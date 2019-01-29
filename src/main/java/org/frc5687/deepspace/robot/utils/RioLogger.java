@@ -23,17 +23,14 @@ public class RioLogger {
     }
 
     public static void warn(String source, String message) {
-        log("warn", source, message);
+        log(LogLevel.warn, source, message);
     }
-    public static void error(String source, String message) {
-        DriverStation.reportError(source + ": " + message, false);
-        log("error", source, message);
-    }
+    public static void error(String source, String message) { log(LogLevel.error, source, message); }
     public static void debug(String source, String message) {
-        log("debug", source, message);
+        log(LogLevel.debug, source, message);
     }
     public static void info(String source, String message) {
-        log("info", source, message);
+        log(LogLevel.info, source, message);
     }
 
     public static void warn(Object source, String message) { warn(source.getClass().getSimpleName(), message); }
@@ -41,8 +38,8 @@ public class RioLogger {
     public static void debug(Object source, String message) { debug(source.getClass().getSimpleName(), message); }
     public static void info(Object source, String message) { info(source.getClass().getSimpleName(), message); }
 
-    public static void log(String level, String source, String message) {
-        getInstance().writeData( getInstance().getDateTimeString(), level, source, message);
+    public static void log(LogLevel level, String source, String message) {
+        getInstance().logint(level, source, message);
     }
 
     private FileWriter fwriter;
@@ -52,7 +49,12 @@ public class RioLogger {
     BufferedWriter log_file = null;
     boolean log_open = false;
 
-    public int init() {
+    private LogLevel _fileLogLevel;
+    private LogLevel _dsLogLevel;
+
+    public int init(LogLevel fileLogLevel, LogLevel dsLogLevel) {
+        _fileLogLevel = fileLogLevel;
+        _dsLogLevel = dsLogLevel;
 
         if (log_open) {
             System.out.println("Warning - log is already open!");
@@ -91,6 +93,15 @@ public class RioLogger {
         DateFormat df = new SimpleDateFormat("yyyy-MM-dd_HHmmss");
         df.setTimeZone(TimeZone.getTimeZone("US/Eastern"));
         return df.format(new Date());
+    }
+
+    protected void logint(LogLevel level, String source, String message) {
+        if (level.getValue() >= _dsLogLevel.getValue()) {
+            DriverStation.reportError(level.toString() + "\t" + source + "\t" + message, false);
+        }
+        if (level.getValue() >= _fileLogLevel.getValue()) {
+            writeData(getDateTimeString(), level.toString(), source, message);
+        }
     }
 
     public int writeData(String... data_elements) {
@@ -181,5 +192,24 @@ public class RioLogger {
         }
         return 0;
     }
+
+    public enum LogLevel {
+        debug(0),
+        info(1),
+        warn(2),
+        error(3);
+
+        private int _value;
+
+        LogLevel(int value) {
+            this._value = value;
+        }
+
+        public int getValue() {
+            return _value;
+        }
+
+    }
+
 }
 

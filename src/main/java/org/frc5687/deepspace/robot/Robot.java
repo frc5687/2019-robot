@@ -6,6 +6,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.frc5687.deepspace.robot.subsystems.DriveTrain;
 import org.frc5687.deepspace.robot.utils.*;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+
 /**
  * The VM is configured to automatically run this class, and to call the
  * functions corresponding to each mode, as described in the TimedRobot
@@ -15,6 +19,12 @@ import org.frc5687.deepspace.robot.utils.*;
  */
 public class Robot extends TimedRobot implements ILoggingSource {
 
+    private IdentityMode _identityMode = IdentityMode.Competition;
+    private RioLogger.LogLevel _dsLogLevel = RioLogger.LogLevel.warn;
+    private RioLogger.LogLevel _fileLogLevel = RioLogger.LogLevel.warn;
+
+
+    private String _name;
     private OI _oi;
     private Limelight _limelight;
     private DriveTrain _driveTrain;
@@ -26,7 +36,8 @@ public class Robot extends TimedRobot implements ILoggingSource {
      */
     @Override
     public void robotInit() {
-        RioLogger.getInstance().init();
+        loadConfigFromUSB();
+        RioLogger.getInstance().init(_fileLogLevel, _dsLogLevel);
         info("Starting " + this.getClass().getCanonicalName() + " from branch " + Version.BRANCH);
 
         _oi = new OI();
@@ -98,6 +109,49 @@ public class Robot extends TimedRobot implements ILoggingSource {
     }
 
 
+    private void loadConfigFromUSB() {    String output_dir = "/U/"; // USB drive is mounted to /U on roboRIO
+        try {
+            String usbDir = "/U/"; // USB drive is mounted to /U on roboRIO
+            String configFileName = usbDir + "frc5687.cfg";
+            File configFile = new File(configFileName);
+            FileReader reader = new FileReader(configFile);
+            BufferedReader bufferedReader = new BufferedReader(reader);
+
+            String line;
+            while ((line = bufferedReader.readLine())!=null) {
+                processConfigLine(line);
+            }
+
+            bufferedReader.close();
+            reader.close();
+        } catch (Exception e) {
+            _identityMode = IdentityMode.Competition;
+        }
+    }
+
+    private void processConfigLine(String line) {
+        try {
+            if (line.startsWith("#")) { return; }
+            String[] a = line.split("=");
+            switch (a[0].trim().toLowerCase()) {
+                case "name":
+                    _name = a[1];
+                    break;
+                case "mode":
+                    _identityMode = IdentityMode.valueOf(a[1]);
+                    break;
+                case "fileloglevel":
+                    _fileLogLevel = RioLogger.LogLevel.valueOf(a[1]);
+                    break;
+                case "dsloglevel":
+                    _dsLogLevel = RioLogger.LogLevel.valueOf(a[1]);
+                    break;
+
+            }
+        } catch (Exception e) {
+
+        }
+    }
     @Override
     public void error(String message) {
         RioLogger.error(this, message);
@@ -128,4 +182,23 @@ public class Robot extends TimedRobot implements ILoggingSource {
         return _limelight;
     }
     public PDP getPDP() { return _pdp; }
+
+
+    public enum IdentityMode {
+        Competition(0),
+        Practice(1),
+        Programming(2);
+
+        private int _value;
+
+        IdentityMode(int value) {
+            this._value = value;
+        }
+
+        public int getValue() {
+            return _value;
+        }
+
+    }
+
 }

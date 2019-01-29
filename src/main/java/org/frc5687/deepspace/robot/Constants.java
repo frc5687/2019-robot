@@ -12,6 +12,9 @@ public class Constants {
         public static final double ROTATION_SENSITIVITY_LOW_GEAR = 0.75;
         public static final double LEFT_RATIO = 1.090909090909;
         public static final double RIGHT_RATIO = 1.090909090909;
+
+        public static final boolean LEFT_MOTORS_INVERTED = true;
+        public static final boolean RIGHT_MOTORS_INVERTED = false;
     }
 
     /*

@@ -1,6 +1,8 @@
 package org.frc5687.deepspace.robot;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.frc5687.deepspace.robot.subsystems.DriveTrain;
@@ -19,7 +21,7 @@ import java.io.FileReader;
  */
 public class Robot extends TimedRobot implements ILoggingSource {
 
-    private IdentityMode _identityMode = IdentityMode.Competition;
+    private IdentityMode _identityMode = IdentityMode.competition;
     private RioLogger.LogLevel _dsLogLevel = RioLogger.LogLevel.warn;
     private RioLogger.LogLevel _fileLogLevel = RioLogger.LogLevel.warn;
 
@@ -39,6 +41,7 @@ public class Robot extends TimedRobot implements ILoggingSource {
         loadConfigFromUSB();
         RioLogger.getInstance().init(_fileLogLevel, _dsLogLevel);
         info("Starting " + this.getClass().getCanonicalName() + " from branch " + Version.BRANCH);
+        info("Robot " + _name + " running in " + _identityMode.toString() + " mode");
 
         _oi = new OI();
         _limelight = new Limelight("limelight");
@@ -79,6 +82,7 @@ public class Robot extends TimedRobot implements ILoggingSource {
      */
     @Override
     public void autonomousPeriodic() {
+        Scheduler.getInstance().run();
     }
 
     /**
@@ -86,6 +90,7 @@ public class Robot extends TimedRobot implements ILoggingSource {
      */
     @Override
     public void teleopPeriodic() {
+        Scheduler.getInstance().run();
     }
 
     /**
@@ -93,6 +98,7 @@ public class Robot extends TimedRobot implements ILoggingSource {
      */
     @Override
     public void testPeriodic() {
+        Scheduler.getInstance().run();
     }
 
     @Override
@@ -125,7 +131,7 @@ public class Robot extends TimedRobot implements ILoggingSource {
             bufferedReader.close();
             reader.close();
         } catch (Exception e) {
-            _identityMode = IdentityMode.Competition;
+            _identityMode = IdentityMode.competition;
         }
     }
 
@@ -133,20 +139,27 @@ public class Robot extends TimedRobot implements ILoggingSource {
         try {
             if (line.startsWith("#")) { return; }
             String[] a = line.split("=");
-            switch (a[0].trim().toLowerCase()) {
-                case "name":
-                    _name = a[1];
-                    break;
-                case "mode":
-                    _identityMode = IdentityMode.valueOf(a[1]);
-                    break;
-                case "fileloglevel":
-                    _fileLogLevel = RioLogger.LogLevel.valueOf(a[1]);
-                    break;
-                case "dsloglevel":
-                    _dsLogLevel = RioLogger.LogLevel.valueOf(a[1]);
-                    break;
-
+            if (a.length==2) {
+                String key = a[0].trim().toLowerCase();
+                String value = a[1].trim();
+                switch (key) {
+                    case "name":
+                        _name = value;
+                        metric("name", _name);
+                        break;
+                    case "mode":
+                        _identityMode = IdentityMode.valueOf(value.toLowerCase());
+                        metric("mode", _identityMode.toString());
+                        break;
+                    case "fileloglevel":
+                        _fileLogLevel = RioLogger.LogLevel.valueOf(value.toLowerCase());
+                        metric("fileLogLevel", _fileLogLevel.toString());
+                        break;
+                    case "dsloglevel":
+                        _dsLogLevel = RioLogger.LogLevel.valueOf(value.toLowerCase());
+                        metric("dsLogLevel", _dsLogLevel.toString());
+                        break;
+                }
             }
         } catch (Exception e) {
 
@@ -185,9 +198,9 @@ public class Robot extends TimedRobot implements ILoggingSource {
 
 
     public enum IdentityMode {
-        Competition(0),
-        Practice(1),
-        Programming(2);
+        competition(0),
+        practice(1),
+        programming(2);
 
         private int _value;
 
@@ -199,6 +212,18 @@ public class Robot extends TimedRobot implements ILoggingSource {
             return _value;
         }
 
+    }
+
+    public void metric(String name, boolean value) {
+        SmartDashboard.putBoolean(getClass().getSimpleName() + "/" + name, value);
+    }
+
+    public void metric(String name, String value) {
+        SmartDashboard.putString(getClass().getSimpleName() + "/" + name, value);
+    }
+
+    public void metric(String name, double value) {
+        SmartDashboard.putNumber(getClass().getSimpleName() + "/" + name, value);
     }
 
 }

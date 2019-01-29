@@ -38,6 +38,14 @@ public class DriveTrain extends OutliersSubsystem {
             _rightMaster = new CANSparkMax(RobotMap.CAN.SPARKMAX.DRIVE_RIGHT_MASTER, CANSparkMaxLowLevel.MotorType.kBrushless);
             _leftFollower = new CANSparkMax(RobotMap.CAN.SPARKMAX.DRIVE_LEFT_FOLLOWER, CANSparkMaxLowLevel.MotorType.kBrushless);
             _rightFollower = new CANSparkMax(RobotMap.CAN.SPARKMAX.DRIVE_RIGHT_FOLLOWER, CANSparkMaxLowLevel.MotorType.kBrushless);
+
+
+            _leftMaster.setInverted(Constants.DriveTrain.LEFT_MOTORS_INVERTED);
+            _leftFollower.setInverted(Constants.DriveTrain.LEFT_MOTORS_INVERTED);
+            _rightMaster.setInverted(Constants.DriveTrain.RIGHT_MOTORS_INVERTED);
+            _rightFollower.setInverted(Constants.DriveTrain.RIGHT_MOTORS_INVERTED);
+
+
         } catch (Exception e) {
             error("Exception allocating drive motor controllers: " + e.getMessage());
             return;

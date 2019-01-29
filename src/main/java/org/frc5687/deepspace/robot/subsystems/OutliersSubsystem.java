@@ -1,6 +1,7 @@
 package org.frc5687.deepspace.robot.subsystems;
 
 import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.frc5687.deepspace.robot.utils.ILoggingSource;
 import org.frc5687.deepspace.robot.utils.RioLogger;
 
@@ -25,5 +26,19 @@ public abstract class OutliersSubsystem extends Subsystem implements ILoggingSou
         RioLogger.debug(this, message);
     }
 
+    public void metric(String name, String value) {
+        SmartDashboard.putString(getClass().getSimpleName() + "/" + name, value);
+    }
+
+    public void metric(String name, double value) {
+        SmartDashboard.putNumber(getClass().getSimpleName() + "/" + name, value);
+    }
+
+    public void metric(String name, boolean value) {
+        SmartDashboard.putBoolean(getClass().getSimpleName() + "/" + name, value);
+    }
+
     public abstract void updateDashboard();
+
+
 }

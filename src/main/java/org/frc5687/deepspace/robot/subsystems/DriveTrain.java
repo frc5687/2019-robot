@@ -73,8 +73,8 @@ public class DriveTrain extends OutliersSubsystem {
 
     public void cheesyDrive(double speed, double rotation) {
         if (!assertMotorControllers()) { return; }
-        SmartDashboard.putNumber("DriveTrain/Speed", speed);
-        SmartDashboard.putNumber("DriveTrain/Rotation", rotation);
+        metric("Speed", speed);
+        metric("Rotation", rotation);
 
         speed = limit(speed);
         //Shifter.Gear gear = _robot.getShifter().getGear();

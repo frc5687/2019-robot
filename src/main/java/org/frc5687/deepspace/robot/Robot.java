@@ -4,9 +4,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.frc5687.deepspace.robot.subsystems.DriveTrain;
-import org.frc5687.deepspace.robot.utils.ILoggingSource;
-import org.frc5687.deepspace.robot.utils.RioLogger;
-import org.frc5687.deepspace.robot.utils.Version;
+import org.frc5687.deepspace.robot.utils.*;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -18,7 +16,9 @@ import org.frc5687.deepspace.robot.utils.Version;
 public class Robot extends TimedRobot implements ILoggingSource {
 
     private OI _oi;
+    private Limelight _limelight;
     private DriveTrain _driveTrain;
+    private PDP _pdp;
 
     /**
      * This function is run when the robot is first started up and should be
@@ -30,7 +30,9 @@ public class Robot extends TimedRobot implements ILoggingSource {
         info("Starting " + this.getClass().getCanonicalName() + " from branch " + Version.BRANCH);
 
         _oi = new OI();
+        _limelight = new Limelight("limelight");
         _driveTrain = new DriveTrain(this);
+        _pdp = new PDP();
     }
 
     /**
@@ -90,7 +92,9 @@ public class Robot extends TimedRobot implements ILoggingSource {
 
 
     public void updateDashboard() {
-
+        _oi.updateDashboard();
+        _driveTrain.updateDashboard();
+        _limelight.updateDashboard();
     }
 
 
@@ -117,4 +121,11 @@ public class Robot extends TimedRobot implements ILoggingSource {
     public OI getOI() {
         return _oi;
     }
+    public DriveTrain getDriveTrain() {
+        return _driveTrain;
+    }
+    public Limelight getLimelight() {
+        return _limelight;
+    }
+    public PDP getPDP() { return _pdp; }
 }

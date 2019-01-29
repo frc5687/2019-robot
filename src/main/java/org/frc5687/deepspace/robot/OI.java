@@ -4,10 +4,12 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.buttons.Button;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import org.frc5687.deepspace.robot.utils.Gamepad;
+import org.frc5687.deepspace.robot.utils.OutliersProxy;
+
 import static org.frc5687.deepspace.robot.utils.Helpers.applyDeadband;
 import static org.frc5687.deepspace.robot.utils.Helpers.applySensitivityFactor;
 
-public class OI {
+public class OI extends OutliersProxy {
     protected Gamepad _driverGamepad;
     protected Gamepad _operatorGamepad;
 
@@ -32,5 +34,9 @@ public class OI {
         return gamepad.getRawAxis(axisNumber);
     }
 
+    @Override
+    public void updateDashboard() {
+
+    }
 }
 

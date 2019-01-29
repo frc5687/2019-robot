@@ -3,6 +3,7 @@ package org.frc5687.deepspace.robot;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import org.frc5687.deepspace.robot.subsystems.DriveTrain;
 import org.frc5687.deepspace.robot.utils.ILoggingSource;
 import org.frc5687.deepspace.robot.utils.RioLogger;
 import org.frc5687.deepspace.robot.utils.Version;
@@ -16,6 +17,9 @@ import org.frc5687.deepspace.robot.utils.Version;
  */
 public class Robot extends TimedRobot implements ILoggingSource {
 
+    private OI _oi;
+    private DriveTrain _driveTrain;
+
     /**
      * This function is run when the robot is first started up and should be
      * used for any initialization code.
@@ -24,6 +28,9 @@ public class Robot extends TimedRobot implements ILoggingSource {
     public void robotInit() {
         RioLogger.getInstance().init();
         info("Starting " + this.getClass().getCanonicalName() + " from branch " + Version.BRANCH);
+
+        _oi = new OI();
+        _driveTrain = new DriveTrain(this);
     }
 
     /**
@@ -105,5 +112,9 @@ public class Robot extends TimedRobot implements ILoggingSource {
     @Override
     public void debug(String message) {
         RioLogger.debug(this, message);
+    }
+
+    public OI getOI() {
+        return _oi;
     }
 }

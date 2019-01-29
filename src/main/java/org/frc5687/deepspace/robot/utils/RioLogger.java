@@ -1,5 +1,7 @@
 package org.frc5687.deepspace.robot.utils;
 
+import edu.wpi.first.wpilibj.DriverStation;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -24,6 +26,7 @@ public class RioLogger {
         log("warn", source, message);
     }
     public static void error(String source, String message) {
+        DriverStation.reportError(source + ": " + message, false);
         log("error", source, message);
     }
     public static void debug(String source, String message) {

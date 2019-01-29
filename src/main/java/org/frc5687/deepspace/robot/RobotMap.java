@@ -11,6 +11,12 @@ public class RobotMap {
         /*  Example:
         public static final int LEFT_MASTER_SPARK= 1;
         */
+        public static class SPARKMAX {
+            public static final int DRIVE_LEFT_MASTER = 0;
+            public static final int DRIVE_RIGHT_MASTER = 1;
+            public static final int DRIVE_LEFT_FOLLOWER = 2;
+            public static final int DRIVE_RIGHT_FOLLOWER = 3;
+        }
     }
 
     /**

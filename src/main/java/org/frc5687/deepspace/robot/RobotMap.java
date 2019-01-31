@@ -12,10 +12,10 @@ public class RobotMap {
         public static final int LEFT_MASTER_SPARK= 1;
         */
         public static class SPARKMAX {
-            public static final int DRIVE_LEFT_MASTER = 1;
-            public static final int DRIVE_RIGHT_MASTER = 3;
-            public static final int DRIVE_LEFT_FOLLOWER = 0;
-            public static final int DRIVE_RIGHT_FOLLOWER = 2;
+            public static final int DRIVE_LEFT_MASTER = 11;
+            public static final int DRIVE_RIGHT_MASTER = 6;
+            public static final int DRIVE_LEFT_FOLLOWER = 14;
+            public static final int DRIVE_RIGHT_FOLLOWER = 8;
         }
     }
 

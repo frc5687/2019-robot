@@ -29,6 +29,11 @@ public class OI extends OutliersProxy {
         speed = applyDeadband(speed, Constants.DriveTrain.DEADBAND);
         return speed;
     }
+    public double getElevatorSpeed() {
+        double speed = -getSpeedFromAxis(_operatorGamepad, Gamepad.Axes.RIGHT_Y.getNumber()) * Constants.Elevator.MAX_ELEVATOR_SPEED;
+        speed = applyDeadband(speed, Constants.Elevator.DEADBAND);
+        return applySensitivityFactor(speed, Constants.Elevator.SENSITIVITY);
+    }
 
     protected double getSpeedFromAxis(Joystick gamepad, int axisNumber) {
         return gamepad.getRawAxis(axisNumber);

@@ -18,9 +18,17 @@ public class Constants {
     }
     public static class Gobbler {
 
-        public static final double MAX_INTAKE_SPEED = 0.5;
+        public static final double MAX_INTAKE_SPEED = 0.3;
         public static final double SENSITIVITY = 0.5;
         public static final double DEADBAND = 0.1;
+        public static final double MAX_DRIVE_SPEED = 0.3;
+        public static final double INTAKE_SPEED = 0.3;
+        public static final double HOLD_SPEED = 0;
+    }
+    public static class OI {
+        public static final double AXIS_BUTTON_THRESHHOLD = 0.2;
+        public static final long RUMBLE_MILLIS = 250;
+        public static final double RUMBLE_INTENSITY = 1.0;
     }
     /*
      There should be a nested static class for each subsystem and for each autonomous command that needs tuning constants.

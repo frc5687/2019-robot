@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.frc5687.deepspace.robot.subsystems.DriveTrain;
+import org.frc5687.deepspace.robot.subsystems.Gobbler;
 import org.frc5687.deepspace.robot.utils.*;
 
 import java.io.BufferedReader;
@@ -24,6 +25,7 @@ public class Robot extends TimedRobot implements ILoggingSource {
     private IdentityMode _identityMode = IdentityMode.competition;
     private RioLogger.LogLevel _dsLogLevel = RioLogger.LogLevel.warn;
     private RioLogger.LogLevel _fileLogLevel = RioLogger.LogLevel.warn;
+    private static Robot _instance;
 
 
     private String _name;
@@ -31,6 +33,7 @@ public class Robot extends TimedRobot implements ILoggingSource {
     private Limelight _limelight;
     private DriveTrain _driveTrain;
     private PDP _pdp;
+    private Gobbler _gobbler;
 
     /**
      * This function is run when the robot is first started up and should be
@@ -47,6 +50,7 @@ public class Robot extends TimedRobot implements ILoggingSource {
         _limelight = new Limelight("limelight");
         _driveTrain = new DriveTrain(this);
         _pdp = new PDP();
+        _oi.initializeButtons(_instance);
     }
 
     /**
@@ -225,5 +229,5 @@ public class Robot extends TimedRobot implements ILoggingSource {
     public void metric(String name, double value) {
         SmartDashboard.putNumber(getClass().getSimpleName() + "/" + name, value);
     }
-
+    public Gobbler getGobbler() { return _gobbler; }
 }

@@ -21,10 +21,8 @@ public class DriveGobbler extends OutliersCommand {
 
     @Override
     public void execute() {
-        // Read fore and aft stick positions from OI
         double speed = _oi.getGobblerSpeed();
 
-        // Send to the gobbler
         _gobbler.setSpeeds(speed);
     }
 

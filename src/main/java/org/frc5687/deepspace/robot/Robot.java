@@ -49,6 +49,7 @@ public class Robot extends TimedRobot implements ILoggingSource {
         _oi = new OI();
         _limelight = new Limelight("limelight");
         _driveTrain = new DriveTrain(this);
+        _gobbler = new Gobbler(this);
         _pdp = new PDP();
         _oi.initializeButtons(_instance);
     }

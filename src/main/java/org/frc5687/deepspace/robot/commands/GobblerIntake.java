@@ -14,8 +14,8 @@ public class GobblerIntake extends OutliersCommand {
     }
     @Override
     protected void execute() {
-        _gobbler.setIntakeState(Gobbler.IntakeState.INTAKE);
-        _gobbler.runIntake(0);
+        _gobbler.setGobblerState(Gobbler.GobblerState.INTAKE);
+        _gobbler.runGobbler(0);
     }
 
     @Override

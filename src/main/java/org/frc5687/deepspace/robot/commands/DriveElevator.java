@@ -1,11 +1,10 @@
 package org.frc5687.deepspace.robot.commands;
 
-import edu.wpi.first.wpilibj.command.Command;
 import org.frc5687.deepspace.robot.OI;
 import org.frc5687.deepspace.robot.Robot;
 import org.frc5687.deepspace.robot.subsystems.Elevator;
 
-public class DriveElevator extends Command {
+public class DriveElevator extends OutliersCommand{
     
     private Elevator _Elevator;
     private OI _oi;

@@ -6,13 +6,13 @@ import org.frc5687.deepspace.robot.subsystems.Elevator;
 
 public class DriveElevator extends OutliersCommand{
     
-    private Elevator _Elevator;
+    private Elevator _elevator;
     private OI _oi;
 
-    public DriveElevator(Robot robot, Elevator Elevator) {
-        _Elevator = Elevator;
+    public DriveElevator(Robot robot, Elevator elevator) {
+        _elevator = elevator;
         _oi = robot.getOI();
-        requires(_Elevator);
+        requires(_elevator);
     }
 
     @Override
@@ -25,7 +25,7 @@ public class DriveElevator extends OutliersCommand{
         double speed = _oi.getElevatorSpeed();
 
         // Send to the Elevator
-        _Elevator.setSpeeds(speed);
+        _elevator.setSpeeds(speed);
     }
 
 

@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.frc5687.deepspace.robot.subsystems.DriveTrain;
+import org.frc5687.deepspace.robot.subsystems.Wrist;
 import org.frc5687.deepspace.robot.utils.*;
 
 import java.io.BufferedReader;
@@ -31,6 +32,7 @@ public class Robot extends TimedRobot implements ILoggingSource {
     private Limelight _limelight;
     private DriveTrain _driveTrain;
     private PDP _pdp;
+    private Wrist _wrist;
 
     /**
      * This function is run when the robot is first started up and should be
@@ -47,6 +49,8 @@ public class Robot extends TimedRobot implements ILoggingSource {
         _limelight = new Limelight("limelight");
         _driveTrain = new DriveTrain(this);
         _pdp = new PDP();
+        _wrist = new Wrist(this);
+        _oi.initializeButtons(this);
     }
 
     /**
@@ -195,6 +199,7 @@ public class Robot extends TimedRobot implements ILoggingSource {
         return _limelight;
     }
     public PDP getPDP() { return _pdp; }
+    public Wrist getWrist() { return _wrist; }
 
 
     public enum IdentityMode {

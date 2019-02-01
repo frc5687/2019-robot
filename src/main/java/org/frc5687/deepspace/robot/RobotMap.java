@@ -37,6 +37,9 @@ public class RobotMap {
         /* Example:
         public static final int LEFT_PINCER_OPEN = 5;
         */
+        public static final int WRIST_DOWN = 2;
+        public static final int WRIST_UP = 3;
+
     }
 
     /**

@@ -3,6 +3,8 @@ package org.frc5687.deepspace.robot;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.buttons.Button;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
+import org.frc5687.deepspace.robot.commands.WristDown;
+import org.frc5687.deepspace.robot.commands.WristUp;
 import org.frc5687.deepspace.robot.utils.Gamepad;
 import org.frc5687.deepspace.robot.utils.OutliersProxy;
 
@@ -13,9 +15,19 @@ public class OI extends OutliersProxy {
     protected Gamepad _driverGamepad;
     protected Gamepad _operatorGamepad;
 
+    private Button _operatorYButton;
+    private Button _operatorXButton;
+
     public OI(){
         _driverGamepad = new Gamepad(0);
         _operatorGamepad = new Gamepad(1);
+        _operatorYButton = new JoystickButton(_operatorGamepad, Gamepad.Buttons.Y.getNumber());
+        _operatorXButton = new JoystickButton(_operatorGamepad, Gamepad.Buttons.X.getNumber());
+    }
+
+    public void initializeButtons(Robot robot){
+        _operatorYButton.whenPressed(new WristUp(robot.getWrist()));
+        _operatorXButton.whenPressed(new WristDown(robot.getWrist()));
     }
 
     public double getDriveSpeed() {

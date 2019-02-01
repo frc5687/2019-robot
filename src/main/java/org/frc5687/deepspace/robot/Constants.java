@@ -16,7 +16,12 @@ public class Constants {
         public static final boolean LEFT_MOTORS_INVERTED = true;
         public static final boolean RIGHT_MOTORS_INVERTED = false;
     }
+    public static class Gobbler {
 
+        public static final double MAX_INTAKE_SPEED = 0.5;
+        public static final double SENSITIVITY = 0.5;
+        public static final double DEADBAND = 0.1;
+    }
     /*
      There should be a nested static class for each subsystem and for each autonomous command that needs tuning constants.
      For example:

@@ -16,6 +16,8 @@ public class RobotMap {
             public static final int DRIVE_RIGHT_MASTER = 6;
             public static final int DRIVE_LEFT_FOLLOWER = 14;
             public static final int DRIVE_RIGHT_FOLLOWER = 8;
+            public static final int GOBBLER_RIGHT = 9;
+            public static final int GOBBLER_LEFT = 16;
         }
     }
 

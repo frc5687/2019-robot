@@ -24,6 +24,9 @@ public class Constants {
         public static final double MAX_DRIVE_SPEED = 0.3;
         public static final double INTAKE_SPEED = 0.3;
         public static final double HOLD_SPEED = 0;
+        public static final double MINIMUM_SPEED = .1;
+        public static final boolean ARM_MOTOR_INVERTED = false;
+        public static final boolean ROLLER_MOTOR_INVERTED = false;
     }
     public static class OI {
         public static final double AXIS_BUTTON_THRESHHOLD = 0.2;

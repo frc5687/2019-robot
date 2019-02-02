@@ -16,6 +16,12 @@ public class Constants {
         public static final boolean LEFT_MOTORS_INVERTED = true;
         public static final boolean RIGHT_MOTORS_INVERTED = false;
     }
+    public static class Elevator {
+
+        public static final double MAX_ELEVATOR_SPEED = 0.3;
+        public static final double DEADBAND = 0.1;
+        public static final double SENSITIVITY = 0.5;
+    }
     public static class Gobbler {
 
         public static final double MAX_INTAKE_SPEED = 0.3;

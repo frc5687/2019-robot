@@ -46,9 +46,14 @@ public class OI extends OutliersProxy {
         return speed;
     }
     public double getGobblerSpeed() {
-        double speed = -getSpeedFromAxis(_operatorGamepad, Gamepad.Axes.RIGHT_Y.getNumber()) * Constants.Gobbler.MAX_INTAKE_SPEED;
+        double speed = 0;// -getSpeedFromAxis(_operatorGamepad, Gamepad.Axes.RIGHT_Y.getNumber()) * Constants.Gobbler.MAX_INTAKE_SPEED;
         speed = applyDeadband(speed, Constants.Gobbler.DEADBAND);
         return applySensitivityFactor(speed, Constants.Gobbler.SENSITIVITY);
+    }
+    public double getElevatorSpeed() {
+        double speed = 0;//-getSpeedFromAxis(_operatorGamepad, Gamepad.Axes.RIGHT_Y.getNumber()) * Constants.Elevator.MAX_ELEVATOR_SPEED;
+        speed = applyDeadband(speed, Constants.Elevator.DEADBAND);
+        return applySensitivityFactor(speed, Constants.Elevator.SENSITIVITY);
     }
 
 

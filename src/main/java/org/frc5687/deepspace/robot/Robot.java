@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.frc5687.deepspace.robot.subsystems.DriveTrain;
+import org.frc5687.deepspace.robot.subsystems.Elevator;
 import org.frc5687.deepspace.robot.subsystems.Gobbler;
 import org.frc5687.deepspace.robot.subsystems.Spear;
 import org.frc5687.deepspace.robot.subsystems.Wrist;
@@ -32,6 +33,7 @@ public class Robot extends TimedRobot implements ILoggingSource {
     private OI _oi;
     private Limelight _limelight;
     private DriveTrain _driveTrain;
+    private Elevator _elevator;
     private PDP _pdp;
     private Spear _spear;
     private Gobbler _gobbler;
@@ -52,6 +54,7 @@ public class Robot extends TimedRobot implements ILoggingSource {
         _limelight = new Limelight("limelight");
         _driveTrain = new DriveTrain(this);
         _gobbler = new Gobbler(this);
+        _elevator = new Elevator(this);
         _pdp = new PDP();
         _spear = new Spear(this);
         _wrist = new Wrist(this);
@@ -122,6 +125,7 @@ public class Robot extends TimedRobot implements ILoggingSource {
         _driveTrain.updateDashboard();
         _limelight.updateDashboard();
         _gobbler.updateDashboard();
+        _elevator.updateDashboard();
     }
 
 

@@ -9,13 +9,14 @@ public class RobotMap {
       */
     public static class CAN {
         /*  Example:
-        public static final int LEFT_MASTER_SPARK= 1;
-        */
+                public static final int LEFT_MASTER_SPARK= 1;
+                */
         public static class SPARKMAX {
             public static final int DRIVE_LEFT_MASTER = 11;
             public static final int DRIVE_RIGHT_MASTER = 6;
             public static final int DRIVE_LEFT_FOLLOWER = 14;
             public static final int DRIVE_RIGHT_FOLLOWER = 8;
+            public static final int ELEVATOR_MOTOR = 5;
             public static final int GOBBLER_ROLLER = 9;
             public static final int GOBBLER_ARM = 16;
         }
@@ -73,6 +74,11 @@ public class RobotMap {
      * Note that for DIO only one device can connect to each port, so the numbers should be unique.
      */
     public static class DIO {
+        public static final int ELEVATOR_A = 0;
+        public static final int ELEVATOR_B = 1;
+        public static final int ELEVATOR_TOP_HALL = 5;
+        public static final int ELEVATOR_BOTTOM_HALL = 4;
+
         public static final int GOBBLER_LOW_HALL = 9;
         public static final int GOBBLER_INTAKE_HALL = 8;
         public static final int GOBBLER_SECURE_HALL = 7;

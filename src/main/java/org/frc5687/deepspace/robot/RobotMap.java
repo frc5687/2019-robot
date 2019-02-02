@@ -16,6 +16,7 @@ public class RobotMap {
             public static final int DRIVE_RIGHT_MASTER = 6;
             public static final int DRIVE_LEFT_FOLLOWER = 14;
             public static final int DRIVE_RIGHT_FOLLOWER = 8;
+            public static final int INTAKE_VAUCUM = 0; //vacuum motor for intake is currently not set up, set to 0 for now.
         }
     }
 
@@ -34,6 +35,8 @@ public class RobotMap {
      * Note that for PCM only one device can connect to each port, so the numbers should be unique.
      */
     public static class PCM {
+        public static final int VACUUM_PISTON_RELEASE = 4;
+        public static final int VACUUM_PISTON_BACK = 5;
         /* Example:
         public static final int LEFT_PINCER_OPEN = 5;
         */

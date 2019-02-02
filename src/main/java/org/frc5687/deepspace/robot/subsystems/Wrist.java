@@ -14,10 +14,10 @@ public class Wrist extends OutliersSubsystem {
         _wristSolenoid = new DoubleSolenoid(RobotMap.PCM.WRIST_DOWN, RobotMap.PCM.WRIST_UP);
     }
     public void Up(){
-        _wristSolenoid.set(DoubleSolenoid.Value.kForward);
+        _wristSolenoid.set(DoubleSolenoid.Value.kReverse);
     }
     public void Down(){
-        _wristSolenoid.set(DoubleSolenoid.Value.kReverse);
+        _wristSolenoid.set(DoubleSolenoid.Value.kForward);
     }
     public void Release(){
         _wristSolenoid.set(DoubleSolenoid.Value.kOff);

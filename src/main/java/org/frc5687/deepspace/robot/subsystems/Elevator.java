@@ -20,7 +20,7 @@ public class Elevator extends OutliersSubsystem{
     private Robot _robot;
 
     private HallEffect _topHall;
-    private HallEffect _lowHall;
+    private HallEffect _bottomHall;
 
     public Elevator(Robot robot) {
         _robot = robot;
@@ -29,6 +29,8 @@ public class Elevator extends OutliersSubsystem{
         _elevatorEncoder = new Encoder(RobotMap.DIO.ELEVATOR_A, RobotMap.DIO.ELEVATOR_B);
         _neoElevatorEncoder = _elevator.getEncoder();
 
+        _topHall = new HallEffect(RobotMap.DIO.ELEVATOR_TOP_HALL);
+        _bottomHall = new HallEffect(RobotMap.DIO.ELEVATOR_BOTTOM_HALL);
 
     }
     public void setSpeeds(double speed) {
@@ -75,5 +77,5 @@ public class Elevator extends OutliersSubsystem{
     }
     public boolean isAtTop() { return _topHall.get(); }
 
-    public boolean isAtBottom() { return _lowHall.get(); }
+    public boolean isAtBottom() { return _bottomHall.get(); }
 }

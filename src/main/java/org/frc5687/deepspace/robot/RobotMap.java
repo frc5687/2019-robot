@@ -67,6 +67,8 @@ public class RobotMap {
     public static class DIO {
         public static final int ELEVATOR_A = 0;
         public static final int ELEVATOR_B = 1;
+        public static final int ELEVATOR_TOP_HALL = 5;
+        public static final int ELEVATOR_BOTTOM_HALL = 4;
 
         /* Example:
         public static final int ARM_FRONT_LIMIT = 0;

@@ -39,6 +39,10 @@ public class RobotMap {
         /* Example:
         public static final int LEFT_PINCER_OPEN = 5;
         */
+
+        //PCM ports are not in the robot yet, using 0 and 1.
+        public static final int SPEAR_OPEN = 0;
+        public static final int SPEAR_CLOSE = 1;
     }
 
     /**

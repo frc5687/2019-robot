@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.frc5687.deepspace.robot.subsystems.DriveTrain;
 import org.frc5687.deepspace.robot.subsystems.Gobbler;
+import org.frc5687.deepspace.robot.subsystems.Spear;
 import org.frc5687.deepspace.robot.utils.*;
 
 import java.io.BufferedReader;
@@ -25,14 +26,13 @@ public class Robot extends TimedRobot implements ILoggingSource {
     private IdentityMode _identityMode = IdentityMode.competition;
     private RioLogger.LogLevel _dsLogLevel = RioLogger.LogLevel.warn;
     private RioLogger.LogLevel _fileLogLevel = RioLogger.LogLevel.warn;
-    private static Robot _instance;
-
 
     private String _name;
     private OI _oi;
     private Limelight _limelight;
     private DriveTrain _driveTrain;
     private PDP _pdp;
+    private Spear _spear;
     private Gobbler _gobbler;
 
     /**
@@ -51,7 +51,8 @@ public class Robot extends TimedRobot implements ILoggingSource {
         _driveTrain = new DriveTrain(this);
         _gobbler = new Gobbler(this);
         _pdp = new PDP();
-        _oi.initializeButtons(_instance);
+        _spear = new Spear(this);
+        _oi.initializeButtons(this);
     }
 
     /**
@@ -201,6 +202,8 @@ public class Robot extends TimedRobot implements ILoggingSource {
         return _limelight;
     }
     public PDP getPDP() { return _pdp; }
+    public Spear getSpear() { return _spear; }
+
 
 
     public enum IdentityMode {

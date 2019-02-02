@@ -9,6 +9,7 @@ import org.frc5687.deepspace.robot.Constants;
 import org.frc5687.deepspace.robot.Robot;
 import org.frc5687.deepspace.robot.RobotMap;
 import org.frc5687.deepspace.robot.commands.DriveElevator;
+import org.frc5687.deepspace.robot.utils.HallEffect;
 import org.frc5687.deepspace.robot.utils.Helpers;
 
 public class Elevator extends OutliersSubsystem{
@@ -18,6 +19,9 @@ public class Elevator extends OutliersSubsystem{
     private CANEncoder _neoElevatorEncoder;
     private Robot _robot;
 
+    private HallEffect _topHall;
+    private HallEffect _lowHall;
+
     public Elevator(Robot robot) {
         _robot = robot;
 
@@ -25,12 +29,28 @@ public class Elevator extends OutliersSubsystem{
         _elevatorEncoder = new Encoder(RobotMap.DIO.ELEVATOR_A, RobotMap.DIO.ELEVATOR_B);
         _neoElevatorEncoder = _elevator.getEncoder();
 
+
     }
     public void setSpeeds(double speed) {
         speed = Helpers.limit(speed, Constants.Elevator.MAX_ELEVATOR_SPEED);
 
         metric("Elevator at" + speed, false);
 
+        _elevator.set(speed);
+    }
+    public void drive(double desiredSpeed, boolean overrideCaps) {
+        double speed = desiredSpeed;
+        if (!overrideCaps) {
+            if (speed > 0 && isAtTop()) {
+                speed = 0;
+            } else if (speed < 0 && isAtBottom()) {
+                speed = 0;
+            }
+
+        }
+
+        metric("rawSpeed", desiredSpeed);
+        metric("speed", speed);
         _elevator.set(speed);
     }
 
@@ -53,4 +73,7 @@ public class Elevator extends OutliersSubsystem{
         metric("NEOEncoder", getRawNeoEncoder());
 
     }
+    public boolean isAtTop() { return _topHall.get(); }
+
+    public boolean isAtBottom() { return _lowHall.get(); }
 }

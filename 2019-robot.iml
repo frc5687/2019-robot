@@ -12,11 +12,11 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.kauailabs.navx.frc/navx-java/3.1.344/30981bb5cf08864cfdca75cfd21418470e16c167/navx-java-3.1.344.jar!/"/>
+          <root url="jar://C:/Users/NathanDesjardins/.gradle/caches/modules-2/files-2.1/com.kauailabs.navx.frc/navx-java/3.1.344/30981bb5cf08864cfdca75cfd21418470e16c167/navx-java-3.1.344.jar!/"/>
         </CLASSES>
         <JAVADOC/>
         <SOURCES>
-          <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.kauailabs.navx.frc/navx-java/3.1.344/d4d52e9506c6d7a139b3a473ce62d4b2d2ed6019/navx-java-3.1.344-sources.jar!/"/>
+          <root url="jar://C:/Users/NathanDesjardins/.gradle/caches/modules-2/files-2.1/com.kauailabs.navx.frc/navx-java/3.1.344/d4d52e9506c6d7a139b3a473ce62d4b2d2ed6019/navx-java-3.1.344-sources.jar!/"/>
         </SOURCES>
       </library>
     </orderEntry>
@@ -100,62 +100,62 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/jaci.pathfinder/Pathfinder-Java/2019.1.11/65fcf6ce6dd64f8fe704fd81c802fe420e899556/Pathfinder-Java-2019.1.11.jar!/"/>
+          <root url="jar://C:/Users/NathanDesjardins/.gradle/caches/modules-2/files-2.1/jaci.pathfinder/Pathfinder-Java/2019.1.11/65fcf6ce6dd64f8fe704fd81c802fe420e899556/Pathfinder-Java-2019.1.11.jar!/"/>
         </CLASSES>
         <JAVADOC/>
         <SOURCES>
-          <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/jaci.pathfinder/Pathfinder-Java/2019.1.11/ab724e8dfc1796cd1703ebbd8fd67e048dcc786a/Pathfinder-Java-2019.1.11-sources.jar!/"/>
+          <root url="jar://C:/Users/NathanDesjardins/.gradle/caches/modules-2/files-2.1/jaci.pathfinder/Pathfinder-Java/2019.1.11/ab724e8dfc1796cd1703ebbd8fd67e048dcc786a/Pathfinder-Java-2019.1.11-sources.jar!/"/>
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/jaci.jniloader/JNILoader/1.0.1/cda8f6f8880538cb168c9d6cf62e2d96c01ee7b5/JNILoader-1.0.1.jar!/"/>
+          <root url="jar://C:/Users/NathanDesjardins/.gradle/caches/modules-2/files-2.1/jaci.jniloader/JNILoader/1.0.1/cda8f6f8880538cb168c9d6cf62e2d96c01ee7b5/JNILoader-1.0.1.jar!/"/>
         </CLASSES>
         <JAVADOC/>
         <SOURCES>
-          <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/jaci.jniloader/JNILoader/1.0.1/43472fb5bec68edf76f499d3ba49b7746465885a/JNILoader-1.0.1-sources.jar!/"/>
+          <root url="jar://C:/Users/NathanDesjardins/.gradle/caches/modules-2/files-2.1/jaci.jniloader/JNILoader/1.0.1/43472fb5bec68edf76f499d3ba49b7746465885a/JNILoader-1.0.1-sources.jar!/"/>
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/jaci.pathfinder/Pathfinder-FRCSupport/2019.1.11/2fd8be344fd372c7012d0c904e00f34a3aef355e/Pathfinder-FRCSupport-2019.1.11.jar!/"/>
+          <root url="jar://C:/Users/NathanDesjardins/.gradle/caches/modules-2/files-2.1/jaci.pathfinder/Pathfinder-FRCSupport/2019.1.11/2fd8be344fd372c7012d0c904e00f34a3aef355e/Pathfinder-FRCSupport-2019.1.11.jar!/"/>
         </CLASSES>
         <JAVADOC/>
         <SOURCES>
-          <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/jaci.pathfinder/Pathfinder-FRCSupport/2019.1.11/adcf411c8bb5da242021dc5d2e448a0510fedfb9/Pathfinder-FRCSupport-2019.1.11-sources.jar!/"/>
+          <root url="jar://C:/Users/NathanDesjardins/.gradle/caches/modules-2/files-2.1/jaci.pathfinder/Pathfinder-FRCSupport/2019.1.11/adcf411c8bb5da242021dc5d2e448a0510fedfb9/Pathfinder-FRCSupport-2019.1.11-sources.jar!/"/>
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://C:/Users/Public/frc2019/maven/com/ctre/phoenix/api-java/5.12.1/api-java-5.12.1.jar!/"/>
+          <root url="jar://C:/Users/NathanDesjardins/.gradle/caches/modules-2/files-2.1/com.ctre.phoenix/api-java/5.12.1/fa670d8c5af999645a422de4b9b55b21919e0c2e/api-java-5.12.1.jar!/"/>
         </CLASSES>
         <JAVADOC/>
         <SOURCES>
-          <root url="jar://C:/Users/Public/frc2019/maven/com/ctre/phoenix/api-java/5.12.1/api-java-5.12.1-sources.jar!/"/>
+          <root url="jar://C:/Users/NathanDesjardins/.gradle/caches/modules-2/files-2.1/com.ctre.phoenix/api-java/5.12.1/1f513a09b7e6c46484c2251435218f894e986fea/api-java-5.12.1-sources.jar!/"/>
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://C:/Users/Public/frc2019/maven/com/ctre/phoenix/wpiapi-java/5.12.1/wpiapi-java-5.12.1.jar!/"/>
+          <root url="jar://C:/Users/NathanDesjardins/.gradle/caches/modules-2/files-2.1/com.ctre.phoenix/wpiapi-java/5.12.1/33be424054a0813eda4d3ff5ad41b2efe735a8aa/wpiapi-java-5.12.1.jar!/"/>
         </CLASSES>
         <JAVADOC/>
         <SOURCES>
-          <root url="jar://C:/Users/Public/frc2019/maven/com/ctre/phoenix/wpiapi-java/5.12.1/wpiapi-java-5.12.1-sources.jar!/"/>
+          <root url="jar://C:/Users/NathanDesjardins/.gradle/caches/modules-2/files-2.1/com.ctre.phoenix/wpiapi-java/5.12.1/968076c014676c9d8f501d4991c909a66874d5bd/wpiapi-java-5.12.1-sources.jar!/"/>
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.revrobotics.frc/SparkMax-java/1.0.28/f5f7155cd7a379f626e36399de46da182898afac/SparkMax-java-1.0.28.jar!/"/>
+          <root url="jar://C:/Users/NathanDesjardins/.gradle/caches/modules-2/files-2.1/com.revrobotics.frc/SparkMax-java/1.0.28/f5f7155cd7a379f626e36399de46da182898afac/SparkMax-java-1.0.28.jar!/"/>
         </CLASSES>
         <JAVADOC/>
         <SOURCES/>

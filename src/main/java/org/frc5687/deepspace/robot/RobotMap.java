@@ -16,6 +16,8 @@ public class RobotMap {
             public static final int DRIVE_RIGHT_MASTER = 6;
             public static final int DRIVE_LEFT_FOLLOWER = 14;
             public static final int DRIVE_RIGHT_FOLLOWER = 8;
+            public static final int GOBBLER_ROLLER = 9;
+            public static final int GOBBLER_ARM = 16;
         }
     }
 
@@ -68,6 +70,10 @@ public class RobotMap {
      * Note that for DIO only one device can connect to each port, so the numbers should be unique.
      */
     public static class DIO {
+        public static final int GOBBLER_LOW_HALL = 9;
+        public static final int GOBBLER_INTAKE_HALL = 8;
+        public static final int GOBBLER_SECURE_HALL = 7;
+        public static final int GOBBLER_STOWED_HALL = 6;
         /* Example:
         public static final int ARM_FRONT_LIMIT = 0;
         */

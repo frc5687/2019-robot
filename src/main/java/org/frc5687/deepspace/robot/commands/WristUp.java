@@ -1,17 +1,15 @@
 package org.frc5687.deepspace.robot.commands;
 
-import org.frc5687.deepspace.robot.subsystems.Gripper;
+import org.frc5687.deepspace.robot.subsystems.Wrist;
 
-public class SuckBall extends OutliersCommand {
-    public Gripper _gripper;
+public class WristUp extends OutliersCommand {
+    public Wrist _wrist;
     private boolean _done = false;
 
-    public SuckBall(Gripper gripper){
-        _gripper = gripper;
-        requires(_gripper);
+    public WristUp(Wrist wrist) {
+        _wrist = wrist;
+        requires(_wrist);
     }
-
-
     @Override
     protected boolean isFinished() {
         return false;
@@ -22,7 +20,7 @@ public class SuckBall extends OutliersCommand {
     }
     @Override
     protected void execute(){
-        _gripper.suckBall();
+        _wrist.Up();
         _done = true;
     }
 }

@@ -7,6 +7,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.frc5687.deepspace.robot.subsystems.DriveTrain;
 import org.frc5687.deepspace.robot.subsystems.Gripper;
+import org.frc5687.deepspace.robot.subsystems.Gobbler;
+import org.frc5687.deepspace.robot.subsystems.Spear;
+import org.frc5687.deepspace.robot.subsystems.Wrist;
 import org.frc5687.deepspace.robot.utils.*;
 
 import java.io.BufferedReader;
@@ -26,13 +29,15 @@ public class Robot extends TimedRobot implements ILoggingSource {
     private RioLogger.LogLevel _dsLogLevel = RioLogger.LogLevel.warn;
     private RioLogger.LogLevel _fileLogLevel = RioLogger.LogLevel.warn;
 
-
     private String _name;
     private OI _oi;
     private Limelight _limelight;
     private DriveTrain _driveTrain;
     private PDP _pdp;
     private Gripper _gripper;
+    private Spear _spear;
+    private Gobbler _gobbler;
+    private Wrist _wrist;
 
     /**
      * This function is run when the robot is first started up and should be
@@ -48,8 +53,11 @@ public class Robot extends TimedRobot implements ILoggingSource {
         _oi = new OI();
         _limelight = new Limelight("limelight");
         _driveTrain = new DriveTrain(this);
+        _gobbler = new Gobbler(this);
         _pdp = new PDP();
         _gripper= new Gripper(this);
+        _spear = new Spear(this);
+        _wrist = new Wrist(this);
         _oi.initializeButtons(this);
     }
 
@@ -116,6 +124,7 @@ public class Robot extends TimedRobot implements ILoggingSource {
         _oi.updateDashboard();
         _driveTrain.updateDashboard();
         _limelight.updateDashboard();
+        _gobbler.updateDashboard();
     }
 
 
@@ -200,6 +209,8 @@ public class Robot extends TimedRobot implements ILoggingSource {
     }
     public PDP getPDP() { return _pdp; }
     public Gripper getGripper() { return _gripper; }
+    public Spear getSpear() { return _spear; }
+    public Wrist getWrist() { return _wrist; }
 
 
 
@@ -231,5 +242,5 @@ public class Robot extends TimedRobot implements ILoggingSource {
     public void metric(String name, double value) {
         SmartDashboard.putNumber(getClass().getSimpleName() + "/" + name, value);
     }
-
+    public Gobbler getGobbler() { return _gobbler; }
 }

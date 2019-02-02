@@ -3,7 +3,8 @@ package org.frc5687.deepspace.robot;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.buttons.Button;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
-import org.frc5687.deepspace.robot.commands.DropBall;
+import org.frc5687.deepspace.robot.commands.*;
+import org.frc5687.deepspace.robot.utils.AxisButton;
 import org.frc5687.deepspace.robot.utils.Gamepad;
 import org.frc5687.deepspace.robot.utils.OutliersProxy;
 
@@ -13,20 +14,31 @@ import static org.frc5687.deepspace.robot.utils.Helpers.applySensitivityFactor;
 public class OI extends OutliersProxy {
     protected Gamepad _driverGamepad;
     protected Gamepad _operatorGamepad;
+    private Button _operatorLeftTrigger;
+    private Button _operatorRightTrigger;
+
+    private Button _operatorYButton;
+    private Button _operatorXButton;
 
     private Button _operatorLeftBumper;
-    private Button _operatorRightBumper;
 
     public OI(){
         _driverGamepad = new Gamepad(0);
         _operatorGamepad = new Gamepad(1);
         _operatorLeftBumper = new JoystickButton(_operatorGamepad, Gamepad.Buttons.LEFT_BUMPER.getNumber());
-        _operatorRightBumper = new JoystickButton(_operatorGamepad, Gamepad.Buttons.RIGHT_BUMPER.getNumber());
+        _operatorLeftTrigger = new AxisButton(_operatorGamepad, Gamepad.Axes.LEFT_TRIGGER.getNumber(), Constants.OI.AXIS_BUTTON_THRESHHOLD);
+        _operatorYButton = new JoystickButton(_operatorGamepad, Gamepad.Buttons.Y.getNumber());
+        _operatorXButton = new JoystickButton(_operatorGamepad, Gamepad.Buttons.X.getNumber());
     }
-
     public void initializeButtons(Robot robot) {
-        _operatorLeftBumper.whenPressed(new )
-        _operatorRightBumper.whenPressed(new DropBall(robt));
+        /*
+        _operatorLeftBumper.whenPressed(new SuckBall(robot.getGripper()));
+        _operatorLeftBumper.whenReleased(new DropBall(robot.getGripper()));
+        _operatorYButton.whenPressed(new WristUp(robot.getWrist()));
+        _operatorXButton.whenPressed(new WristDown(robot.getWrist()));
+        _operatorLeftTrigger.whenPressed(new OpenSpear(robot.getSpear()));
+        _operatorLeftTrigger.whenReleased(new CloseSpear(robot.getSpear()));
+        */
     }
 
     public double getDriveSpeed() {
@@ -40,6 +52,12 @@ public class OI extends OutliersProxy {
         speed = applyDeadband(speed, Constants.DriveTrain.DEADBAND);
         return speed;
     }
+    public double getGobblerSpeed() {
+        double speed = -getSpeedFromAxis(_operatorGamepad, Gamepad.Axes.RIGHT_Y.getNumber()) * Constants.Gobbler.MAX_INTAKE_SPEED;
+        speed = applyDeadband(speed, Constants.Gobbler.DEADBAND);
+        return applySensitivityFactor(speed, Constants.Gobbler.SENSITIVITY);
+    }
+
 
     protected double getSpeedFromAxis(Joystick gamepad, int axisNumber) {
         return gamepad.getRawAxis(axisNumber);

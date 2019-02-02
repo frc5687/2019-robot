@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj.DoubleSolenoid;
 import org.frc5687.deepspace.robot.Constants;
 import org.frc5687.deepspace.robot.Robot;
 import org.frc5687.deepspace.robot.RobotMap;
+import org.frc5687.deepspace.robot.commands.WristRelease;
 
 public class Gripper extends OutliersSubsystem{
     private Robot _robot;
@@ -16,13 +17,14 @@ public class Gripper extends OutliersSubsystem{
         _vacuumPusher = new DoubleSolenoid(RobotMap.PCM.VACUUM_PISTON_RELEASE, RobotMap.PCM.VACUUM_PISTON_BACK);
         debug("Finding vacuum motor.");
         try{
-            _vacuumFan = new CANSparkMax(RobotMap.CAN.SPARKMAX.INTAKE_VAUCUM, CANSparkMaxLowLevel.MotorType.kBrushless);
+            _vacuumFan = new CANSparkMax(RobotMap.CAN.SPARKMAX.INTAKE_VACUUM, CANSparkMaxLowLevel.MotorType.kBrushless);
         } catch (Exception e){
             error("Exception allocating vacuum motor controller: " + e.getMessage());
             return;
         }
     }
     public void suckBall(){
+
         _vacuumFan.set(Constants.Intake.VACUUM_SPEED);
     }
     public void dropBall(){

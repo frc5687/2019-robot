@@ -117,6 +117,7 @@ public class Robot extends TimedRobot implements ILoggingSource {
         _oi.updateDashboard();
         _driveTrain.updateDashboard();
         _limelight.updateDashboard();
+        _gobbler.updateDashboard();
     }
 
 

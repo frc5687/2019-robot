@@ -22,7 +22,7 @@ public class OI extends OutliersProxy {
         _operatorLeftTrigger = new AxisButton(_operatorGamepad, Gamepad.Axes.LEFT_TRIGGER.getNumber(), Constants.OI.AXIS_BUTTON_THRESHHOLD);
     }
     public void initializeButtons(Robot robot) {
-        _operatorLeftTrigger.whenPressed(new GobblerIntake(robot.getGobbler()));
+        // _operatorLeftTrigger.whenPressed(new GobblerIntake(robot.getGobbler()));
     }
 
     public double getDriveSpeed() {

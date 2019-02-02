@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.frc5687.deepspace.robot.subsystems.DriveTrain;
+import org.frc5687.deepspace.robot.subsystems.Elevator;
 import org.frc5687.deepspace.robot.utils.*;
 
 import java.io.BufferedReader;
@@ -30,6 +31,7 @@ public class Robot extends TimedRobot implements ILoggingSource {
     private OI _oi;
     private Limelight _limelight;
     private DriveTrain _driveTrain;
+    private Elevator _elevator;
     private PDP _pdp;
 
     /**
@@ -46,6 +48,7 @@ public class Robot extends TimedRobot implements ILoggingSource {
         _oi = new OI();
         _limelight = new Limelight("limelight");
         _driveTrain = new DriveTrain(this);
+        _elevator = new Elevator(this);
         _pdp = new PDP();
     }
 
@@ -112,6 +115,7 @@ public class Robot extends TimedRobot implements ILoggingSource {
         _oi.updateDashboard();
         _driveTrain.updateDashboard();
         _limelight.updateDashboard();
+        _elevator.updateDashboard();
     }
 
 

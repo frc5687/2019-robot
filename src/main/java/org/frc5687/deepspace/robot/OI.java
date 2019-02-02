@@ -7,6 +7,8 @@ import org.frc5687.deepspace.robot.commands.CloseSpear;
 import org.frc5687.deepspace.robot.commands.OpenSpear;
 import org.frc5687.deepspace.robot.commands.GobblerIntake;
 import org.frc5687.deepspace.robot.utils.AxisButton;
+import org.frc5687.deepspace.robot.commands.WristDown;
+import org.frc5687.deepspace.robot.commands.WristUp;
 import org.frc5687.deepspace.robot.utils.Gamepad;
 import org.frc5687.deepspace.robot.utils.OutliersProxy;
 
@@ -19,10 +21,15 @@ public class OI extends OutliersProxy {
     private Button _operatorLeftTrigger;
     private Button _operatorRightTrigger;
 
+    private Button _operatorYButton;
+    private Button _operatorXButton;
+
     public OI(){
         _driverGamepad = new Gamepad(0);
         _operatorGamepad = new Gamepad(1);
         _operatorLeftTrigger = new AxisButton(_operatorGamepad, Gamepad.Axes.LEFT_TRIGGER.getNumber(), Constants.OI.AXIS_BUTTON_THRESHHOLD);
+        _operatorYButton = new JoystickButton(_operatorGamepad, Gamepad.Buttons.Y.getNumber());
+        _operatorXButton = new JoystickButton(_operatorGamepad, Gamepad.Buttons.X.getNumber());
     }
 
     public void initializeButtons(Robot robot){

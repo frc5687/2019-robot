@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.frc5687.deepspace.robot.subsystems.DriveTrain;
 import org.frc5687.deepspace.robot.subsystems.Gobbler;
 import org.frc5687.deepspace.robot.subsystems.Spear;
+import org.frc5687.deepspace.robot.subsystems.Wrist;
 import org.frc5687.deepspace.robot.utils.*;
 
 import java.io.BufferedReader;
@@ -34,6 +35,7 @@ public class Robot extends TimedRobot implements ILoggingSource {
     private PDP _pdp;
     private Spear _spear;
     private Gobbler _gobbler;
+    private Wrist _wrist;
 
     /**
      * This function is run when the robot is first started up and should be
@@ -52,6 +54,7 @@ public class Robot extends TimedRobot implements ILoggingSource {
         _gobbler = new Gobbler(this);
         _pdp = new PDP();
         _spear = new Spear(this);
+        _wrist = new Wrist(this);
         _oi.initializeButtons(this);
     }
 
@@ -203,6 +206,7 @@ public class Robot extends TimedRobot implements ILoggingSource {
     }
     public PDP getPDP() { return _pdp; }
     public Spear getSpear() { return _spear; }
+    public Wrist getWrist() { return _wrist; }
 
 
 

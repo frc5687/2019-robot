@@ -43,6 +43,9 @@ public class RobotMap {
         //PCM ports are not in the robot yet, using 0 and 1.
         public static final int SPEAR_OPEN = 0;
         public static final int SPEAR_CLOSE = 1;
+        public static final int WRIST_DOWN = 2;
+        public static final int WRIST_UP = 3;
+
     }
 
     /**

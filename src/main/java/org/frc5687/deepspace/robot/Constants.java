@@ -27,6 +27,8 @@ public class Constants {
         public static final double MINIMUM_SPEED = .1;
         public static final boolean ARM_MOTOR_INVERTED = false;
         public static final boolean ROLLER_MOTOR_INVERTED = false;
+        public static final int SHOULDER_STALL_LIMIT = 10;
+        public static final int SHOULDER_FREE_LIMIT = 80;
     }
     public static class OI {
         public static final double AXIS_BUTTON_THRESHHOLD = 0.2;

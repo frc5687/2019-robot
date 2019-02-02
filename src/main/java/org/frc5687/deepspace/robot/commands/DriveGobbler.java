@@ -23,7 +23,7 @@ public class DriveGobbler extends OutliersCommand {
     public void execute() {
         double speed = _oi.getGobblerSpeed();
 
-        _gobbler.setSpeeds(speed);
+        _gobbler.setSpeed(speed);
     }
 
 

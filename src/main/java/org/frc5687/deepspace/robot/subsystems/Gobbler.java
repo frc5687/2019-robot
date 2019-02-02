@@ -34,7 +34,6 @@ public class Gobbler extends OutliersSubsystem {
         _roller.setInverted(Constants.Gobbler.ROLLER_MOTOR_INVERTED);
         _arm.setInverted(Constants.Gobbler.ARM_MOTOR_INVERTED);
 
-
         _shoulderEncoder = _arm.getEncoder();
 
         _lowHall = new HallEffect(RobotMap.DIO.GOBBLER_LOW_HALL);
@@ -42,9 +41,11 @@ public class Gobbler extends OutliersSubsystem {
         _secureHall = new HallEffect(RobotMap.DIO.GOBBLER_SECURE_HALL);
         _stowedHall = new HallEffect(RobotMap.DIO.GOBBLER_STOWED_HALL);
 
+
+        _arm.setSmartCurrentLimit(Constants.Gobbler.SHOULDER_STALL_LIMIT, Constants.Gobbler.SHOULDER_FREE_LIMIT);
     }
 
-    public void setSpeeds(double speed) {
+    public void setSpeed(double speed) {
         speed = Helpers.limit(speed, Constants.Gobbler.MAX_DRIVE_SPEED);
 
         metric("Speed", speed);

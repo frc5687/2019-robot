@@ -5,10 +5,9 @@ import edu.wpi.first.wpilibj.buttons.Button;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import org.frc5687.deepspace.robot.commands.CloseSpear;
 import org.frc5687.deepspace.robot.commands.OpenSpear;
-import org.frc5687.deepspace.robot.commands.GobblerIntake;
-import org.frc5687.deepspace.robot.utils.AxisButton;
 import org.frc5687.deepspace.robot.commands.WristDown;
 import org.frc5687.deepspace.robot.commands.WristUp;
+import org.frc5687.deepspace.robot.utils.AxisButton;
 import org.frc5687.deepspace.robot.utils.Gamepad;
 import org.frc5687.deepspace.robot.utils.OutliersProxy;
 
@@ -50,14 +49,14 @@ public class OI extends OutliersProxy {
         return speed;
     }
     public double getArmSpeed() {
-        double speed = -getSpeedFromAxis(_operatorGamepad, Gamepad.Axes.LEFT_Y.getNumber()) * Constants.Gobbler.MAX_INTAKE_SPEED;
-        speed = applyDeadband(speed, Constants.Gobbler.ARM_DEADBAND);
-        return applySensitivityFactor(speed, Constants.Gobbler.ARM_SENSITIVITY);
+        double speed = 0;// -getSpeedFromAxis(_operatorGamepad, Gamepad.Axes.LEFT_Y.getNumber()) * Constants.Arm.MAX_INTAKE_SPEED;
+        speed = applyDeadband(speed, Constants.Arm.DEADBAND);
+        return applySensitivityFactor(speed, Constants.Arm.SENSITIVITY);
     }
     public double getRollerSpeed() {
-        double speed = -getSpeedFromAxis(_operatorGamepad, Gamepad.Axes.LEFT_TRIGGER.getNumber()) * Constants.Gobbler.MAX_ROLLER_SPEED;
-        speed = applyDeadband(speed, Constants.Gobbler.ROLLER_DEADBAND);
-        return applySensitivityFactor(speed, Constants.Gobbler.ROLLER_SENSITIVITY);
+        double speed = -getSpeedFromAxis(_operatorGamepad, Gamepad.Axes.LEFT_TRIGGER.getNumber()) * Constants.Roller.MAX_SPEED;
+        speed = applyDeadband(speed, Constants.Roller.DEADBAND);
+        return applySensitivityFactor(speed, Constants.Roller.SENSITIVITY);
     }
     public double getElevatorSpeed() {
         double speed = -getSpeedFromAxis(_operatorGamepad, Gamepad.Axes.RIGHT_Y.getNumber()) * Constants.Elevator.MAX_ELEVATOR_SPEED;

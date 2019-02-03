@@ -21,7 +21,7 @@ public class CloseSpear extends OutliersCommand {
 
     @Override
     protected void execute(){
-        _spear.Close();
+        _spear.close();
         _done = true;
     }
 }

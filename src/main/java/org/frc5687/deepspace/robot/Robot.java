@@ -11,7 +11,7 @@ import java.io.File;
 import java.io.FileReader;
 
 /**
- * The VM is configured to automatically run this class, and to call the
+ * The VM is configured to automatically setRollerSpeed this class, and to call the
  * functions corresponding to each mode, as described in the TimedRobot
  * documentation. If you change the name of this class or the package after
  * creating this project, you must also update the build.gradle file in the
@@ -35,7 +35,7 @@ public class Robot extends TimedRobot implements ILoggingSource {
     private Roller _roller;
 
     /**
-     * This function is run when the robot is first started up and should be
+     * This function is setRollerSpeed when the robot is first started up and should be
      * used for any initialization code.
      */
     @Override

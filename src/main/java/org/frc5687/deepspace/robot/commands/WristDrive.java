@@ -1,9 +1,14 @@
 package org.frc5687.deepspace.robot.commands;
 
-public class WristDrive extends OutliersCommand {
+import org.frc5687.deepspace.robot.subsystems.Wrist;
 
+public class WristDrive extends OutliersCommand {
+    private Wrist _wrist;
     private boolean _done = false;
-    public WristDrive(){
+    public WristDrive(Wrist wrist){
+        _wrist = wrist;
+        requires(_wrist);
+
         //Don't know what to put here, if anything.
     }
 

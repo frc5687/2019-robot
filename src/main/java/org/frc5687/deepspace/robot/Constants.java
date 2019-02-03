@@ -18,9 +18,10 @@ public class Constants {
     }
     public static class Elevator {
 
-        public static final double MAX_ELEVATOR_SPEED = 0.3;
+        public static final double MAX_ELEVATOR_SPEED = 0.75;
         public static final double DEADBAND = 0.1;
         public static final double SENSITIVITY = 0.5;
+        public static final boolean ELEVATOR_MOTOR_ELEVATOR = true;
     }
     public static class OI {
         public static final double AXIS_BUTTON_THRESHHOLD = 0.2;
@@ -31,6 +32,8 @@ public class Constants {
     public class Roller {
         public static final double MAX_SPEED = 1.0;
         public static final boolean MOTOR_INVERTED = false;
+        public static final double DEADBAND = 0.01;
+        public static final double SENSITIVITY = 0.5;
     }
 
     public class Arm {
@@ -44,6 +47,11 @@ public class Constants {
         public static final boolean MOTOR_INVERTED = false;
         public static final int SHOULDER_STALL_LIMIT = 10;
         public static final int SHOULDER_FREE_LIMIT = 80;
+        public static final double MAX_ROLLER_SPEED = 1;
+        public static final double ARM_DEADBAND = 0.05;
+        public static final double ARM_SENSITIVITY = 0.5 ;
+        public static final double ROLLER_DEADBAND = 0.05;
+        public static final double ROLLER_SENSITIVITY = 0.5;
     }
     /*
      There should be a nested static class for each subsystem and for each autonomous command that needs tuning constants.

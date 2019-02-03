@@ -77,8 +77,8 @@ public class RobotMap {
     public static class DIO {
         public static final int ELEVATOR_A = 0;
         public static final int ELEVATOR_B = 1;
-        public static final int ELEVATOR_TOP_HALL = 5;
-        public static final int ELEVATOR_BOTTOM_HALL = 4;
+        public static final int ELEVATOR_TOP_HALL = 2;
+        public static final int ELEVATOR_BOTTOM_HALL = 3;
 
         public static final int GOBBLER_LOW_HALL = 9;
         public static final int GOBBLER_INTAKE_HALL = 8;

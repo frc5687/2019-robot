@@ -21,9 +21,11 @@ public class DriveGobbler extends OutliersCommand {
 
     @Override
     public void execute() {
-        double speed = _oi.getGobblerSpeed();
+        double rollerSpeed = _oi.getRollerSpeed();
+        double armSpeed = _oi.getArmSpeed();
 
-        _gobbler.setSpeed(speed);
+        _gobbler.setArmSpeed(armSpeed);
+        _gobbler.setRollerSpeed(rollerSpeed);
     }
 
 

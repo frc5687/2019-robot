@@ -31,28 +31,18 @@ public class Elevator extends OutliersSubsystem{
 
         _topHall = new HallEffect(RobotMap.DIO.ELEVATOR_TOP_HALL);
         _bottomHall = new HallEffect(RobotMap.DIO.ELEVATOR_BOTTOM_HALL);
+        _elevator.setInverted(Constants.Elevator.ELEVATOR_MOTOR_ELEVATOR);
 
     }
-    public void setSpeeds(double speed) {
+    public void setElevatorSpeeds(double speed) {
         speed = Helpers.limit(speed, Constants.Elevator.MAX_ELEVATOR_SPEED);
-
-        metric("Elevator at" + speed, false);
-
-        _elevator.set(speed);
-    }
-    public void drive(double desiredSpeed, boolean overrideCaps) {
-        double speed = desiredSpeed;
-        if (!overrideCaps) {
-            if (speed > 0 && isAtTop()) {
-                speed = 0;
-            } else if (speed < 0 && isAtBottom()) {
-                speed = 0;
-            }
-
+        if (speed > 0 && isAtTop()) {
+            speed = 0;
+        } else if (speed < 0 && isAtBottom()) {
+            speed = 0;
         }
+        metric("ElevatorSpeed",speed);
 
-        metric("rawSpeed", desiredSpeed);
-        metric("speed", speed);
         _elevator.set(speed);
     }
 

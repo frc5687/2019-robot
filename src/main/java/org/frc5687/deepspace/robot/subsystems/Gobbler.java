@@ -3,7 +3,6 @@ package org.frc5687.deepspace.robot.subsystems;
 import com.revrobotics.CANEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
-import edu.wpi.first.wpilibj.DigitalSource;
 import org.frc5687.deepspace.robot.Constants;
 import org.frc5687.deepspace.robot.Robot;
 import org.frc5687.deepspace.robot.RobotMap;
@@ -45,44 +44,23 @@ public class Gobbler extends OutliersSubsystem {
         _arm.setSmartCurrentLimit(Constants.Gobbler.SHOULDER_STALL_LIMIT, Constants.Gobbler.SHOULDER_FREE_LIMIT);
     }
 
-    public void setSpeed(double speed) {
-        speed = Helpers.limit(speed, Constants.Gobbler.MAX_DRIVE_SPEED);
+    public void setArmSpeed(double speed) {
+        speed = Helpers.limit(speed, Constants.Gobbler.MAX_ARM_SPEED);
 
-        metric("Speed", speed);
-        _arm.set(speed);
-    }
-    public void drive(double desiredSpeed, boolean overrideCaps) {
-        double speed = desiredSpeed;
-        if (!overrideCaps) {
-            if (speed > 0 && isStowed()) {
-                speed = 0;
-            } else if (speed < 0 && isLow()) {
-                speed = 0;
-            }
+        if (speed > 0 && isStowed()) {
+            speed = 0;
+        } else if (speed < 0 && isLow()) {
+            speed = 0;
         }
-        metric("rawSpeed", desiredSpeed);
-        metric("speed", speed);
+
+        metric("ArmSpeed", speed);
         _arm.set(speed);
     }
-    public void run(double speed) {
+
+    public void setRollerSpeed(double speed) {
         speed = Helpers.limit(speed, Constants.Gobbler.MAX_INTAKE_SPEED);
+        metric("RollerSpeed", speed);
         _roller.set(speed);
-    }
-
-    public void runGobbler(double speed) {
-        switch(_gobblerState) {
-            case HOLD:
-                run(Constants.Gobbler.HOLD_SPEED);
-                break;
-            case INTAKE:
-                run(Constants.Gobbler.INTAKE_SPEED);
-                break;
-            case EJECT:
-                run(speed);
-                break;
-            default:
-                run(0);
-        }
     }
 
     public void setGobblerState(GobblerState gobblerState) {

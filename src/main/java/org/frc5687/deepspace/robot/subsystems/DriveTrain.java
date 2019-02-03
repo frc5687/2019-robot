@@ -9,6 +9,7 @@ import org.frc5687.deepspace.robot.OI;
 import org.frc5687.deepspace.robot.Robot;
 import org.frc5687.deepspace.robot.RobotMap;
 import org.frc5687.deepspace.robot.commands.Drive;
+import org.frc5687.deepspace.robot.utils.IRDistanceSensor;
 
 import static org.frc5687.deepspace.robot.utils.Helpers.applySensitivityFactor;
 import static org.frc5687.deepspace.robot.utils.Helpers.limit;
@@ -28,6 +29,8 @@ public class DriveTrain extends OutliersSubsystem {
     private double _leftOffset;
     private double _rightOffset;
 
+    private IRDistanceSensor _irDistanceSensor;
+
     public DriveTrain(Robot robot) {
         info("Constructing DriveTrain class.");
         _oi = robot.getOI();
@@ -45,7 +48,6 @@ public class DriveTrain extends OutliersSubsystem {
             _rightMaster.setInverted(Constants.DriveTrain.RIGHT_MOTORS_INVERTED);
             _rightFollower.setInverted(Constants.DriveTrain.RIGHT_MOTORS_INVERTED);
 
-
         } catch (Exception e) {
             error("Exception allocating drive motor controllers: " + e.getMessage());
             return;
@@ -57,6 +59,8 @@ public class DriveTrain extends OutliersSubsystem {
         debug("Configuring encoders");
         _leftEncoder = _leftMaster.getEncoder();
         _rightEncoder = _rightMaster.getEncoder();
+
+        _irDistanceSensor = new IRDistanceSensor(RobotMap.Analog.IR_DISTANCE_SENSOR, IRDistanceSensor.Type.MEDIUM);
     }
 
     private boolean assertMotorControllers() {
@@ -72,6 +76,7 @@ public class DriveTrain extends OutliersSubsystem {
         metric("Distance/Left", getLeftDistance());
         metric("Distance/Right", getRightDistance());
         metric("Distance/Total", getDistance());
+        metric("IRSensor", getIRDistanceSensor());
     }
 
     @Override
@@ -160,6 +165,10 @@ public class DriveTrain extends OutliersSubsystem {
     public void resetDriveEncoders() {
         _leftOffset = getLeftTicks();
         _rightOffset = getRightTicks();
+    }
+
+    public double getIRDistanceSensor() {
+        return _irDistanceSensor.getValue();
     }
 
 

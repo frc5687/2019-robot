@@ -52,6 +52,10 @@ public class Constants {
         public static final double ARM_SENSITIVITY = 0.5 ;
         public static final double ROLLER_DEADBAND = 0.05;
         public static final double ROLLER_SENSITIVITY = 0.5;
+        public static final double kI = 0;
+        public static final double kP = 0.1;
+        public static final double kD = 0;
+
     }
     /*
      There should be a nested static class for each subsystem and for each autonomous command that needs tuning constants.

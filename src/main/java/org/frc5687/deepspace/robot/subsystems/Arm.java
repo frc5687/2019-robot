@@ -3,6 +3,10 @@ package org.frc5687.deepspace.robot.subsystems;
 import com.revrobotics.CANEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
+import edu.wpi.first.wpilibj.PIDController;
+import edu.wpi.first.wpilibj.PIDOutput;
+import edu.wpi.first.wpilibj.PIDSource;
+import edu.wpi.first.wpilibj.PIDSourceType;
 import org.frc5687.deepspace.robot.Constants;
 import org.frc5687.deepspace.robot.Robot;
 import org.frc5687.deepspace.robot.RobotMap;
@@ -10,7 +14,7 @@ import org.frc5687.deepspace.robot.commands.DriveArm;
 import org.frc5687.deepspace.robot.utils.HallEffect;
 import org.frc5687.deepspace.robot.utils.Helpers;
 
-public class Arm extends OutliersSubsystem {
+public class Arm extends OutliersSubsystem implements PIDSource {
 
     private CANSparkMax _arm;
 
@@ -21,7 +25,14 @@ public class Arm extends OutliersSubsystem {
     private HallEffect _secureHall;
     private HallEffect _stowedHall;
 
+    private PIDController _pidController;
+    private PIDSourceType _pidSource;
+    // PIDController
+    // Arm needs to implement PIDSource
+    // Amr's pidGet should return encoder position
 
+    // Need private double _pidOut
+    private double _pidOut;
     private Robot _robot;
     public Arm(Robot robot) {
         _robot = robot;
@@ -38,6 +49,11 @@ public class Arm extends OutliersSubsystem {
 
 
         _arm.setSmartCurrentLimit(Constants.Arm.SHOULDER_STALL_LIMIT, Constants.Arm.SHOULDER_FREE_LIMIT);
+
+        _pidController = new PIDController(Constants.Arm.kP, Constants.Arm.kI, Constants.Arm.kD, this, new PIDListener());
+        // Create PIDController
+        // pass in range and PID constants
+        // pass this as source and PIDListener as listener
     }
 
     public void setSpeed(double speed) {
@@ -61,8 +77,6 @@ public class Arm extends OutliersSubsystem {
         _arm.set(speed);
     }
 
-
-
     @Override
     protected void initDefaultCommand() {
         setDefaultCommand(new DriveArm(_robot, this));
@@ -84,4 +98,67 @@ public class Arm extends OutliersSubsystem {
     public boolean isSecured() { return _secureHall.get(); }
 
     public boolean isLow() { return _lowHall.get(); }
+
+    @Override
+    public void setPIDSourceType(PIDSourceType pidSource) {
+        _pidSource = pidSource;
+    }
+    @Override
+    public PIDSourceType getPIDSourceType() {
+        return null;
+    }
+
+    @Override
+    public double pidGet() {
+        return _shoulderEncoder.getPosition();
+    }
+
+    public void setSetpoint(double setPoint){
+        _pidController.setSetpoint(setPoint);
+        _pidController.enable();
+    }
+    public PIDController getPIDController(){
+        return _pidController;
+    }
+
+    // Need setSetPoint(double)
+    // set pidcontroller setpoint to param
+    // enable
+
+    public void disable(){
+        _pidController.disable();
+        _arm.set(0);
+    }
+
+    // Need disable()
+    // Simply disable controller
+    // also set speed to 0
+
+    // Need a private PIDListener class
+    // pidOut should set _pidout
+
+    // you'll also need:
+    // MoveArmToSetPoint command
+    //   initialize will call arm.setSetPoint
+    //   isFinished will return true if arm pidcontroller is onTarget
+    //   end does nada
+
+    // HoldArm command
+    //   Does nothing for now
+    private class PIDListener implements PIDOutput {
+
+        private double value;
+
+        public double get() {
+            return value;
+        }
+
+        @Override
+        public void pidWrite(double output) {
+            value = output;
+        }
+
+    }
 }
+
+

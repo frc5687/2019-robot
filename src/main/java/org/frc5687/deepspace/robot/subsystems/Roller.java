@@ -5,6 +5,7 @@ import com.revrobotics.CANSparkMaxLowLevel;
 import org.frc5687.deepspace.robot.Constants;
 import org.frc5687.deepspace.robot.Robot;
 import org.frc5687.deepspace.robot.RobotMap;
+import org.frc5687.deepspace.robot.commands.HoldRoller;
 import org.frc5687.deepspace.robot.utils.Helpers;
 
 public class Roller extends OutliersSubsystem {
@@ -30,6 +31,6 @@ public class Roller extends OutliersSubsystem {
 
     @Override
     protected void initDefaultCommand() {
-
+        setDefaultCommand(new HoldRoller(this));
     }
 }

@@ -38,6 +38,16 @@ public class Arm extends OutliersSubsystem {
 
 
         _arm.setSmartCurrentLimit(Constants.Arm.SHOULDER_STALL_LIMIT, Constants.Arm.SHOULDER_FREE_LIMIT);
+
+
+    }
+
+    public void enableBrakeMode() {
+        _arm.setIdleMode(CANSparkMax.IdleMode.kBrake);
+    }
+
+    public void enableCoastMode() {
+        _arm.setIdleMode(CANSparkMax.IdleMode.kCoast);
     }
 
     public void setSpeed(double speed) {

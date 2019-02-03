@@ -83,6 +83,11 @@ public class Robot extends TimedRobot implements ILoggingSource {
      */
     @Override
     public void autonomousInit() {
+        _arm.enableBrakeMode();
+    }
+
+    public void teleopInit() {
+        _arm.enableBrakeMode();
     }
 
     /**
@@ -113,6 +118,7 @@ public class Robot extends TimedRobot implements ILoggingSource {
     public void disabledInit() {
         RioLogger.getInstance().forceSync();
         RioLogger.getInstance().close();
+        _arm.enableCoastMode();
     }
 
 

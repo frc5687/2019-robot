@@ -22,8 +22,18 @@ public class Constants {
         public static final double DEADBAND = 0.1;
         public static final double SENSITIVITY = 0.5;
     }
-    public static class Gobbler {
+    public static class OI {
+        public static final double AXIS_BUTTON_THRESHHOLD = 0.2;
+        public static final long RUMBLE_MILLIS = 250;
+        public static final double RUMBLE_INTENSITY = 1.0;
+    }
 
+    public class Roller {
+        public static final double MAX_SPEED = 1.0;
+        public static final boolean MOTOR_INVERTED = false;
+    }
+
+    public class Arm {
         public static final double MAX_INTAKE_SPEED = 0.3;
         public static final double SENSITIVITY = 0.5;
         public static final double DEADBAND = 0.1;
@@ -31,15 +41,9 @@ public class Constants {
         public static final double INTAKE_SPEED = 0.3;
         public static final double HOLD_SPEED = 0;
         public static final double MINIMUM_SPEED = .1;
-        public static final boolean ARM_MOTOR_INVERTED = false;
-        public static final boolean ROLLER_MOTOR_INVERTED = false;
+        public static final boolean MOTOR_INVERTED = false;
         public static final int SHOULDER_STALL_LIMIT = 10;
         public static final int SHOULDER_FREE_LIMIT = 80;
-    }
-    public static class OI {
-        public static final double AXIS_BUTTON_THRESHHOLD = 0.2;
-        public static final long RUMBLE_MILLIS = 250;
-        public static final double RUMBLE_INTENSITY = 1.0;
     }
     /*
      There should be a nested static class for each subsystem and for each autonomous command that needs tuning constants.

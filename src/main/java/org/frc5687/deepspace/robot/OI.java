@@ -3,12 +3,7 @@ package org.frc5687.deepspace.robot;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.buttons.Button;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
-import org.frc5687.deepspace.robot.commands.CloseSpear;
-import org.frc5687.deepspace.robot.commands.OpenSpear;
-import org.frc5687.deepspace.robot.commands.GobblerIntake;
 import org.frc5687.deepspace.robot.utils.AxisButton;
-import org.frc5687.deepspace.robot.commands.WristDown;
-import org.frc5687.deepspace.robot.commands.WristUp;
 import org.frc5687.deepspace.robot.utils.Gamepad;
 import org.frc5687.deepspace.robot.utils.OutliersProxy;
 
@@ -45,10 +40,10 @@ public class OI extends OutliersProxy {
         speed = applyDeadband(speed, Constants.DriveTrain.DEADBAND);
         return speed;
     }
-    public double getGobblerSpeed() {
-        double speed = 0;// -getSpeedFromAxis(_operatorGamepad, Gamepad.Axes.RIGHT_Y.getNumber()) * Constants.Gobbler.MAX_INTAKE_SPEED;
-        speed = applyDeadband(speed, Constants.Gobbler.DEADBAND);
-        return applySensitivityFactor(speed, Constants.Gobbler.SENSITIVITY);
+    public double getArmSpeed() {
+        double speed = 0;// -getSpeedFromAxis(_operatorGamepad, Gamepad.Axes.RIGHT_Y.getNumber()) * Constants.Arm.MAX_INTAKE_SPEED;
+        speed = applyDeadband(speed, Constants.Arm.DEADBAND);
+        return applySensitivityFactor(speed, Constants.Arm.SENSITIVITY);
     }
     public double getElevatorSpeed() {
         double speed = 0;//-getSpeedFromAxis(_operatorGamepad, Gamepad.Axes.RIGHT_Y.getNumber()) * Constants.Elevator.MAX_ELEVATOR_SPEED;

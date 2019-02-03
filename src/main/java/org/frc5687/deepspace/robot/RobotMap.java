@@ -17,8 +17,8 @@ public class RobotMap {
             public static final int DRIVE_LEFT_FOLLOWER = 14;
             public static final int DRIVE_RIGHT_FOLLOWER = 8;
             public static final int ELEVATOR_MOTOR = 5;
-            public static final int GOBBLER_ROLLER = 9;
-            public static final int GOBBLER_ARM = 16;
+            public static final int ROLLER = 9;
+            public static final int ARM = 16;
         }
     }
 
@@ -79,10 +79,10 @@ public class RobotMap {
         public static final int ELEVATOR_TOP_HALL = 5;
         public static final int ELEVATOR_BOTTOM_HALL = 4;
 
-        public static final int GOBBLER_LOW_HALL = 9;
-        public static final int GOBBLER_INTAKE_HALL = 8;
-        public static final int GOBBLER_SECURE_HALL = 7;
-        public static final int GOBBLER_STOWED_HALL = 6;
+        public static final int ARM_LOW_HALL = 9;
+        public static final int ARM_INTAKE_HALL = 8;
+        public static final int ARM_SECURE_HALL = 7;
+        public static final int ARM_STOWED_HALL = 6;
         /* Example:
         public static final int ARM_FRONT_LIMIT = 0;
         */

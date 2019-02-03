@@ -2,17 +2,17 @@ package org.frc5687.deepspace.robot.commands;
 
 import org.frc5687.deepspace.robot.OI;
 import org.frc5687.deepspace.robot.Robot;
-import org.frc5687.deepspace.robot.subsystems.Gobbler;
+import org.frc5687.deepspace.robot.subsystems.Arm;
 
-public class DriveGobbler extends OutliersCommand {
+public class DriveArm extends OutliersCommand {
 
-    private Gobbler _gobbler;
+    private Arm _arm;
     private OI _oi;
 
-    public DriveGobbler(Robot robot, Gobbler gobbler) {
-        _gobbler = gobbler;
+    public DriveArm(Robot robot, Arm arm) {
+        _arm = arm;
         _oi = robot.getOI();
-        requires(_gobbler);
+        requires(_arm);
     }
 
     @Override
@@ -21,9 +21,9 @@ public class DriveGobbler extends OutliersCommand {
 
     @Override
     public void execute() {
-        double speed = _oi.getGobblerSpeed();
+        double speed = _oi.getArmSpeed();
 
-        _gobbler.setSpeed(speed);
+        _arm.setSpeed(speed);
     }
 
 
@@ -34,7 +34,7 @@ public class DriveGobbler extends OutliersCommand {
 
     @Override
     protected void end() {
-        // Set gobbler motor speeds to 0 and set break mode?s
+        // Set arm motor speeds to 0 and set break mode?s
     }
 }
 

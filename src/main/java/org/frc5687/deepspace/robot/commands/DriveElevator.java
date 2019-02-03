@@ -25,7 +25,7 @@ public class DriveElevator extends OutliersCommand{
         double speed = _oi.getElevatorSpeed();
 
         // Send to the Elevator
-        _elevator.setSpeeds(speed);
+        _elevator.setElevatorSpeeds(speed);
     }
 
 

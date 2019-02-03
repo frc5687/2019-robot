@@ -21,7 +21,7 @@ public class OpenSpear extends OutliersCommand {
 
     @Override
     protected void execute(){
-       _spear.Open();
+       _spear.open();
        _done = true;
     }
 }

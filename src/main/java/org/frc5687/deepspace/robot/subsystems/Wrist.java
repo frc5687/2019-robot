@@ -6,11 +6,12 @@ import org.frc5687.deepspace.robot.RobotMap;
 import org.frc5687.deepspace.robot.commands.WristDrive;
 
 public class Wrist extends OutliersSubsystem {
-    private Robot robot;
+    private Robot _robot;
     private DoubleSolenoid _wristSolenoid;
 
 
     public Wrist (Robot robot){
+        _robot = robot;
         _wristSolenoid = new DoubleSolenoid(RobotMap.PCM.WRIST_DOWN, RobotMap.PCM.WRIST_UP);
     }
     public void Up(){
@@ -28,6 +29,6 @@ public class Wrist extends OutliersSubsystem {
 
     @Override
     protected void initDefaultCommand() {
-        setDefaultCommand(new WristDrive());
+        setDefaultCommand(new WristDrive(this));
     }
 }

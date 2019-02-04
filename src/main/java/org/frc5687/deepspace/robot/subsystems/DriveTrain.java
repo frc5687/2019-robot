@@ -113,7 +113,7 @@ public class DriveTrain extends OutliersSubsystem {
 
 
     public void setPower(double leftSpeed, double rightSpeed, boolean override) {
-        if (!assertMotorControllers()) { return; }
+//         if (!assertMotorControllers()) { return; }
         try {
             _leftMaster.set(leftSpeed);
             _rightMaster.set(rightSpeed);

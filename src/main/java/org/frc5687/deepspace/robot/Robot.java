@@ -1,15 +1,9 @@
 package org.frc5687.deepspace.robot;
 
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.command.Scheduler;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import org.frc5687.deepspace.robot.subsystems.DriveTrain;
-import org.frc5687.deepspace.robot.subsystems.Gripper;
-import org.frc5687.deepspace.robot.subsystems.Gobbler;
-import org.frc5687.deepspace.robot.subsystems.Spear;
-import org.frc5687.deepspace.robot.subsystems.Wrist;
+import org.frc5687.deepspace.robot.subsystems.*;
 import org.frc5687.deepspace.robot.utils.*;
 
 import java.io.BufferedReader;
@@ -33,14 +27,16 @@ public class Robot extends TimedRobot implements ILoggingSource {
     private OI _oi;
     private Limelight _limelight;
     private DriveTrain _driveTrain;
+    private Elevator _elevator;
     private PDP _pdp;
     private Gripper _gripper;
     private Spear _spear;
-    private Gobbler _gobbler;
+    private Arm _arm;
     private Wrist _wrist;
+    private Roller _roller;
 
     /**
-     * This function is run when the robot is first started up and should be
+     * This function is setRollerSpeed when the robot is first started up and should be
      * used for any initialization code.
      */
     @Override
@@ -53,9 +49,11 @@ public class Robot extends TimedRobot implements ILoggingSource {
         _oi = new OI();
         _limelight = new Limelight("limelight");
         _driveTrain = new DriveTrain(this);
-        _gobbler = new Gobbler(this);
+        _arm = new Arm(this);
+        _roller = new Roller(this);
+        _elevator = new Elevator(this);
         _pdp = new PDP();
-        _gripper= new Gripper(this);
+        // _gripper= new Gripper(this); // Commenting out until the motor controller it ready
         _spear = new Spear(this);
         _wrist = new Wrist(this);
         _oi.initializeButtons(this);
@@ -87,6 +85,11 @@ public class Robot extends TimedRobot implements ILoggingSource {
      */
     @Override
     public void autonomousInit() {
+        _arm.enableBrakeMode();
+    }
+
+    public void teleopInit() {
+        _arm.enableBrakeMode();
     }
 
     /**
@@ -117,6 +120,7 @@ public class Robot extends TimedRobot implements ILoggingSource {
     public void disabledInit() {
         RioLogger.getInstance().forceSync();
         RioLogger.getInstance().close();
+        _arm.enableCoastMode();
     }
 
 
@@ -124,7 +128,10 @@ public class Robot extends TimedRobot implements ILoggingSource {
         _oi.updateDashboard();
         _driveTrain.updateDashboard();
         _limelight.updateDashboard();
-        _gobbler.updateDashboard();
+        _arm.updateDashboard();
+        _roller.updateDashboard();
+        _elevator.updateDashboard();
+
     }
 
 
@@ -211,6 +218,8 @@ public class Robot extends TimedRobot implements ILoggingSource {
     public Gripper getGripper() { return _gripper; }
     public Spear getSpear() { return _spear; }
     public Wrist getWrist() { return _wrist; }
+    public Roller getRoller() { return _roller; }
+    public Arm getArm() { return _arm; }
 
 
 
@@ -242,5 +251,4 @@ public class Robot extends TimedRobot implements ILoggingSource {
     public void metric(String name, double value) {
         SmartDashboard.putNumber(getClass().getSimpleName() + "/" + name, value);
     }
-    public Gobbler getGobbler() { return _gobbler; }
 }

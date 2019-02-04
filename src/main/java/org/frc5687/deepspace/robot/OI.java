@@ -20,16 +20,22 @@ public class OI extends OutliersProxy {
     private Button _operatorYButton;
     private Button _operatorXButton;
 
+    private Button _operatorLeftBumper;
+
     public OI(){
         _driverGamepad = new Gamepad(0);
         _operatorGamepad = new Gamepad(1);
         _operatorRightTrigger = new AxisButton(_operatorGamepad, Gamepad.Axes.RIGHT_TRIGGER.getNumber(), Constants.OI.AXIS_BUTTON_THRESHHOLD);
+        _operatorLeftBumper = new JoystickButton(_operatorGamepad, Gamepad.Buttons.LEFT_BUMPER.getNumber());
         _operatorLeftTrigger = new AxisButton(_operatorGamepad, Gamepad.Axes.LEFT_TRIGGER.getNumber(), Constants.OI.AXIS_BUTTON_THRESHHOLD);
         _operatorYButton = new JoystickButton(_operatorGamepad, Gamepad.Buttons.Y.getNumber());
         _operatorXButton = new JoystickButton(_operatorGamepad, Gamepad.Buttons.X.getNumber());
     }
-
     public void initializeButtons(Robot robot){
+        if (robot.getGripper()!=null) {
+            _operatorLeftBumper.whenPressed(new SuckBall(robot.getGripper()));
+            _operatorLeftBumper.whenReleased(new DropBall(robot.getGripper()));
+        }
         _operatorXButton.whenPressed(new WristDown(robot.getWrist()));
         _operatorYButton.whenPressed(new WristUp(robot.getWrist()));
         _operatorRightTrigger.whenPressed(new CloseSpear(robot.getSpear()));

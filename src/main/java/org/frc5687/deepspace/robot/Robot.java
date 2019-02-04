@@ -11,7 +11,7 @@ import java.io.File;
 import java.io.FileReader;
 
 /**
- * The VM is configured to automatically setRollerSpeed this class, and to call the
+ * The VM is configured to automatically run this class, and to call the
  * functions corresponding to each mode, as described in the TimedRobot
  * documentation. If you change the name of this class or the package after
  * creating this project, you must also update the build.gradle file in the
@@ -29,6 +29,7 @@ public class Robot extends TimedRobot implements ILoggingSource {
     private DriveTrain _driveTrain;
     private Elevator _elevator;
     private PDP _pdp;
+    private Gripper _gripper;
     private Spear _spear;
     private Arm _arm;
     private Wrist _wrist;
@@ -52,6 +53,7 @@ public class Robot extends TimedRobot implements ILoggingSource {
         _roller = new Roller(this);
         _elevator = new Elevator(this);
         _pdp = new PDP();
+        // _gripper= new Gripper(this); // Commenting out until the motor controller it ready
         _spear = new Spear(this);
         _wrist = new Wrist(this);
         _oi.initializeButtons(this);
@@ -213,6 +215,7 @@ public class Robot extends TimedRobot implements ILoggingSource {
         return _limelight;
     }
     public PDP getPDP() { return _pdp; }
+    public Gripper getGripper() { return _gripper; }
     public Spear getSpear() { return _spear; }
     public Wrist getWrist() { return _wrist; }
     public Roller getRoller() { return _roller; }

@@ -9,6 +9,8 @@ import org.frc5687.deepspace.robot.OI;
 import org.frc5687.deepspace.robot.Robot;
 import org.frc5687.deepspace.robot.RobotMap;
 import org.frc5687.deepspace.robot.commands.Drive;
+import org.frc5687.deepspace.robot.utils.IRDistanceSensor;
+import org.frc5687.deepspace.robot.utils.RioLogger;
 
 import static org.frc5687.deepspace.robot.utils.Helpers.applySensitivityFactor;
 import static org.frc5687.deepspace.robot.utils.Helpers.limit;
@@ -44,6 +46,7 @@ public class DriveTrain extends OutliersSubsystem {
             _leftFollower.setInverted(Constants.DriveTrain.LEFT_MOTORS_INVERTED);
             _rightMaster.setInverted(Constants.DriveTrain.RIGHT_MOTORS_INVERTED);
             _rightFollower.setInverted(Constants.DriveTrain.RIGHT_MOTORS_INVERTED);
+
 
 
         } catch (Exception e) {
@@ -161,6 +164,31 @@ public class DriveTrain extends OutliersSubsystem {
         _leftOffset = getLeftTicks();
         _rightOffset = getRightTicks();
     }
+    public void enableBrakeMode() {
+        try {
+            _leftMaster.setIdleMode(CANSparkMax.IdleMode.kBrake);
+            _rightMaster.setIdleMode(CANSparkMax.IdleMode.kBrake);
+            _leftFollower.setIdleMode(CANSparkMax.IdleMode.kBrake);
+            _rightFollower.setIdleMode(CANSparkMax.IdleMode.kBrake);
+
+        } catch (Exception e) {
+            RioLogger.error(this.getClass().getSimpleName(), "DriveTrain.enableBrakeMode exception: " + e.toString());
+        }
+        metric("DriveTrain/neutralMode", "Brake");
+    }
+
+    public void enableCoastMode() {
+        try {
+            _leftMaster.setIdleMode(CANSparkMax.IdleMode.kCoast);
+            _rightMaster.setIdleMode(CANSparkMax.IdleMode.kCoast);
+            _leftFollower.setIdleMode(CANSparkMax.IdleMode.kCoast);
+            _rightFollower.setIdleMode(CANSparkMax.IdleMode.kCoast);
+        } catch (Exception e) {
+            RioLogger.error(this.getClass().getSimpleName(),  "DriveTrain.enableCoastMode exception: " + e.toString());
+        }
+        metric("DriveTrain/neutralMode", "Coast");
+    }
+
 
 
 }

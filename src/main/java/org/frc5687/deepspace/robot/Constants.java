@@ -47,6 +47,32 @@ public class Constants {
         public static final int SHOULDER_STALL_LIMIT = 10;
         public static final int SHOULDER_FREE_LIMIT = 80;
     }
+    public class Auto {
+        public static final double MIN_IMU_ANGLE = -180;
+        public static final double MAX_IMU_ANGLE = 180;
+
+        public static final double MAX_PITCH = 20.0;
+        public static final double MAX_ROLL = 20.0;
+
+        public class DriveToTarget{
+            public static final double SPEED = 0.2;
+            public static final double TURN_SPEED = 0.1;
+
+            public static final double kPAngle = 0.04;
+            public static final double kIAngle = 0.002;
+            public static final double kDAngle = 0.2;
+
+            public static final double kPDistance = 0.4;
+            public static final double kIDistance = 0.000;
+            public static final double kDDistance = 0.25;
+
+            public static final double ANGLE_TOLERANCE = .5;
+            public static final double DISTANCE_TOLERANCE = .5;
+
+            public static final double TARGET_HEIGHT = 29;
+            public static final double LIGHT_HEIGHT = 43;
+        }
+    }
     /*
      There should be a nested static class for each subsystem and for each autonomous command that needs tuning constants.
      For example:

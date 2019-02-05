@@ -104,13 +104,13 @@ public class AutoDriveToTarget extends OutliersCommand {
         double yawAngle = _imu.getAngle();
         _angleTarget = limeLightAngle + yawAngle;
 
-        metric("AutoDriveToTarget/angle/startoffset", limeLightAngle);
-        metric("AutoDriveToTarget/angle/startyaw", yawAngle);
-        metric("AutoDriveToTarget/angle/target", _angleTarget);
+        metric("angle/startoffset", limeLightAngle);
+        metric("angle/startyaw", yawAngle);
+        metric("angle/target", _angleTarget);
 
         if (Math.abs(_angleTarget - _angleController.getSetpoint()) > Constants.Auto.DriveToTarget.ANGLE_TOLERANCE) {
             _angleController.setSetpoint(_angleTarget);
-            metric("AutoDriveToTarget/angle/setpoint", _angleTarget);
+            metric("angle/setpoint", _angleTarget);
         }
         double limeLightYAngle = _limelight.getVerticalAngle();
         double fixedAngle = 0.0;
@@ -123,7 +123,7 @@ public class AutoDriveToTarget extends OutliersCommand {
 
         if (Math.abs(distanceSetPoint - oldSetpoint) > _distanceTolerance) {
             _distanceController.setSetpoint(distanceSetPoint);
-            metric("AutoDriveToTarget/distance/setpoint", distanceSetPoint);
+            metric("distance/setpoint", distanceSetPoint);
         }
 
         _distanceController.setSetpoint(distanceSetPoint);
@@ -131,12 +131,12 @@ public class AutoDriveToTarget extends OutliersCommand {
 
 
         //SmartDashboard.putBoolean("AutoDriveToTarget/angle/onTarget", _angleController.onTarget());
-        metric("AutoDriveToTarget/angle/yaw", _imu.getYaw());
+        metric("angle/yaw", _imu.getYaw());
 
-        metric("AutoDriveToTarget/angle/PIDOut", _anglePIDOut);
-        metric("AutoDriveToTarget/distance/PIDOut", _distancePIDOut);
-        metric("AutoDriveToTarget/distance/target", distanceSetPoint);
-        metric("AutoDriveToTarget/distance/current", _driveTrain.getDistance());
+        metric("angle/PIDOut", _anglePIDOut);
+        metric("distance/PIDOut", _distancePIDOut);
+        metric("distance/target", distanceSetPoint);
+        metric("/distance/current", _driveTrain.getDistance());
 
         //_distancePIDOut = 0;
         _driveTrain.setPower(_distancePIDOut + _anglePIDOut , _distancePIDOut - _anglePIDOut, true); // positive output is clockwise
@@ -158,9 +158,15 @@ public class AutoDriveToTarget extends OutliersCommand {
 
     @Override
     protected void end() {
+        double limeLightYAngle = _limelight.getVerticalAngle();
+        double fixedAngle = 0.0;
+        double angleY = fixedAngle + limeLightYAngle;
+        double tanY = Math.tan(angleY * (Math.PI / 180));
+        double currentTargetDistance = (Constants.Auto.DriveToTarget.TARGET_HEIGHT + Constants.Auto.DriveToTarget.LIGHT_HEIGHT)/tanY;
+
         _driveTrain.enableBrakeMode();
         _driveTrain.setPower(0,0, true);
-        //error("AutoDriveToTarget finished: angle=" + _imu.getYaw() + ", distance=" + _driveTrain.getIRDistanceSensor().getDistance() + ", time=" + (System.currentTimeMillis() - _startTimeMillis), false);
+        error("AutoDriveToTarget finished: angle=" + _imu.getYaw() + ", distance=" + currentTargetDistance + ", time=" + (System.currentTimeMillis() - _startTimeMillis));
         _distanceController.disable();
         _angleController.disable();
     }

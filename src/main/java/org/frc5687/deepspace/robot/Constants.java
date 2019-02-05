@@ -21,9 +21,14 @@ public class Constants {
     }
     public static class Elevator {
         public static final double MAX_ELEVATOR_SPEED = 0.75;
+        public static final double MAX_ELEVATOR_SPEED_UP = 0.75;
+        public static final double MAX_ELEVATOR_SPEED_DOWN = 0.4;
         public static final double DEADBAND = 0.1;
         public static final double SENSITIVITY = 0.5;
         public static final boolean ELEVATOR_MOTOR_ELEVATOR = true;
+        public static final int TOLERANCE = 10;
+        public static final double SPEED_UP = 0.8;
+        public static final double SPEED_DOWN = 0.4;
     }
     public static class OI {
         public static final double AXIS_BUTTON_THRESHHOLD = 0.2;

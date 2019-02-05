@@ -46,6 +46,14 @@ public class Elevator extends OutliersSubsystem{
         _elevator.set(speed);
     }
 
+    public void enableBrakeMode() {
+        _elevator.setIdleMode(CANSparkMax.IdleMode.kBrake);
+    }
+
+    public void enableCoastMode() {
+        _elevator.setIdleMode(CANSparkMax.IdleMode.kCoast);
+    }
+
     public double getRawNeoEncoder() {
         return _neoElevatorEncoder.getPosition();
     }
@@ -68,4 +76,50 @@ public class Elevator extends OutliersSubsystem{
     public boolean isAtTop() { return _topHall.get(); }
 
     public boolean isAtBottom() { return _bottomHall.get(); }
+
+    public double getPosition() {
+        return getRawMAGEncoder();
+    }
+
+
+    public enum Setpoint {
+        Bottom(0),
+        Port1(1),
+        Hatch1(2),
+        Port2(3),
+        Hatch2(4),
+        Port3(5),
+        Hatch3(6),
+        Top(9);
+
+        private int _value;
+
+        Setpoint(int value) {
+            this._value = value;
+        }
+
+        public int getValue() {
+            return _value;
+        }
+
+    }
+
+    public enum MotionMode {
+        Simple(0),
+        PID(1),
+        Path(2);
+
+        private int _value;
+
+        MotionMode(int value) {
+            this._value = value;
+        }
+
+        public int getValue() {
+            return _value;
+        }
+
+    }
+
+
 }

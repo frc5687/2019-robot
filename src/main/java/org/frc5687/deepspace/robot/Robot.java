@@ -1,5 +1,7 @@
 package org.frc5687.deepspace.robot;
 
+import com.kauailabs.navx.frc.AHRS;
+import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -33,6 +35,7 @@ public class Robot extends TimedRobot implements ILoggingSource {
     private Arm _arm;
     private Wrist _wrist;
     private Roller _roller;
+    private AHRS _imu;
 
     /**
      * This function is setRollerSpeed when the robot is first started up and should be
@@ -55,6 +58,7 @@ public class Robot extends TimedRobot implements ILoggingSource {
         _spear = new Spear(this);
         _wrist = new Wrist(this);
         _oi.initializeButtons(this);
+        _imu = new AHRS(SPI.Port.kMXP, (byte) 100);
     }
 
     /**
@@ -216,6 +220,7 @@ public class Robot extends TimedRobot implements ILoggingSource {
     public Spear getSpear() { return _spear; }
     public Wrist getWrist() { return _wrist; }
     public Roller getRoller() { return _roller; }
+    public AHRS getIMU() { return _imu; }
     public Arm getArm() { return _arm; }
 
 

@@ -19,6 +19,7 @@ public class OI extends OutliersProxy {
 
     private Button _operatorYButton;
     private Button _operatorXButton;
+    private Button _driverAButton;
 
     public OI(){
         _driverGamepad = new Gamepad(0);
@@ -27,6 +28,7 @@ public class OI extends OutliersProxy {
         _operatorLeftTrigger = new AxisButton(_operatorGamepad, Gamepad.Axes.LEFT_TRIGGER.getNumber(), Constants.OI.AXIS_BUTTON_THRESHHOLD);
         _operatorYButton = new JoystickButton(_operatorGamepad, Gamepad.Buttons.Y.getNumber());
         _operatorXButton = new JoystickButton(_operatorGamepad, Gamepad.Buttons.X.getNumber());
+        _driverAButton = new JoystickButton(_driverGamepad, Gamepad.Buttons.A.getNumber());
     }
 
     public void initializeButtons(Robot robot){
@@ -35,7 +37,10 @@ public class OI extends OutliersProxy {
         _operatorRightTrigger.whenPressed(new CloseSpear(robot.getSpear()));
         _operatorRightTrigger.whenReleased(new OpenSpear(robot.getSpear()));
         _operatorLeftTrigger.whileHeld(new DriveRoller(robot.getRoller()));
+        _driverAButton.whenPressed(new AutoAlignToTarget(robot, .3, 5000, .5));
     }
+    public boolean isAutoTargetPressed() {return _driverAButton.get();}
+
     public double getDriveSpeed() {
         double speed = -getSpeedFromAxis(_driverGamepad, Gamepad.Axes.LEFT_Y.getNumber());
         speed = applyDeadband(speed, Constants.DriveTrain.DEADBAND);

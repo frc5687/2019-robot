@@ -79,6 +79,11 @@ public class DriveTrain extends OutliersSubsystem {
         setDefaultCommand(new Drive(this, _oi));
     }
 
+    public void setPower(double leftSpeed, double rightSpeed) {
+        setPower(leftSpeed, rightSpeed, false);
+    }
+
+
     public void cheesyDrive(double speed, double rotation) {
         if (!assertMotorControllers()) { return; }
         metric("Speed", speed);

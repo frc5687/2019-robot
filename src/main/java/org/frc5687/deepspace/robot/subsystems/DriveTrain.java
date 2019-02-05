@@ -1,19 +1,23 @@
 package org.frc5687.deepspace.robot.subsystems;
 
+import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
+import edu.wpi.first.wpilibj.PIDSource;
+import edu.wpi.first.wpilibj.PIDSourceType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.frc5687.deepspace.robot.Constants;
 import org.frc5687.deepspace.robot.OI;
 import org.frc5687.deepspace.robot.Robot;
 import org.frc5687.deepspace.robot.RobotMap;
 import org.frc5687.deepspace.robot.commands.Drive;
+import org.frc5687.deepspace.robot.utils.RioLogger;
 
 import static org.frc5687.deepspace.robot.utils.Helpers.applySensitivityFactor;
 import static org.frc5687.deepspace.robot.utils.Helpers.limit;
 
-public class DriveTrain extends OutliersSubsystem {
+public class DriveTrain extends OutliersSubsystem implements PIDSource {
     private CANSparkMax _leftMaster;
     private CANSparkMax _rightMaster;
 
@@ -24,6 +28,7 @@ public class DriveTrain extends OutliersSubsystem {
     private CANEncoder _rightEncoder;
 
     private OI _oi;
+    private AHRS _imu;
 
     private double _leftOffset;
     private double _rightOffset;
@@ -31,6 +36,7 @@ public class DriveTrain extends OutliersSubsystem {
     public DriveTrain(Robot robot) {
         info("Constructing DriveTrain class.");
         _oi = robot.getOI();
+        _imu = robot.getIMU();
 
         debug("Allocating motor controllers");
         try {
@@ -79,9 +85,6 @@ public class DriveTrain extends OutliersSubsystem {
         setDefaultCommand(new Drive(this, _oi));
     }
 
-    public void setPower(double leftSpeed, double rightSpeed) {
-        setPower(leftSpeed, rightSpeed, false);
-    }
 
 
     public void cheesyDrive(double speed, double rotation) {
@@ -116,7 +119,12 @@ public class DriveTrain extends OutliersSubsystem {
         setPower(limit(leftMotorOutput), limit(rightMotorOutput), true);
     }
 
-
+    public float getYaw() {
+        return _imu.getYaw();
+    }
+    public void setPower(double leftSpeed, double rightSpeed) {
+        setPower(leftSpeed, rightSpeed, false);
+    }
     public void setPower(double leftSpeed, double rightSpeed, boolean override) {
 //         if (!assertMotorControllers()) { return; }
         try {
@@ -166,6 +174,44 @@ public class DriveTrain extends OutliersSubsystem {
         _leftOffset = getLeftTicks();
         _rightOffset = getRightTicks();
     }
+    public void enableBrakeMode() {
+        try {
+            _leftMaster.setIdleMode(CANSparkMax.IdleMode.kBrake);
+            _rightMaster.setIdleMode(CANSparkMax.IdleMode.kBrake);
+            _leftFollower.setIdleMode(CANSparkMax.IdleMode.kBrake);
+            _rightFollower.setIdleMode(CANSparkMax.IdleMode.kBrake);
+
+        } catch (Exception e) {
+            RioLogger.error(this.getClass().getSimpleName(), "DriveTrain.enableBrakeMode exception: " + e.toString());
+        }
+        SmartDashboard.putString("DriveTrain/neutralMode", "Brake");
+    }
 
 
+    public void enableCoastMode() {
+        try {
+            _leftMaster.setIdleMode(CANSparkMax.IdleMode.kCoast);
+            _rightMaster.setIdleMode(CANSparkMax.IdleMode.kCoast);
+            _leftFollower.setIdleMode(CANSparkMax.IdleMode.kCoast);
+            _rightFollower.setIdleMode(CANSparkMax.IdleMode.kCoast);
+        } catch (Exception e) {
+            RioLogger.error(this.getClass().getSimpleName(),  "DriveTrain.enableCoastMode exception: " + e.toString());
+        }
+        SmartDashboard.putString("DriveTrain/neutralMode", "Coast");
+    }
+
+
+    @Override
+    public double pidGet() {
+        return getDistance();
+    }
+
+    @Override
+    public PIDSourceType getPIDSourceType() {
+        return PIDSourceType.kDisplacement;
+    }
+
+    @Override
+    public void setPIDSourceType(PIDSourceType pidSource) {
+    }
 }

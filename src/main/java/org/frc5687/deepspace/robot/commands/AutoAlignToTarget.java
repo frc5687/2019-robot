@@ -85,8 +85,8 @@ public class AutoAlignToTarget extends OutliersCommand implements PIDOutput {
         controller.setSetpoint(angle);
         controller.enable();
         metric("setpoint", angle);
-        DriverStation.reportError("AutoAlign " + _message + " initialized to " + angle + " at " + speed, false);
-        DriverStation.reportError("kP="+kP+" , kI="+kI+", kD="+kD + ",T="+ Constants.Auto.AlignToTarget.TOLERANCE, false);
+        error("AutoAlign " + _message + " initialized to " + angle + " at " + speed);
+        error("kP="+kP+" , kI="+kI+", kD="+kD + ",T="+ Constants.Auto.AlignToTarget.TOLERANCE);
         startTimeMillis = System.currentTimeMillis();
         _endTimeMillis = startTimeMillis + _timeout;
 

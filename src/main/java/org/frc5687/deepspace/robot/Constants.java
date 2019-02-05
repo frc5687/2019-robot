@@ -49,7 +49,10 @@ public class Constants {
 
         public static final double MIN_IMU_ANGLE = -180;
         public static final double MAX_IMU_ANGLE = 180;
-        
+
+        public static final double MAX_PITCH = 20.0;
+        public static final double MAX_ROLL = 20.0;
+
         public class AlignToTarget {
             public static final double SPEED = 1.0;
 
@@ -60,6 +63,57 @@ public class Constants {
             public static final double MINIMUM_SPEED = 0.2;
             public static final double STEADY_TIME = 60;
 
+        }
+        public class Align {
+            public static final double SPEED = 1.0;
+
+            public static final double kP = 0.04;
+            public static final double kI = 0.002;
+            public static final double kD = 0.4;
+            public static final double TOLERANCE = .5; // 0.5
+            public static final double MINIMUM_SPEED = 0.2;
+            public static final double MAX_OUTPUT = 0;
+            /*
+             *time the angle must be on target for to be considered steady
+             */
+            public static final double STEADY_TIME = 60;
+        }
+        public class Drive {
+            public static final double SPEED = 1.0;
+
+            public static final double MIN_SPEED = 0.25;
+
+            public class MaxVel {
+                public static final double MPS = 2.33; // Meters Per Second
+                public static final double IPS = 130; // Inches Per Second
+            }
+
+            public class MaxAcceleration {
+                public static final double METERS = 2; // Meters Per Second Squared
+                public static final double INCHES = 80.0;
+            }
+
+            public class MaxJerk {
+                public static final double METERS = 6.0; // Meters Per Second Cubed
+                public static final double INCHES = 200.0;
+            }
+
+            public static final long STEADY_TIME = 100;
+            public static final long ALIGN_STEADY_TIME = 100;
+
+
+            public class AnglePID {
+                public static final double kP = 0.4;
+                public static final double kI = 0.006;
+                public static final double kD = 0.09;
+                public class kV {
+                    public static final double MPS = 1.0 / MaxVel.MPS;
+                    public static final double IPS = 1.0 / MaxVel.IPS;
+                }
+                public static final double PATH_TURN = 0.4; // 1.0
+                public static final double MAX_DIFFERENCE = 0.4;
+                public static final double TOLERANCE = .5;
+            }
         }
     }
     /*

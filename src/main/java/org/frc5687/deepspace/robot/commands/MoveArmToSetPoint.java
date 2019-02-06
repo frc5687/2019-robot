@@ -52,7 +52,7 @@ public class MoveArmToSetPoint extends OutliersCommand {
         }
         return _arm.getPIDController().onTarget();
     }
-    
+
     @Override
     protected void end(){
 

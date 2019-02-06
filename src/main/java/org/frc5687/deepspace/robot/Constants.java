@@ -20,15 +20,18 @@ public class Constants {
         public static final double VACUUM_SPEED = 0.2;
     }
     public static class Elevator {
-        public static final double MAX_ELEVATOR_SPEED = 0.75;
-        public static final double MAX_ELEVATOR_SPEED_UP = 0.75;
-        public static final double MAX_ELEVATOR_SPEED_DOWN = 0.4;
+        public static final double MAX_ELEVATOR_SPEED = 1.0;
+        public static final double MAX_ELEVATOR_SPEED_UP = 1.0;
+        public static final double MAX_ELEVATOR_SPEED_DOWN = 0.1;
         public static final double DEADBAND = 0.1;
         public static final double SENSITIVITY = 0.5;
-        public static final boolean ELEVATOR_MOTOR_ELEVATOR = true;
+        public static final boolean ELEVATOR_MOTOR_INVERTED = true;
         public static final int TOLERANCE = 10;
-        public static final double SPEED_UP = 0.8;
-        public static final double SPEED_DOWN = 0.4;
+        public static final double SPEED_UP = 1.0;
+        public static final double SPEED_DOWN = 0.1;
+        public static final double kP = 0.1;
+        public static final double kI = 0.0;
+        public static final double kD = 0.0;
     }
     public static class OI {
         public static final double AXIS_BUTTON_THRESHHOLD = 0.2;

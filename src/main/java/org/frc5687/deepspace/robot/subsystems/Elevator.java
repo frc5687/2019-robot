@@ -5,6 +5,8 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.PIDSource;
+import edu.wpi.first.wpilibj.PIDSourceType;
 import org.frc5687.deepspace.robot.Constants;
 import org.frc5687.deepspace.robot.Robot;
 import org.frc5687.deepspace.robot.RobotMap;
@@ -12,7 +14,7 @@ import org.frc5687.deepspace.robot.commands.DriveElevator;
 import org.frc5687.deepspace.robot.utils.HallEffect;
 import org.frc5687.deepspace.robot.utils.Helpers;
 
-public class Elevator extends OutliersSubsystem{
+public class Elevator extends OutliersSubsystem implements PIDSource {
 
     private CANSparkMax _elevator;
     private Encoder _elevatorEncoder;
@@ -31,11 +33,11 @@ public class Elevator extends OutliersSubsystem{
 
         _topHall = new HallEffect(RobotMap.DIO.ELEVATOR_TOP_HALL);
         _bottomHall = new HallEffect(RobotMap.DIO.ELEVATOR_BOTTOM_HALL);
-        _elevator.setInverted(Constants.Elevator.ELEVATOR_MOTOR_ELEVATOR);
+        _elevator.setInverted(Constants.Elevator.ELEVATOR_MOTOR_INVERTED);
 
     }
     public void setElevatorSpeeds(double speed) {
-        speed = Helpers.limit(speed, Constants.Elevator.MAX_ELEVATOR_SPEED);
+        speed = Helpers.limit(speed, -Constants.Elevator.MAX_ELEVATOR_SPEED_DOWN,  Constants.Elevator.MAX_ELEVATOR_SPEED_UP);
         if (speed > 0 && isAtTop()) {
             speed = 0;
         } else if (speed < 0 && isAtBottom()) {
@@ -79,6 +81,20 @@ public class Elevator extends OutliersSubsystem{
 
     public double getPosition() {
         return getRawMAGEncoder();
+    }
+
+    @Override
+    public void setPIDSourceType(PIDSourceType pidSource) {
+    }
+
+    @Override
+    public PIDSourceType getPIDSourceType() {
+        return PIDSourceType.kDisplacement;
+    }
+
+    @Override
+    public double pidGet() {
+        return getPosition();
     }
 
 

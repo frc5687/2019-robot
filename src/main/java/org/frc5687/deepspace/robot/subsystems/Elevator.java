@@ -84,13 +84,13 @@ public class Elevator extends OutliersSubsystem{
 
     public enum Setpoint {
         Bottom(0),
-        Port1(1),
-        Hatch1(2),
-        Port2(3),
-        Hatch2(4),
-        Port3(5),
-        Hatch3(6),
-        Top(9);
+        Port1(133),
+        Hatch1(133),
+        Port2(2168),
+        Hatch2(2169),
+        Port3(4267),
+        Hatch3(4268),
+        Top(4269);
 
         private int _value;
 

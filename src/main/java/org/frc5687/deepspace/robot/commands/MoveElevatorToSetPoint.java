@@ -51,7 +51,7 @@ public class MoveElevatorToSetPoint extends OutliersCommand {
 
     @Override
     protected void end() {
-        info("Reached setpoint " + _setpoint.name());
-        super.end();
+        _elevator.setElevatorSpeeds(0);
+        info("Reached setpoint " + _setpoint.name() + " (" + _position + ")");
     }
 }

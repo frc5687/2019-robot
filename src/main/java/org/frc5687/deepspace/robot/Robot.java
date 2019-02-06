@@ -222,6 +222,7 @@ public class Robot extends TimedRobot implements ILoggingSource {
     public Wrist getWrist() { return _wrist; }
     public Roller getRoller() { return _roller; }
     public Arm getArm() { return _arm; }
+    public Elevator getElevator() { return _elevator; }
 
 
 

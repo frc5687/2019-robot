@@ -1,7 +1,11 @@
 package org.frc5687.deepspace.robot;
 
 public class Constants {
+    /**
+     *
+     */
     public static final int CYCLES_PER_SECOND = 50;
+    public static final int TICKS_PER_UPDATE = 10;
 
     public class DriveTrain {
 
@@ -29,9 +33,18 @@ public class Constants {
         public static final int TOLERANCE = 10;
         public static final double SPEED_UP = 1.0;
         public static final double SPEED_DOWN = 0.1;
-        public static final double kP = 0.1;
-        public static final double kI = 0.0;
-        public static final double kD = 0.0;
+        public static final double MAX_VELOCITY_FPS = 3.0;
+
+        public static class PID {
+            public static final double kP = 0.1;
+            public static final double kI = 0.0;
+            public static final double kD = 0.0;
+        }
+        public static class Path {
+            public static final double kP = 1.0;
+            public static final double kI = 0.0;
+            public static final double kD = 0.0;
+        }
     }
     public static class OI {
         public static final double AXIS_BUTTON_THRESHHOLD = 0.2;

@@ -1,9 +1,17 @@
 package org.frc5687.deepspace.robot.commands;
 
+import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.PIDOutput;
+import jaci.pathfinder.Pathfinder;
+import jaci.pathfinder.Trajectory;
+import jaci.pathfinder.Waypoint;
+import jaci.pathfinder.followers.DistanceFollower;
+import jaci.pathfinder.followers.EncoderFollower;
 import org.frc5687.deepspace.robot.Constants;
 import org.frc5687.deepspace.robot.subsystems.Elevator;
+
+import static org.frc5687.deepspace.robot.Constants.Elevator.*;
 
 public class MoveElevatorToSetPoint extends OutliersCommand {
 
@@ -13,17 +21,23 @@ public class MoveElevatorToSetPoint extends OutliersCommand {
     private double _position = 0;
 
     private double _pidOutput;
+    private double _pathOutput;
 
     private PIDController _pidController;
 
+    private Trajectory _trajectory;
+    private DistanceFollower _pathFollower;
+    private Notifier _pathNotifier;
+
     public MoveElevatorToSetPoint(Elevator elevator, Elevator.Setpoint setpoint, Elevator.MotionMode mode) {
         _elevator = elevator;
+        requires(_elevator);
         _setpoint = setpoint;
         _mode = mode;
 
-        _pidController = new PIDController(Constants.Elevator.kP, Constants.Elevator.kI, Constants.Elevator.kD, _elevator, new PIDListener());
-        _pidController.setAbsoluteTolerance(Constants.Elevator.TOLERANCE);
-        _pidController.setOutputRange(-Constants.Elevator.MAX_ELEVATOR_SPEED_DOWN, Constants.Elevator.MAX_ELEVATOR_SPEED_UP);
+        _pidController = new PIDController(PID.kP, PID.kI, PID.kD, _elevator, new PIDListener());
+        _pidController.setAbsoluteTolerance(TOLERANCE);
+        _pidController.setOutputRange(-MAX_ELEVATOR_SPEED_DOWN, MAX_ELEVATOR_SPEED_UP);
         _pidController.setInputRange(Elevator.Setpoint.Bottom.getValue(), Elevator.Setpoint.Top.getValue());
         _pidController.disable();
     }
@@ -31,6 +45,7 @@ public class MoveElevatorToSetPoint extends OutliersCommand {
     @Override
     protected void initialize() {
         _position = _elevator.getPosition();
+        if (withinTolerance()) { return; }
         info("Moving to setpoint " + _setpoint.name() + " (" + _setpoint.getValue() + ") using " + _mode.name() + " mode.");
         switch(_mode) {
             case Simple:
@@ -38,6 +53,14 @@ public class MoveElevatorToSetPoint extends OutliersCommand {
             case PID:
                 _pidController.setSetpoint(_setpoint.getValue());
                 _pidController.enable();
+                break;
+            case Path:
+                _trajectory = getTrajectory((long)_elevator.getPosition(), _setpoint.getValue());
+                _pathFollower = new DistanceFollower(_trajectory);
+                _pathFollower.configurePIDVA(Path.kP, Path.kI, Path.kD, 1/MAX_VELOCITY_FPS, 0);
+
+                _pathNotifier = new Notifier(this::followPath);
+                _pathNotifier.startPeriodic(_trajectory.get(0).dt);
                 break;
         }
 
@@ -48,10 +71,10 @@ public class MoveElevatorToSetPoint extends OutliersCommand {
         _position = _elevator.getPosition();
         switch(_mode) {
             case Simple:
-                if (_position  < _setpoint.getValue() - Constants.Elevator.TOLERANCE) {
-                    _elevator.setElevatorSpeeds(Constants.Elevator.SPEED_UP);
-                } else if (_position > _setpoint.getValue() + Constants.Elevator.TOLERANCE) {
-                    _elevator.setElevatorSpeeds(-Constants.Elevator.SPEED_DOWN);
+                if (_position  < _setpoint.getValue() - TOLERANCE) {
+                    _elevator.setElevatorSpeeds(SPEED_UP);
+                } else if (_position > _setpoint.getValue() + TOLERANCE) {
+                    _elevator.setElevatorSpeeds(-SPEED_DOWN);
                 } else {
                     _elevator.setElevatorSpeeds(0);
                 }
@@ -59,20 +82,37 @@ public class MoveElevatorToSetPoint extends OutliersCommand {
             case PID:
                 _elevator.setElevatorSpeeds(_pidOutput);
                 break;
+            case Path:
+                _elevator.setElevatorSpeeds(_pathOutput);
+                break;
             default:
                 _elevator.setElevatorSpeeds(0);
                 break;
         }
     }
 
+    private boolean withinTolerance() {
+        return Math.abs(_position-_setpoint.getValue()) <= TOLERANCE;
+    }
     @Override
     protected boolean isFinished() {
-        return Math.abs(_position-_setpoint.getValue()) <= Constants.Elevator.TOLERANCE;
+        if (withinTolerance()) {
+            return true;
+        };
+        switch(_mode) {
+            case PID:
+                return _pidController.onTarget();
+            case Path:
+                return _pathFollower.isFinished();
+            default:
+                return false;
+        }
     }
 
     @Override
     protected void end() {
         _pidController.disable();
+        _pathNotifier.stop();
         _elevator.setElevatorSpeeds(0);
         info("Reached setpoint " + _setpoint.name() + " (" + _position + ")");
     }
@@ -90,4 +130,25 @@ public class MoveElevatorToSetPoint extends OutliersCommand {
 
     }
 
+    private void followPath() {
+        if (_pathFollower.isFinished()) {
+            _pathNotifier.stop();
+        } else {
+            double _speed = _pathFollower.calculate(_elevator.getPosition());
+            _pathOutput = _speed;
+        }
+    }
+
+
+    private Trajectory getTrajectory(long startPosition, long endPosition) {
+        Waypoint[] points = new Waypoint[] {
+                new Waypoint(0, startPosition, 0),      // Waypoint @ x=-4, y=-1, exit angle=-45 degrees
+                new Waypoint(0, endPosition, 0),                        // Waypoint @ x=-2, y=-2, exit angle=0 radians
+        };
+
+        Trajectory.Config config = new Trajectory.Config(Trajectory.FitMethod.HERMITE_CUBIC, Trajectory.Config.SAMPLES_FAST, 0.02, MAX_VELOCITY_FPS, MAX_VELOCITY_FPS, 60.0);
+        Trajectory trajectory = Pathfinder.generate(points, config);
+
+        return trajectory;
+    }
 }

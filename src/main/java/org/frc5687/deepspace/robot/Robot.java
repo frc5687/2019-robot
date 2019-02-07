@@ -23,6 +23,8 @@ public class Robot extends TimedRobot implements ILoggingSource {
     private RioLogger.LogLevel _dsLogLevel = RioLogger.LogLevel.warn;
     private RioLogger.LogLevel _fileLogLevel = RioLogger.LogLevel.warn;
 
+    private int _updateTick = 0;
+
     private String _name;
     private OI _oi;
     private Limelight _limelight;
@@ -127,13 +129,17 @@ public class Robot extends TimedRobot implements ILoggingSource {
 
 
     public void updateDashboard() {
-        _oi.updateDashboard();
-        _driveTrain.updateDashboard();
-        _limelight.updateDashboard();
-        _arm.updateDashboard();
-        _roller.updateDashboard();
-        _elevator.updateDashboard();
-
+        _updateTick++;
+        if (_updateTick >= Constants.TICKS_PER_UPDATE) {
+            _oi.updateDashboard();
+            _driveTrain.updateDashboard();
+            _limelight.updateDashboard();
+            _arm.updateDashboard();
+            _roller.updateDashboard();
+            _elevator.updateDashboard();
+            _pdp.updateDashboard();
+            _updateTick = 0;
+        }
     }
 
 

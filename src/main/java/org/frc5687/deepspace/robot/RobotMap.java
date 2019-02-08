@@ -67,7 +67,7 @@ public class RobotMap {
         /*
         public static final int ARM_POTENTIOMETER = 7;
          */
-        public static final int IR_DISTANCE_SENSOR = 0;
+        public static final int IR_DISTANCE_SENSOR = 1;
     }
 
     /**

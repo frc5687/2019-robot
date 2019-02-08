@@ -77,6 +77,7 @@ public class DriveTrain extends OutliersSubsystem {
         metric("Distance/Right", getRightDistance());
         metric("Distance/Total", getDistance());
         metric("IRSensor", getIRDistanceSensor());
+        metric("IRSensorDistance", _irDistanceSensor.getDistance());
     }
 
     @Override

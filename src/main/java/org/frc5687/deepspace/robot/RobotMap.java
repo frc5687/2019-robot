@@ -86,6 +86,13 @@ public class RobotMap {
         public static final int ARM_INTAKE_HALL = 8;
         public static final int ARM_SECURE_HALL = 7;
         public static final int ARM_STOWED_HALL = 6;
+
+        public static final int DRIVE_LEFT_A = 23;
+        public static final int DRIVE_LEFT_B = 21;
+        public static final int DRIVE_RIGHT_A = 19;
+        public static final int DRIVE_RIGHT_B = 13;
+
+
         /* Example:
         public static final int ARM_FRONT_LIMIT = 0;
         */

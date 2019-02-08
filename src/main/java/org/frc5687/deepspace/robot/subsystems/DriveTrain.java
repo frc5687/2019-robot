@@ -3,6 +3,7 @@ package org.frc5687.deepspace.robot.subsystems;
 import com.revrobotics.CANEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
+import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.frc5687.deepspace.robot.Constants;
 import org.frc5687.deepspace.robot.OI;
@@ -22,6 +23,9 @@ public class DriveTrain extends OutliersSubsystem {
 
     private CANEncoder _leftEncoder;
     private CANEncoder _rightEncoder;
+
+    private Encoder _leftMagEncoder;
+    private Encoder _rightMagEncoder;
 
     private OI _oi;
 
@@ -45,7 +49,6 @@ public class DriveTrain extends OutliersSubsystem {
             _rightMaster.setInverted(Constants.DriveTrain.RIGHT_MOTORS_INVERTED);
             _rightFollower.setInverted(Constants.DriveTrain.RIGHT_MOTORS_INVERTED);
 
-
         } catch (Exception e) {
             error("Exception allocating drive motor controllers: " + e.getMessage());
             return;
@@ -57,6 +60,11 @@ public class DriveTrain extends OutliersSubsystem {
         debug("Configuring encoders");
         _leftEncoder = _leftMaster.getEncoder();
         _rightEncoder = _rightMaster.getEncoder();
+
+        debug("Configuring mag encoders");
+        _leftMagEncoder = new Encoder(RobotMap.DIO.DRIVE_LEFT_A, RobotMap.DIO.DRIVE_LEFT_B);
+        _rightMagEncoder = new Encoder(RobotMap.DIO.DRIVE_RIGHT_A, RobotMap.DIO.DRIVE_RIGHT_B);
+
     }
 
     private boolean assertMotorControllers() {
@@ -67,11 +75,13 @@ public class DriveTrain extends OutliersSubsystem {
 
     @Override
     public void updateDashboard() {
-        metric("Ticks/Left", getLeftTicks());
-        metric("Ticks/Right", getRightTicks());
-        metric("Distance/Left", getLeftDistance());
-        metric("Distance/Right", getRightDistance());
-        metric("Distance/Total", getDistance());
+        metric("Neo/Ticks/Left", getLeftTicks());
+        metric("Neo/Ticks/Right", getRightTicks());
+        metric("Neo/Distance/Left", getLeftDistance());
+        metric("Neo/Distance/Right", getRightDistance());
+        metric("Neo/Distance/Total", getDistance());
+        metric("Mag/Ticks/Left", _leftMagEncoder.get());
+        metric("Mag/Ticks/Right", _rightMagEncoder.get());
     }
 
     @Override

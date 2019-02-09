@@ -18,8 +18,12 @@ public class Roller extends OutliersSubsystem {
 
     public Roller(Robot robot) {
         _robot = robot;
-        _roller = new CANSparkMax(RobotMap.CAN.SPARKMAX.ROLLER, CANSparkMaxLowLevel.MotorType.kBrushless);
-        _roller.setInverted(Constants.Roller.MOTOR_INVERTED);
+        try {
+            _roller = new CANSparkMax(RobotMap.CAN.SPARKMAX.ROLLER, CANSparkMaxLowLevel.MotorType.kBrushless);
+            _roller.setInverted(Constants.Roller.MOTOR_INVERTED);
+        } catch (Exception e) {
+            error("Unable to allocate roller controller: " + e.getMessage());
+        }
         _ballIR = new AnalogInput(RobotMap.Analog.BALL_IR);
     }
     @Override
@@ -31,6 +35,7 @@ public class Roller extends OutliersSubsystem {
     public void setRollerSpeed(double speed) {
         speed = Helpers.limit(speed, Constants.Roller.MAX_SPEED);
         metric("Speed", speed);
+        if(_roller==null) { return; }
         _roller.set(speed);
     }
     public boolean isBallDetected() {

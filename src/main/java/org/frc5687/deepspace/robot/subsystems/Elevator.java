@@ -53,7 +53,7 @@ public class Elevator extends OutliersSubsystem implements PIDSource {
     }
 
     public void enableCoastMode() {
-        _elevator.setIdleMode(CANSparkMax.IdleMode.kCoast);
+        // _elevator.setIdleMode(CANSparkMax.IdleMode.kCoast);
     }
 
     public double getRawNeoEncoder() {
@@ -104,9 +104,9 @@ public class Elevator extends OutliersSubsystem implements PIDSource {
         Hatch1(133),
         Port2(2168),
         Hatch2(2169),
-        Port3(4267),
-        Hatch3(4268),
-        Top(4269);
+        Port3(4100),
+        Hatch3(4100),
+        Top(4100);
 
         private int _value;
 

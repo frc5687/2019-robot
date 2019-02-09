@@ -33,7 +33,8 @@ public class Constants {
         public static final int TOLERANCE = 10;
         public static final double SPEED_UP = 1.0;
         public static final double SPEED_DOWN = 0.1;
-        public static final double MAX_VELOCITY_FPS = 3.0;
+        public static final double MAX_VELOCITY_IPS = 27.0;
+        public static final double TICKS_PER_INCH = 111.1111111;
 
         public static class PID {
             public static final double kP = 0.1;

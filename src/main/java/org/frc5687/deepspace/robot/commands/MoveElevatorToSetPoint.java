@@ -1,5 +1,6 @@
 package org.frc5687.deepspace.robot.commands;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.PIDOutput;
@@ -28,6 +29,7 @@ public class MoveElevatorToSetPoint extends OutliersCommand {
     private Trajectory _trajectory;
     private DistanceFollower _pathFollower;
     private Notifier _pathNotifier;
+    private long _startTime;
 
     public MoveElevatorToSetPoint(Elevator elevator, Elevator.Setpoint setpoint, Elevator.MotionMode mode) {
         _elevator = elevator;
@@ -57,13 +59,13 @@ public class MoveElevatorToSetPoint extends OutliersCommand {
             case Path:
                 _trajectory = getTrajectory((long)_elevator.getPosition(), _setpoint.getValue());
                 _pathFollower = new DistanceFollower(_trajectory);
-                _pathFollower.configurePIDVA(Path.kP, Path.kI, Path.kD, 1/MAX_VELOCITY_FPS, 0);
+                _pathFollower.configurePIDVA(Path.kP, Path.kI, Path.kD, 1/MAX_VELOCITY_IPS, 0);
 
                 _pathNotifier = new Notifier(this::followPath);
                 _pathNotifier.startPeriodic(_trajectory.get(0).dt);
                 break;
         }
-
+        _startTime = System.currentTimeMillis();
     }
 
     @Override
@@ -111,8 +113,14 @@ public class MoveElevatorToSetPoint extends OutliersCommand {
 
     @Override
     protected void end() {
-        _pidController.disable();
-        _pathNotifier.stop();
+        long endTime = System.currentTimeMillis();
+        DriverStation.reportError("Ran for " + (endTime - _startTime) + " millis", false);
+        if (_pidController!=null) {
+            _pidController.disable();
+        }
+        if (_pathNotifier!=null) {
+            _pathNotifier.stop();
+        }
         _elevator.setElevatorSpeeds(0);
         info("Reached setpoint " + _setpoint.name() + " (" + _position + ")");
     }
@@ -141,12 +149,15 @@ public class MoveElevatorToSetPoint extends OutliersCommand {
 
 
     private Trajectory getTrajectory(long startPosition, long endPosition) {
+        double startInches = startPosition/Constants.Elevator.TICKS_PER_INCH;
+        double endInches = endPosition/Constants.Elevator.TICKS_PER_INCH;
+
         Waypoint[] points = new Waypoint[] {
-                new Waypoint(0, startPosition, 0),      // Waypoint @ x=-4, y=-1, exit angle=-45 degrees
-                new Waypoint(0, endPosition, 0),                        // Waypoint @ x=-2, y=-2, exit angle=0 radians
+                new Waypoint(0, startInches, 0),      // Waypoint @ x=-4, y=-1, exit angle=-45 degrees
+                new Waypoint(0, endInches, 0),                        // Waypoint @ x=-2, y=-2, exit angle=0 radians
         };
 
-        Trajectory.Config config = new Trajectory.Config(Trajectory.FitMethod.HERMITE_CUBIC, Trajectory.Config.SAMPLES_FAST, 0.02, MAX_VELOCITY_FPS, MAX_VELOCITY_FPS, 60.0);
+        Trajectory.Config config = new Trajectory.Config(Trajectory.FitMethod.HERMITE_CUBIC, Trajectory.Config.SAMPLES_FAST, 0.02, MAX_VELOCITY_IPS, MAX_VELOCITY_IPS, 60.0);
         Trajectory trajectory = Pathfinder.generate(points, config);
 
         return trajectory;

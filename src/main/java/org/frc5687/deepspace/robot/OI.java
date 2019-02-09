@@ -53,7 +53,6 @@ public class OI extends OutliersProxy {
         _operatorYButton.whenPressed(new WristUp(robot.getWrist()));
         _operatorRightTrigger.whenPressed(new CloseSpear(robot.getSpear()));
         _operatorRightTrigger.whenReleased(new OpenSpear(robot.getSpear()));
-        _operatorLeftTrigger.whileHeld(new DriveRoller(robot.getRoller()));
 
         _driverAButton.whenPressed(new MoveElevatorToSetPoint(robot.getElevator(), Elevator.Setpoint.Hatch1, Elevator.MotionMode.PID));
         _driverBButton.whenPressed(new MoveElevatorToSetPoint(robot.getElevator(), Elevator.Setpoint.Hatch2, Elevator.MotionMode.PID));

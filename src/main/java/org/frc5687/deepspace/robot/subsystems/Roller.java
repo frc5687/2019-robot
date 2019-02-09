@@ -5,6 +5,7 @@ import com.revrobotics.CANSparkMaxLowLevel;
 import org.frc5687.deepspace.robot.Constants;
 import org.frc5687.deepspace.robot.Robot;
 import org.frc5687.deepspace.robot.RobotMap;
+import org.frc5687.deepspace.robot.commands.DriveRoller;
 import org.frc5687.deepspace.robot.commands.HoldRoller;
 import org.frc5687.deepspace.robot.utils.Helpers;
 
@@ -26,7 +27,7 @@ public class Roller extends OutliersSubsystem {
     public void updateDashboard() {
     }
 
-    public void run(double speed) {
+    public void setRollerSpeed(double speed) {
         speed = Helpers.limit(speed, Constants.Roller.MAX_SPEED);
         metric("Speed", speed);
         if(_roller==null) { return; }
@@ -35,6 +36,6 @@ public class Roller extends OutliersSubsystem {
 
     @Override
     protected void initDefaultCommand() {
-        setDefaultCommand(new HoldRoller(this));
+        setDefaultCommand(new DriveRoller(_robot, this));
     }
 }

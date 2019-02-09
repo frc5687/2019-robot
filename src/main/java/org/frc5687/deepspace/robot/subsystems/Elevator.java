@@ -5,12 +5,18 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.I2C;
 import org.frc5687.deepspace.robot.Constants;
 import org.frc5687.deepspace.robot.Robot;
 import org.frc5687.deepspace.robot.RobotMap;
 import org.frc5687.deepspace.robot.commands.DriveElevator;
 import org.frc5687.deepspace.robot.utils.HallEffect;
 import org.frc5687.deepspace.robot.utils.Helpers;
+import static org.frc5687.deepspace.robot.utils.EndianReaders.*;
+
+import java.io.IOException;
+
+import static org.frc5687.deepspace.robot.Constants.Elevator.I2C.*;
 
 public class Elevator extends OutliersSubsystem{
 
@@ -21,6 +27,8 @@ public class Elevator extends OutliersSubsystem{
 
     private HallEffect _topHall;
     private HallEffect _bottomHall;
+    private I2C _rangeFinder;
+    private int stopVariable = 0;
 
     public Elevator(Robot robot) {
         _robot = robot;
@@ -32,6 +40,7 @@ public class Elevator extends OutliersSubsystem{
         _topHall = new HallEffect(RobotMap.DIO.ELEVATOR_TOP_HALL);
         _bottomHall = new HallEffect(RobotMap.DIO.ELEVATOR_BOTTOM_HALL);
         _elevator.setInverted(Constants.Elevator.ELEVATOR_MOTOR_ELEVATOR);
+        _rangeFinder = new I2C(I2C.Port.kOnboard,0x1);
 
     }
     public void setElevatorSpeeds(double speed) {
@@ -45,6 +54,7 @@ public class Elevator extends OutliersSubsystem{
 
         _elevator.set(speed);
     }
+
 
     public double getRawNeoEncoder() {
         return _neoElevatorEncoder.getPosition();
@@ -68,4 +78,6 @@ public class Elevator extends OutliersSubsystem{
     public boolean isAtTop() { return _topHall.get(); }
 
     public boolean isAtBottom() { return _bottomHall.get(); }
+
+
 }

@@ -24,6 +24,7 @@ public class Constants {
         public static final double DEADBAND = 0.1;
         public static final double SENSITIVITY = 0.5;
         public static final boolean ELEVATOR_MOTOR_ELEVATOR = true;
+
     }
     public static class OI {
         public static final double AXIS_BUTTON_THRESHHOLD = 0.2;

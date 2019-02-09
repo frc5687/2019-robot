@@ -3,6 +3,7 @@ package org.frc5687.deepspace.robot.subsystems;
 import com.revrobotics.CANEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
+import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.frc5687.deepspace.robot.Constants;
@@ -27,6 +28,8 @@ public class DriveTrain extends OutliersSubsystem {
     private Encoder _leftMagEncoder;
     private Encoder _rightMagEncoder;
 
+    private AnalogInput _frontDistance;
+
     private OI _oi;
 
     private double _leftOffset;
@@ -36,8 +39,10 @@ public class DriveTrain extends OutliersSubsystem {
         info("Constructing DriveTrain class.");
         _oi = robot.getOI();
 
-        debug("Allocating motor controllers");
+        _frontDistance = new AnalogInput(RobotMap.Analog.FRONT_IR);
+
         try {
+            debug("Allocating motor controllers");
             _leftMaster = new CANSparkMax(RobotMap.CAN.SPARKMAX.DRIVE_LEFT_MASTER, CANSparkMaxLowLevel.MotorType.kBrushless);
             _rightMaster = new CANSparkMax(RobotMap.CAN.SPARKMAX.DRIVE_RIGHT_MASTER, CANSparkMaxLowLevel.MotorType.kBrushless);
             _leftFollower = new CANSparkMax(RobotMap.CAN.SPARKMAX.DRIVE_LEFT_FOLLOWER, CANSparkMaxLowLevel.MotorType.kBrushless);
@@ -49,17 +54,17 @@ public class DriveTrain extends OutliersSubsystem {
             _rightMaster.setInverted(Constants.DriveTrain.RIGHT_MOTORS_INVERTED);
             _rightFollower.setInverted(Constants.DriveTrain.RIGHT_MOTORS_INVERTED);
 
+            debug("Configuring followers");
+            _leftFollower.follow(_leftMaster);
+            _rightFollower.follow(_rightMaster);
+
+            debug("Configuring encoders");
+            _leftEncoder = _leftMaster.getEncoder();
+            _rightEncoder = _rightMaster.getEncoder();
+
         } catch (Exception e) {
             error("Exception allocating drive motor controllers: " + e.getMessage());
-            return;
         }
-        debug("Configuring followers");
-        _leftFollower.follow(_leftMaster);
-        _rightFollower.follow(_rightMaster);
-
-        debug("Configuring encoders");
-        _leftEncoder = _leftMaster.getEncoder();
-        _rightEncoder = _rightMaster.getEncoder();
 
         debug("Configuring mag encoders");
         _leftMagEncoder = new Encoder(RobotMap.DIO.DRIVE_LEFT_A, RobotMap.DIO.DRIVE_LEFT_B);
@@ -75,6 +80,12 @@ public class DriveTrain extends OutliersSubsystem {
 
     @Override
     public void updateDashboard() {
+        metric("Front/Value", _frontDistance.getValue());
+        metric("Front/Voltage", _frontDistance.getVoltage());
+        metric("Front/PID", _frontDistance.pidGet());
+        metric("Front/AverageValue", _frontDistance.getAverageValue());
+        metric("Front/AverageVoltage", _frontDistance.getAverageVoltage());
+        metric("Front/Value", _frontDistance.getValue());
         metric("Neo/Ticks/Left", getLeftTicks());
         metric("Neo/Ticks/Right", getRightTicks());
         metric("Neo/Distance/Left", getLeftDistance());
@@ -82,6 +93,7 @@ public class DriveTrain extends OutliersSubsystem {
         metric("Neo/Distance/Total", getDistance());
         metric("Mag/Ticks/Left", _leftMagEncoder.get());
         metric("Mag/Ticks/Right", _rightMagEncoder.get());
+
     }
 
     @Override

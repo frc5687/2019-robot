@@ -1,7 +1,11 @@
 package org.frc5687.deepspace.robot;
 
 public class Constants {
+    /**
+     *
+     */
     public static final int CYCLES_PER_SECOND = 50;
+    public static final int TICKS_PER_UPDATE = 10;
 
     public class DriveTrain {
 
@@ -16,12 +20,32 @@ public class Constants {
         public static final boolean LEFT_MOTORS_INVERTED = true;
         public static final boolean RIGHT_MOTORS_INVERTED = false;
     }
+    public class Gripper{
+        public static final double VACUUM_SPEED = 0.2;
+    }
     public static class Elevator {
-
-        public static final double MAX_ELEVATOR_SPEED = 0.75;
+        public static final double MAX_ELEVATOR_SPEED = 0.5;
+        public static final double MAX_ELEVATOR_SPEED_UP = 0.5;
+        public static final double MAX_ELEVATOR_SPEED_DOWN = 0.2;
         public static final double DEADBAND = 0.1;
         public static final double SENSITIVITY = 0.5;
-        public static final boolean ELEVATOR_MOTOR_ELEVATOR = true;
+        public static final boolean ELEVATOR_MOTOR_INVERTED = true;
+        public static final int TOLERANCE = 10;
+        public static final double SPEED_UP = 1.0;
+        public static final double SPEED_DOWN = 0.1;
+        public static final double MAX_VELOCITY_IPS = 27.0;
+        public static final double TICKS_PER_INCH = 111.1111111;
+
+        public static class PID {
+            public static final double kP = 0.1;
+            public static final double kI = 0.0;
+            public static final double kD = 0.0;
+        }
+        public static class Path {
+            public static final double kP = 1.0;
+            public static final double kI = 0.0;
+            public static final double kD = 0.0;
+        }
     }
     public static class OI {
         public static final double AXIS_BUTTON_THRESHHOLD = 0.2;
@@ -40,18 +64,10 @@ public class Constants {
         public static final double MAX_INTAKE_SPEED = 0.3;
         public static final double SENSITIVITY = 0.5;
         public static final double DEADBAND = 0.1;
-        public static final double MAX_DRIVE_SPEED = 0.3;
-        public static final double INTAKE_SPEED = 0.3;
-        public static final double HOLD_SPEED = 0;
-        public static final double MINIMUM_SPEED = .1;
-        public static final boolean MOTOR_INVERTED = false;
+        public static final double MAX_DRIVE_SPEED = 0.5;
+        public static final boolean MOTOR_INVERTED = true;
         public static final int SHOULDER_STALL_LIMIT = 10;
         public static final int SHOULDER_FREE_LIMIT = 80;
-        public static final double MAX_ROLLER_SPEED = 1;
-        public static final double ARM_DEADBAND = 0.05;
-        public static final double ARM_SENSITIVITY = 0.5 ;
-        public static final double ROLLER_DEADBAND = 0.05;
-        public static final double ROLLER_SENSITIVITY = 0.5;
         public static final double kI = 0;
         public static final double kP = 0.1;
         public static final double kD = 0;

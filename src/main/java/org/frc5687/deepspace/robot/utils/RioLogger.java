@@ -56,6 +56,10 @@ public class RioLogger {
         _fileLogLevel = fileLogLevel;
         _dsLogLevel = dsLogLevel;
 
+        if (_fileLogLevel == LogLevel.none) {
+            return 0;
+        }
+
         if (log_open) {
             System.out.println("Warning - log is already open!");
             return 0;
@@ -99,6 +103,10 @@ public class RioLogger {
         if (level.getValue() >= _dsLogLevel.getValue()) {
             DriverStation.reportError(level.toString() + "\t" + source + "\t" + message, false);
         }
+        if (_fileLogLevel==LogLevel.none) {
+            return;
+        }
+
         if (level.getValue() >= _fileLogLevel.getValue()) {
             writeData(getDateTimeString(), level.toString(), source, message);
         }
@@ -194,10 +202,11 @@ public class RioLogger {
     }
 
     public enum LogLevel {
-        debug(0),
-        info(1),
-        warn(2),
-        error(3);
+        none(0),
+        debug(1),
+        info(2),
+        warn(3),
+        error(4);
 
         private int _value;
 

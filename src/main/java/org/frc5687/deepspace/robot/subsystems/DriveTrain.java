@@ -3,12 +3,15 @@ package org.frc5687.deepspace.robot.subsystems;
 import com.revrobotics.CANEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
+import edu.wpi.first.wpilibj.AnalogInput;
+import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.frc5687.deepspace.robot.Constants;
 import org.frc5687.deepspace.robot.OI;
 import org.frc5687.deepspace.robot.Robot;
 import org.frc5687.deepspace.robot.RobotMap;
 import org.frc5687.deepspace.robot.commands.Drive;
+import org.frc5687.deepspace.robot.utils.IRDistanceSensor;
 
 import static org.frc5687.deepspace.robot.utils.Helpers.applySensitivityFactor;
 import static org.frc5687.deepspace.robot.utils.Helpers.limit;
@@ -23,6 +26,11 @@ public class DriveTrain extends OutliersSubsystem {
     private CANEncoder _leftEncoder;
     private CANEncoder _rightEncoder;
 
+    private Encoder _leftMagEncoder;
+    private Encoder _rightMagEncoder;
+
+    private IRDistanceSensor _frontDistance;
+
     private OI _oi;
 
     private double _leftOffset;
@@ -32,8 +40,10 @@ public class DriveTrain extends OutliersSubsystem {
         info("Constructing DriveTrain class.");
         _oi = robot.getOI();
 
-        debug("Allocating motor controllers");
+        _frontDistance = new IRDistanceSensor(RobotMap.Analog.FRONT_IR, IRDistanceSensor.Type.MEDIUM);
+
         try {
+            debug("Allocating motor controllers");
             _leftMaster = new CANSparkMax(RobotMap.CAN.SPARKMAX.DRIVE_LEFT_MASTER, CANSparkMaxLowLevel.MotorType.kBrushless);
             _rightMaster = new CANSparkMax(RobotMap.CAN.SPARKMAX.DRIVE_RIGHT_MASTER, CANSparkMaxLowLevel.MotorType.kBrushless);
             _leftFollower = new CANSparkMax(RobotMap.CAN.SPARKMAX.DRIVE_LEFT_FOLLOWER, CANSparkMaxLowLevel.MotorType.kBrushless);
@@ -45,18 +55,22 @@ public class DriveTrain extends OutliersSubsystem {
             _rightMaster.setInverted(Constants.DriveTrain.RIGHT_MOTORS_INVERTED);
             _rightFollower.setInverted(Constants.DriveTrain.RIGHT_MOTORS_INVERTED);
 
+            debug("Configuring followers");
+            _leftFollower.follow(_leftMaster);
+            _rightFollower.follow(_rightMaster);
+
+            debug("Configuring encoders");
+            _leftEncoder = _leftMaster.getEncoder();
+            _rightEncoder = _rightMaster.getEncoder();
 
         } catch (Exception e) {
             error("Exception allocating drive motor controllers: " + e.getMessage());
-            return;
         }
-        debug("Configuring followers");
-        _leftFollower.follow(_leftMaster);
-        _rightFollower.follow(_rightMaster);
 
-        debug("Configuring encoders");
-        _leftEncoder = _leftMaster.getEncoder();
-        _rightEncoder = _rightMaster.getEncoder();
+        debug("Configuring mag encoders");
+        _leftMagEncoder = new Encoder(RobotMap.DIO.DRIVE_LEFT_A, RobotMap.DIO.DRIVE_LEFT_B);
+        _rightMagEncoder = new Encoder(RobotMap.DIO.DRIVE_RIGHT_A, RobotMap.DIO.DRIVE_RIGHT_B);
+
     }
 
     private boolean assertMotorControllers() {
@@ -67,11 +81,21 @@ public class DriveTrain extends OutliersSubsystem {
 
     @Override
     public void updateDashboard() {
-        metric("Ticks/Left", getLeftTicks());
-        metric("Ticks/Right", getRightTicks());
-        metric("Distance/Left", getLeftDistance());
-        metric("Distance/Right", getRightDistance());
-        metric("Distance/Total", getDistance());
+        metric("Front/Value", _frontDistance.getValue());
+        metric("Front/Voltage", _frontDistance.getVoltage());
+        metric("Front/PID", _frontDistance.pidGet());
+        metric("Front/AverageValue", _frontDistance.getAverageValue());
+        metric("Front/AverageVoltage", _frontDistance.getAverageVoltage());
+        metric("Front/Value", _frontDistance.getValue());
+        metric("Front/Inches", _frontDistance.getDistance());
+        metric("Neo/Ticks/Left", getLeftTicks());
+        metric("Neo/Ticks/Right", getRightTicks());
+        metric("Neo/Distance/Left", getLeftDistance());
+        metric("Neo/Distance/Right", getRightDistance());
+        metric("Neo/Distance/Total", getDistance());
+        metric("Mag/Ticks/Left", _leftMagEncoder.get());
+        metric("Mag/Ticks/Right", _rightMagEncoder.get());
+
     }
 
     @Override
@@ -113,7 +137,7 @@ public class DriveTrain extends OutliersSubsystem {
 
 
     public void setPower(double leftSpeed, double rightSpeed, boolean override) {
-        if (!assertMotorControllers()) { return; }
+//         if (!assertMotorControllers()) { return; }
         try {
             _leftMaster.set(leftSpeed);
             _rightMaster.set(rightSpeed);

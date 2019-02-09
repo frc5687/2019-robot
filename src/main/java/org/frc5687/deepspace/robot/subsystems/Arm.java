@@ -37,10 +37,15 @@ public class Arm extends OutliersSubsystem implements PIDSource {
     public Arm(Robot robot) {
         _robot = robot;
 
-        _arm = new CANSparkMax(RobotMap.CAN.SPARKMAX.ARM, CANSparkMaxLowLevel.MotorType.kBrushless);
-        _arm.setInverted(Constants.Arm.MOTOR_INVERTED);
+        try {
+            _arm = new CANSparkMax(RobotMap.CAN.SPARKMAX.ARM, CANSparkMaxLowLevel.MotorType.kBrushless);
+            _arm.setInverted(Constants.Arm.MOTOR_INVERTED);
+            _arm.setSmartCurrentLimit(Constants.Arm.SHOULDER_STALL_LIMIT, Constants.Arm.SHOULDER_FREE_LIMIT);
 
-        _shoulderEncoder = _arm.getEncoder();
+            _shoulderEncoder = _arm.getEncoder();
+        } catch (Exception e) {
+            error("Unable to allocate arm controller: " + e.getMessage());
+        }
 
         _lowHall = new HallEffect(RobotMap.DIO.ARM_LOW_HALL);
         _intakeHall = new HallEffect(RobotMap.DIO.ARM_INTAKE_HALL);
@@ -48,7 +53,8 @@ public class Arm extends OutliersSubsystem implements PIDSource {
         _stowedHall = new HallEffect(RobotMap.DIO.ARM_STOWED_HALL);
 
 
-        _arm.setSmartCurrentLimit(Constants.Arm.SHOULDER_STALL_LIMIT, Constants.Arm.SHOULDER_FREE_LIMIT);
+
+
 
         _pidController = new PIDController(Constants.Arm.kP, Constants.Arm.kI, Constants.Arm.kD, this, new PIDListener());
         // Create PIDController
@@ -56,7 +62,18 @@ public class Arm extends OutliersSubsystem implements PIDSource {
         // pass this as source and PIDListener as listener
     }
 
+    public void enableBrakeMode() {
+        if (_arm==null) { return; }
+        _arm.setIdleMode(CANSparkMax.IdleMode.kBrake);
+    }
+
+    public void enableCoastMode() {
+        if (_arm==null) { return; }
+        _arm.setIdleMode(CANSparkMax.IdleMode.kCoast);
+    }
+
     public void setSpeed(double speed) {
+        if (_arm==null) { return; }
         speed = Helpers.limit(speed, Constants.Arm.MAX_DRIVE_SPEED);
 
         metric("Speed", speed);
@@ -74,6 +91,7 @@ public class Arm extends OutliersSubsystem implements PIDSource {
         }
         metric("rawSpeed", desiredSpeed);
         metric("speed", speed);
+        if (_arm==null) { return; }
         _arm.set(speed);
     }
 
@@ -88,6 +106,7 @@ public class Arm extends OutliersSubsystem implements PIDSource {
         metric("IntakeHall", _intakeHall.get());
         metric("SecureHall", _secureHall.get());
         metric("StowedHall", _stowedHall.get());
+        if (_shoulderEncoder==null) { return; }
         metric("Encoder", _shoulderEncoder.getPosition());
     }
 

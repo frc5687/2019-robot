@@ -11,6 +11,7 @@ import org.frc5687.deepspace.robot.OI;
 import org.frc5687.deepspace.robot.Robot;
 import org.frc5687.deepspace.robot.RobotMap;
 import org.frc5687.deepspace.robot.commands.Drive;
+import org.frc5687.deepspace.robot.utils.IRDistanceSensor;
 
 import static org.frc5687.deepspace.robot.utils.Helpers.applySensitivityFactor;
 import static org.frc5687.deepspace.robot.utils.Helpers.limit;
@@ -28,7 +29,7 @@ public class DriveTrain extends OutliersSubsystem {
     private Encoder _leftMagEncoder;
     private Encoder _rightMagEncoder;
 
-    private AnalogInput _frontDistance;
+    private IRDistanceSensor _frontDistance;
 
     private OI _oi;
 
@@ -39,7 +40,7 @@ public class DriveTrain extends OutliersSubsystem {
         info("Constructing DriveTrain class.");
         _oi = robot.getOI();
 
-        _frontDistance = new AnalogInput(RobotMap.Analog.FRONT_IR);
+        _frontDistance = new IRDistanceSensor(RobotMap.Analog.FRONT_IR, IRDistanceSensor.Type.MEDIUM);
 
         try {
             debug("Allocating motor controllers");
@@ -86,6 +87,7 @@ public class DriveTrain extends OutliersSubsystem {
         metric("Front/AverageValue", _frontDistance.getAverageValue());
         metric("Front/AverageVoltage", _frontDistance.getAverageVoltage());
         metric("Front/Value", _frontDistance.getValue());
+        metric("Front/Inches", _frontDistance.getDistance());
         metric("Neo/Ticks/Left", getLeftTicks());
         metric("Neo/Ticks/Right", getRightTicks());
         metric("Neo/Distance/Left", getLeftDistance());

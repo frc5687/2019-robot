@@ -18,7 +18,6 @@ public class Roller extends OutliersSubsystem {
         _robot = robot;
         _roller = new CANSparkMax(RobotMap.CAN.SPARKMAX.ROLLER, CANSparkMaxLowLevel.MotorType.kBrushless);
         _roller.setInverted(Constants.Roller.MOTOR_INVERTED);
-
     }
     @Override
     public void updateDashboard() {

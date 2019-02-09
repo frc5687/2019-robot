@@ -19,7 +19,6 @@ public class DriveRoller extends OutliersCommand {
     @Override
     protected void execute() {
         double speed = _oi.getRollerSpeed();
-
         _roller.setRollerSpeed(speed);
     }
 

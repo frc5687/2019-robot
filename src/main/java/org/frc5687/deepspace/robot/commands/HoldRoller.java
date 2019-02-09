@@ -5,7 +5,6 @@ import org.frc5687.deepspace.robot.OI;
 import org.frc5687.deepspace.robot.subsystems.Roller;
 
 public class HoldRoller extends OutliersCommand {
-
     private Roller _roller;
     private OI _oi;
 
@@ -15,7 +14,7 @@ public class HoldRoller extends OutliersCommand {
     }
     @Override
     protected void execute() {
-        _roller.run(0);
+        _roller.setRollerSpeed(0);
     }
 
     @Override

@@ -27,13 +27,17 @@ public class Elevator extends OutliersSubsystem implements PIDSource {
     public Elevator(Robot robot) {
         _robot = robot;
 
-        _elevator = new CANSparkMax(RobotMap.CAN.SPARKMAX.ELEVATOR_MOTOR, CANSparkMaxLowLevel.MotorType.kBrushless);
+        try {
+            _elevator = new CANSparkMax(RobotMap.CAN.SPARKMAX.ELEVATOR_MOTOR, CANSparkMaxLowLevel.MotorType.kBrushless);
+            _elevator.setInverted(Constants.Elevator.ELEVATOR_MOTOR_INVERTED);
+            _neoElevatorEncoder = _elevator.getEncoder();
+        } catch (Exception e) {
+            error("Unable to allocate elevator controller: " + e.getMessage());
+        }
         _elevatorEncoder = new Encoder(RobotMap.DIO.ELEVATOR_A, RobotMap.DIO.ELEVATOR_B);
-        _neoElevatorEncoder = _elevator.getEncoder();
 
         _topHall = new HallEffect(RobotMap.DIO.ELEVATOR_TOP_HALL);
         _bottomHall = new HallEffect(RobotMap.DIO.ELEVATOR_BOTTOM_HALL);
-        _elevator.setInverted(Constants.Elevator.ELEVATOR_MOTOR_INVERTED);
 
     }
     public void setElevatorSpeeds(double speed) {
@@ -45,18 +49,22 @@ public class Elevator extends OutliersSubsystem implements PIDSource {
         }
         metric("ElevatorSpeed",speed);
 
+        if (_elevator==null) { return; }
         _elevator.set(speed);
     }
 
     public void enableBrakeMode() {
+        if (_elevator==null) { return; }
         _elevator.setIdleMode(CANSparkMax.IdleMode.kBrake);
     }
 
     public void enableCoastMode() {
+        if (_elevator==null) { return; }
         // _elevator.setIdleMode(CANSparkMax.IdleMode.kCoast);
     }
 
     public double getRawNeoEncoder() {
+        if (_elevator==null) { return 0; }
         return _neoElevatorEncoder.getPosition();
     }
 

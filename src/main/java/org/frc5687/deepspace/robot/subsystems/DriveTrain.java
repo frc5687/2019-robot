@@ -29,7 +29,7 @@ public class DriveTrain extends OutliersSubsystem {
     private Encoder _leftMagEncoder;
     private Encoder _rightMagEncoder;
 
-    private IRDistanceSensor _frontDistance;
+    private IRDistanceSensor _intakeDistance;
 
     private OI _oi;
 
@@ -40,7 +40,7 @@ public class DriveTrain extends OutliersSubsystem {
         info("Constructing DriveTrain class.");
         _oi = robot.getOI();
 
-        _frontDistance = new IRDistanceSensor(RobotMap.Analog.FRONT_IR, IRDistanceSensor.Type.MEDIUM);
+        _intakeDistance = new IRDistanceSensor(RobotMap.Analog.INTAKE_IR, IRDistanceSensor.Type.MEDIUM);
 
         try {
             debug("Allocating motor controllers");
@@ -81,13 +81,13 @@ public class DriveTrain extends OutliersSubsystem {
 
     @Override
     public void updateDashboard() {
-        metric("Front/Value", _frontDistance.getValue());
-        metric("Front/Voltage", _frontDistance.getVoltage());
-        metric("Front/PID", _frontDistance.pidGet());
-        metric("Front/AverageValue", _frontDistance.getAverageValue());
-        metric("Front/AverageVoltage", _frontDistance.getAverageVoltage());
-        metric("Front/Value", _frontDistance.getValue());
-        metric("Front/Inches", _frontDistance.getDistance());
+        metric("IntakeIR/Value", _intakeDistance.getValue());
+        metric("IntakeIR/Voltage", _intakeDistance.getVoltage());
+        metric("IntakeIR/PID", _intakeDistance.pidGet());
+        metric("IntakeIR/AverageValue", _intakeDistance.getAverageValue());
+        metric("IntakeIR/AverageVoltage", _intakeDistance.getAverageVoltage());
+        metric("IntakeIR/Value", _intakeDistance.getValue());
+        metric("IntakeIR/Inches", _intakeDistance.getDistance());
         metric("Neo/Ticks/Left", getLeftTicks());
         metric("Neo/Ticks/Right", getRightTicks());
         metric("Neo/Distance/Left", getLeftDistance());

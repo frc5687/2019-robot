@@ -70,7 +70,7 @@ public class RobotMap {
         /*
         public static final int ARM_POTENTIOMETER = 7;
          */
-        public static final int FRONT_IR = 0;
+        public static final int INTAKE_IR = 0;
     }
 
     /**

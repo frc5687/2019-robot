@@ -77,8 +77,8 @@ public class RobotMap {
      * Note that for DIO only one device can connect to each port, so the numbers should be unique.
      */
     public static class DIO {
-        public static final int ELEVATOR_A = 0;
-        public static final int ELEVATOR_B = 1;
+        public static final int ELEVATOR_B = 0;
+        public static final int ELEVATOR_A = 1;
         public static final int ELEVATOR_TOP_HALL = 2;
         public static final int ELEVATOR_BOTTOM_HALL = 3;
 
@@ -86,6 +86,13 @@ public class RobotMap {
         public static final int ARM_INTAKE_HALL = 8;
         public static final int ARM_SECURE_HALL = 7;
         public static final int ARM_STOWED_HALL = 6;
+
+        public static final int DRIVE_LEFT_A = 23;
+        public static final int DRIVE_LEFT_B = 21;
+        public static final int DRIVE_RIGHT_A = 19;
+        public static final int DRIVE_RIGHT_B = 13;
+
+
         /* Example:
         public static final int ARM_FRONT_LIMIT = 0;
         */

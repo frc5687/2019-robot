@@ -24,9 +24,9 @@ public class Constants {
         public static final double VACUUM_SPEED = 0.2;
     }
     public static class Elevator {
-        public static final double MAX_ELEVATOR_SPEED = 1.0;
-        public static final double MAX_ELEVATOR_SPEED_UP = 1.0;
-        public static final double MAX_ELEVATOR_SPEED_DOWN = 0.1;
+        public static final double MAX_ELEVATOR_SPEED = 0.5;
+        public static final double MAX_ELEVATOR_SPEED_UP = 0.5;
+        public static final double MAX_ELEVATOR_SPEED_DOWN = 0.2;
         public static final double DEADBAND = 0.1;
         public static final double SENSITIVITY = 0.5;
         public static final boolean ELEVATOR_MOTOR_INVERTED = true;

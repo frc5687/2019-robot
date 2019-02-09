@@ -15,7 +15,7 @@ public class HoldRoller extends OutliersCommand {
     }
     @Override
     protected void execute() {
-        _roller.run(0);
+        _roller.setRollerSpeed(0);
     }
 
     @Override

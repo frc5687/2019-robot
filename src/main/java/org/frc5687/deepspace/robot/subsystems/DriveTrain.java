@@ -36,6 +36,10 @@ public class DriveTrain extends OutliersSubsystem {
     private double _leftOffset;
     private double _rightOffset;
 
+    private double _oldLeftSpeed;
+    private double _oldRightSpeed;
+    private boolean _isPaused = false;
+
     public DriveTrain(Robot robot) {
         info("Constructing DriveTrain class.");
         _oi = robot.getOI();
@@ -138,6 +142,10 @@ public class DriveTrain extends OutliersSubsystem {
 
     public void setPower(double leftSpeed, double rightSpeed, boolean override) {
 //         if (!assertMotorControllers()) { return; }
+        if (_isPaused == true) {
+            leftSpeed = 0;
+            rightSpeed = 0;
+        }
         try {
             _leftMaster.set(leftSpeed);
             _rightMaster.set(rightSpeed);
@@ -146,6 +154,19 @@ public class DriveTrain extends OutliersSubsystem {
         }
         metric("Power/Right", rightSpeed);
         metric("Power/Left", leftSpeed);
+    }
+    public void pauseMotors() {
+        _oldLeftSpeed = _leftMaster.get();
+        _oldRightSpeed = _rightMaster.get();
+        _leftMaster.set(0);
+        _rightMaster.set(0);
+        _isPaused = true;
+    }
+
+    public void resumeMotors() {
+        _leftMaster.set(_oldLeftSpeed);
+        _rightMaster.set(_oldRightSpeed);
+        _isPaused = false;
     }
 
 

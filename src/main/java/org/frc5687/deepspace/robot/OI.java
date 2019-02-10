@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj.buttons.Button;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import org.frc5687.deepspace.robot.commands.*;
 import org.frc5687.deepspace.robot.subsystems.Elevator;
+import org.frc5687.deepspace.robot.subsystems.Shifter;
 import org.frc5687.deepspace.robot.utils.AxisButton;
 import org.frc5687.deepspace.robot.utils.Gamepad;
 import org.frc5687.deepspace.robot.utils.OutliersProxy;
@@ -31,6 +32,9 @@ public class OI extends OutliersProxy {
     private Button _driverXButton;
     private Button _driverYButton;
 
+    private Button _driverLeftBumper;
+    private Button _driverRightBumper;
+
 
     public OI(){
         _driverGamepad = new Gamepad(0);
@@ -41,6 +45,9 @@ public class OI extends OutliersProxy {
 
         _operatorLeftBumper = new JoystickButton(_operatorGamepad, Gamepad.Buttons.LEFT_BUMPER.getNumber());
         _operatorRightBumper = new JoystickButton(_operatorGamepad, Gamepad.Buttons.RIGHT_BUMPER.getNumber());
+
+        _driverLeftBumper = new JoystickButton(_driverGamepad, Gamepad.Buttons.LEFT_BUMPER.getNumber());
+        _driverRightBumper = new JoystickButton(_driverGamepad, Gamepad.Buttons.RIGHT_BUMPER.getNumber());
 
         _operatorAButton = new JoystickButton(_operatorGamepad, Gamepad.Buttons.A.getNumber());
         _operatorBButton = new JoystickButton(_operatorGamepad, Gamepad.Buttons.B.getNumber());
@@ -64,6 +71,8 @@ public class OI extends OutliersProxy {
 
         _operatorLeftBumper.whenPressed(new WristDown(robot.getWrist()));
         _operatorRightBumper.whenPressed(new WristUp(robot.getWrist()));
+        _driverLeftBumper.whenPressed(new Shift(robot.getDriveTrain(), robot.getShifter(), Shifter.Gear.HIGH, false));
+        _driverRightBumper.whenPressed(new Shift(robot.getDriveTrain(), robot.getShifter(), Shifter.Gear.LOW, false));
 
 
         _operatorAButton.whenPressed(new MoveElevatorToSetPoint(robot.getElevator(), Elevator.Setpoint.Hatch1, Elevator.MotionMode.PID));

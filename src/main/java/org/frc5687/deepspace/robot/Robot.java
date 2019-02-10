@@ -36,6 +36,7 @@ public class Robot extends TimedRobot implements ILoggingSource {
     private Arm _arm;
     private Wrist _wrist;
     private Roller _roller;
+    private Shifter _shifter;
 
     /**
      * This function is setRollerSpeed when the robot is first started up and should be
@@ -58,6 +59,7 @@ public class Robot extends TimedRobot implements ILoggingSource {
         // _gripper= new Gripper(this); // Commenting out until the motor controller it ready
         _spear = new Spear(this);
         _wrist = new Wrist(this);
+        _shifter = new Shifter(this);
         _oi.initializeButtons(this);
         _limelight.disableLEDs();
     }
@@ -139,6 +141,7 @@ public class Robot extends TimedRobot implements ILoggingSource {
             _roller.updateDashboard();
             _elevator.updateDashboard();
             _pdp.updateDashboard();
+            _shifter.updateDashboard();
             _updateTick = 0;
         }
     }
@@ -230,6 +233,7 @@ public class Robot extends TimedRobot implements ILoggingSource {
     public Roller getRoller() { return _roller; }
     public Arm getArm() { return _arm; }
     public Elevator getElevator() { return _elevator; }
+    public Shifter getShifter() { return _shifter; }
 
 
 

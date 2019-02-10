@@ -8,9 +8,10 @@ public class RobotMap {
      * Thus, you cannot have two SparkMax controllers with Id 0, but you can have a SparkMax with Id 0 and a TalonSRX with Id 0.
       */
     public static class CAN {
+
         /*  Example:
-                public static final int LEFT_MASTER_SPARK= 1;
-                */
+                        public static final int LEFT_MASTER_SPARK= 1;
+                        */
         public static class SPARKMAX {
             public static final int DRIVE_LEFT_MASTER = 11;
             public static final int DRIVE_RIGHT_MASTER = 6;
@@ -20,6 +21,9 @@ public class RobotMap {
             public static final int ROLLER = 9;
             public static final int ARM = 16;
             public static final int INTAKE_VACUUM = 0; //vacuum motor for intake is currently not set up, set to 0 for now.
+        }
+        public static class TALONSRX{
+            public static final int GRIPPER_VACUUM = 0;
         }
     }
 

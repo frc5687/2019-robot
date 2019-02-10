@@ -38,6 +38,8 @@ public class OI extends OutliersProxy {
 
     private Button _operatorStartButton;
     private Button _operatorBackButton;
+    private Button _driverStartButton;
+    private Button _driverBackButton;
 
     public OI(){
         _driverGamepad = new Gamepad(0);
@@ -56,6 +58,7 @@ public class OI extends OutliersProxy {
         _operatorBButton = new JoystickButton(_operatorGamepad, Gamepad.Buttons.B.getNumber());
         _operatorYButton = new JoystickButton(_operatorGamepad, Gamepad.Buttons.Y.getNumber());
         _operatorXButton = new JoystickButton(_operatorGamepad, Gamepad.Buttons.X.getNumber());
+        
 
         _driverAButton = new JoystickButton(_driverGamepad, Gamepad.Buttons.A.getNumber());
         _driverBButton = new JoystickButton(_driverGamepad, Gamepad.Buttons.B.getNumber());
@@ -65,16 +68,20 @@ public class OI extends OutliersProxy {
         _operatorStartButton = new JoystickButton(_operatorGamepad, Gamepad.Buttons.START.getNumber());
         _operatorBackButton = new JoystickButton(_operatorGamepad, Gamepad.Buttons.BACK.getNumber());
 
+        _driverStartButton = new JoystickButton(_driverGamepad, Gamepad.Buttons.START.getNumber());
+        _driverBackButton = new JoystickButton(_driverGamepad, Gamepad.Buttons.BACK.getNumber());
+
     }
     public void initializeButtons(Robot robot){
-        _operatorLeftBumper.whenPressed(new RunGripper(robot.getGripper()));
-        _operatorLeftBumper.whenReleased(new StopGripper(robot.getGripper()));
+        _driverStartButton.whenPressed(new RunGripper(robot.getGripper()));
+        _driverBackButton.whenReleased(new StopGripper(robot.getGripper()));
 
         _operatorStartButton.whenPressed(new CloseSpear(robot.getSpear()));
         _operatorBackButton.whenReleased(new OpenSpear(robot.getSpear()));
 
         _operatorLeftBumper.whenPressed(new WristDown(robot.getWrist()));
         _operatorRightBumper.whenPressed(new WristUp(robot.getWrist()));
+
         _driverLeftBumper.whenPressed(new Shift(robot.getDriveTrain(), robot.getShifter(), Shifter.Gear.HIGH, false));
         _driverRightBumper.whenPressed(new Shift(robot.getDriveTrain(), robot.getShifter(), Shifter.Gear.LOW, false));
 

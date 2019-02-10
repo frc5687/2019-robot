@@ -31,6 +31,8 @@ public class Arm extends OutliersSubsystem implements PIDSource {
     // Arm needs to implement PIDSource
     // Amr's pidGet should return encoder position
 
+    private double _offset = 0;
+
     // Need private double _pidOut
     private double _pidOut;
     private Robot _robot;
@@ -107,7 +109,7 @@ public class Arm extends OutliersSubsystem implements PIDSource {
         metric("SecureHall", _secureHall.get());
         metric("StowedHall", _stowedHall.get());
         if (_shoulderEncoder==null) { return; }
-        metric("Encoder", _shoulderEncoder.getPosition());
+        metric("Encoder", getPosition());
     }
 
     public boolean isStowed() { return _stowedHall.get(); }
@@ -129,7 +131,7 @@ public class Arm extends OutliersSubsystem implements PIDSource {
 
     @Override
     public double pidGet() {
-        return _shoulderEncoder.getPosition();
+        return getPosition();
     }
 
     public void setSetpoint(double setPoint){
@@ -149,6 +151,13 @@ public class Arm extends OutliersSubsystem implements PIDSource {
         _arm.set(0);
     }
 
+    public double getPosition() {
+        return _shoulderEncoder.getPosition() - _offset;
+    }
+
+    public void resetEncoder() {
+        _offset = _shoulderEncoder.getPosition();
+    }
     // Need disable()
     // Simply disable controller
     // also set speed to 0
@@ -178,6 +187,56 @@ public class Arm extends OutliersSubsystem implements PIDSource {
         }
 
     }
+
+    public enum HallEffectSensor {
+        LOW,
+        INTAKE,
+        SECURE,
+        STOWED
+    }
+
+    public enum Setpoint {
+        Stowed(0),
+        Secure(37),
+        Intake(70),
+        Handoff(100),
+        Floor(104),
+        Climb(121);
+
+        private int _value;
+
+        Setpoint(int value) {
+            this._value = value;
+        }
+
+        public int getValue() {
+            return _value;
+        }
+
+        public int getPosition() {
+            return -_value;
+        }
+
+    }
+
+    public enum MotionMode {
+        HallOnly(0),
+        Simple(1),
+        PID(2),
+        Path(3);
+
+        private int _value;
+
+        MotionMode(int value) {
+            this._value = value;
+        }
+
+        public int getValue() {
+            return _value;
+        }
+
+    }
+
 }
 
 

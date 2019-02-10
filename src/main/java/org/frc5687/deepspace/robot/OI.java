@@ -36,6 +36,8 @@ public class OI extends OutliersProxy {
     private Button _driverLeftBumper;
     private Button _driverRightBumper;
 
+    private Button _operatorStartButton;
+    private Button _operatorBackButton;
 
     public OI(){
         _driverGamepad = new Gamepad(0);
@@ -60,15 +62,16 @@ public class OI extends OutliersProxy {
         _driverXButton = new JoystickButton(_driverGamepad, Gamepad.Buttons.X.getNumber());
         _driverYButton = new JoystickButton(_driverGamepad, Gamepad.Buttons.Y.getNumber());
 
+        _operatorStartButton = new JoystickButton(_operatorGamepad, Gamepad.Buttons.START.getNumber());
+        _operatorBackButton = new JoystickButton(_operatorGamepad, Gamepad.Buttons.BACK.getNumber());
+
     }
     public void initializeButtons(Robot robot){
-        if (robot.getGripper()!=null) {
-            _operatorLeftBumper.whenPressed(new RunGripper(robot.getGripper()));
-            _operatorLeftBumper.whenReleased(new StopGripper(robot.getGripper()));
-        }
+        _operatorLeftBumper.whenPressed(new RunGripper(robot.getGripper()));
+        _operatorLeftBumper.whenReleased(new StopGripper(robot.getGripper()));
 
-        //_operatorRightTrigger.whenPressed(new CloseSpear(robot.getSpear()));
-        //_operatorRightTrigger.whenReleased(new OpenSpear(robot.getSpear()));
+        _operatorStartButton.whenPressed(new CloseSpear(robot.getSpear()));
+        _operatorBackButton.whenReleased(new OpenSpear(robot.getSpear()));
 
         _operatorLeftBumper.whenPressed(new WristDown(robot.getWrist()));
         _operatorRightBumper.whenPressed(new WristUp(robot.getWrist()));

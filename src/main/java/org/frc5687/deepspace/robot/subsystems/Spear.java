@@ -18,9 +18,11 @@ public class Spear extends OutliersSubsystem{
 
     public void open(){
         _spearSolenoid.set(DoubleSolenoid.Value.kForward);
+        metric("Spear","Open");
     }
     public void close(){
         _spearSolenoid.set(DoubleSolenoid.Value.kReverse);
+        metric("Spear","Closed");
     }
 
     @Override

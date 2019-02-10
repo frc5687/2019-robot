@@ -31,7 +31,9 @@ public class Constants {
         public static final long MANUAL_WAIT_PERIOD = 3000;
     }
     public class Gripper{
-        public static final double VACUUM_SPEED = 0.2;
+        public static final double VACUUM_SPEED = 1.0;
+        public static final boolean MOTOR_INVERTED =     false;
+        public static final double VACUUM_STOP = 0.0;
     }
     public static class Elevator {
         public static final double MAX_ELEVATOR_SPEED = 0.5;

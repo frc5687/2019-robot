@@ -63,8 +63,8 @@ public class OI extends OutliersProxy {
     }
     public void initializeButtons(Robot robot){
         if (robot.getGripper()!=null) {
-            _operatorLeftBumper.whenPressed(new SuckBall(robot.getGripper()));
-            _operatorLeftBumper.whenReleased(new DropBall(robot.getGripper()));
+            _operatorLeftBumper.whenPressed(new RunGripper(robot.getGripper()));
+            _operatorLeftBumper.whenReleased(new StopGripper(robot.getGripper()));
         }
 
         //_operatorRightTrigger.whenPressed(new CloseSpear(robot.getSpear()));

@@ -1,11 +1,12 @@
 package org.frc5687.deepspace.robot.commands;
 
+import org.frc5687.deepspace.robot.Constants;
 import org.frc5687.deepspace.robot.subsystems.Gripper;
 
-public class SuckBall extends OutliersCommand {
+public class StopGripper extends OutliersCommand {
     public Gripper _gripper;
 
-    public SuckBall(Gripper gripper){
+    public StopGripper(Gripper gripper){
         _gripper = gripper;
         requires(_gripper);
     }
@@ -19,8 +20,9 @@ public class SuckBall extends OutliersCommand {
     protected void initialize() {
 
     }
+
     @Override
     protected void execute(){
-        _gripper.suckBall();
+        _gripper.setSpeed(Constants.Gripper.VACUUM_STOP);
     }
 }

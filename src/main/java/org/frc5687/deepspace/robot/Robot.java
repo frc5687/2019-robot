@@ -56,7 +56,7 @@ public class Robot extends TimedRobot implements ILoggingSource {
         _roller = new Roller(this);
         _elevator = new Elevator(this);
         _pdp = new PDP();
-        // _gripper= new Gripper(this); // Commenting out until the motor controller it ready
+        _gripper= new Gripper(this); // Commenting out until the motor controller it ready
         _spear = new Spear(this);
         _wrist = new Wrist(this);
         _shifter = new Shifter(this);

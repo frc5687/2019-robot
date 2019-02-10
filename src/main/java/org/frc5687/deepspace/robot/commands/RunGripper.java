@@ -1,11 +1,12 @@
 package org.frc5687.deepspace.robot.commands;
 
+import org.frc5687.deepspace.robot.Constants;
 import org.frc5687.deepspace.robot.subsystems.Gripper;
 
-public class DropBall extends OutliersCommand {
+public class RunGripper extends OutliersCommand {
     public Gripper _gripper;
 
-    public DropBall(Gripper gripper){
+    public RunGripper(Gripper gripper){
         _gripper = gripper;
         requires(_gripper);
     }
@@ -19,9 +20,8 @@ public class DropBall extends OutliersCommand {
     protected void initialize() {
 
     }
-
     @Override
     protected void execute(){
-        _gripper.dropBall();
+        _gripper.setSpeed(Constants.Gripper.VACUUM_SPEED);
     }
 }

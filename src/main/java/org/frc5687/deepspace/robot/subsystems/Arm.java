@@ -22,11 +22,6 @@ public class Arm extends OutliersSubsystem implements PIDSource {
     private HallEffect _secureHall;
     private HallEffect _stowedHall;
 
-    private PIDController _pidController;
-    private PIDSourceType _pidSource;
-    // PIDController
-    // Arm needs to implement PIDSource
-    // Amr's pidGet should return encoder position
 
     private double _offset = 0;
 
@@ -51,14 +46,6 @@ public class Arm extends OutliersSubsystem implements PIDSource {
         _secureHall = new HallEffect(RobotMap.DIO.ARM_SECURE_HALL);
         _stowedHall = new HallEffect(RobotMap.DIO.ARM_STOWED_HALL);
 
-
-
-
-
-        _pidController = new PIDController(Constants.Arm.kP, Constants.Arm.kI, Constants.Arm.kD, this, new PIDListener());
-        // Create PIDController
-        // pass in range and PID constants
-        // pass this as source and PIDListener as listener
     }
 
     public void enableBrakeMode() {
@@ -119,11 +106,11 @@ public class Arm extends OutliersSubsystem implements PIDSource {
 
     @Override
     public void setPIDSourceType(PIDSourceType pidSource) {
-        _pidSource = pidSource;
     }
+
     @Override
     public PIDSourceType getPIDSourceType() {
-        return null;
+        return PIDSourceType.kDisplacement;
     }
 
     @Override
@@ -131,22 +118,6 @@ public class Arm extends OutliersSubsystem implements PIDSource {
         return getPosition();
     }
 
-    public void setSetpoint(double setPoint){
-        _pidController.setSetpoint(setPoint);
-        _pidController.enable();
-    }
-    public PIDController getPIDController(){
-        return _pidController;
-    }
-
-    // Need setSetPoint(double)
-    // set pidcontroller setpoint to param
-    // enable
-
-    public void disable(){
-        _pidController.disable();
-        _arm.set(0);
-    }
 
     public double getPosition() {
         return _shoulderEncoder.getPosition() - _offset;
@@ -155,35 +126,6 @@ public class Arm extends OutliersSubsystem implements PIDSource {
     public void resetEncoder() {
         _offset = _shoulderEncoder.getPosition();
         DriverStation.reportError("Resetting arm offset to " + _offset , false);
-    }
-    // Need disable()
-    // Simply disable controller
-    // also set speed to 0
-
-    // Need a private PIDListener class
-    // pidOut should set _pidout
-
-    // you'll also need:
-    // MoveArmToSetPoint command
-    //   initialize will call arm.setSetPoint
-    //   isFinished will return true if arm pidcontroller is onTarget
-    //   end does nada
-
-    // HoldArm command
-    //   Does nothing for now
-    private class PIDListener implements PIDOutput {
-
-        private double value;
-
-        public double get() {
-            return value;
-        }
-
-        @Override
-        public void pidWrite(double output) {
-            value = output;
-        }
-
     }
 
     public enum HallEffectSensor {

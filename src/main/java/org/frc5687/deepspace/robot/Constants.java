@@ -20,6 +20,16 @@ public class Constants {
         public static final boolean LEFT_MOTORS_INVERTED = true;
         public static final boolean RIGHT_MOTORS_INVERTED = false;
     }
+    public class Shifter {
+        public static final long STOP_MOTOR_TIME = 60;
+        public static final long SHIFT_TIME = 60;
+
+        public static final double SHIFT_UP_THRESHOLD = 50; // in inches per second graTODO tune
+        public static final double SHIFT_DOWN_THRESHOLD = 40; // in inches per second TODO tune
+
+        public static final long AUTO_WAIT_PERIOD = 500;
+        public static final long MANUAL_WAIT_PERIOD = 3000;
+    }
     public class Gripper{
         public static final double VACUUM_SPEED = 0.2;
     }

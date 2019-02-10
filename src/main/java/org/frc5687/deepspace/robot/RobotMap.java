@@ -38,8 +38,6 @@ public class RobotMap {
      * Note that for PCM only one device can connect to each port, so the numbers should be unique.
      */
     public static class PCM {
-        public static final int VACUUM_PISTON_RELEASE = 4;
-        public static final int VACUUM_PISTON_BACK = 5;
         /* Example:
         public static final int LEFT_PINCER_OPEN = 5;
         */
@@ -49,6 +47,8 @@ public class RobotMap {
         public static final int SPEAR_CLOSE = 3;
         public static final int WRIST_DOWN = 1;
         public static final int WRIST_UP = 0;
+        public static final int SHIFTER_HIGH = 4;
+        public static final int SHIFTER_LOW = 5;
     }
 
     /**

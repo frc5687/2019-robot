@@ -70,7 +70,7 @@ public class RioLogger {
             log_name = output_dir + "log_" + getDateTimeString() + ".txt";
             // Open File
             FileWriter fstream = new FileWriter(log_name, true);
-            log_file = new BufferedWriter(fstream, 32768);
+            log_file = new BufferedWriter(fstream);  // 8K by default. Probably big enough but size is 2nd arg if not.
             // End of line
             log_file.write("\n\r");
             log_open = true;

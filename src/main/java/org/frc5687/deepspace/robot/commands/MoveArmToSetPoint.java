@@ -60,9 +60,9 @@ public class MoveArmToSetPoint extends OutliersCommand {
                 break;
             case Simple:
                 if (_position  < _setpoint.getPosition() - TOLERANCE) {
-                    _arm.setSpeed(SPEED_UP);
+                    _arm.setSpeed(-SPEED_UP);
                 } else if (_position > _setpoint.getPosition() + TOLERANCE) {
-                    _arm.setSpeed(-SPEED_DOWN);
+                    _arm.setSpeed(SPEED_DOWN);
                 } else {
                     _arm.setSpeed(0);
                 }

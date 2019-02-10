@@ -60,6 +60,7 @@ public class Robot extends TimedRobot implements ILoggingSource {
         _wrist = new Wrist(this);
         _oi.initializeButtons(this);
         _limelight.disableLEDs();
+        _arm.resetEncoder();
     }
 
     /**

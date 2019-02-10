@@ -3,10 +3,7 @@ package org.frc5687.deepspace.robot.subsystems;
 import com.revrobotics.CANEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
-import edu.wpi.first.wpilibj.PIDController;
-import edu.wpi.first.wpilibj.PIDOutput;
-import edu.wpi.first.wpilibj.PIDSource;
-import edu.wpi.first.wpilibj.PIDSourceType;
+import edu.wpi.first.wpilibj.*;
 import org.frc5687.deepspace.robot.Constants;
 import org.frc5687.deepspace.robot.Robot;
 import org.frc5687.deepspace.robot.RobotMap;
@@ -157,6 +154,7 @@ public class Arm extends OutliersSubsystem implements PIDSource {
 
     public void resetEncoder() {
         _offset = _shoulderEncoder.getPosition();
+        DriverStation.reportError("Resetting arm offset to " + _offset , false);
     }
     // Need disable()
     // Simply disable controller
@@ -197,11 +195,11 @@ public class Arm extends OutliersSubsystem implements PIDSource {
 
     public enum Setpoint {
         Stowed(0),
-        Secure(37),
-        Intake(70),
+        Secure(45),
+        Intake(80),
         Handoff(100),
-        Floor(104),
-        Climb(121);
+        Floor(110),
+        Climb(120);
 
         private int _value;
 

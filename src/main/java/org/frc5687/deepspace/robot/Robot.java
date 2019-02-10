@@ -62,6 +62,7 @@ public class Robot extends TimedRobot implements ILoggingSource {
         _shifter = new Shifter(this);
         _oi.initializeButtons(this);
         _limelight.disableLEDs();
+        _arm.resetEncoder();
     }
 
     /**

@@ -3,14 +3,10 @@ package org.frc5687.deepspace.robot.subsystems;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMaxLowLevel;
-import edu.wpi.first.wpilibj.DoubleSolenoid;
 import org.frc5687.deepspace.robot.Constants;
 import org.frc5687.deepspace.robot.Robot;
 import org.frc5687.deepspace.robot.RobotMap;
-import org.frc5687.deepspace.robot.commands.DropBall;
-import org.frc5687.deepspace.robot.commands.WristRelease;
+import org.frc5687.deepspace.robot.commands.StopGripper;
 
 public class Gripper extends OutliersSubsystem{
     private Robot _robot;
@@ -55,7 +51,7 @@ public class Gripper extends OutliersSubsystem{
 
     @Override
     protected void initDefaultCommand() {
-        setDefaultCommand(new DropBall(this));
+        setDefaultCommand(new StopGripper(this));
     }
     @Override
     public void updateDashboard() {

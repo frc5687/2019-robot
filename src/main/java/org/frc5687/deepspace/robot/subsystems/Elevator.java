@@ -12,11 +12,11 @@ import org.frc5687.deepspace.robot.RobotMap;
 import org.frc5687.deepspace.robot.commands.DriveElevator;
 import org.frc5687.deepspace.robot.utils.HallEffect;
 import org.frc5687.deepspace.robot.utils.Helpers;
-import static org.frc5687.deepspace.robot.utils.EndianReaders.*;
+import org.frc5687.deepspace.robot.utils.LaserRangeFinder;
 
 import java.io.IOException;
 
-import static org.frc5687.deepspace.robot.Constants.Elevator.I2C.*;
+
 
 public class Elevator extends OutliersSubsystem{
 
@@ -24,11 +24,12 @@ public class Elevator extends OutliersSubsystem{
     private Encoder _elevatorEncoder;
     private CANEncoder _neoElevatorEncoder;
     private Robot _robot;
+    private LaserRangeFinder _rangeFinder;
 
     private HallEffect _topHall;
     private HallEffect _bottomHall;
-    private I2C _rangeFinder;
     private int stopVariable = 0;
+
 
     public Elevator(Robot robot) {
         _robot = robot;
@@ -40,7 +41,7 @@ public class Elevator extends OutliersSubsystem{
         _topHall = new HallEffect(RobotMap.DIO.ELEVATOR_TOP_HALL);
         _bottomHall = new HallEffect(RobotMap.DIO.ELEVATOR_BOTTOM_HALL);
         _elevator.setInverted(Constants.Elevator.ELEVATOR_MOTOR_ELEVATOR);
-        _rangeFinder = new I2C(I2C.Port.kOnboard,0x1);
+        _rangeFinder = new LaserRangeFinder(LaserRangeFinder._rangeFinder_I2CADDR,0x1);
 
     }
     public void setElevatorSpeeds(double speed) {
@@ -73,11 +74,12 @@ public class Elevator extends OutliersSubsystem{
     public void updateDashboard() {
         metric("MAGEncoder", getRawMAGEncoder());
         metric("NEOEncoder", getRawNeoEncoder());
+        metric("LaserRange", getRange());
 
     }
     public boolean isAtTop() { return _topHall.get(); }
 
     public boolean isAtBottom() { return _bottomHall.get(); }
 
-
+    public double getRange() { return _rangeFinder.range(); }
 }

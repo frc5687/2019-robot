@@ -30,6 +30,11 @@ public class Constants {
         public static final long AUTO_WAIT_PERIOD = 500;
         public static final long MANUAL_WAIT_PERIOD = 3000;
     }
+    public class Wrist {
+
+        public static final long RAISE_MILLI_SEC = 500;
+        public static final long LOWER_MILLI_SEC = 500;
+    }
     public class Gripper{
         public static final double VACUUM_SPEED = 1.0;
         public static final boolean MOTOR_INVERTED =     false;

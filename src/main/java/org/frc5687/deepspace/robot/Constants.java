@@ -30,14 +30,19 @@ public class Constants {
         public static final long AUTO_WAIT_PERIOD = 500;
         public static final long MANUAL_WAIT_PERIOD = 3000;
     }
+    public class Wrist {
+
+        public static final long RAISE_MILLI_SEC = 500;
+        public static final long LOWER_MILLI_SEC = 500;
+    }
     public class Gripper{
         public static final double VACUUM_SPEED = 1.0;
         public static final boolean MOTOR_INVERTED =     false;
         public static final double VACUUM_STOP = 0.0;
     }
     public static class Elevator {
-        public static final double MAX_ELEVATOR_SPEED = 0.5;
-        public static final double MAX_ELEVATOR_SPEED_UP = 0.5;
+        public static final double MAX_ELEVATOR_SPEED = 0.3;
+        public static final double MAX_ELEVATOR_SPEED_UP = 0.3;
         public static final double MAX_ELEVATOR_SPEED_DOWN = 0.2;
         public static final double DEADBAND = 0.1;
         public static final double SENSITIVITY = 0.5;
@@ -76,7 +81,7 @@ public class Constants {
         public static final double MAX_INTAKE_SPEED = 0.3;
         public static final double SENSITIVITY = 0.5;
         public static final double DEADBAND = 0.1;
-        public static final double MAX_DRIVE_SPEED = 0.75;
+        public static final double MAX_DRIVE_SPEED = 0.5;
         public static final boolean MOTOR_INVERTED = true;
         public static final int SHOULDER_STALL_LIMIT = 10;
         public static final int SHOULDER_FREE_LIMIT = 80;
@@ -84,9 +89,9 @@ public class Constants {
         public static final double kP = 0.1;
         public static final double kD = 0;
         public static final double TOLERANCE = 2.0;
-        public static final double SPEED = 0.75;
-        public static final double SPEED_UP = 0.75;
-        public static final double SPEED_DOWN = 0.75;
+        public static final double SPEED = 0.5;
+        public static final double SPEED_UP = 0.5;
+        public static final double SPEED_DOWN = 0.5;
 
     }
 

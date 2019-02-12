@@ -7,13 +7,14 @@ import org.frc5687.deepspace.robot.Constants;
 import org.frc5687.deepspace.robot.Robot;
 import org.frc5687.deepspace.robot.RobotMap;
 import org.frc5687.deepspace.robot.commands.DriveRoller;
-import org.frc5687.deepspace.robot.commands.HoldRoller;
 import org.frc5687.deepspace.robot.utils.Helpers;
+import static org.frc5687.deepspace.robot.Constants.Roller.*;
 
 public class Roller extends OutliersSubsystem {
     private CANSparkMax _roller;
     private Robot _robot;
     private AnalogInput _ballIR;
+    private boolean _forceOn;
 
 
     public Roller(Robot robot) {
@@ -32,12 +33,26 @@ public class Roller extends OutliersSubsystem {
         metric ("BallDetected", isBallDetected());
     }
 
-    public void setRollerSpeed(double speed) {
+    public void start() {
+        _forceOn = true;
+    }
+
+    public void stop() {
+        _forceOn = false;
+    }
+
+    public void setSpeed(double speed) {
+        setRollerSpeed(_forceOn ? INTAKE_SPEED : speed);
+    }
+
+    private void setRollerSpeed(double speed) {
         speed = Helpers.limit(speed, Constants.Roller.MAX_SPEED);
         metric("Speed", speed);
+
         if(_roller==null) { return; }
         _roller.set(speed);
     }
+
     public boolean isBallDetected() {
         if (_ballIR.getValue() > 2200) {
             return true;

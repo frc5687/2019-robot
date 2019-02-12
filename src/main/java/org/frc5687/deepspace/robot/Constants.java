@@ -75,6 +75,7 @@ public class Constants {
         public static final boolean MOTOR_INVERTED = false;
         public static final double DEADBAND = 0.01;
         public static final double SENSITIVITY = 0.5;
+        public static final double INTAKE_SPEED = 1.0;
     }
 
     public class Arm {

@@ -16,10 +16,12 @@ public class RunGripper extends OutliersCommand {
     protected boolean isFinished() {
         return false;
     }
+
     @Override
     protected void initialize() {
 
     }
+
     @Override
     protected void execute(){
         _gripper.setSpeed(Constants.Gripper.VACUUM_SPEED);

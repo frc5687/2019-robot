@@ -11,18 +11,19 @@ public class StopGripper extends OutliersCommand {
         requires(_gripper);
     }
 
-
     @Override
     protected boolean isFinished() {
-        return false;
+        return true;
     }
+
     @Override
     protected void initialize() {
-
+        _gripper.stop();
     }
 
     @Override
     protected void execute(){
-        _gripper.setSpeed(Constants.Gripper.VACUUM_STOP);
+        _gripper.stop();
     }
+
 }

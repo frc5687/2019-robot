@@ -63,6 +63,7 @@ public class RobotMap {
         /* Example:
         public static final int ARM_VICTORSP = 0;
         */
+        public static final int GRIPPER_VACCUUM = 0;
     }
 
     /**

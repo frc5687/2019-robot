@@ -3,14 +3,13 @@ package org.frc5687.deepspace.robot.commands;
 import org.frc5687.deepspace.robot.Constants;
 import org.frc5687.deepspace.robot.subsystems.Gripper;
 
-public class RunGripper extends OutliersCommand {
+public class DriveGripper extends OutliersCommand {
     public Gripper _gripper;
 
-    public RunGripper(Gripper gripper){
+    public DriveGripper(Gripper gripper){
         _gripper = gripper;
         requires(_gripper);
     }
-
 
     @Override
     protected boolean isFinished() {
@@ -24,6 +23,6 @@ public class RunGripper extends OutliersCommand {
 
     @Override
     protected void execute(){
-        _gripper.setSpeed(Constants.Gripper.VACUUM_SPEED);
+        _gripper.run();
     }
 }

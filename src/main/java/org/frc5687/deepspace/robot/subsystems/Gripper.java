@@ -6,16 +6,22 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import org.frc5687.deepspace.robot.Constants;
 import org.frc5687.deepspace.robot.Robot;
 import org.frc5687.deepspace.robot.RobotMap;
+import org.frc5687.deepspace.robot.commands.DriveGripper;
 import org.frc5687.deepspace.robot.commands.StopGripper;
+import org.frc5687.deepspace.robot.utils.PDP;
+
+import static org.frc5687.deepspace.robot.Constants.Gripper.*;
 
 public class Gripper extends OutliersSubsystem{
     private Robot _robot;
     private TalonSRX _vacuumFan;
+    private PDP _pdp;
 
-    public double HIGH_POW = 1.0;
-    public double LOW_POW = -HIGH_POW;
+    private boolean _running = false;
 
     public Gripper(Robot robot){
+        _robot = robot;
+        _pdp = _robot.getPDP();
         debug("Finding vacuum motor.");
         try{
             _vacuumFan = new TalonSRX(RobotMap.CAN.TALONSRX.GRIPPER_VACUUM);
@@ -30,31 +36,52 @@ public class Gripper extends OutliersSubsystem{
         _vacuumFan.setInverted(Constants.Gripper.MOTOR_INVERTED);
         enableBrakeMode();
     }
+
     public void enableBrakeMode() {
         try {
             _vacuumFan.setNeutralMode(NeutralMode.Brake);
-
         } catch (Exception e) {
             error("DriveTrain.enableBrakeMode exception: " + e.toString());
         }
         metric("neutralMode", "Brake");
     }
 
-    public void setSpeed(double speed){
+    public void start() {
+        _running = true;
+        run();
+    }
 
+    public void stop() {
+        _running = false;
+        run();
+    }
+
+    public void run() {
+        if (_running) {
+            setSpeed(VACUUM_SPEED);
+        } else {
+            setSpeed(VACUUM_STOP);
+        }
+    }
+
+    public void setSpeed(double speed){
         _vacuumFan.set(ControlMode.PercentOutput, speed);
         metric("Speed", speed);
     }
 
 
-
-
     @Override
     protected void initDefaultCommand() {
-        setDefaultCommand(new StopGripper(this));
+        setDefaultCommand(new DriveGripper(this));
     }
+
     @Override
     public void updateDashboard() {
 
     }
+
+    public boolean hasCargo() {
+        return _pdp.getCurrent(RobotMap.PDP.GRIPPER_VACCUUM) > SECURED_AMP_THRESHOLD;
+    }
+
 }

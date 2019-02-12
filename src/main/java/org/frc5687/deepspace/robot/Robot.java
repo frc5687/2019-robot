@@ -255,6 +255,24 @@ public class Robot extends TimedRobot implements ILoggingSource {
 
     }
 
+    public enum Configuration {
+        starting(0),
+        hatch(1),
+        cargo(2),
+        climb(3);
+
+        private int _value;
+
+        Configuration(int value) {
+            this._value = value;
+        }
+
+        public int getValue() {
+            return _value;
+        }
+    }
+
+
     public void metric(String name, boolean value) {
         SmartDashboard.putBoolean(getClass().getSimpleName() + "/" + name, value);
     }

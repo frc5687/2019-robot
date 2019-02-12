@@ -20,6 +20,7 @@ import java.io.FileReader;
 public class Robot extends TimedRobot implements ILoggingSource {
 
     private IdentityMode _identityMode = IdentityMode.competition;
+    private Configuration _configuration;
     private RioLogger.LogLevel _dsLogLevel = RioLogger.LogLevel.warn;
     private RioLogger.LogLevel _fileLogLevel = RioLogger.LogLevel.warn;
 
@@ -198,6 +199,12 @@ public class Robot extends TimedRobot implements ILoggingSource {
 
         }
     }
+    public void setConfiguration(Configuration configuration) {
+        _configuration = configuration;
+    }
+    public Configuration getConfiguration() {
+        return _configuration;
+    }
     @Override
     public void error(String message) {
         RioLogger.error(this, message);
@@ -235,6 +242,7 @@ public class Robot extends TimedRobot implements ILoggingSource {
     public Arm getArm() { return _arm; }
     public Elevator getElevator() { return _elevator; }
     public Shifter getShifter() { return _shifter; }
+    public Configuration getCarMode;
 
 
 
@@ -252,6 +260,7 @@ public class Robot extends TimedRobot implements ILoggingSource {
         public int getValue() {
             return _value;
         }
+
 
     }
 

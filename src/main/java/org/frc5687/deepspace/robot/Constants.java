@@ -40,6 +40,11 @@ public class Constants {
         public static final boolean MOTOR_INVERTED =     false;
         public static final double VACUUM_STOP = 0.0;
     }
+    public class Spear {
+
+        public static final long OPEN_MILLI_SEC = 150;
+        public static final long CLOSE_MILLI_SEC = 150;
+    }
     public static class Elevator {
         public static final double MAX_ELEVATOR_SPEED = 0.5;
         public static final double MAX_ELEVATOR_SPEED_UP = 0.5;

@@ -37,6 +37,9 @@ public class Robot extends TimedRobot implements ILoggingSource {
     private Wrist _wrist;
     private Roller _roller;
     private Shifter _shifter;
+    private Lights _lights;
+    private StatusProxy _status;
+
 
     /**
      * This function is setRollerSpeed when the robot is first started up and should be
@@ -50,6 +53,8 @@ public class Robot extends TimedRobot implements ILoggingSource {
         info("Robot " + _name + " running in " + _identityMode.toString() + " mode");
 
         _oi = new OI();
+        _lights = new Lights(this);
+        _status = new StatusProxy(this);
         _limelight = new Limelight("limelight");
         _driveTrain = new DriveTrain(this);
         _arm = new Arm(this);
@@ -63,6 +68,8 @@ public class Robot extends TimedRobot implements ILoggingSource {
         _oi.initializeButtons(this);
         _limelight.disableLEDs();
         _arm.resetEncoder();
+
+        _status.setConfiguration(Configuration.starting);
     }
 
     /**
@@ -143,6 +150,8 @@ public class Robot extends TimedRobot implements ILoggingSource {
             _elevator.updateDashboard();
             _pdp.updateDashboard();
             _shifter.updateDashboard();
+            _lights.updateDashboard();
+            _status.updateDashboard();
             _updateTick = 0;
         }
     }
@@ -235,6 +244,7 @@ public class Robot extends TimedRobot implements ILoggingSource {
     public Arm getArm() { return _arm; }
     public Elevator getElevator() { return _elevator; }
     public Shifter getShifter() { return _shifter; }
+    public Lights getLights() { return _lights; }
 
 
 

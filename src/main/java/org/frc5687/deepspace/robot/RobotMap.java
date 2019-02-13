@@ -32,6 +32,7 @@ public class RobotMap {
      * Note that for PWM only one device can connect to each port, so the numbers should be unique.
      */
     public static class PWM {
+        public static final int Blinkin = 0;
         /*  Example:
         public static final int ARM_VICTORSP = 0;
         */

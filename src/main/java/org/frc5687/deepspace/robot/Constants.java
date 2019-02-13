@@ -35,11 +35,18 @@ public class Constants {
         public static final long RAISE_MILLI_SEC = 500;
         public static final long LOWER_MILLI_SEC = 500;
     }
+
     public class Gripper{
+        public static final double HIGH_POW = 1.0;
+        public static final double LOW_POW = -HIGH_POW;
         public static final double VACUUM_SPEED = 1.0;
         public static final boolean MOTOR_INVERTED =     false;
         public static final double VACUUM_STOP = 0.0;
+        public static final double SECURED_AMP_MIN = 3.0;
+        public static final double SECURED_AMP_MAX = 4.5;
+        public static final long STARTUP_DELAY = 250;
     }
+
     public static class Elevator {
         public static final double MAX_ELEVATOR_SPEED = 0.5;
         public static final double MAX_ELEVATOR_SPEED_UP = 0.5;

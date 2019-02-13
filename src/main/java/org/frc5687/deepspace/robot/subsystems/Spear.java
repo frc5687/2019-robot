@@ -12,6 +12,7 @@ public class Spear extends OutliersSubsystem{
     private DoubleSolenoid _spearSolenoid;
     private OI _oi;
     public Spear (Robot robot){
+
         _robot = robot;
        _spearSolenoid = new DoubleSolenoid(RobotMap.PCM.SPEAR_OPEN, RobotMap.PCM.SPEAR_CLOSE);
     }

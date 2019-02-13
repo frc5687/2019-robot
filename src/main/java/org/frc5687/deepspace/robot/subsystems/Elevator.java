@@ -110,6 +110,7 @@ public class Elevator extends OutliersSubsystem implements PIDSource {
         Bottom(0),
         Port1(132),
         Hatch1(133),
+        Secure(450),
         Port2(2168),
         Hatch2(2169),
         Port3(4100),

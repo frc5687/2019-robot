@@ -15,6 +15,7 @@ public class Roller extends OutliersSubsystem {
     private Robot _robot;
     private AnalogInput _ballIR;
     private boolean _forceOn;
+    private RollerMode _rollerMode;
 
 
     public Roller(Robot robot) {
@@ -62,5 +63,28 @@ public class Roller extends OutliersSubsystem {
     @Override
     protected void initDefaultCommand() {
         setDefaultCommand(new DriveRoller(_robot, this));
+    }
+    public void setRollerMode(RollerMode rollerMode) {
+        _rollerMode = rollerMode;
+    }
+    public RollerMode getRollerMode() {
+        return _rollerMode;
+    }
+
+    public enum RollerMode {
+        RUNNING(0),
+        WAITING(1),
+        DONE(2);
+
+        private int _value;
+
+        RollerMode(int value) {
+            this._value = value;
+        }
+
+        public int getValue() {
+            return _value;
+        }
+
     }
 }

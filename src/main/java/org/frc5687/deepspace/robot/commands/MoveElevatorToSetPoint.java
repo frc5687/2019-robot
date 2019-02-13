@@ -1,5 +1,6 @@
 package org.frc5687.deepspace.robot.commands;
 
+import com.sun.xml.internal.bind.v2.runtime.reflect.opt.Const;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.PIDController;
@@ -19,6 +20,7 @@ public class MoveElevatorToSetPoint extends OutliersCommand {
     private Elevator _elevator;
     private Elevator.Setpoint _setpoint;
     private Elevator.MotionMode _mode;
+    private Elevator.RampingMode _rampingMode;
     private double _position = 0;
 
     private double _pidOutput;
@@ -30,6 +32,7 @@ public class MoveElevatorToSetPoint extends OutliersCommand {
     private DistanceFollower _pathFollower;
     private Notifier _pathNotifier;
     private long _startTime;
+    private double _step;
 
     public MoveElevatorToSetPoint(Elevator elevator, Elevator.Setpoint setpoint, Elevator.MotionMode mode) {
         _elevator = elevator;
@@ -46,6 +49,7 @@ public class MoveElevatorToSetPoint extends OutliersCommand {
 
     @Override
     protected void initialize() {
+        _step = 0;
         _position = _elevator.getPosition();
         if (withinTolerance()) { return; }
         info("Moving to setpoint " + _setpoint.name() + " (" + _setpoint.getValue() + ") using " + _mode.name() + " mode.");
@@ -70,27 +74,38 @@ public class MoveElevatorToSetPoint extends OutliersCommand {
 
     @Override
     protected void execute() {
-        _position = _elevator.getPosition();
-        switch(_mode) {
-            case Simple:
-                if (_position  < _setpoint.getValue() - TOLERANCE) {
-                    _elevator.setElevatorSpeeds(SPEED_UP);
-                } else if (_position > _setpoint.getValue() + TOLERANCE) {
-                    _elevator.setElevatorSpeeds(-SPEED_DOWN);
-                } else {
-                    _elevator.setElevatorSpeeds(0);
+        _step++;
+        double speed;
+
+        switch(_rampingMode) {
+            case Ramp:
+                speed = (Constants.Elevator.MIN_SPEED +(_step/Constants.Elevator.STEPS))* (Constants.Elevator.GOAL_SPEED - Constants.Elevator.MIN_SPEED);
+                _elevator.setElevatorSpeeds(speed);
+                if (speed == Constants.Elevator.GOAL_SPEED) {
+
                 }
-                break;
-            case PID:
-                _elevator.setElevatorSpeeds(_pidOutput);
-                break;
-            case Path:
-                _elevator.setElevatorSpeeds(_pathOutput);
-                break;
-            default:
-                _elevator.setElevatorSpeeds(0);
-                break;
         }
+//        _position = _elevator.getPosition();
+//        switch(_mode) {
+//            case Simple:
+//                if (_position  < _setpoint.getValue() - TOLERANCE) {
+//                    _elevator.setElevatorSpeeds(SPEED_UP);
+//                } else if (_position > _setpoint.getValue() + TOLERANCE) {
+//                    _elevator.setElevatorSpeeds(-SPEED_DOWN);
+//                } else {
+//                    _elevator.setElevatorSpeeds(0);
+//                }
+//                break;
+//            case PID:
+//                _elevator.setElevatorSpeeds(_pidOutput);
+//                break;
+//            case Path:
+//                _elevator.setElevatorSpeeds(_pathOutput);
+//                break;
+//            default:
+//                _elevator.setElevatorSpeeds(0);
+//                break;
+//        }
     }
 
     private boolean withinTolerance() {

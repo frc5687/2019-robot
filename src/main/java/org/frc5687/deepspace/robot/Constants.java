@@ -59,6 +59,9 @@ public class Constants {
         public static final double SPEED_DOWN = 0.1;
         public static final double MAX_VELOCITY_IPS = 27.0;
         public static final double TICKS_PER_INCH = 111.1111111;
+        public static final double STEPS = 10;
+        public static final double MIN_SPEED = 0.2;
+        public static final double GOAL_SPEED = 0.5;
 
         public static class PID {
             public static final double kP = 0.1;

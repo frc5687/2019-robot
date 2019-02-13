@@ -23,6 +23,7 @@ public class Elevator extends OutliersSubsystem implements PIDSource {
 
     private HallEffect _topHall;
     private HallEffect _bottomHall;
+    private double _speed;
 
     public Elevator(Robot robot) {
         _robot = robot;
@@ -50,6 +51,7 @@ public class Elevator extends OutliersSubsystem implements PIDSource {
         metric("ElevatorSpeed",speed);
 
         if (_elevator==null) { return; }
+        _speed = speed;
         _elevator.set(speed);
     }
 
@@ -90,6 +92,7 @@ public class Elevator extends OutliersSubsystem implements PIDSource {
     public double getPosition() {
         return getRawMAGEncoder();
     }
+    public
 
     @Override
     public void setPIDSourceType(PIDSourceType pidSource) {
@@ -103,6 +106,17 @@ public class Elevator extends OutliersSubsystem implements PIDSource {
     @Override
     public double pidGet() {
         return getPosition();
+    }
+    public enum RampingMode {
+        Ramp(0),
+        Steady(1),
+        Down(2);
+
+        private int _value;
+
+        RampingMode(int value) { this._value = value; }
+
+        public int getValue() { return _value; }
     }
 
 

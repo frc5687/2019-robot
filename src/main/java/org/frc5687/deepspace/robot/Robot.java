@@ -254,7 +254,6 @@ public class Robot extends TimedRobot implements ILoggingSource {
     public Arm getArm() { return _arm; }
     public Elevator getElevator() { return _elevator; }
     public Shifter getShifter() { return _shifter; }
-    public Configuration getCarMode;
     public Lights getLights() { return _lights; }
     public Stilt getStilt() { return _stilt; }
 

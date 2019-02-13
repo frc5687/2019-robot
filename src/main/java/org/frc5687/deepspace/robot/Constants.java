@@ -96,10 +96,11 @@ public class Constants {
     }
 
     public class Stilt {
-        public static final double MAX_Stilt_SPEED = 0.1;
+        public static final double MAX_Stilt_SPEED = 0.25;
         public static final double SENSITVITY = 0.1;
         public static final double DEADBAND = 0.1;
         public static final boolean MOTOR_INVERTED = false;
+        public static final double STILT_HOLD_SPEED = 0.07;
 
     }
 

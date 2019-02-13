@@ -4,21 +4,29 @@ import org.frc5687.deepspace.robot.Constants;
 import org.frc5687.deepspace.robot.OI;
 import org.frc5687.deepspace.robot.subsystems.Roller;
 
-public class HoldRoller extends OutliersCommand {
+public class StopRoller extends OutliersCommand {
     private Roller _roller;
     private OI _oi;
 
-    public HoldRoller(Roller roller) {
+    public StopRoller(Roller roller) {
         _roller = roller;
         requires(_roller);
     }
+
     @Override
-    protected void execute() {
-        _roller.setRollerSpeed(0);
+    protected void initialize() {
+        _roller.stop();
     }
 
     @Override
+    protected void execute() {
+        _roller.setSpeed(0);
+    }
+
+
+
+    @Override
     protected boolean isFinished() {
-        return false;
+        return true;
     }
 }

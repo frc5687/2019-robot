@@ -76,11 +76,11 @@ public class OI extends OutliersProxy {
 
     }
     public void initializeButtons(Robot robot){
-        _driverStartButton.whenPressed(new RunGripper(robot.getGripper()));
-        _driverBackButton.whenReleased(new StopGripper(robot.getGripper()));
+        _driverStartButton.whenPressed(new GripHargo(robot.getGripper()));
+        _driverBackButton.whenPressed(new StopGripper(robot.getGripper()));
 
         _operatorStartButton.whenPressed(new CloseSpear(robot.getSpear()));
-        _operatorBackButton.whenReleased(new OpenSpear(robot.getSpear()));
+        _operatorBackButton.whenReleased(new StartRoller(robot.getRoller(), true));
 
         _operatorRightBumper.whenPressed(new CargoMode(robot));
         _operatorLeftBumper.whenPressed(new HatchMode(robot));
@@ -88,10 +88,10 @@ public class OI extends OutliersProxy {
         _driverLeftBumper.whenPressed(new Shift(robot.getDriveTrain(), robot.getShifter(), Shifter.Gear.HIGH, false));
         _driverRightBumper.whenPressed(new Shift(robot.getDriveTrain(), robot.getShifter(), Shifter.Gear.LOW, false));
 
-        _driverLeftTrigger.whenPressed(new Intake(robot));
+        _driverLeftTrigger.whenPressed(new CargoIntake(robot));
 
 
-        _operatorAButton.whenPressed(new MoveElevatorToSetPoint(robot.getElevator(), Elevator.Setpoint.Hatch1, Elevator.MotionMode.PID));
+        _operatorAButton.whenPressed(new MoveElevatorToSetPoint(robot.getElevator(), Elevator.Setpoint.Secure, Elevator.MotionMode.PID));
         _operatorBButton.whenPressed(new MoveElevatorToSetPoint(robot.getElevator(), Elevator.Setpoint.Hatch2, Elevator.MotionMode.PID));
         _operatorYButton.whenPressed(new MoveElevatorToSetPoint(robot.getElevator(), Elevator.Setpoint.Top, Elevator.MotionMode.PID));
         _operatorXButton.whenPressed(new MoveElevatorToSetPoint(robot.getElevator(), Elevator.Setpoint.Bottom, Elevator.MotionMode.PID));

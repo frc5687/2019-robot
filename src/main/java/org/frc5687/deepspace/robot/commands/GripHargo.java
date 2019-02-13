@@ -1,5 +1,6 @@
 package org.frc5687.deepspace.robot.commands;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import org.frc5687.deepspace.robot.Constants;
 import org.frc5687.deepspace.robot.subsystems.Gripper;
 
@@ -22,6 +23,11 @@ public class GripHargo extends OutliersCommand {
     @Override
     protected void execute(){
         _gripper.run();
+    }
+
+
+    @Override
+    protected void end(){
     }
 
     @Override

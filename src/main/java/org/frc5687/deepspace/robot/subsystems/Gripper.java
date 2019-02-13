@@ -17,6 +17,8 @@ public class Gripper extends OutliersSubsystem{
     private TalonSRX _vacuumFan;
     private PDP _pdp;
 
+    private long _delay;
+
     private boolean _running = false;
 
     public Gripper(Robot robot){
@@ -47,6 +49,9 @@ public class Gripper extends OutliersSubsystem{
     }
 
     public void start() {
+        if (!_running) {
+            _delay = System.currentTimeMillis() + STARTUP_DELAY;
+        }
         _running = true;
         run();
     }
@@ -81,7 +86,8 @@ public class Gripper extends OutliersSubsystem{
     }
 
     public boolean hasCargo() {
-        return _pdp.getCurrent(RobotMap.PDP.GRIPPER_VACCUUM) > SECURED_AMP_THRESHOLD;
+        double current = _pdp.getCurrent(RobotMap.PDP.GRIPPER_VACCUUM);
+        return System.currentTimeMillis() > _delay && current  > SECURED_AMP_MIN && current < SECURED_AMP_MAX;
     }
 
 }

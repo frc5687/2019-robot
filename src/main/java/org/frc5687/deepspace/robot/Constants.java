@@ -42,7 +42,9 @@ public class Constants {
         public static final double VACUUM_SPEED = 1.0;
         public static final boolean MOTOR_INVERTED =     false;
         public static final double VACUUM_STOP = 0.0;
-        public static final double SECURED_AMP_THRESHOLD = 10.0;
+        public static final double SECURED_AMP_MIN = 3.0;
+        public static final double SECURED_AMP_MAX = 4.5;
+        public static final long STARTUP_DELAY = 250;
     }
 
     public static class Elevator {

@@ -39,7 +39,7 @@ public class Robot extends TimedRobot implements ILoggingSource {
     private Shifter _shifter;
     private Lights _lights;
     private StatusProxy _status;
-
+    private Stilt _stilt;
 
     /**
      * This function is setRollerSpeed when the robot is first started up and should be
@@ -60,6 +60,7 @@ public class Robot extends TimedRobot implements ILoggingSource {
         _arm = new Arm(this);
         _roller = new Roller(this);
         _elevator = new Elevator(this);
+        _stilt = new Stilt(this);
         _pdp = new PDP();
         _gripper= new Gripper(this);
         _spear = new Spear(this);
@@ -68,7 +69,6 @@ public class Robot extends TimedRobot implements ILoggingSource {
         _oi.initializeButtons(this);
         _limelight.disableLEDs();
         _arm.resetEncoder();
-
         _status.setConfiguration(Configuration.starting);
     }
 
@@ -104,6 +104,7 @@ public class Robot extends TimedRobot implements ILoggingSource {
     public void teleopInit() {
         _arm.enableBrakeMode();
         _elevator.enableBrakeMode();
+        _stilt.enableBrakeMode();
     }
 
     /**
@@ -136,6 +137,7 @@ public class Robot extends TimedRobot implements ILoggingSource {
         RioLogger.getInstance().close();
         _arm.enableCoastMode();
         _elevator.enableCoastMode();
+        _stilt.enableCoastMode();
     }
 
 
@@ -153,6 +155,7 @@ public class Robot extends TimedRobot implements ILoggingSource {
             _lights.updateDashboard();
             _status.updateDashboard();
             _updateTick = 0;
+            _stilt.updateDashboard();
         }
     }
 
@@ -245,6 +248,7 @@ public class Robot extends TimedRobot implements ILoggingSource {
     public Elevator getElevator() { return _elevator; }
     public Shifter getShifter() { return _shifter; }
     public Lights getLights() { return _lights; }
+    public Stilt getStilt() { return _stilt; }
 
 
 

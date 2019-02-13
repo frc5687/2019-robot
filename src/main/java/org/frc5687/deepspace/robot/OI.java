@@ -7,6 +7,7 @@ import org.frc5687.deepspace.robot.commands.*;
 import org.frc5687.deepspace.robot.subsystems.Arm;
 import org.frc5687.deepspace.robot.subsystems.Elevator;
 import org.frc5687.deepspace.robot.subsystems.Shifter;
+import org.frc5687.deepspace.robot.subsystems.Stilt;
 import org.frc5687.deepspace.robot.utils.AxisButton;
 import org.frc5687.deepspace.robot.utils.Gamepad;
 import org.frc5687.deepspace.robot.utils.OutliersProxy;
@@ -122,6 +123,11 @@ public class OI extends OutliersProxy {
         double speed = -getSpeedFromAxis(_operatorGamepad, Gamepad.Axes.RIGHT_Y.getNumber()) * Constants.Elevator.MAX_ELEVATOR_SPEED;
         speed = applyDeadband(speed, Constants.Elevator.DEADBAND);
         return applySensitivityFactor(speed, Constants.Elevator.SENSITIVITY);
+    }
+    public double getStiltSpeed() {
+        double speed = getSpeedFromAxis(_operatorGamepad, Gamepad.Axes.RIGHT_TRIGGER.getNumber())*Constants.Stilt.MAX_Stilt_SPEED;
+        speed = applyDeadband(speed, Constants.Stilt.DEADBAND);
+        return applySensitivityFactor(speed,Constants.Stilt.SENSITVITY);
     }
 
 

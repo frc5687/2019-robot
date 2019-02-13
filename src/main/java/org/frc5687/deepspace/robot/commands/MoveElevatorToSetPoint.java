@@ -14,6 +14,8 @@ import org.frc5687.deepspace.robot.Constants;
 import org.frc5687.deepspace.robot.subsystems.Elevator;
 
 import static org.frc5687.deepspace.robot.Constants.Elevator.*;
+import static org.frc5687.deepspace.robot.subsystems.Elevator.RampingMode.Down;
+import static org.frc5687.deepspace.robot.subsystems.Elevator.RampingMode.Steady;
 
 public class MoveElevatorToSetPoint extends OutliersCommand {
 
@@ -82,7 +84,12 @@ public class MoveElevatorToSetPoint extends OutliersCommand {
                 speed = (Constants.Elevator.MIN_SPEED +(_step/Constants.Elevator.STEPS))* (Constants.Elevator.GOAL_SPEED - Constants.Elevator.MIN_SPEED);
                 _elevator.setElevatorSpeeds(speed);
                 if (speed == Constants.Elevator.GOAL_SPEED) {
-
+                    _elevator.setRampingMode(Steady);
+                }
+            case Steady:
+                _elevator.setElevatorSpeeds(Constants.Elevator.GOAL_SPEED);
+                if(_setpoint == _setpoint - 200) {
+                    _elevator.setRampingMode(Down);
                 }
         }
 //        _position = _elevator.getPosition();

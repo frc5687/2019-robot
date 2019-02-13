@@ -23,7 +23,7 @@ public class Elevator extends OutliersSubsystem implements PIDSource {
 
     private HallEffect _topHall;
     private HallEffect _bottomHall;
-    private double _speed;
+    private RampingMode _rampingMode;
 
     public Elevator(Robot robot) {
         _robot = robot;
@@ -92,7 +92,12 @@ public class Elevator extends OutliersSubsystem implements PIDSource {
     public double getPosition() {
         return getRawMAGEncoder();
     }
-    public
+    public void setRampingMode(RampingMode rampingMode) {
+        _rampingMode = rampingMode;
+    }
+    public RampingMode getRampingMode() {
+        return _rampingMode;
+    }
 
     @Override
     public void setPIDSourceType(PIDSourceType pidSource) {

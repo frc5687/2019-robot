@@ -95,6 +95,14 @@ public class Constants {
 
     }
 
+    public class Stilt {
+        public static final double MAX_Stilt_SPEED = 0.1;
+        public static final double SENSITVITY = 0.1;
+        public static final double DEADBAND = 0.1;
+        public static final boolean MOTOR_INVERTED = false;
+
+    }
+
 
     /*
      There should be a nested static class for each subsystem and for each autonomous command that needs tuning constants.

@@ -80,7 +80,7 @@ public class OI extends OutliersProxy {
         _driverBackButton.whenPressed(new StopGripper(robot.getGripper()));
 
         _operatorStartButton.whenPressed(new CloseSpear(robot.getSpear()));
-        _operatorBackButton.whenReleased(new StartRoller(robot.getRoller(), true));
+        _operatorBackButton.whenReleased(new OpenSpear(robot.getSpear()));
 
         _operatorRightBumper.whenPressed(new CargoMode(robot));
         _operatorLeftBumper.whenPressed(new HatchMode(robot));

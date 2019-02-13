@@ -14,9 +14,16 @@ public class StopRoller extends OutliersCommand {
     }
 
     @Override
-    protected void execute() {
+    protected void initialize() {
         _roller.stop();
     }
+
+    @Override
+    protected void execute() {
+        _roller.setSpeed(0);
+    }
+
+
 
     @Override
     protected boolean isFinished() {

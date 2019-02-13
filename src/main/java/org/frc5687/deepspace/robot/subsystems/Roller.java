@@ -35,10 +35,12 @@ public class Roller extends OutliersSubsystem {
 
     public void start() {
         _forceOn = true;
+        metric("ForceOn", _forceOn);
     }
 
     public void stop() {
         _forceOn = false;
+        metric("ForceOn", _forceOn);
     }
 
     public void setSpeed(double speed) {
@@ -54,10 +56,7 @@ public class Roller extends OutliersSubsystem {
     }
 
     public boolean isBallDetected() {
-        if (_ballIR.getValue() > 2200) {
-            return true;
-        }
-        return false;
+        return _ballIR.getValue() > 2200;
     }
 
     @Override

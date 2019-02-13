@@ -1,5 +1,6 @@
 package org.frc5687.deepspace.robot.commands;
 
+import org.frc5687.deepspace.robot.Constants;
 import org.frc5687.deepspace.robot.OI;
 import org.frc5687.deepspace.robot.subsystems.Roller;
 
@@ -14,8 +15,13 @@ public class StartRoller extends OutliersCommand {
     }
     
     @Override
-    protected void execute() {
+    protected void initialize() {
         _roller.start();
+    }
+
+    @Override
+    protected void execute() {
+        _roller.setSpeed(Constants.Roller.INTAKE_SPEED);
     }
 
     @Override

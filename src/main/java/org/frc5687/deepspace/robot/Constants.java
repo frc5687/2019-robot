@@ -12,8 +12,11 @@ public class Constants {
         public static final double DEADBAND = 0.05;
         public static final double SPEED_SENSITIVITY = 0.75;
         public static final double ROTATION_SENSITIVITY = 0.75;
-        public static final double ROTATION_SENSITIVITY_HIGH_GEAR = 0.75;
-        public static final double ROTATION_SENSITIVITY_LOW_GEAR = 0.75;
+        public static final double ROTATION_SENSITIVITY_HIGH_GEAR = 0.5;
+        public static final double ROTATION_SENSITIVITY_LOW_GEAR = 0.5;
+        public static final double TURNING_SENSITIVITY_HIGH_GEAR = 0.75;
+        public static final double TURNING_SENSITIVITY_LOW_GEAR = 0.75;
+
         public static final double LEFT_RATIO = 1.090909090909;
         public static final double RIGHT_RATIO = 1.090909090909;
 

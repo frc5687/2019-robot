@@ -40,9 +40,12 @@ public class DriveTrain extends OutliersSubsystem {
     private double _oldRightSpeed;
     private boolean _isPaused = false;
 
+    private Shifter _shifter;
+
     public DriveTrain(Robot robot) {
         info("Constructing DriveTrain class.");
         _oi = robot.getOI();
+        _shifter = robot.getShifter();
 
         _frontDistance = new IRDistanceSensor(RobotMap.Analog.FRONT_IR, IRDistanceSensor.Type.MEDIUM);
 
@@ -120,7 +123,6 @@ public class DriveTrain extends OutliersSubsystem {
         // Square the inputs (while preserving the sign) to increase fine control
         // while permitting full power.
         speed = Math.copySign(speed * speed, speed);
-        rotation = applySensitivityFactor(rotation,  true ? Constants.DriveTrain.ROTATION_SENSITIVITY_HIGH_GEAR : Constants.DriveTrain.ROTATION_SENSITIVITY_LOW_GEAR);
 
         double leftMotorOutput;
         double rightMotorOutput;
@@ -128,9 +130,11 @@ public class DriveTrain extends OutliersSubsystem {
         double maxInput = Math.copySign(Math.max(Math.abs(speed), Math.abs(rotation)), speed);
 
         if (speed==0.0) {
+            rotation = applySensitivityFactor(rotation, _shifter.getGear()== Shifter.Gear.HIGH  ? Constants.DriveTrain.ROTATION_SENSITIVITY_HIGH_GEAR : Constants.DriveTrain.ROTATION_SENSITIVITY_LOW_GEAR);
             leftMotorOutput = rotation;
             rightMotorOutput = -rotation;
         } else {
+            rotation = applySensitivityFactor(rotation, _shifter.getGear()== Shifter.Gear.HIGH  ? Constants.DriveTrain.TURNING_SENSITIVITY_HIGH_GEAR : Constants.DriveTrain.TURNING_SENSITIVITY_LOW_GEAR);
             double delta = rotation * Math.abs(speed);
             leftMotorOutput = speed + delta;
             rightMotorOutput = speed - delta;

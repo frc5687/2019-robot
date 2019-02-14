@@ -124,7 +124,7 @@ public class Arm extends OutliersSubsystem implements PIDSource {
     }
 
     public void resetEncoder() {
-        _offset = _shoulderEncoder.getPosition();
+        //_offset = _shoulderEncoder.getPosition();
         DriverStation.reportError("Resetting arm offset to " + _offset , false);
     }
 

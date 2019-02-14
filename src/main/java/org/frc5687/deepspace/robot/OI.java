@@ -9,6 +9,7 @@ import org.frc5687.deepspace.robot.subsystems.Elevator;
 import org.frc5687.deepspace.robot.subsystems.Shifter;
 import org.frc5687.deepspace.robot.utils.AxisButton;
 import org.frc5687.deepspace.robot.utils.Gamepad;
+import org.frc5687.deepspace.robot.utils.JoystickLight;
 import org.frc5687.deepspace.robot.utils.OutliersProxy;
 
 import static org.frc5687.deepspace.robot.utils.Helpers.applyDeadband;
@@ -40,6 +41,8 @@ public class OI extends OutliersProxy {
     private Button _operatorBackButton;
     private Button _driverStartButton;
     private Button _driverBackButton;
+
+    private JoystickLight testLight;
 
     public OI(){
         _driverGamepad = new Gamepad(0);

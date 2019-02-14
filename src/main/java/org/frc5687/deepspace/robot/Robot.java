@@ -1,5 +1,6 @@
 package org.frc5687.deepspace.robot;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -37,6 +38,8 @@ public class Robot extends TimedRobot implements ILoggingSource {
     private Wrist _wrist;
     private Roller _roller;
     private Shifter _shifter;
+    private JoystickLight _light;
+    private Launchpad launchpad;
 
     /**
      * This function is setRollerSpeed when the robot is first started up and should be
@@ -63,6 +66,9 @@ public class Robot extends TimedRobot implements ILoggingSource {
         _oi.initializeButtons(this);
         _limelight.disableLEDs();
         _arm.resetEncoder();
+        launchpad = new Launchpad(2);
+        _light = new JoystickLight(launchpad, 1);
+        _light.set(true);
     }
 
     /**
@@ -112,6 +118,7 @@ public class Robot extends TimedRobot implements ILoggingSource {
      */
     @Override
     public void teleopPeriodic() {
+
         Scheduler.getInstance().run();
     }
 

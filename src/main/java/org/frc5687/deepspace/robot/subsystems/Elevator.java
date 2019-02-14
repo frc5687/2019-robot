@@ -51,7 +51,6 @@ public class Elevator extends OutliersSubsystem implements PIDSource {
         metric("ElevatorSpeed",speed);
 
         if (_elevator==null) { return; }
-        _speed = speed;
         _elevator.set(speed);
     }
 
@@ -150,7 +149,8 @@ public class Elevator extends OutliersSubsystem implements PIDSource {
     public enum MotionMode {
         Simple(0),
         PID(1),
-        Path(2);
+        Path(2),
+        Ramp(3);
 
         private int _value;
 

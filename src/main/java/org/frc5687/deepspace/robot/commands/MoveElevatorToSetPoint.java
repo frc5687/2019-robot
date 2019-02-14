@@ -15,6 +15,7 @@ import org.frc5687.deepspace.robot.subsystems.Elevator;
 
 import static org.frc5687.deepspace.robot.Constants.Elevator.*;
 import static org.frc5687.deepspace.robot.subsystems.Elevator.RampingMode.Down;
+import static org.frc5687.deepspace.robot.subsystems.Elevator.RampingMode.Ramp;
 import static org.frc5687.deepspace.robot.subsystems.Elevator.RampingMode.Steady;
 
 public class MoveElevatorToSetPoint extends OutliersCommand {
@@ -79,6 +80,40 @@ public class MoveElevatorToSetPoint extends OutliersCommand {
         _step++;
         double speed;
 
+        _position = _elevator.getPosition();
+        switch(_mode) {
+            case Simple:
+                if (_position  < _setpoint.getValue() - TOLERANCE) {
+                    _elevator.setElevatorSpeeds(SPEED_UP);
+                } else if (_position > _setpoint.getValue() + TOLERANCE) {
+                    _elevator.setElevatorSpeeds(-SPEED_DOWN);
+                } else {
+                    _elevator.setElevatorSpeeds(0);
+                }
+                break;
+            case PID:
+                _elevator.setElevatorSpeeds(_pidOutput);
+                break;
+            case Path:
+                _elevator.setElevatorSpeeds(_pathOutput);
+                break;
+            case Ramp:
+                if (_position  < _setpoint.getValue() - TOLERANCE) {
+                    _elevator.setElevatorSpeeds(getRampedSpeed(SPEED_UP));
+                } else if (_position > _setpoint.getValue() + TOLERANCE) {
+                    _elevator.setElevatorSpeeds(getRampedSpeed(-SPEED_DOWN));
+                } else {
+                    _elevator.setElevatorSpeeds(0);
+                }
+                break;
+            default:
+                _elevator.setElevatorSpeeds(0);
+                break;
+        }
+    }
+
+    private double getRampedSpeed(double speed) {
+        if (speed < 0) { return speed; }
         switch(_rampingMode) {
             case Ramp:
                 speed = (Constants.Elevator.MIN_SPEED +(_step/Constants.Elevator.STEPS))* (Constants.Elevator.GOAL_SPEED - Constants.Elevator.MIN_SPEED);
@@ -88,33 +123,19 @@ public class MoveElevatorToSetPoint extends OutliersCommand {
                 }
             case Steady:
                 _elevator.setElevatorSpeeds(Constants.Elevator.GOAL_SPEED);
-                if(_setpoint == _setpoint - 200) {
+                if(_setpoint.getValue() == _elevator.getRawMAGEncoder() - 200) {
+                    _step = 0;
                     _elevator.setRampingMode(Down);
                 }
-        }
-//        _position = _elevator.getPosition();
-//        switch(_mode) {
-//            case Simple:
-//                if (_position  < _setpoint.getValue() - TOLERANCE) {
-//                    _elevator.setElevatorSpeeds(SPEED_UP);
-//                } else if (_position > _setpoint.getValue() + TOLERANCE) {
-//                    _elevator.setElevatorSpeeds(-SPEED_DOWN);
-//                } else {
-//                    _elevator.setElevatorSpeeds(0);
-//                }
-//                break;
-//            case PID:
-//                _elevator.setElevatorSpeeds(_pidOutput);
-//                break;
-//            case Path:
-//                _elevator.setElevatorSpeeds(_pathOutput);
-//                break;
-//            default:
-//                _elevator.setElevatorSpeeds(0);
-//                break;
-//        }
-    }
+            case Down:
+                speed = (Constants.Elevator.GOAL_SPEED -(_step/Constants.Elevator.STEPS))* (Constants.Elevator.GOAL_SPEED - Constants.Elevator.MIN_SPEED);
+                _elevator.setElevatorSpeeds(speed);
+                if (_elevator.getRawMAGEncoder() == _setpoint.getValue()) {
 
+                }
+        }
+        return speed;
+    }
     private boolean withinTolerance() {
         return Math.abs(_position-_setpoint.getValue()) <= TOLERANCE;
     }

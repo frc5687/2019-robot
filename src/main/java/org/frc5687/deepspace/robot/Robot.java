@@ -66,9 +66,8 @@ public class Robot extends TimedRobot implements ILoggingSource {
         _oi.initializeButtons(this);
         _limelight.disableLEDs();
         _arm.resetEncoder();
-        launchpad = new Launchpad(2);
-        _light = new JoystickLight(launchpad, 1);
-        _light.set(true);
+
+
     }
 
     /**
@@ -101,6 +100,7 @@ public class Robot extends TimedRobot implements ILoggingSource {
     }
 
     public void teleopInit() {
+        _oi._testLight.set(false);
         _arm.enableBrakeMode();
         _elevator.enableBrakeMode();
     }

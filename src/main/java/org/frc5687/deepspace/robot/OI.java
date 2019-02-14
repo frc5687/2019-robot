@@ -7,10 +7,7 @@ import org.frc5687.deepspace.robot.commands.*;
 import org.frc5687.deepspace.robot.subsystems.Arm;
 import org.frc5687.deepspace.robot.subsystems.Elevator;
 import org.frc5687.deepspace.robot.subsystems.Shifter;
-import org.frc5687.deepspace.robot.utils.AxisButton;
-import org.frc5687.deepspace.robot.utils.Gamepad;
-import org.frc5687.deepspace.robot.utils.JoystickLight;
-import org.frc5687.deepspace.robot.utils.OutliersProxy;
+import org.frc5687.deepspace.robot.utils.*;
 
 import static org.frc5687.deepspace.robot.utils.Helpers.applyDeadband;
 import static org.frc5687.deepspace.robot.utils.Helpers.applySensitivityFactor;
@@ -18,6 +15,7 @@ import static org.frc5687.deepspace.robot.utils.Helpers.applySensitivityFactor;
 public class OI extends OutliersProxy {
     protected Gamepad _driverGamepad;
     protected Gamepad _operatorGamepad;
+    protected Launchpad _launchpad;
     private Button _operatorRightTrigger;
     private Button _operatorLeftTrigger;
 
@@ -42,11 +40,12 @@ public class OI extends OutliersProxy {
     private Button _driverStartButton;
     private Button _driverBackButton;
 
-    private JoystickLight testLight;
+    public JoystickLight _testLight;
 
     public OI(){
         _driverGamepad = new Gamepad(0);
         _operatorGamepad = new Gamepad(1);
+        _launchpad = new Launchpad(2);
 
         _operatorLeftTrigger = new AxisButton(_operatorGamepad, Gamepad.Axes.LEFT_TRIGGER.getNumber(), Constants.OI.AXIS_BUTTON_THRESHHOLD);
         _operatorRightTrigger = new AxisButton(_operatorGamepad, Gamepad.Axes.RIGHT_TRIGGER.getNumber(), Constants.OI.AXIS_BUTTON_THRESHHOLD);
@@ -73,6 +72,8 @@ public class OI extends OutliersProxy {
 
         _driverStartButton = new JoystickButton(_driverGamepad, Gamepad.Buttons.START.getNumber());
         _driverBackButton = new JoystickButton(_driverGamepad, Gamepad.Buttons.BACK.getNumber());
+
+        _testLight = new JoystickLight(_launchpad, 1);
 
     }
     public void initializeButtons(Robot robot){

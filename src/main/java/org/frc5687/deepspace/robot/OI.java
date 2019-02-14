@@ -161,6 +161,9 @@ public class OI extends OutliersProxy {
     public int getOperatorPOV() {
         return POV.fromWPILIbAngle(0, _operatorGamepad.getPOV()).getDirectionValue();
     }
+    public int getDriverPOV() {
+        return POV.fromWPILIbAngle(0, _driverGamepad.getPOV()).getDirectionValue();
+    }
 
     protected double getSpeedFromAxis(Joystick gamepad, int axisNumber) {
         return gamepad.getRawAxis(axisNumber);

@@ -23,6 +23,7 @@ public class MoveArmToSetPoint extends OutliersCommand {
     private long _startTime;
     private PIDController _pidController;
 
+
     public MoveArmToSetPoint(Arm arm, Arm.Setpoint setpoint, Arm.HallEffectSensor hallEffectSensor, Arm.MotionMode mode){
         _arm = arm;
         _hallEffectSensor = hallEffectSensor;

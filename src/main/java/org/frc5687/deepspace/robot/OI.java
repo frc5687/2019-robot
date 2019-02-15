@@ -92,11 +92,11 @@ public class OI extends OutliersProxy {
 
     }
     public void initializeButtons(Robot robot){
-        //_driverStartButton.whenPressed(new Launch(robot));
-        //_driverBackButton.whenPressed(new Climb(robot));
+        _driverStartButton.whenPressed(new StartGripper(robot.getGripper()));
+        _driverBackButton.whenPressed(new StopGripper(robot.getGripper()));
 
-        _operatorStartButton.whenPressed(new CloseSpear(robot.getSpear()));
-        _operatorBackButton.whenReleased(new OpenSpear(robot.getSpear()));
+        _operatorStartButton.whenPressed(new WristUp(robot,robot.getWrist()));
+        _operatorBackButton.whenReleased(new WristDown(robot, robot.getWrist()));
 
         _operatorRightBumper.whenPressed(new CargoMode(robot));
         _operatorLeftBumper.whenPressed(new HatchMode(robot));
@@ -105,10 +105,11 @@ public class OI extends OutliersProxy {
         _driverLeftBumper.whenPressed(new Shift(robot.getDriveTrain(), robot.getShifter(), Shifter.Gear.HIGH, false));
 
 //        _operatorRightTrigger.whenPressed(new Score(robot));
-        _operatorLeftBumper.whenActive(new Intake(robot));
+        _operatorRightTrigger.whenActive(new Intake(robot));
 
 //        _driverRightTrigger.whenPressed(new AutoScore(robot));
         _driverLeftTrigger.whenPressed(new AutoIntake(robot));
+
 
 //        _operatorUpButton.whenPressed(new Manual(robot));
 //        _operatorDownButton.whenPressed(new CancelAuto(robot));
@@ -119,12 +120,12 @@ public class OI extends OutliersProxy {
         _operatorAButton.whenPressed(new MoveElevatorToSetPoint(robot.getElevator(), Elevator.Setpoint.Hatch1, Elevator.MotionMode.PID));
         _operatorBButton.whenPressed(new MoveElevatorToSetPoint(robot.getElevator(), Elevator.Setpoint.Hatch2, Elevator.MotionMode.PID));
         _operatorYButton.whenPressed(new MoveElevatorToSetPoint(robot.getElevator(), Elevator.Setpoint.Hatch3, Elevator.MotionMode.PID));
-        _operatorXButton.whenPressed(new MoveElevatorToSetPoint(robot.getElevator(), Elevator.Setpoint.Bottom, Elevator.MotionMode.PID));
+        _operatorXButton.whenPressed(new MoveElevatorToSetPoint(robot.getElevator(), Elevator.Setpoint.HPMode, Elevator.MotionMode.PID));
 
-        _driverAButton.whenPressed(new MoveArmToSetPoint(robot.getArm(), Arm.Setpoint.Floor, Arm.HallEffectSensor.LOW, Arm.MotionMode.Simple));
+        _driverYButton.whenPressed(new MoveArmToSetPoint(robot.getArm(), Arm.Setpoint.Floor, Arm.HallEffectSensor.LOW, Arm.MotionMode.Simple));
         _driverBButton.whenPressed(new MoveArmToSetPoint(robot.getArm(), Arm.Setpoint.Intake, Arm.HallEffectSensor.INTAKE, Arm.MotionMode.Simple));
         _driverXButton.whenPressed(new MoveArmToSetPoint(robot.getArm(), Arm.Setpoint.Secure, Arm.HallEffectSensor.SECURE, Arm.MotionMode.Simple));
-        _driverYButton.whenPressed(new MoveArmToSetPoint(robot.getArm(), Arm.Setpoint.Stowed, Arm.HallEffectSensor.STOWED, Arm.MotionMode.Simple));
+        _driverAButton.whenPressed(new MoveArmToSetPoint(robot.getArm(), Arm.Setpoint.Stowed, Arm.HallEffectSensor.STOWED, Arm.MotionMode.Simple));
 
     }
     public double getDriveSpeed() {

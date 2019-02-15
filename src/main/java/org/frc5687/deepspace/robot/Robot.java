@@ -69,7 +69,6 @@ public class Robot extends TimedRobot implements ILoggingSource {
         _wrist = new Wrist(this);
         _oi.initializeButtons(this);
         _limelight.disableLEDs();
-        _arm.resetEncoder();
         _status.setConfiguration(Configuration.starting);
     }
 
@@ -103,6 +102,7 @@ public class Robot extends TimedRobot implements ILoggingSource {
     }
 
     public void teleopInit() {
+        _arm.resetEncoder();
         _arm.enableBrakeMode();
         _elevator.enableBrakeMode();
         _stilt.enableBrakeMode();

@@ -13,6 +13,7 @@ public class CargoIntake extends CommandGroup {
         addSequential(new WristDown(robot, robot.getWrist()));
         addSequential(new StartRoller(robot.getRoller(), true));
         addSequential(new StopRoller(robot.getRoller()));
+        addSequential(new StartGripper(robot.getGripper()));
         addSequential(new MoveArmToSetPoint(robot.getArm(), Arm.Setpoint.Secure, Arm.HallEffectSensor.SECURE, Arm.MotionMode.Simple));
         addSequential(new StartGripper(robot.getGripper()));
         addSequential(new MoveElevatorToSetPoint(robot.getElevator(), Elevator.Setpoint.Secure, Elevator.MotionMode.PID));

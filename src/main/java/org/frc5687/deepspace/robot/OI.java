@@ -11,6 +11,7 @@ import org.frc5687.deepspace.robot.subsystems.Stilt;
 import org.frc5687.deepspace.robot.utils.AxisButton;
 import org.frc5687.deepspace.robot.utils.Gamepad;
 import org.frc5687.deepspace.robot.utils.OutliersProxy;
+import org.frc5687.deepspace.robot.utils.POV;
 
 import static org.frc5687.deepspace.robot.utils.Helpers.applyDeadband;
 import static org.frc5687.deepspace.robot.utils.Helpers.applySensitivityFactor;
@@ -89,24 +90,35 @@ public class OI extends OutliersProxy {
         _driverLeftBumper.whenPressed(new Shift(robot.getDriveTrain(), robot.getShifter(), Shifter.Gear.HIGH, false));
         _driverRightBumper.whenPressed(new Shift(robot.getDriveTrain(), robot.getShifter(), Shifter.Gear.LOW, false));
 
-        _driverLeftTrigger.whenPressed(new CargoIntake(robot));
+//        _operatorRightTrigger.whenPressed(new Score(robot));
+        _operatorLeftTrigger.whenPressed(new Intake(robot));
+
+//        _driverRightTrigger.whenPressed(new AutoScore(robot));
+        _driverLeftTrigger.whenPressed(new AutoIntake(robot));
+
+//        _operatorUpButton.whenPressed(new Manual(robot));
+//        _operatorDownButton.whenPressed(new CancelAuto(robot));
+//        _driverUpButton.whenPressed(new Manual(robot));
+//        _driverDownButton.whenPressed(new CancelAuto(robot));
 
 
         _operatorAButton.whenPressed(new MoveElevatorToSetPoint(robot.getElevator(), Elevator.Setpoint.Secure, Elevator.MotionMode.PID));
         _operatorBButton.whenPressed(new MoveElevatorToSetPoint(robot.getElevator(), Elevator.Setpoint.Hatch2, Elevator.MotionMode.PID));
-        _operatorYButton.whenPressed(new MoveElevatorToSetPoint(robot.getElevator(), Elevator.Setpoint.Top, Elevator.MotionMode.PID));
-        _operatorXButton.whenPressed(new MoveElevatorToSetPoint(robot.getElevator(), Elevator.Setpoint.Bottom, Elevator.MotionMode.PID));
+        _operatorYButton.whenPressed(new MoveElevatorToSetPoint(robot.getElevator(), Elevator.Setpoint.Hatch3, Elevator.MotionMode.PID));
+        _operatorXButton.whenPressed(new MoveElevatorToSetPoint(robot.getElevator(), Elevator.Setpoint.HPMode, Elevator.MotionMode.PID));
 
-        _driverAButton.whenPressed(new MoveArmToSetPoint(robot.getArm(), Arm.Setpoint.Floor, Arm.HallEffectSensor.LOW, Arm.MotionMode.Simple));
+
+        _driverYButton.whenPressed(new MoveArmToSetPoint(robot.getArm(), Arm.Setpoint.Floor, Arm.HallEffectSensor.LOW, Arm.MotionMode.Simple));
         _driverBButton.whenPressed(new MoveArmToSetPoint(robot.getArm(), Arm.Setpoint.Intake, Arm.HallEffectSensor.INTAKE, Arm.MotionMode.Simple));
         _driverXButton.whenPressed(new MoveArmToSetPoint(robot.getArm(), Arm.Setpoint.Secure, Arm.HallEffectSensor.SECURE, Arm.MotionMode.Simple));
-        _driverYButton.whenPressed(new MoveArmToSetPoint(robot.getArm(), Arm.Setpoint.Stowed, Arm.HallEffectSensor.STOWED, Arm.MotionMode.Simple));
+        _driverAButton.whenPressed(new MoveArmToSetPoint(robot.getArm(), Arm.Setpoint.Stowed, Arm.HallEffectSensor.STOWED, Arm.MotionMode.Simple));
 
     }
     public double getDriveSpeed() {
         double speed = -getSpeedFromAxis(_driverGamepad, Gamepad.Axes.LEFT_Y.getNumber());
         speed = applyDeadband(speed, Constants.DriveTrain.DEADBAND);
-        return applySensitivityFactor(speed, Constants.DriveTrain.SPEED_SENSITIVITY);
+        return applySensitivityFactor(speed, Constants.DriveTrain.
+                SPEED_SENSITIVITY);
     }
 
     public double getDriveRotation() {
@@ -133,6 +145,14 @@ public class OI extends OutliersProxy {
         double speed = getSpeedFromAxis(_operatorGamepad, Gamepad.Axes.RIGHT_TRIGGER.getNumber())*Constants.Stilt.MAX_Stilt_SPEED;
         speed = applyDeadband(speed, Constants.Stilt.DEADBAND);
         return applySensitivityFactor(speed,Constants.Stilt.SENSITVITY);
+    }
+
+
+    public int getOperatorPOV() {
+        return POV.fromWPILIbAngle(0, _operatorGamepad.getPOV()).getDirectionValue();
+    }
+    public int getDriverPOV() {
+        return POV.fromWPILIbAngle(0, _driverGamepad.getPOV()).getDirectionValue();
     }
 
 

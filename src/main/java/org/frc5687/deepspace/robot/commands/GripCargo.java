@@ -7,10 +7,10 @@ import org.frc5687.deepspace.robot.subsystems.Gripper;
 /**
  * Runs the vaccuum motor and finishes (without stopping the motor) once the cargo is secured.
  */
-public class GripHargo extends OutliersCommand {
+public class GripCargo extends OutliersCommand {
     public Gripper _gripper;
 
-    public GripHargo(Gripper gripper){
+    public GripCargo(Gripper gripper){
         _gripper = gripper;
         requires(_gripper);
     }

@@ -57,6 +57,7 @@ public class Robot extends TimedRobot implements ILoggingSource {
         _lights = new Lights(this);
         _status = new StatusProxy(this);
         _limelight = new Limelight("limelight");
+        _shifter = new Shifter(this);
         _driveTrain = new DriveTrain(this);
         _arm = new Arm(this);
         _roller = new Roller(this);
@@ -66,7 +67,6 @@ public class Robot extends TimedRobot implements ILoggingSource {
         _gripper= new Gripper(this);
         _spear = new Spear(this);
         _wrist = new Wrist(this);
-        _shifter = new Shifter(this);
         _oi.initializeButtons(this);
         _limelight.disableLEDs();
         _arm.resetEncoder();

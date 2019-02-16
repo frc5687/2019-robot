@@ -152,10 +152,9 @@ public class OI extends OutliersProxy {
         return applySensitivityFactor(speed, Constants.Arm.SENSITIVITY);
     }
     public double getRollerSpeed() {
-    return 0;
-//        double speed = getSpeedFromAxis(_operatorGamepad, Gamepad.Axes.LEFT_TRIGGER.getNumber()) * Constants.Roller.MAX_SPEED;
-//        speed = applyDeadband(speed, Constants.Roller.DEADBAND);
-//        return applySensitivityFactor(speed, Constants.Roller.SENSITIVITY);
+        double speed = getSpeedFromAxis(_operatorGamepad, Gamepad.Axes.LEFT_X.getNumber()) * Constants.Roller.MAX_SPEED;
+        speed = applyDeadband(speed, Constants.Roller.DEADBAND);
+        return applySensitivityFactor(speed, Constants.Roller.SENSITIVITY);
     }
     public double getElevatorSpeed() {
         double speed = -getSpeedFromAxis(_operatorGamepad, Gamepad.Axes.RIGHT_Y.getNumber()) * Constants.Elevator.MAX_ELEVATOR_SPEED;

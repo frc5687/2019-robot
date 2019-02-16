@@ -88,7 +88,7 @@ public class Constants {
     public class Roller {
         public static final double MAX_SPEED = 1.0;
         public static final boolean MOTOR_INVERTED = false;
-        public static final double DEADBAND = 0.01;
+        public static final double DEADBAND = 0.05;
         public static final double SENSITIVITY = 0.5;
         public static final double INTAKE_SPEED = 1.0;
         public static final long TIME_MILLI_SEC = 1000;

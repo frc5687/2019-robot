@@ -17,7 +17,7 @@ public class AutoIntake extends OutliersCommand {
         if (_robot.getConfiguration() == Robot.Configuration.hatch) {
             (new OpenSpear(_robot.getSpear())).start();
         } else if(_robot.getConfiguration() == Robot.Configuration.cargo) {
-            (new CloseSpear(_robot.getSpear())).start();
+            (new CargoIntake(_robot)).start();
         }
         metric("Mode", _robot.getConfiguration().toString());
     }

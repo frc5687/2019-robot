@@ -9,7 +9,8 @@ public class CargoMode extends CommandGroup {
     public CargoMode(Robot robot) {
         addSequential(new MoveElevatorToSetPoint(robot.getElevator(), Elevator.Setpoint.ClearRoller, Elevator.MotionMode.PID));
         addSequential(new MoveArmToSetPoint(robot.getArm(), Arm.Setpoint.Intake, Arm.HallEffectSensor.INTAKE, Arm.MotionMode.Simple));
-        addSequential(new WristUp(robot, robot.getWrist()));
-        addSequential(new MoveElevatorToSetPoint(robot.getElevator(), Elevator.Setpoint.Bottom, Elevator.MotionMode.PID));
+        addSequential(new WristDown(robot, robot.getWrist()));
+        //addSequential(new MoveElevatorToSetPoint(robot.getElevator(), Elevator.Setpoint.ClearRoller, Elevator.MotionMode.PID));
+        addSequential(new SetConfiguration(robot, Robot.Configuration.cargo));
     }
 }

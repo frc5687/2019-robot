@@ -68,9 +68,11 @@ public class Robot extends TimedRobot implements ILoggingSource {
         _spear = new Spear(this);
         _wrist = new Wrist(this);
         _oi.initializeButtons(this);
-        _limelight.disableLEDs();
+        // _limelight.disableLEDs();
+        _limelight.setStreamingMode(Limelight.StreamMode.PIP_SECONDARY);
         _status.setConfiguration(Configuration.starting);
-    }
+        _arm.resetEncoder();
+        }
 
     /**
      * This function is called every robot packet, no matter the mode. Use
@@ -102,7 +104,6 @@ public class Robot extends TimedRobot implements ILoggingSource {
     }
 
     public void teleopInit() {
-        _arm.resetEncoder();
         _arm.enableBrakeMode();
         _elevator.enableBrakeMode();
         _stilt.enableBrakeMode();
@@ -213,6 +214,7 @@ public class Robot extends TimedRobot implements ILoggingSource {
     }
     public void setConfiguration(Configuration configuration) {
         _configuration = configuration;
+        _status.setConfiguration(configuration);
     }
     public Configuration getConfiguration() {
         return _configuration;

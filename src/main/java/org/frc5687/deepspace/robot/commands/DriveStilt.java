@@ -18,7 +18,7 @@ public class DriveStilt extends OutliersCommand {
         @Override
         protected void execute() {
             double speed = _oi.getStiltSpeed();
-            _stilt.drive(speed);
+            _stilt.drive(0);
         }
 
         @Override

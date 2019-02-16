@@ -23,9 +23,9 @@ public class MoveArmToSetPoint extends OutliersCommand {
     private long _startTime;
     private PIDController _pidController;
 
+
     public MoveArmToSetPoint(Arm arm, Arm.Setpoint setpoint, Arm.HallEffectSensor hallEffectSensor, Arm.MotionMode mode){
         _arm = arm;
-        _hallEffectSensor = hallEffectSensor;
         _setpoint = setpoint;
         _mode = mode;
         _hallEffectSensor = hallEffectSensor;
@@ -36,7 +36,7 @@ public class MoveArmToSetPoint extends OutliersCommand {
     protected void initialize(){
         _position = _arm.getPosition();
         if (withinTolerance()) { return; }
-        info("Moving to setpoint " + _setpoint.name() + " (" + _setpoint.getValue() + ") using " + _mode.name() + " mode.");
+        DriverStation.reportError("Moving to setpoint " + _setpoint.name() + " (" + _setpoint.getValue() + ") using " + _mode.name() + " mode.", false);
         switch(_mode) {
             case HallOnly:
                 _direction = getDirection(_hallEffectSensor);
@@ -60,9 +60,11 @@ public class MoveArmToSetPoint extends OutliersCommand {
                 break;
             case Simple:
                 if (_position  < _setpoint.getPosition() - TOLERANCE) {
-                    _arm.setSpeed(-SPEED_UP);
-                } else if (_position > _setpoint.getPosition() + TOLERANCE) {
+                    DriverStation.reportError(_position + " < " + _setpoint.getPosition() + " - " + TOLERANCE + " setting speed to " + SPEED_DOWN, false);
                     _arm.setSpeed(SPEED_DOWN);
+                } else if (_position > _setpoint.getPosition() + TOLERANCE) {
+                    DriverStation.reportError(_position + " > " + _setpoint.getPosition() + " + " + TOLERANCE + " setting speed to " + (-SPEED_UP), false);
+                    _arm.setSpeed(-SPEED_UP);
                 } else {
                     _arm.setSpeed(0);
                 }
@@ -144,7 +146,8 @@ public class MoveArmToSetPoint extends OutliersCommand {
             _pidController.disable();
         }
         _arm.setSpeed(0);
-        info("Reached setpoint " + _setpoint.name() + " (" + _position + ")");
+
+        DriverStation.reportError("Reached setpoint " + _setpoint.name() + " (" + _position + ")", false);
     }
 
 

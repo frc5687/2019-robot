@@ -29,7 +29,8 @@ public class JoystickLight {
     }
 
     public void set(boolean value) {
-        m_joystick.setOutput(m_outputNumber, value = m_value);
+        m_value = value;
+        m_joystick.setOutput(m_outputNumber, m_value);
 
     }
 

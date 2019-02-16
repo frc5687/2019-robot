@@ -72,7 +72,6 @@ public class OI extends OutliersProxy {
 
         _driverStartButton = new JoystickButton(_driverGamepad, Gamepad.Buttons.START.getNumber());
         _driverBackButton = new JoystickButton(_driverGamepad, Gamepad.Buttons.BACK.getNumber());
-
         _testLight = new JoystickLight(_launchpad, 1);
 
     }
@@ -100,6 +99,7 @@ public class OI extends OutliersProxy {
         _driverXButton.whenPressed(new MoveArmToSetPoint(robot.getArm(), Arm.Setpoint.Secure, Arm.HallEffectSensor.SECURE, Arm.MotionMode.Simple));
         _driverYButton.whenPressed(new MoveArmToSetPoint(robot.getArm(), Arm.Setpoint.Stowed, Arm.HallEffectSensor.STOWED, Arm.MotionMode.Simple));
 
+        _testLight.set(true);
     }
     public double getDriveSpeed() {
         double speed = -getSpeedFromAxis(_driverGamepad, Gamepad.Axes.LEFT_Y.getNumber());

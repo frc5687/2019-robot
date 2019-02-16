@@ -3,6 +3,7 @@ package org.frc5687.deepspace.robot;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import org.frc5687.deepspace.robot.commands.KillAll;
 import org.frc5687.deepspace.robot.subsystems.*;
 import org.frc5687.deepspace.robot.utils.*;
 
@@ -122,6 +123,14 @@ public class Robot extends TimedRobot implements ILoggingSource {
      */
     @Override
     public void teleopPeriodic() {
+        int operatorPOV = _oi.getOperatorPOV();
+        int driverPOV = _oi.getDriverPOV();
+
+
+        if (driverPOV != 0 || operatorPOV != 0) {
+            new KillAll(this).start();
+        }
+
         Scheduler.getInstance().run();
     }
 

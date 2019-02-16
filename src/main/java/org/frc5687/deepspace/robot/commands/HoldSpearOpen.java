@@ -15,9 +15,9 @@ public class HoldSpearOpen extends OutliersCommand {
     }
     @Override
     protected void initialize() {
-        if (_robot.getConfiguration() == Robot.Configuration.hatch) {
+//        if (_robot.getConfiguration() == Robot.Configuration.hatch) {
             _spear.open();
-        }
+//        }
     }
 
     @Override
@@ -27,9 +27,9 @@ public class HoldSpearOpen extends OutliersCommand {
 
     @Override
     protected void end() {
-        if (_robot.getConfiguration() == Robot.Configuration.hatch) {
+//        if (_robot.getConfiguration() == Robot.Configuration.hatch) {
             _spear.close();
-        }
+//        }
     }
 
     @Override

@@ -73,7 +73,12 @@ public class Robot extends TimedRobot implements ILoggingSource {
         _limelight.setStreamingMode(Limelight.StreamMode.PIP_SECONDARY);
         _status.setConfiguration(Configuration.starting);
         _arm.resetEncoder();
-        }
+
+        _arm.enableBrakeMode();
+        _elevator.enableBrakeMode();
+        _stilt.enableBrakeMode();
+
+    }
 
     /**
      * This function is called every robot packet, no matter the mode. Use
@@ -105,9 +110,6 @@ public class Robot extends TimedRobot implements ILoggingSource {
     }
 
     public void teleopInit() {
-        _arm.enableBrakeMode();
-        _elevator.enableBrakeMode();
-        _stilt.enableBrakeMode();
     }
 
     /**
@@ -144,17 +146,20 @@ public class Robot extends TimedRobot implements ILoggingSource {
 
     @Override
     public void disabledInit() {
+/*
         RioLogger.getInstance().forceSync();
         RioLogger.getInstance().close();
         _arm.enableCoastMode();
         _elevator.enableCoastMode();
         _stilt.enableCoastMode();
+         */
     }
 
 
     public void updateDashboard() {
         _updateTick++;
         if (_updateTick >= Constants.TICKS_PER_UPDATE) {
+            _updateTick = 0;
             _oi.updateDashboard();
             _driveTrain.updateDashboard();
             _limelight.updateDashboard();
@@ -165,7 +170,6 @@ public class Robot extends TimedRobot implements ILoggingSource {
             _shifter.updateDashboard();
             _lights.updateDashboard();
             _status.updateDashboard();
-            _updateTick = 0;
             _stilt.updateDashboard();
         }
     }

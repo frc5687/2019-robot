@@ -104,8 +104,8 @@ public class OI extends OutliersProxy {
         _driverStartButton.whenPressed(new OpenSpear(robot.getSpear()));
         _driverBackButton.whenPressed(new CloseSpear(robot.getSpear()));
 
-//        _driverStartButton.whenPressed(new StartGripper(robot.getGripper()));
-//        _driverBackButton.whenPressed(new StopGripper(robot.getGripper()));
+        _operatorStartButton.whenPressed(new StartGripper(robot.getGripper()));
+        _operatorBackButton.whenPressed(new StopGripper(robot.getGripper()));
 
 //        _operatorStartButton.whenPressed(new WristUp(robot,robot.getWrist()));
 //        _operatorBackButton.whenReleased(new WristDown(robot, robot.getWrist()));
@@ -147,7 +147,7 @@ public class OI extends OutliersProxy {
     public double getDriveSpeed() {
         double speed = -getSpeedFromAxis(_driverGamepad, Gamepad.Axes.LEFT_Y.getNumber());
         speed = applyDeadband(speed, Constants.DriveTrain.DEADBAND);
-        return applySensitivityFactor(speed, Constants.DriveTrain.SPEED_SENSITIVITY);
+        return speed;
     }
 
     public double getDriveRotation() {

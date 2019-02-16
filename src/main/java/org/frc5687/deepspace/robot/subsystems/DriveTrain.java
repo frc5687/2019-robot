@@ -126,7 +126,7 @@ public class DriveTrain extends OutliersSubsystem {
 
         double maxInput = Math.copySign(Math.max(Math.abs(speed), Math.abs(rotation)), speed);
 
-        if (speed<Constants.DriveTrain.DEADBAND) {
+        if (speed < Constants.DriveTrain.DEADBAND && speed > -Constants.DriveTrain.DEADBAND) {
             metric("Rot/Raw", rotation);
             rotation = applySensitivityFactor(rotation, _shifter.getGear()== Shifter.Gear.HIGH  ? Constants.DriveTrain.ROTATION_SENSITIVITY_HIGH_GEAR : Constants.DriveTrain.ROTATION_SENSITIVITY_LOW_GEAR);
             metric("Rot/Transformed", rotation);
@@ -137,11 +137,15 @@ public class DriveTrain extends OutliersSubsystem {
         } else {
             // Square the inputs (while preserving the sign) to increase fine control
             // while permitting full power.
-            speed = applySensitivityFactor(speed, Constants.DriveTrain.SPEED_SENSITIVITY);
+            metric("Str/Raw", speed);
+            speed = Math.copySign(applySensitivityFactor(speed, Constants.DriveTrain.SPEED_SENSITIVITY), speed);
+            metric("Str/Trans", speed);
             rotation = applySensitivityFactor(rotation, _shifter.getGear()== Shifter.Gear.HIGH  ? Constants.DriveTrain.TURNING_SENSITIVITY_HIGH_GEAR : Constants.DriveTrain.TURNING_SENSITIVITY_LOW_GEAR);
             double delta = rotation * Math.abs(speed);
             leftMotorOutput = speed + delta;
             rightMotorOutput = speed - delta;
+            metric("Str/LeftMotor", leftMotorOutput);
+            metric("Str/RightMotor", rightMotorOutput);
         }
 
         setPower(limit(leftMotorOutput), limit(rightMotorOutput), true);

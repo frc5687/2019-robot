@@ -23,6 +23,8 @@ public class KillAll extends OutliersCommand {
 
     @Override
     protected void initialize() {
+        _robot.getRoller().stop();
+        _robot.getGripper().stop();
         _finished = true;
         DriverStation.reportError("Initialize KillAll Command", false);
     }

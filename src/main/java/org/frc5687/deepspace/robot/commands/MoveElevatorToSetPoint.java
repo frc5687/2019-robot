@@ -114,7 +114,7 @@ public class MoveElevatorToSetPoint extends OutliersCommand {
     @Override
     protected void end() {
         long endTime = System.currentTimeMillis();
-        DriverStation.reportError("Ran for " + (endTime - _startTime) + " millis", false);
+        DriverStation.reportError("MoveElevatorToSetpoint Ran for " + (endTime - _startTime) + " millis", false);
         if (_pidController!=null) {
             _pidController.disable();
         }

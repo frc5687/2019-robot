@@ -12,8 +12,8 @@ public class Constants {
         public static final double DEADBAND = 0.05;
         public static final double SPEED_SENSITIVITY = 0.50;
         public static final double ROTATION_SENSITIVITY = 0.75;
-        public static final double ROTATION_SENSITIVITY_HIGH_GEAR = 0.75;
-        public static final double ROTATION_SENSITIVITY_LOW_GEAR = 0.75;
+        public static final double ROTATION_SENSITIVITY_HIGH_GEAR = 0.5;
+        public static final double ROTATION_SENSITIVITY_LOW_GEAR = 0.5;
         public static final double TURNING_SENSITIVITY_HIGH_GEAR = 0.75;
         public static final double TURNING_SENSITIVITY_LOW_GEAR = 0.75;
 
@@ -51,8 +51,8 @@ public class Constants {
     }
     public class Spear {
 
-        public static final long OPEN_MILLI_SEC = 150;
-        public static final long CLOSE_MILLI_SEC = 150;
+        public static final long OPEN_MILLI_SEC = 40;
+        public static final long CLOSE_MILLI_SEC = 40;
     }
 
     public static class Elevator {
@@ -88,10 +88,11 @@ public class Constants {
     public class Roller {
         public static final double MAX_SPEED = 1.0;
         public static final boolean MOTOR_INVERTED = false;
-        public static final double DEADBAND = 0.01;
+        public static final double DEADBAND = 0.1;
         public static final double SENSITIVITY = 0.5;
         public static final double INTAKE_SPEED = 1.0;
         public static final long TIME_MILLI_SEC = 1000;
+        public static final int CARGO_DETECTED_THRESHOLD = 2000;
     }
 
     public class Arm {

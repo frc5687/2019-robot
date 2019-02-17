@@ -57,7 +57,7 @@ public class Roller extends OutliersSubsystem {
     }
 
     public boolean isBallDetected() {
-        return _ballIR.getValue() > 2200;
+        return _ballIR.getValue() > Constants.Roller.CARGO_DETECTED_THRESHOLD;
     }
 
     @Override

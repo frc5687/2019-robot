@@ -5,7 +5,6 @@ import org.frc5687.deepspace.robot.Robot;
 import org.frc5687.deepspace.robot.subsystems.Spear;
 public class OpenSpear extends OutliersCommand {
     private Spear _spear;
-    private boolean _done = false;
     private long _startTime;
 
     public OpenSpear(Spear spear) {
@@ -14,6 +13,7 @@ public class OpenSpear extends OutliersCommand {
     }
     @Override
     protected void initialize() {
+        _spear.open();
         _startTime = System.currentTimeMillis();
     }
 
@@ -24,7 +24,5 @@ public class OpenSpear extends OutliersCommand {
 
     @Override
     protected void execute(){
-       _spear.open();
-       _done = true;
     }
 }

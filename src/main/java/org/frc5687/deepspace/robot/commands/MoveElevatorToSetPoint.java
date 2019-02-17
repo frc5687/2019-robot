@@ -9,7 +9,6 @@ import jaci.pathfinder.Pathfinder;
 import jaci.pathfinder.Trajectory;
 import jaci.pathfinder.Waypoint;
 import jaci.pathfinder.followers.DistanceFollower;
-import jaci.pathfinder.followers.EncoderFollower;
 import org.frc5687.deepspace.robot.Constants;
 import org.frc5687.deepspace.robot.subsystems.Elevator;
 
@@ -84,18 +83,18 @@ public class MoveElevatorToSetPoint extends OutliersCommand {
         switch(_mode) {
             case Simple:
                 if (_position  < _setpoint.getValue() - TOLERANCE) {
-                    _elevator.setElevatorSpeeds(SPEED_UP);
+                    _elevator.setSpeed(SPEED_UP);
                 } else if (_position > _setpoint.getValue() + TOLERANCE) {
-                    _elevator.setElevatorSpeeds(-SPEED_DOWN);
+                    _elevator.setSpeed(-SPEED_DOWN);
                 } else {
-                    _elevator.setElevatorSpeeds(0);
+                    _elevator.setSpeed(0);
                 }
                 break;
             case PID:
-                _elevator.setElevatorSpeeds(_pidOutput);
+                _elevator.setSpeed(_pidOutput);
                 break;
             case Path:
-                _elevator.setElevatorSpeeds(_pathOutput);
+                _elevator.setSpeed(_pathOutput);
                 break;
             case Ramp:
                 if (_position  < _setpoint.getValue() - TOLERANCE) {
@@ -107,7 +106,7 @@ public class MoveElevatorToSetPoint extends OutliersCommand {
                 }
                 break;
             default:
-                _elevator.setElevatorSpeeds(0);
+                _elevator.setSpeed(0);
                 break;
         }
     }
@@ -144,27 +143,26 @@ public class MoveElevatorToSetPoint extends OutliersCommand {
         if (withinTolerance()) {
             return true;
         };
-        switch(_mode) {
+        switch (_mode) {
             case PID:
                 return _pidController.onTarget();
             case Path:
                 return _pathFollower.isFinished();
-            default:
-                return false;
         }
+        return false;
     }
 
     @Override
     protected void end() {
         long endTime = System.currentTimeMillis();
-        DriverStation.reportError("Ran for " + (endTime - _startTime) + " millis", false);
+        DriverStation.reportError("MoveElevatorToSetpoint Ran for " + (endTime - _startTime) + " millis", false);
         if (_pidController!=null) {
             _pidController.disable();
         }
         if (_pathNotifier!=null) {
             _pathNotifier.stop();
         }
-        _elevator.setElevatorSpeeds(0);
+        _elevator.setSpeed(0);
         info("Reached setpoint " + _setpoint.name() + " (" + _position + ")");
     }
 

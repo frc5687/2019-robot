@@ -3,6 +3,7 @@ package org.frc5687.deepspace.robot;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import org.frc5687.deepspace.robot.commands.KillAll;
 import org.frc5687.deepspace.robot.subsystems.*;
 import org.frc5687.deepspace.robot.utils.*;
 
@@ -20,6 +21,7 @@ import java.io.FileReader;
 public class Robot extends TimedRobot implements ILoggingSource {
 
     private IdentityMode _identityMode = IdentityMode.competition;
+    private Configuration _configuration;
     private RioLogger.LogLevel _dsLogLevel = RioLogger.LogLevel.warn;
     private RioLogger.LogLevel _fileLogLevel = RioLogger.LogLevel.warn;
 
@@ -37,6 +39,9 @@ public class Robot extends TimedRobot implements ILoggingSource {
     private Wrist _wrist;
     private Roller _roller;
     private Shifter _shifter;
+    private Lights _lights;
+    private StatusProxy _status;
+    private Stilt _stilt;
 
     /**
      * This function is setRollerSpeed when the robot is first started up and should be
@@ -50,19 +55,29 @@ public class Robot extends TimedRobot implements ILoggingSource {
         info("Robot " + _name + " running in " + _identityMode.toString() + " mode");
 
         _oi = new OI();
+        _lights = new Lights(this);
+        _status = new StatusProxy(this);
         _limelight = new Limelight("limelight");
+        _shifter = new Shifter(this);
         _driveTrain = new DriveTrain(this);
         _arm = new Arm(this);
         _roller = new Roller(this);
         _elevator = new Elevator(this);
+        _stilt = new Stilt(this);
         _pdp = new PDP();
         _gripper= new Gripper(this);
         _spear = new Spear(this);
         _wrist = new Wrist(this);
-        _shifter = new Shifter(this);
         _oi.initializeButtons(this);
-        _limelight.disableLEDs();
+        // _limelight.disableLEDs();
+        _limelight.setStreamingMode(Limelight.StreamMode.PIP_SECONDARY);
+        _status.setConfiguration(Configuration.starting);
         _arm.resetEncoder();
+
+        _arm.enableBrakeMode();
+        _elevator.enableBrakeMode();
+        _stilt.enableBrakeMode();
+
     }
 
     /**
@@ -95,8 +110,6 @@ public class Robot extends TimedRobot implements ILoggingSource {
     }
 
     public void teleopInit() {
-        _arm.enableBrakeMode();
-        _elevator.enableBrakeMode();
     }
 
     /**
@@ -112,6 +125,14 @@ public class Robot extends TimedRobot implements ILoggingSource {
      */
     @Override
     public void teleopPeriodic() {
+        int operatorPOV = _oi.getOperatorPOV();
+        int driverPOV = _oi.getDriverPOV();
+
+
+        if (driverPOV != 0 || operatorPOV != 0) {
+            new KillAll(this).start();
+        }
+
         Scheduler.getInstance().run();
     }
 
@@ -125,16 +146,20 @@ public class Robot extends TimedRobot implements ILoggingSource {
 
     @Override
     public void disabledInit() {
+/*
         RioLogger.getInstance().forceSync();
         RioLogger.getInstance().close();
         _arm.enableCoastMode();
         _elevator.enableCoastMode();
+        _stilt.enableCoastMode();
+         */
     }
 
 
     public void updateDashboard() {
         _updateTick++;
         if (_updateTick >= Constants.TICKS_PER_UPDATE) {
+            _updateTick = 0;
             _oi.updateDashboard();
             _driveTrain.updateDashboard();
             _limelight.updateDashboard();
@@ -143,7 +168,9 @@ public class Robot extends TimedRobot implements ILoggingSource {
             _elevator.updateDashboard();
             _pdp.updateDashboard();
             _shifter.updateDashboard();
-            _updateTick = 0;
+            _lights.updateDashboard();
+            _status.updateDashboard();
+            _stilt.updateDashboard();
         }
     }
 
@@ -198,6 +225,13 @@ public class Robot extends TimedRobot implements ILoggingSource {
 
         }
     }
+    public void setConfiguration(Configuration configuration) {
+        _configuration = configuration;
+        _status.setConfiguration(configuration);
+    }
+    public Configuration getConfiguration() {
+        return _configuration;
+    }
     @Override
     public void error(String message) {
         RioLogger.error(this, message);
@@ -235,6 +269,8 @@ public class Robot extends TimedRobot implements ILoggingSource {
     public Arm getArm() { return _arm; }
     public Elevator getElevator() { return _elevator; }
     public Shifter getShifter() { return _shifter; }
+    public Lights getLights() { return _lights; }
+    public Stilt getStilt() { return _stilt; }
 
 
 
@@ -252,6 +288,7 @@ public class Robot extends TimedRobot implements ILoggingSource {
         public int getValue() {
             return _value;
         }
+
 
     }
 

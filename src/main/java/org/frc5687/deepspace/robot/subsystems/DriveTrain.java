@@ -4,6 +4,7 @@ import com.revrobotics.CANEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
 import edu.wpi.first.wpilibj.AnalogInput;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.frc5687.deepspace.robot.Constants;
@@ -40,9 +41,12 @@ public class DriveTrain extends OutliersSubsystem {
     private double _oldRightSpeed;
     private boolean _isPaused = false;
 
+    private Shifter _shifter;
+
     public DriveTrain(Robot robot) {
         info("Constructing DriveTrain class.");
         _oi = robot.getOI();
+        _shifter = robot.getShifter();
 
         _frontDistance = new IRDistanceSensor(RobotMap.Analog.FRONT_IR, IRDistanceSensor.Type.MEDIUM);
 
@@ -112,28 +116,36 @@ public class DriveTrain extends OutliersSubsystem {
         metric("Speed", speed);
         metric("Rotation", rotation);
 
-        speed = limit(speed);
+        speed = limit(speed, 1);
         //Shifter.Gear gear = _robot.getShifter().getGear();
 
-        rotation = limit(rotation);
-
-        // Square the inputs (while preserving the sign) to increase fine control
-        // while permitting full power.
-        speed = Math.copySign(speed * speed, speed);
-        rotation = applySensitivityFactor(rotation,  true ? Constants.DriveTrain.ROTATION_SENSITIVITY_HIGH_GEAR : Constants.DriveTrain.ROTATION_SENSITIVITY_LOW_GEAR);
+        rotation = limit(rotation, 1);
 
         double leftMotorOutput;
         double rightMotorOutput;
 
         double maxInput = Math.copySign(Math.max(Math.abs(speed), Math.abs(rotation)), speed);
 
-        if (speed==0.0) {
+        if (speed < Constants.DriveTrain.DEADBAND && speed > -Constants.DriveTrain.DEADBAND) {
+            metric("Rot/Raw", rotation);
+            rotation = applySensitivityFactor(rotation, _shifter.getGear()== Shifter.Gear.HIGH  ? Constants.DriveTrain.ROTATION_SENSITIVITY_HIGH_GEAR : Constants.DriveTrain.ROTATION_SENSITIVITY_LOW_GEAR);
+            metric("Rot/Transformed", rotation);
             leftMotorOutput = rotation;
             rightMotorOutput = -rotation;
+            metric("Rot/LeftMotor", leftMotorOutput);
+            metric("Rot/RightMotor", rightMotorOutput);
         } else {
+            // Square the inputs (while preserving the sign) to increase fine control
+            // while permitting full power.
+            metric("Str/Raw", speed);
+            speed = Math.copySign(applySensitivityFactor(speed, Constants.DriveTrain.SPEED_SENSITIVITY), speed);
+            metric("Str/Trans", speed);
+            rotation = applySensitivityFactor(rotation, _shifter.getGear()== Shifter.Gear.HIGH  ? Constants.DriveTrain.TURNING_SENSITIVITY_HIGH_GEAR : Constants.DriveTrain.TURNING_SENSITIVITY_LOW_GEAR);
             double delta = rotation * Math.abs(speed);
             leftMotorOutput = speed + delta;
             rightMotorOutput = speed - delta;
+            metric("Str/LeftMotor", leftMotorOutput);
+            metric("Str/RightMotor", rightMotorOutput);
         }
 
         setPower(limit(leftMotorOutput), limit(rightMotorOutput), true);

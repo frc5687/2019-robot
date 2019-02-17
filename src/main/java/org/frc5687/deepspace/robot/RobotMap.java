@@ -21,6 +21,7 @@ public class RobotMap {
             public static final int ROLLER = 9;
             public static final int ARM = 16;
             public static final int INTAKE_VACUUM = 0; //vacuum motor for intake is currently not set up, set to 0 for now.
+            public static final int STILT = 13;
         }
         public static class TALONSRX{
             public static final int GRIPPER_VACUUM = 0;
@@ -32,6 +33,7 @@ public class RobotMap {
      * Note that for PWM only one device can connect to each port, so the numbers should be unique.
      */
     public static class PWM {
+        public static final int Blinkin = 0;
         /*  Example:
         public static final int ARM_VICTORSP = 0;
         */

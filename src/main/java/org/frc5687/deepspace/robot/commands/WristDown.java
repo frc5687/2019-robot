@@ -1,15 +1,18 @@
 package org.frc5687.deepspace.robot.commands;
 
 import org.frc5687.deepspace.robot.Constants;
+import org.frc5687.deepspace.robot.Robot;
 import org.frc5687.deepspace.robot.subsystems.Wrist;
 
 public class WristDown extends OutliersCommand {
-    public Wrist _wrist;
+    private Wrist _wrist;
+    private Robot _robot;
     private boolean _done = false;
     private long _startTime;
 
-    public WristDown(Wrist wrist) {
+    public WristDown(Robot robot, Wrist wrist) {
         _wrist = wrist;
+        _robot = robot;
         requires(_wrist);
     }
     @Override
@@ -20,6 +23,8 @@ public class WristDown extends OutliersCommand {
     protected void initialize() {
         _done = false;
         _startTime = System.currentTimeMillis();
+        _robot.setConfiguration(Robot.Configuration.hatch);
+        metric("Mode", _robot.getConfiguration().toString());
     }
     @Override
     protected void execute(){

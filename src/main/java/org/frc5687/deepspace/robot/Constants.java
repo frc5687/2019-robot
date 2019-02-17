@@ -10,10 +10,13 @@ public class Constants {
     public class DriveTrain {
 
         public static final double DEADBAND = 0.05;
-        public static final double SPEED_SENSITIVITY = 0.75;
+        public static final double SPEED_SENSITIVITY = 0.50;
         public static final double ROTATION_SENSITIVITY = 0.75;
-        public static final double ROTATION_SENSITIVITY_HIGH_GEAR = 0.75;
-        public static final double ROTATION_SENSITIVITY_LOW_GEAR = 0.75;
+        public static final double ROTATION_SENSITIVITY_HIGH_GEAR = 0.5;
+        public static final double ROTATION_SENSITIVITY_LOW_GEAR = 0.5;
+        public static final double TURNING_SENSITIVITY_HIGH_GEAR = 0.75;
+        public static final double TURNING_SENSITIVITY_LOW_GEAR = 0.75;
+
         public static final double LEFT_RATIO = 1.090909090909;
         public static final double RIGHT_RATIO = 1.090909090909;
 
@@ -45,6 +48,11 @@ public class Constants {
         public static final double SECURED_AMP_MIN = 3.0;
         public static final double SECURED_AMP_MAX = 4.5;
         public static final long STARTUP_DELAY = 250;
+    }
+    public class Spear {
+
+        public static final long OPEN_MILLI_SEC = 40;
+        public static final long CLOSE_MILLI_SEC = 40;
     }
 
     public static class Elevator {
@@ -83,9 +91,11 @@ public class Constants {
     public class Roller {
         public static final double MAX_SPEED = 1.0;
         public static final boolean MOTOR_INVERTED = false;
-        public static final double DEADBAND = 0.01;
+        public static final double DEADBAND = 0.1;
         public static final double SENSITIVITY = 0.5;
         public static final double INTAKE_SPEED = 1.0;
+        public static final long TIME_MILLI_SEC = 1000;
+        public static final int CARGO_DETECTED_THRESHOLD = 2000;
     }
 
     public class Arm {
@@ -104,6 +114,45 @@ public class Constants {
         public static final double SPEED_UP = 0.75;
         public static final double SPEED_DOWN = 0.75;
 
+    }
+
+    public class Lights {
+        public static final double SOLID_BLUE = 0.87;
+        public static final double PULSING_BLUE = -0.09;
+        public static final double BEATING_BLUE = 0.23;
+
+        public static final double SOLID_RED = 0.61;
+        public static final double PULSING_RED = -0.11;
+        public static final double BEATING_RED = 0.25;
+
+        public static final double SOLID_GREEN = 0.77;
+        public static final double PULSING_GREEN = 0.77; // replace
+        public static final double BEATING_GREEN = 0.00; // unused
+
+        public static final double SOLID_PURPLE = 0.91;
+        public static final double PULSING_PURPLE = 0.05;
+        public static final double BEATING_PURPLE = 0.00;
+
+        public static final double SOLID_ORANGE = 0.06;
+        public static final double PULSING_ORANGE = 0.07;
+        public static final double BEATING_ORANGE = 0.08;
+
+        public static final double SOLID_YELLOW = 0.69;
+        public static final double PULSING_YELLOW = 0.10;
+        public static final double BEATING_YELLOW = 0.11;
+
+        public static final double SOLID_BLACK = 0.99;
+
+        public static final double SOLID_HOT_PINK = 0.57;
+
+        public static final double CONFETTI = -0.87;
+    }
+    public class Stilt {
+        public static final double MAX_Stilt_SPEED = 0.25;
+        public static final double SENSITVITY = 0.1;
+        public static final double DEADBAND = 0.1;
+        public static final boolean MOTOR_INVERTED = false;
+        public static final double STILT_HOLD_SPEED = 0.07;
     }
 
 

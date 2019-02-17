@@ -60,7 +60,7 @@ public class Arm extends OutliersSubsystem implements PIDSource {
 
     public void setSpeed(double speed) {
         if (_arm==null) { return; }
-        speed = Helpers.limit(speed, Constants.Arm.MAX_DRIVE_SPEED);
+        // speed = Helpers.limit(speed, Constants.Arm.MAX_DRIVE_SPEED);
 
         metric("Speed", speed);
         _arm.set(speed);
@@ -154,7 +154,7 @@ public class Arm extends OutliersSubsystem implements PIDSource {
         }
 
         public int getPosition() {
-            return -_value;
+            return _value;
         }
 
     }

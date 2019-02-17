@@ -2,21 +2,25 @@ package org.frc5687.deepspace.robot.commands;
 
 import org.frc5687.deepspace.robot.Constants;
 import org.frc5687.deepspace.robot.Robot;
+import org.frc5687.deepspace.robot.subsystems.Gripper;
 import org.frc5687.deepspace.robot.subsystems.Spear;
 
 public class HoldSpearOpen extends OutliersCommand {
     private Robot _robot;
     private Spear _spear;
+    private Gripper _gripper;
 
     public HoldSpearOpen(Robot robot) {
         _robot = robot;
         _spear = robot.getSpear();
+        _gripper = robot.getGripper();
         requires(_spear);
+        requires(_gripper);
     }
     @Override
     protected void initialize() {
 //        if (_robot.getConfiguration() == Robot.Configuration.hatch) {
-            _spear.open();
+        _spear.open();
 //        }
     }
 
@@ -29,6 +33,7 @@ public class HoldSpearOpen extends OutliersCommand {
     protected void end() {
 //        if (_robot.getConfiguration() == Robot.Configuration.hatch) {
             _spear.close();
+        _gripper.stop();
 //        }
     }
 

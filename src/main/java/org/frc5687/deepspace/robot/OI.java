@@ -117,8 +117,8 @@ public class OI extends OutliersProxy {
         _driverLeftBumper.whenPressed(new Shift(robot.getDriveTrain(), robot.getShifter(), Shifter.Gear.HIGH, false));
 
 //        _operatorRightTrigger.whenPressed(new Score(robot));
-        _operatorRightTrigger.whenPressed(new Intake(robot));
-        _operatorLeftTrigger.whileHeld(new HoldSpearOpen(robot));
+        _operatorRightTrigger.whileHeld(new HoldSpearOpen(robot));
+        _operatorLeftTrigger.whenPressed(new GripCargo(robot.getGripper(), robot.getOI(), robot.getSpear()));
 
         _driverRightTrigger.whenPressed(new EjectCargo(robot));
         _driverLeftTrigger.whileHeld(new HoldSpearOpen(robot));

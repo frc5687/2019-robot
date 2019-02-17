@@ -12,15 +12,18 @@ public class Spear extends OutliersSubsystem{
     private DoubleSolenoid _spearSolenoid;
     private OI _oi;
     public Spear (Robot robot){
+
         _robot = robot;
        _spearSolenoid = new DoubleSolenoid(RobotMap.PCM.SPEAR_OPEN, RobotMap.PCM.SPEAR_CLOSE);
     }
 
     public void open(){
         _spearSolenoid.set(DoubleSolenoid.Value.kForward);
+        metric("Spear","Open");
     }
     public void close(){
         _spearSolenoid.set(DoubleSolenoid.Value.kReverse);
+        metric("Spear","Closed");
     }
 
     @Override

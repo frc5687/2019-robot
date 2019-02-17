@@ -53,7 +53,7 @@ public class IRDistanceSensor extends AnalogInput {
     private static final double[] _coefficients =  {
             0,
             27.385,
-            28.003,
+            23.999,
             0,
             0
     };
@@ -63,8 +63,8 @@ public class IRDistanceSensor extends AnalogInput {
      */
     private static final double[] _powers = {
             0,
-            -1.203,
-            -1.207,
+            -1.203  ,
+            -1.145,
             0,
             0
     };

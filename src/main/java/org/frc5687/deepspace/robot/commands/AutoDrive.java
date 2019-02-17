@@ -75,6 +75,7 @@ public class AutoDrive extends OutliersCommand {
 
     @Override
     protected void initialize() {
+        error("Start init");
         this.endMillis = maxMillis == 0 ? Long.MAX_VALUE : System.currentTimeMillis() + maxMillis;
         driveTrain.enableBrakeMode();
         if (usePID) {
@@ -109,6 +110,7 @@ public class AutoDrive extends OutliersCommand {
 
     @Override
     protected void execute() {
+        error("starting execute");
         double distanceFactor = 0;
         double angleFactor = 0;
         if (usePID) {
@@ -135,31 +137,31 @@ public class AutoDrive extends OutliersCommand {
     @Override
     protected boolean isFinished() {
         if (maxMillis>0 && endMillis!=Long.MAX_VALUE && System.currentTimeMillis() > endMillis) {
-            RioLogger.info(this.getClass().getSimpleName(), "AutoDrive for " + maxMillis + " timed out.");
+            info("AutoDrive for " + maxMillis + " timed out.");
             return true; }
         if (usePID) {
             if (distanceController.onTarget()) {
                 if (settleTime == 0) {
-                    RioLogger.info(this.getClass().getSimpleName(), "AutoDrive nosettle complete at " + driveTrain.getDistance() + " inches");
+                    info("AutoDrive nosettle complete at " + driveTrain.getDistance() + " inches");
                     return true;
                 }
                 if (settleEnd > 0) {
                     if (System.currentTimeMillis() > settleEnd) {
-                        RioLogger.info(this.getClass().getSimpleName(), "AutoDrive settled at " + driveTrain.getDistance() + " inches");
+                        info("AutoDrive settled at " + driveTrain.getDistance() + " inches");
                         return true;
                     }
                 } else {
-                    RioLogger.info(this.getClass().getSimpleName(), "AutoDrive settling for " + settleTime + "ms");
+                    info("AutoDrive settling for " + settleTime + "ms");
                     settleEnd = System.currentTimeMillis() + settleTime;
                 }
             } else {
                 if (settleEnd > 0) {
-                    RioLogger.info(this.getClass().getSimpleName(), "AutoDrive unsettled at " + driveTrain.getDistance() + " inches");
+                    info("AutoDrive unsettled at " + driveTrain.getDistance() + " inches");
                     settleEnd = 0;
                 }
             }
         } else {
-            RioLogger.info(this.getClass().getSimpleName(), "AutoDrive nopid complete at " + driveTrain.getDistance() + " inches");
+            info("AutoDrive nopid complete at " + driveTrain.getDistance() + " inches");
             return distance == 0 ? true : distance < 0 ? (driveTrain.getDistance() < distance) : (driveTrain.getDistance() >  distance);
         }
         return false;
@@ -169,14 +171,14 @@ public class AutoDrive extends OutliersCommand {
 
     @Override
     protected void end() {
-        RioLogger.info(this.getClass().getSimpleName(), "AutoDrive Finished (" + driveTrain.getDistance() + ", " + (driveTrain.getYaw() - angleController.getSetpoint()) + ") " + (debug==null?"":debug));
+        info("AutoDrive Finished (" + driveTrain.getDistance() + ", " + (driveTrain.getYaw() - angleController.getSetpoint()) + ") " + (debug==null?"":debug));
         driveTrain.enableCoastMode();
         angleController.disable();
         if (distanceController!=null) {
             distanceController.disable();
         }
         if (stopOnFinish) {
-            RioLogger.info(this.getClass().getSimpleName(), "Stopping at ." + driveTrain.getDistance());
+            info("Stopping at ." + driveTrain.getDistance());
             driveTrain.enableBrakeMode();
             driveTrain.setPower(0, 0, true);
         }

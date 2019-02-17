@@ -8,7 +8,7 @@ import org.frc5687.deepspace.robot.utils.MetricTracker;
 import org.frc5687.deepspace.robot.utils.RioLogger;
 
 public abstract class OutliersSubsystem extends Subsystem implements ILoggingSource {
-    private MetricTracker _metricTracker = MetricTracker.createMetricTracker(this);
+    protected MetricTracker _metricTracker = MetricTracker.createMetricTracker(this);
 
     @Override
     public void error(String message) {
@@ -44,14 +44,6 @@ public abstract class OutliersSubsystem extends Subsystem implements ILoggingSou
         SmartDashboard.putBoolean(getClass().getSimpleName() + "/" + name, value);
         _metricTracker.put(name, value);
     }
-
-    public void newMetricRow() {
-        _metricTracker.newMetricRow();
-    }
-
-    public static void newMetricRowAll() {
-        MetricTracker.newMetricRowAll();
-    }
-
+    
     public abstract void updateDashboard();
 }

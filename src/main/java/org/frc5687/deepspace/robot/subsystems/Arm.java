@@ -45,6 +45,8 @@ public class Arm extends OutliersSubsystem implements PIDSource {
         _secureHall = new HallEffect(RobotMap.DIO.ARM_SECURE_HALL);
         _stowedHall = new HallEffect(RobotMap.DIO.ARM_STOWED_HALL);
 
+        _metricTracker.registerReportableMetricName("ElvisWeight");
+        _metricTracker.registerReportableMetricName("ElvisStatus");
         // Example of metrics collection.
         // _metricTracker.registerReportableMetricName("foo");
         // _metricTracker.registerReportableMetricName("bar");
@@ -84,8 +86,8 @@ public class Arm extends OutliersSubsystem implements PIDSource {
                 speed = 0;
             }
         }
-        metric("rawSpeed", desiredSpeed);
-        metric("speed", speed);
+        //metric("rawSpeed", desiredSpeed);
+        //metric("speed", speed);
         if (_arm==null) { return; }
         _arm.set(speed);
     }
@@ -97,12 +99,15 @@ public class Arm extends OutliersSubsystem implements PIDSource {
 
     @Override
     public void updateDashboard() {
-        metric("LowHall", _lowHall.get());
-        metric("IntakeHall", _intakeHall.get());
-        metric("SecureHall", _secureHall.get());
-        metric("StowedHall", _stowedHall.get());
+        metric("ElvisWeight", 400);
+        metric("ElvisStatus", "Dead");
+
+        //metric("LowHall", _lowHall.get());
+        //metric("IntakeHall", _intakeHall.get());
+        //metric("SecureHall", _secureHall.get());
+        //metric("StowedHall", _stowedHall.get());
         if (_shoulderEncoder==null) { return; }
-        metric("Encoder", getPosition());
+        //metric("Encoder", getPosition());
     }
 
     public boolean isStowed() { return _stowedHall.get(); }

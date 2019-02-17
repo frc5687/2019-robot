@@ -1,5 +1,8 @@
 package org.frc5687.deepspace.robot.utils;
 
+import edu.wpi.first.wpilibj.DriverStation;
+import org.frc5687.deepspace.robot.commands.Drive;
+
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -10,41 +13,55 @@ import java.util.*;
 public class MetricTracker {
     private List<String> _reportableMetricNames = new ArrayList<>();
     private Map<String, Object> _rowMetrics = new HashMap<>();
-    private List<Map<String, Object>> _allMetrics = new ArrayList<>();
     private static List<MetricTracker> _allMetricsTrackers = new ArrayList<>();
     private String _instrumentedClassName;
+    private boolean _streamOpen = false;
+    private BufferedWriter _bufferedWriter;
 
     /**
      * Private ctor. Call createMetricsTracker.
      * @param instrumentedClassName The name of the instrumented class. This is used to name the output file.
      */
-    private MetricTracker(String instrumentedClassName) {
+    private MetricTracker(String instrumentedClassName, boolean header) {
         // Don't use the c'tor. Use createMetricTracker.
         _instrumentedClassName = instrumentedClassName;
+        String outputDir = "/U/"; // USB drive is mounted to /U on roboRIO
+        String filename = outputDir + "metrics_" + this._instrumentedClassName + "_" + getDateTimeString() + ".csv";
+
+        try {
+            _bufferedWriter = new BufferedWriter(new FileWriter(filename, true));
+            _streamOpen = true;
+            if (header) {
+                _bufferedWriter.write(buildHeaderRow());
+            }
+        } catch (IOException e) {
+            System.out.println("Error initializing metrics file: " + e.getMessage());
+        }
     }
 
     /**
      * MetricsTracker factory method - Creates a new Metrics Tracker and registers the associated object with a list
      * of metrics so they can all be flushed to SD by calling the static flushAll method.
+     * @param header if true, writes a header row.
      * @return a fresh new MetricTracker.
      */
-    public static MetricTracker createMetricTracker(String instrumentedClassName) {
-        MetricTracker newMetricTracker = new MetricTracker(instrumentedClassName);
+    public static MetricTracker createMetricTracker(String instrumentedClassName, boolean header) {
+        MetricTracker newMetricTracker = new MetricTracker(instrumentedClassName, header);
         MetricTracker._allMetricsTrackers.add(newMetricTracker);
         return newMetricTracker;
     }
 
     /**
-     * Shorthand in case you want to just pass the object instead of a name.
-     * @param instrumentedObject object that is collecting metrics.
-     * @return a fresh new MetricTracker.
+     * Shorthand version of the ctor
+     * @param instrumentedObject
+     * @return
      */
     public static MetricTracker createMetricTracker(Object instrumentedObject) {
-        return createMetricTracker(instrumentedObject.getClass().getSimpleName());
+        return createMetricTracker(instrumentedObject.getClass().getSimpleName(), true);
     }
 
     /**
-     * Adds a metric name,value pair to this row of metrics
+     * Adds a metric (name,value) pair to this row of metrics
      * @param name
      * @param value
      */
@@ -65,8 +82,17 @@ public class MetricTracker {
      * Starts a new row of metrics. You'd call this, e.g., once per loop.
      */
     public void newMetricRow() {
-        _allMetrics.add(_rowMetrics);
-        _rowMetrics.clear();
+        if (!_streamOpen) {
+            return;
+        }
+        try {
+            DriverStation.getInstance().reportWarning(">>>>> WRITING A NEW METRIC ROW " + buildMetricRow(), false);
+            _bufferedWriter.write(buildMetricRow());
+            _bufferedWriter.newLine();
+            _rowMetrics.clear();
+        } catch (IOException e) {
+            System.out.println("Error writing metrics file: " + e.getMessage());
+        }
     }
 
     /**
@@ -79,48 +105,41 @@ public class MetricTracker {
     }
 
     /**
-     * Writes the metrics for all the instrumented objects to SD card.
-     * @param header if true, write header rows
+     * Writes the metrics for all the instrumented objects to perm storage.
      */
-    public static void flushAll(boolean header) {
-        for(MetricTracker metricTracker : MetricTracker._allMetricsTrackers) {
-            metricTracker.flushMetricsTracker(header);
+    public static void flushAll() {
+        newMetricRowAll();
+        for (MetricTracker metricTracker : MetricTracker._allMetricsTrackers) {
+            DriverStation.getInstance().reportError(">>>>>>>>>>> METRIC TRACKER IS " + metricTracker._instrumentedClassName, false);
+            metricTracker.flushMetricsTracker();
         }
     }
 
     /**
-     * Before shutdown, flushes all the rows of metrics for this instrumented class to SD card.
-     * @param header if true, write a header row with the metric names
-     * @return 0 on success, -1 if an exception go thrown while flushing.
+     * Before shutdown, flushes all the rows of metrics for this instrumented class to perm storage.
      */
-    public int flushMetricsTracker(boolean header) {
-        String outputDir = "/U/"; // USB drive is mounted to /U on roboRIO
-        String filename = outputDir + "metrics_" + this.getClass().getSimpleName() + getDateTimeString() + ".csv";
-
+    public void flushMetricsTracker() {
         try {
-            FileWriter fileWriter = new FileWriter(filename, true);
-            BufferedWriter logFile = new BufferedWriter(fileWriter);
-            if (header) {
-                logFile.write(buildHeaderRow());
-            }
-            for (Map<String, Object> row : _allMetrics) {
-                logFile.write(buildMetricRow(row));
-            }
-            fileWriter.close();
+            _bufferedWriter.flush();
+            _bufferedWriter.close();
+            _streamOpen = false;
         } catch (IOException e) {
-            System.out.println("Error initializing log file: " + e.getMessage());
-            return -1;
+            System.out.println("Error closing metrics file: " + e.getMessage());
         }
-        return 0;
     }
 
     // Formats a row of metrics as a comma-delimited quoted string.
-    private String buildMetricRow(Map<String, Object> row) {
-        StringBuffer sb = new StringBuffer();
+    private String buildMetricRow() {
+        StringBuilder sb = new StringBuilder();
         int i = 0;
+        System.out.println(">>>>>>>>>>>>>>> " + _rowMetrics.toString());
         for (String name : _reportableMetricNames) {
             sb.append("\"");
-            sb.append(row.get(name).toString());
+            if (_rowMetrics.get(name) == null) {
+                sb.append("(null)");
+            } else {
+                sb.append(_rowMetrics.get(name).toString());
+            }
             sb.append("\"");
             if (i++ < _reportableMetricNames.size() - 1) {
                 sb.append(",");

@@ -1,5 +1,6 @@
 package org.frc5687.deepspace.robot;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -91,6 +92,7 @@ public class Robot extends TimedRobot implements ILoggingSource {
     @Override
     public void robotPeriodic() {
         updateDashboard();
+        MetricTracker.newMetricRowAll();
     }
 
     /**
@@ -149,14 +151,14 @@ public class Robot extends TimedRobot implements ILoggingSource {
 
     @Override
     public void disabledInit() {
-        MetricTracker.flushAll(true);
-/*
+        MetricTracker.flushAll();
+
         RioLogger.getInstance().forceSync();
         RioLogger.getInstance().close();
         _arm.enableCoastMode();
         _elevator.enableCoastMode();
         _stilt.enableCoastMode();
-         */
+
     }
 
 

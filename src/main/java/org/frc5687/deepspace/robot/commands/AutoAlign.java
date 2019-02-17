@@ -91,6 +91,7 @@ public class AutoAlign extends OutliersCommand implements PIDOutput {
         info("kP="+kP+" , kI="+kI+", kD="+kD + ",T="+ Constants.Auto.Align.TOLERANCE);
         startTimeMillis = System.currentTimeMillis();
         _endTimeMillis = startTimeMillis + _timeout;
+        metric("Angle", angle);
     }
 
     @Override
@@ -111,7 +112,6 @@ public class AutoAlign extends OutliersCommand implements PIDOutput {
             this.controller.disable();
             _aborted = true;
         }
-
 
         metric("onTarget", controller.onTarget());
         metric("imu", imu.getYaw());

@@ -39,6 +39,4 @@ public abstract class OutliersSubsystem extends Subsystem implements ILoggingSou
     }
 
     public abstract void updateDashboard();
-
-
 }

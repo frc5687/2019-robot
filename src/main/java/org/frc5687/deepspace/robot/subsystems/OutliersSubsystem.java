@@ -4,9 +4,12 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.frc5687.deepspace.robot.utils.ILoggingSource;
+import org.frc5687.deepspace.robot.utils.MetricTracker;
 import org.frc5687.deepspace.robot.utils.RioLogger;
 
 public abstract class OutliersSubsystem extends Subsystem implements ILoggingSource {
+    private MetricTracker _metricTracker = MetricTracker.createMetricTracker(this);
+
     @Override
     public void error(String message) {
         RioLogger.error(this, message);
@@ -29,14 +32,25 @@ public abstract class OutliersSubsystem extends Subsystem implements ILoggingSou
 
     public void metric(String name, String value) {
         SmartDashboard.putString(getClass().getSimpleName() + "/" + name, value);
+        _metricTracker.put(name, value);
     }
 
     public void metric(String name, double value) {
         SmartDashboard.putNumber(getClass().getSimpleName() + "/" + name, value);
+        _metricTracker.put(name, value);
     }
 
     public void metric(String name, boolean value) {
         SmartDashboard.putBoolean(getClass().getSimpleName() + "/" + name, value);
+        _metricTracker.put(name, value);
+    }
+
+    public void newMetricRow() {
+        _metricTracker.newMetricRow();
+    }
+
+    public static void newMetricRowAll() {
+        MetricTracker.newMetricRowAll();
     }
 
     public abstract void updateDashboard();

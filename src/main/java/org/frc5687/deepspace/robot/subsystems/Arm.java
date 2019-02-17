@@ -9,7 +9,7 @@ import org.frc5687.deepspace.robot.Robot;
 import org.frc5687.deepspace.robot.RobotMap;
 import org.frc5687.deepspace.robot.commands.DriveArm;
 import org.frc5687.deepspace.robot.utils.HallEffect;
-import org.frc5687.deepspace.robot.utils.Helpers;
+import org.frc5687.deepspace.robot.utils.MetricTracker;
 
 public class Arm extends OutliersSubsystem implements PIDSource {
 
@@ -21,7 +21,6 @@ public class Arm extends OutliersSubsystem implements PIDSource {
     private HallEffect _intakeHall;
     private HallEffect _secureHall;
     private HallEffect _stowedHall;
-
 
     private double _offset = 0;
 
@@ -46,6 +45,16 @@ public class Arm extends OutliersSubsystem implements PIDSource {
         _secureHall = new HallEffect(RobotMap.DIO.ARM_SECURE_HALL);
         _stowedHall = new HallEffect(RobotMap.DIO.ARM_STOWED_HALL);
 
+        // Example of metrics collection.
+        // _metricTracker.registerReportableMetricName("foo");
+        // _metricTracker.registerReportableMetricName("bar");
+        // _metricTracker.registerReportableMetricName("baz");
+        //
+        // Later on...
+        // metric("foo", 123);
+        // metric("bar", "elvis");
+        // metric("baz", 42.42);
+        // metric("pants", 99);    <~ Won't get written to SD card because it wasn't registered.
     }
 
     public void enableBrakeMode() {

@@ -125,6 +125,9 @@ public class Robot extends TimedRobot implements ILoggingSource {
      */
     @Override
     public void teleopPeriodic() {
+        // Example of starting a new row of metrics for all instrumented objects.
+        // MetricTracker.newMetricRowAll();
+
         int operatorPOV = _oi.getOperatorPOV();
         int driverPOV = _oi.getDriverPOV();
 
@@ -146,6 +149,7 @@ public class Robot extends TimedRobot implements ILoggingSource {
 
     @Override
     public void disabledInit() {
+        MetricTracker.flushAll(true);
 /*
         RioLogger.getInstance().forceSync();
         RioLogger.getInstance().close();

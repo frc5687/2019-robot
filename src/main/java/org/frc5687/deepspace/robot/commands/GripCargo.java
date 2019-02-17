@@ -24,7 +24,7 @@ public class GripCargo extends OutliersCommand {
 
     @Override
     protected void initialize() {
-        _spear.open();
+        _spear.close();
         _gripper.start();
     }
 

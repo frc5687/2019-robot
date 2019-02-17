@@ -1,6 +1,5 @@
 package org.frc5687.deepspace.robot.commands;
 
-import com.sun.xml.internal.bind.v2.runtime.reflect.opt.Const;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.PIDController;
@@ -13,16 +12,13 @@ import org.frc5687.deepspace.robot.Constants;
 import org.frc5687.deepspace.robot.subsystems.Elevator;
 
 import static org.frc5687.deepspace.robot.Constants.Elevator.*;
-import static org.frc5687.deepspace.robot.subsystems.Elevator.RampingMode.Down;
-import static org.frc5687.deepspace.robot.subsystems.Elevator.RampingMode.Ramp;
-import static org.frc5687.deepspace.robot.subsystems.Elevator.RampingMode.Steady;
 
 public class MoveElevatorToSetPoint extends OutliersCommand {
 
     private Elevator _elevator;
     private Elevator.Setpoint _setpoint;
     private Elevator.MotionMode _mode;
-    private Elevator.RampingMode _rampingMode;
+    private RampingMode _rampingMode;
     private double _position = 0;
 
     private double _pidOutput;
@@ -44,7 +40,7 @@ public class MoveElevatorToSetPoint extends OutliersCommand {
 
         _pidController = new PIDController(PID.kP, PID.kI, PID.kD, _elevator, new PIDListener());
         _pidController.setAbsoluteTolerance(TOLERANCE);
-        _pidController.setOutputRange(-MAX_ELEVATOR_SPEED_DOWN, MAX_ELEVATOR_SPEED_UP);
+        _pidController.setOutputRange(-MAX_SPEED_DOWN, MAX_SPEED_UP);
         _pidController.setInputRange(Elevator.Setpoint.Bottom.getValue(), Elevator.Setpoint.Top.getValue());
         _pidController.disable();
     }
@@ -54,6 +50,7 @@ public class MoveElevatorToSetPoint extends OutliersCommand {
         _step = 0;
         _position = _elevator.getPosition();
         if (withinTolerance()) { return; }
+        DriverStation.reportError("Moving to setpoint " + _setpoint.name() + " (" + _setpoint.getValue() + ") using " + _mode.name() + " mode.", false);
         info("Moving to setpoint " + _setpoint.name() + " (" + _setpoint.getValue() + ") using " + _mode.name() + " mode.");
         switch(_mode) {
             case Simple:
@@ -70,6 +67,8 @@ public class MoveElevatorToSetPoint extends OutliersCommand {
                 _pathNotifier = new Notifier(this::followPath);
                 _pathNotifier.startPeriodic(_trajectory.get(0).dt);
                 break;
+            case Ramp:
+                _rampingMode = RampingMode.Ramp;
         }
         _startTime = System.currentTimeMillis();
     }
@@ -91,18 +90,18 @@ public class MoveElevatorToSetPoint extends OutliersCommand {
                 }
                 break;
             case PID:
-                _elevator.setSpeed(_pidOutput);
+                _elevator.setSpeed(_pidOutput, true);
                 break;
             case Path:
                 _elevator.setSpeed(_pathOutput);
                 break;
             case Ramp:
                 if (_position  < _setpoint.getValue() - TOLERANCE) {
-                    _elevator.setElevatorSpeeds(getRampedSpeed(SPEED_UP));
+                    _elevator.setSpeed(getRampedSpeed(SPEED_UP));
                 } else if (_position > _setpoint.getValue() + TOLERANCE) {
-                    _elevator.setElevatorSpeeds(getRampedSpeed(-SPEED_DOWN));
+                    _elevator.setSpeed(getRampedSpeed(-SPEED_DOWN));
                 } else {
-                    _elevator.setElevatorSpeeds(0);
+                    _elevator.setSpeed(0);
                 }
                 break;
             default:
@@ -112,27 +111,35 @@ public class MoveElevatorToSetPoint extends OutliersCommand {
     }
 
     private double getRampedSpeed(double speed) {
-        if (speed < 0) { return speed; }
+        metric("Ramp/RawSpeed", speed);
+        metric("Ramp/Mode", _rampingMode.name());
+        metric("Ramp/Step", _step);
+
         switch(_rampingMode) {
             case Ramp:
-                speed = (Constants.Elevator.MIN_SPEED +(_step/Constants.Elevator.STEPS))* (Constants.Elevator.GOAL_SPEED - Constants.Elevator.MIN_SPEED);
-                _elevator.setElevatorSpeeds(speed);
-                if (speed == Constants.Elevator.GOAL_SPEED) {
-                    _elevator.setRampingMode(Steady);
-                }
-            case Steady:
-                _elevator.setElevatorSpeeds(Constants.Elevator.GOAL_SPEED);
-                if(_setpoint.getValue() == _elevator.getRawMAGEncoder() - 200) {
+                speed = MIN_SPEED + _step * ((GOAL_SPEED - MIN_SPEED) / STEPS_UP);
+                if(Math.abs(_setpoint.getValue() - _elevator.getPosition()) <=  TICKS_PER_STEP * STEPS_DOWN) {
                     _step = 0;
-                    _elevator.setRampingMode(Down);
+                    _rampingMode = RampingMode.Down;
+                } else if (_step >= STEPS_UP) {
+                    _rampingMode = RampingMode.Steady;
                 }
+                break;
+            case Steady:
+                if(Math.abs(_setpoint.getValue() - _elevator.getPosition()) <=  TICKS_PER_STEP * STEPS_DOWN) {
+                    _step = 0;
+                    _rampingMode = RampingMode.Down;
+                }
+                break;
             case Down:
-                speed = (Constants.Elevator.GOAL_SPEED -(_step/Constants.Elevator.STEPS))* (Constants.Elevator.GOAL_SPEED - Constants.Elevator.MIN_SPEED);
-                _elevator.setElevatorSpeeds(speed);
-                if (_elevator.getRawMAGEncoder() == _setpoint.getValue()) {
-
-                }
+                speed = MIN_SPEED + (STEPS_DOWN - _step) * ((GOAL_SPEED - MIN_SPEED) / STEPS_DOWN);
+                //speed = (Constants.Elevator.GOAL_SPEED -(_step/Constants.Elevator.STEPS))* (Constants.Elevator.GOAL_SPEED - Constants.Elevator.MIN_SPEED);
+                //if (_elevator.getRawMAGEncoder() == _setpoint.getValue()) {
+                //}
         }
+
+        metric("Ramp/RampedSpeed", speed);
+
         return speed;
     }
     private boolean withinTolerance() {
@@ -203,4 +210,18 @@ public class MoveElevatorToSetPoint extends OutliersCommand {
 
         return trajectory;
     }
+
+
+    private enum RampingMode {
+        Ramp(0),
+        Steady(1),
+        Down(2);
+
+        private int _value;
+
+        RampingMode(int value) { this._value = value; }
+
+        public int getValue() { return _value; }
+    }
+
 }

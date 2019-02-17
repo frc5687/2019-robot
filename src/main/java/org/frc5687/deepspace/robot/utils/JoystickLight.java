@@ -18,19 +18,17 @@ public class JoystickLight {
         m_joystick = joystick;
         m_outputNumber = outputNumber;
     }
-
-    /**
-     * Gets the value of the joystick button.
-     *
-     * @return The value of the joystick button
-     */
+/**
+ * Gets the value of the joystick button.
+ *
+ * @return The value of the joystick button
+ */
     public boolean get() {
         return m_value;
     }
 
     public void set(boolean value) {
-        m_joystick.setOutput(m_outputNumber, value = m_value);
-
+        m_value = value;
+        m_joystick.setOutput(m_outputNumber, m_value);
     }
-
 }

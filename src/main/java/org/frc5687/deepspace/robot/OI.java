@@ -73,7 +73,7 @@ public class OI extends OutliersProxy {
         _driverStartButton = new JoystickButton(_driverGamepad, Gamepad.Buttons.START.getNumber());
         _driverBackButton = new JoystickButton(_driverGamepad, Gamepad.Buttons.BACK.getNumber());
 
-        _testLight = new JoystickLight(_launchpad, 1);
+        _testLight = new JoystickLight(_launchpad, Launchpad.LEDs.A.getNumber());
 
     }
     public void initializeButtons(Robot robot){

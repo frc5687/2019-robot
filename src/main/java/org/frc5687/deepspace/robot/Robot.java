@@ -58,6 +58,7 @@ public class Robot extends TimedRobot implements ILoggingSource {
         info("Robot " + _name + " running in " + _identityMode.toString() + " mode");
 
         _oi = new OI();
+        _imu = new AHRS(SPI.Port.kMXP, (byte) 100);
         _lights = new Lights(this);
         _status = new StatusProxy(this);
         _limelight = new Limelight("limelight");
@@ -72,7 +73,6 @@ public class Robot extends TimedRobot implements ILoggingSource {
         _spear = new Spear(this);
         _wrist = new Wrist(this);
         _oi.initializeButtons(this);
-        _imu = new AHRS(SPI.Port.kMXP, (byte) 100);
         // _limelight.disableLEDs();
         _limelight.setStreamingMode(Limelight.StreamMode.PIP_SECONDARY);
         _status.setConfiguration(Configuration.starting);

@@ -21,7 +21,10 @@ public class AxisButton extends Button {
 
     public boolean get() {
         SmartDashboard.putNumber("OI/Axis/" + m_axisNumber, this.m_joystick.getRawAxis(this.m_axisNumber));
-        return this.m_joystick.getRawAxis(this.m_axisNumber) > _threshold;
+        if (_threshold > 0){
+            return this.m_joystick.getRawAxis(this.m_axisNumber) > _threshold;
+        }
+        else return this.m_joystick.getRawAxis(this.m_axisNumber) < _threshold;
     }
 
 

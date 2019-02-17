@@ -86,7 +86,7 @@ public class AutoDriveToTarget extends OutliersCommand {
 
         double distanceSetPoint = _driveTrain.getDistance() + currentTargetDistance - _distanceTarget;
 
-        _distanceController = new PIDController(kPDistance, kIDistance, kDDistance, (PIDSource) _driveTrain, new DistanceListener(), 0.1);
+        _distanceController = new PIDController(kPDistance, kIDistance, kDDistance, _driveTrain, new DistanceListener(), 0.1);
         _distanceController.setOutputRange(-speed, speed);
         _distanceController.setAbsoluteTolerance(_distanceTolerance);
         _distanceController.setContinuous(false);

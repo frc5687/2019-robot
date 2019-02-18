@@ -6,17 +6,16 @@ import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.PIDOutput;
 import org.frc5687.deepspace.robot.Constants;
 import org.frc5687.deepspace.robot.subsystems.DriveTrain;
-import org.frc5687.deepspace.robot.utils.RioLogger;
 
 public class AutoDrive extends OutliersCommand {
     private double distance;
     private double speed;
-    private PIDController distanceController;
-    private PIDController angleController;
+    private PIDController _distanceController;
+    private PIDController _angleController;
     private double _distancePIDOut;
     private double _anglePIDOut;
     private long endMillis;
-    private long maxMillis;
+    private long _maxMillis;
 
     ;
     private boolean usePID;
@@ -67,7 +66,7 @@ public class AutoDrive extends OutliersCommand {
         this.usePID = usePID;
         this.stopOnFinish = stopOnFinish;
         this.angle = angle;
-        this.maxMillis = maxMillis;
+        this._maxMillis = maxMillis;
         this.debug = debug;
         this.driveTrain = driveTrain;
         this.imu = imu;
@@ -76,7 +75,7 @@ public class AutoDrive extends OutliersCommand {
     @Override
     protected void initialize() {
         driveTrain.resetDriveEncoders();
-        this.endMillis = maxMillis == 0 ? Long.MAX_VALUE : System.currentTimeMillis() + maxMillis;
+        this.endMillis = _maxMillis == 0 ? Long.MAX_VALUE : System.currentTimeMillis() + _maxMillis;
         driveTrain.enableBrakeMode();
         if (usePID) {
             metric("kP", kPdistance);
@@ -84,24 +83,24 @@ public class AutoDrive extends OutliersCommand {
             metric("kD", kDdistance);
             metric("kT", kTdistance);
 
-            distanceController = new PIDController(kPdistance, kIdistance, kDdistance, speed, driveTrain, new DistanceListener(), 0.01);
-            distanceController.setAbsoluteTolerance(kTdistance);
-            distanceController.setOutputRange(-speed, speed);
-            distanceController.setSetpoint(driveTrain.getDistance() + distance);
-            distanceController.enable();
+            _distanceController = new PIDController(kPdistance, kIdistance, kDdistance, speed, driveTrain, new DistanceListener(), 0.01);
+            _distanceController.setAbsoluteTolerance(kTdistance);
+            _distanceController.setOutputRange(-speed, speed);
+            _distanceController.setSetpoint(driveTrain.getDistance() + distance);
+            _distanceController.enable();
         }
 
-        angleController = new PIDController(kPangle, kIangle, kDangle, imu, new AngleListener(), 0.01);
-        angleController.setInputRange(Constants.Auto.MIN_IMU_ANGLE, Constants.Auto.MAX_IMU_ANGLE);
+        _angleController = new PIDController(kPangle, kIangle, kDangle, imu, new AngleListener(), 0.01);
+        _angleController.setInputRange(Constants.Auto.MIN_IMU_ANGLE, Constants.Auto.MAX_IMU_ANGLE);
         double maxSpeed = speed * Constants.Auto.Drive.AnglePID.MAX_DIFFERENCE;
         metric("angleMaxSpeed", maxSpeed);
         metric("setPoint", driveTrain.getYaw());
-        angleController.setOutputRange(-maxSpeed, maxSpeed);
-        angleController.setContinuous();
+        _angleController.setOutputRange(-maxSpeed, maxSpeed);
+        _angleController.setContinuous();
 
         // If an angle is supplied, use that as our setpoint.  Otherwise get the current heading and stick to it!
-        angleController.setSetpoint(angle==1000?driveTrain.getYaw():angle);
-        angleController.enable();
+        _angleController.setSetpoint(angle==1000?driveTrain.getYaw():angle);
+        _angleController.enable();
 
         info("Auto Drive initialized: " + (debug==null?"":debug));
     }
@@ -110,7 +109,7 @@ public class AutoDrive extends OutliersCommand {
     protected void execute() {
 
         driveTrain.setPower(_distancePIDOut + _anglePIDOut , _distancePIDOut - _anglePIDOut, true); // positive output is clockwise
-        metric("onTarget", distanceController == null ? false : distanceController.onTarget());
+        metric("onTarget", _distanceController == null ? false : _distanceController.onTarget());
         metric("imu", driveTrain.getYaw());
         metric("distance", driveTrain.pidGet());
         metric("turnPID", _anglePIDOut);
@@ -120,12 +119,12 @@ public class AutoDrive extends OutliersCommand {
 
     @Override
     protected boolean isFinished() {
-        if (maxMillis>0 && endMillis!=Long.MAX_VALUE && System.currentTimeMillis() > endMillis) {
-            info("AutoDrive for " + maxMillis + " timed out.");
-            DriverStation.reportError("AutoDrive for " + maxMillis + " timed out.", false);
+        if (_maxMillis >0 && endMillis!=Long.MAX_VALUE && System.currentTimeMillis() > endMillis) {
+            info("AutoDrive for " + _maxMillis + " timed out.");
+            DriverStation.reportError("AutoDrive for " + _maxMillis + " timed out.", false);
             return true; }
         if (usePID) {
-            if (distanceController.onTarget()) {
+            if (_distanceController.onTarget()) {
                DriverStation.reportError("AutoDrive stoped at " + driveTrain.getDistance(),false);
 
             }
@@ -140,12 +139,12 @@ public class AutoDrive extends OutliersCommand {
 
     @Override
     protected void end() {
-        info("AutoDrive Finished (" + driveTrain.getDistance() + ", " + (driveTrain.getYaw() - angleController.getSetpoint()) + ") " + (debug==null?"":debug));
-        DriverStation.reportError("AutoDrive Finished (" + driveTrain.getDistance() + ", " + (driveTrain.getYaw() - angleController.getSetpoint()) + ") " + (debug==null?"":debug), false);
+        info("AutoDrive Finished (" + driveTrain.getDistance() + ", " + (driveTrain.getYaw() - _angleController.getSetpoint()) + ") " + (debug==null?"":debug));
+        DriverStation.reportError("AutoDrive Finished (" + driveTrain.getDistance() + ", " + (driveTrain.getYaw() - _angleController.getSetpoint()) + ") " + (debug==null?"":debug), false);
         driveTrain.enableCoastMode();
-        angleController.disable();
-        if (distanceController!=null) {
-            distanceController.disable();
+        _angleController.disable();
+        if (_distanceController !=null) {
+            _distanceController.disable();
         }
         if (stopOnFinish) {
             info("Stopping at ." + driveTrain.getDistance());

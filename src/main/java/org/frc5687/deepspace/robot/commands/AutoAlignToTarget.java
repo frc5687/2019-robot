@@ -4,7 +4,6 @@ import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.PIDOutput;
 import org.frc5687.deepspace.robot.Constants;
@@ -15,28 +14,27 @@ import org.frc5687.deepspace.robot.subsystems.DriveTrain;
 
 public class AutoAlignToTarget extends OutliersCommand implements PIDOutput {
 
-    private PIDController controller;
-    private double angle;
-    private double speed;
+    private PIDController _controller;
+    private double _angle;
+    private double _speed;
     private long _timeout = 2000;
 
-    private double pidOut;
+    private double _pidOut;
 
     private long _onTargetSince;
-    private long startTimeMillis;
+    private long _startTimeMillis;
     private long _endTimeMillis;
     private boolean _aborted = false;
 
-    private DriveTrain driveTrain;
-    private AHRS imu;
+    private DriveTrain _driveTrain;
+    private AHRS _imu;
 
-    private String _message = "";
+    private String _stage = "";
 
     NetworkTable _table;
 
     private OI _oi;
 
-    private DriveTrainBehavior _driveTrainBehavior = DriveTrainBehavior.bothSides;
 
     private double _tolerance;
 
@@ -46,15 +44,15 @@ public class AutoAlignToTarget extends OutliersCommand implements PIDOutput {
     }
 
 
-    public AutoAlignToTarget(DriveTrain driveTrain, AHRS imu, double speed, long timeout, double tolerance, String message) {
+    public AutoAlignToTarget(DriveTrain driveTrain, AHRS imu, double speed, long timeout, double tolerance, String stage) {
         requires(driveTrain);
-        this.angle = angle;
-        this.speed = speed;
-        this.driveTrain = driveTrain;
-        this.imu = imu;
+        _angle = _angle;
+        _speed = speed;
+        _driveTrain = driveTrain;
+        _imu = imu;
         _timeout = timeout;
         _tolerance = tolerance;
-        _message = message;
+        _stage = stage;
     }
 
     @Override
@@ -70,25 +68,25 @@ public class AutoAlignToTarget extends OutliersCommand implements PIDOutput {
         NetworkTableEntry tx = _table.getEntry("tx");
 
         double limeLightAngle = tx.getDouble(0.0);
-        double yawAngle = imu.getAngle();
-        angle = limeLightAngle + yawAngle;
+        double yawAngle = _imu.getAngle();
+        _angle = limeLightAngle + yawAngle;
 
         metric("LimeLightAngle", limeLightAngle);
         metric("YawAngle", yawAngle);
-        metric("angle", angle);
+        metric("angle", _angle);
 
-        controller = new PIDController(kP, kI, kD, imu, this, 0.01);
-        controller.setInputRange(Constants.Auto.MIN_IMU_ANGLE, Constants.Auto.MAX_IMU_ANGLE);
-        controller.setOutputRange(-speed, speed);
-        controller.setAbsoluteTolerance(_tolerance);
-        controller.setContinuous();
-        controller.setSetpoint(angle);
-        controller.enable();
-        metric("setpoint", angle);
-        error("AutoAlign " + _message + " initialized to " + angle + " at " + speed);
+        _controller = new PIDController(kP, kI, kD, _imu, this, 0.01);
+        _controller.setInputRange(Constants.Auto.MIN_IMU_ANGLE, Constants.Auto.MAX_IMU_ANGLE);
+        _controller.setOutputRange(-_speed, _speed);
+        _controller.setAbsoluteTolerance(_tolerance);
+        _controller.setContinuous();
+        _controller.setSetpoint(_angle);
+        _controller.enable();
+        metric("setpoint", _angle);
+        error("AutoAlign " + _stage + " initialized to " + _angle + " at " + _speed);
         error("kP="+kP+" , kI="+kI+", kD="+kD + ",T="+ Constants.Auto.AlignToTarget.TOLERANCE);
-        startTimeMillis = System.currentTimeMillis();
-        _endTimeMillis = startTimeMillis + _timeout;
+        _startTimeMillis = System.currentTimeMillis();
+        _endTimeMillis = _startTimeMillis + _timeout;
 
 
     }
@@ -97,19 +95,19 @@ public class AutoAlignToTarget extends OutliersCommand implements PIDOutput {
     protected void execute() {
         NetworkTableEntry tx = _table.getEntry("tx");
         double limeLightAngle = tx.getDouble(0.0);
-        double yawAngle = imu.getAngle();
-        angle = limeLightAngle + yawAngle;
+        double yawAngle = _imu.getAngle();
+        _angle = limeLightAngle + yawAngle;
 
         metric("startoffset", limeLightAngle);
         metric("startyaw", yawAngle);
-        metric("target", angle);
+        metric("target", _angle);
 
-        if (Math.abs(angle - controller.getSetpoint()) > _tolerance) {
-            controller.setSetpoint(angle);
-            metric("setpoint", angle);
+        if (Math.abs(_angle - _controller.getSetpoint()) > _tolerance) {
+            _controller.setSetpoint(_angle);
+            metric("setpoint", _angle);
         }
-        metric("onTarget", controller.onTarget());
-        metric("yaw", imu.getYaw());
+        metric("onTarget", _controller.onTarget());
+        metric("yaw", _imu.getYaw());
 
         actOnPidOut();
 
@@ -117,41 +115,34 @@ public class AutoAlignToTarget extends OutliersCommand implements PIDOutput {
     }
 
     private void actOnPidOut() {
-        if (pidOut > 0 && pidOut < Constants.Auto.AlignToTarget.MINIMUM_SPEED) {
-            pidOut = Constants.Auto.AlignToTarget.MINIMUM_SPEED;
+        if (_pidOut > 0 && _pidOut < Constants.Auto.AlignToTarget.MINIMUM_SPEED) {
+            _pidOut = Constants.Auto.AlignToTarget.MINIMUM_SPEED;
         }
-        if (pidOut < 0 && pidOut > -Constants.Auto.AlignToTarget.MINIMUM_SPEED) {
-            pidOut = -Constants.Auto.AlignToTarget.MINIMUM_SPEED;
+        if (_pidOut < 0 && _pidOut > -Constants.Auto.AlignToTarget.MINIMUM_SPEED) {
+            _pidOut = -Constants.Auto.AlignToTarget.MINIMUM_SPEED;
         }
-        metric("pidOut", pidOut);
-        if (_driveTrainBehavior == DriveTrainBehavior.bothSides) {
-            driveTrain.setPower(pidOut, -pidOut, true); // positive output is clockwise
-        } else if (_driveTrainBehavior == DriveTrainBehavior.rightOnly) {
-            driveTrain.setPower(0, -pidOut);
-        } else if (_driveTrainBehavior == DriveTrainBehavior.leftOnly) {
-            driveTrain.setPower(pidOut, 0);
-        }
+        metric("pidOut", _pidOut);
     }
     @Override
     protected boolean isFinished() {
         if (_aborted) { return true; }
-        if (!controller.onTarget()) {
+        if (!_controller.onTarget()) {
             _onTargetSince = 0;
         }
 
         if((_oi!=null && !_oi.isAutoTargetPressed()) && System.currentTimeMillis() >= _endTimeMillis){
-            error("AutoAlignToTarget timed out after " + _timeout + "ms at " + imu.getYaw());
+            error("AutoAlignToTarget timed out after " + _timeout + "ms at " + _imu.getYaw());
             return true;
         }
 
-        if (controller.onTarget()) {
+        if (_controller.onTarget()) {
             if (_onTargetSince == 0) {
-                error("AutoAlignToTarget reached target " + imu.getYaw());
+                error("AutoAlignToTarget reached target " + _imu.getYaw());
                 _onTargetSince = System.currentTimeMillis();
             }
 
             if ((_oi!=null && !_oi.isAutoTargetPressed()) && System.currentTimeMillis() > _onTargetSince + Constants.Auto.AlignToTarget.STEADY_TIME) {
-                error("AutoAlignToTarget complete after " + Constants.Auto.AlignToTarget.STEADY_TIME + " at " + imu.getYaw());
+                error("AutoAlignToTarget complete after " + Constants.Auto.AlignToTarget.STEADY_TIME + " at " + _imu.getYaw());
                 return  true;
             }
         }
@@ -160,22 +151,17 @@ public class AutoAlignToTarget extends OutliersCommand implements PIDOutput {
     }
     @Override
     protected void end() {
-        driveTrain.setPower(0,0, true);
-        error("AutoAlign finished: angle = " + imu.getYaw() + ", time = " + (System.currentTimeMillis() - startTimeMillis));
-        controller.disable();
+        _driveTrain.setPower(0,0, true);
+        error("AutoAlign finished: angle = " + _imu.getYaw() + ", time = " + (System.currentTimeMillis() - _startTimeMillis));
+        _controller.disable();
         error("AutoAlign.end() controller disabled");
 
     }
     @Override
     public void pidWrite(double output) {
-        pidOut = output;
+        _pidOut = output;
 //        actOnPidOut();
 
-    }
-    public enum DriveTrainBehavior {
-        bothSides,
-        leftOnly,
-        rightOnly
     }
 
 }

@@ -148,7 +148,7 @@ public class Constants {
             public static final double DISTANCE_TOLERANCE = .5;
 
             public static final double TARGET_HEIGHT = 29;
-            public static final double LIGHT_HEIGHT = 38;
+            public static final double LIGHT_HEIGHT = 41;
 
         }
         public class Align {

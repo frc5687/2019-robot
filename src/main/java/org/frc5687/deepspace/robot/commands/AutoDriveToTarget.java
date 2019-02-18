@@ -3,7 +3,6 @@ package org.frc5687.deepspace.robot.commands;
 import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.PIDOutput;
-import edu.wpi.first.wpilibj.PIDSource;
 import org.frc5687.deepspace.robot.Constants;
 import org.frc5687.deepspace.robot.OI;
 import org.frc5687.deepspace.robot.Robot;
@@ -23,7 +22,7 @@ public class AutoDriveToTarget extends OutliersCommand {
     private double _distanceTarget;
     private double _distanceTolerance;
 
-    private double speed;
+    private double _speed;
 
     private double _anglePIDOut;
     private double _distancePIDOut;
@@ -31,25 +30,25 @@ public class AutoDriveToTarget extends OutliersCommand {
     private long _startTimeMillis;
     private boolean _aborted = false;
 
-    private String _message = "";
+    private String _stage = "";
 
-    public AutoDriveToTarget (Robot robot, double speed, double distance, double tolerance, String message) {
+    public AutoDriveToTarget (Robot robot, double speed, double distance, double tolerance, String stage) {
         _driveTrain = robot.getDriveTrain();
         _imu = robot.getIMU();
         _limelight = robot.getLimelight();
         _oi = robot.getOI();
 
         requires(_driveTrain);
-        this.speed = speed;
+        _speed = speed;
         _distanceTarget = distance;
         _distanceTolerance = tolerance;
-        _message = message;
+        _stage = stage;
     }
 
     @Override
     protected void initialize() {
         _startTimeMillis = System.currentTimeMillis();
-        error("Running AutoDriveToTarget to " + _distanceTarget + " inches at " + speed);
+        error("Running AutoDriveToTarget to " + _distanceTarget + " inches at " + _speed);
         double kPAngle = Constants.Auto.DriveToTarget.kPAngle; // Double.parseDouble(SmartDashboard.getString("DB/String 0", ".04"));
         double kIAngle = Constants.Auto.DriveToTarget.kIAngle; // Double.parseDouble(SmartDashboard.getString("DB/String 1", ".006"));
         double kDAngle = Constants.Auto.DriveToTarget.kDAngle; //Double.parseDouble(SmartDashboard.getString("DB/String 2", ".09"));
@@ -82,12 +81,12 @@ public class AutoDriveToTarget extends OutliersCommand {
         double fixedAngle = 0.0;
         double angleY = fixedAngle + limeLightYAngle;
         double tanY = Math.tan(angleY * (Math.PI / 180));
-        double currentTargetDistance = (Constants.Auto.DriveToTarget.TARGET_HEIGHT + Constants.Auto.DriveToTarget.LIGHT_HEIGHT)/tanY;
+        double currentTargetDistance = (Constants.Auto.DriveToTarget.TARGET_HEIGHT - Constants.Auto.DriveToTarget.LIGHT_HEIGHT)/tanY;
 
         double distanceSetPoint = _driveTrain.getDistance() + currentTargetDistance - _distanceTarget;
 
         _distanceController = new PIDController(kPDistance, kIDistance, kDDistance, _driveTrain, new DistanceListener(), 0.1);
-        _distanceController.setOutputRange(-speed, speed);
+        _distanceController.setOutputRange(-_speed, _speed);
         _distanceController.setAbsoluteTolerance(_distanceTolerance);
         _distanceController.setContinuous(false);
         _distanceController.setSetpoint(distanceSetPoint);
@@ -116,7 +115,7 @@ public class AutoDriveToTarget extends OutliersCommand {
         double fixedAngle = 0.0;
         double angleY = fixedAngle + limeLightYAngle;
         double tanY = Math.tan(angleY * (Math.PI / 180));
-        double currentTargetDistance = (Constants.Auto.DriveToTarget.TARGET_HEIGHT + Constants.Auto.DriveToTarget.LIGHT_HEIGHT)/tanY;
+        double currentTargetDistance = (Constants.Auto.DriveToTarget.TARGET_HEIGHT - Constants.Auto.DriveToTarget.LIGHT_HEIGHT)/tanY;
 
         double distanceSetPoint = _driveTrain.getDistance() + currentTargetDistance - _distanceTarget;
         double oldSetpoint = _distanceController.getSetpoint();
@@ -129,16 +128,14 @@ public class AutoDriveToTarget extends OutliersCommand {
         _distanceController.setSetpoint(distanceSetPoint);
         _distanceController.enable();
 
-
-        //SmartDashboard.putBoolean("AutoDriveToTarget/angle/onTarget", _angleController.onTarget());
         metric("angle/yaw", _imu.getYaw());
 
+        metric("currentTargetDistance", currentTargetDistance);
         metric("angle/PIDOut", _anglePIDOut);
         metric("distance/PIDOut", _distancePIDOut);
         metric("distance/target", distanceSetPoint);
         metric("/distance/current", _driveTrain.getDistance());
 
-        //_distancePIDOut = 0;
         _driveTrain.setPower(_distancePIDOut + _anglePIDOut , _distancePIDOut - _anglePIDOut, true); // positive output is clockwise
 
     }
@@ -161,7 +158,7 @@ public class AutoDriveToTarget extends OutliersCommand {
         double fixedAngle = 0.0;
         double angleY = fixedAngle + limeLightYAngle;
         double tanY = Math.tan(angleY * (Math.PI / 180));
-        double currentTargetDistance = (Constants.Auto.DriveToTarget.TARGET_HEIGHT + Constants.Auto.DriveToTarget.LIGHT_HEIGHT)/tanY;
+        double currentTargetDistance = (Constants.Auto.DriveToTarget.TARGET_HEIGHT - Constants.Auto.DriveToTarget.LIGHT_HEIGHT)/tanY;
 
         _driveTrain.enableBrakeMode();
         _driveTrain.setPower(0,0, true);

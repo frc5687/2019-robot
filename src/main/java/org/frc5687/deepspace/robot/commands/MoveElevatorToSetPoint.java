@@ -12,6 +12,7 @@ import org.frc5687.deepspace.robot.Constants;
 import org.frc5687.deepspace.robot.subsystems.Elevator;
 
 import static org.frc5687.deepspace.robot.Constants.Elevator.*;
+import static org.frc5687.deepspace.robot.utils.Helpers.limit;
 
 public class MoveElevatorToSetPoint extends OutliersCommand {
 
@@ -119,12 +120,24 @@ public class MoveElevatorToSetPoint extends OutliersCommand {
 
     private double getRampedSpeed() {
         double speed = 0;
+        double goalSpeed = 0;
+        double minSpeed = MIN_SPEED;
         if (_rampDirection > 0) {
-            speed = SPEED_UP;
+            goalSpeed = SPEED_UP;
+            if (_elevator.isAtTop() || _position >= _setpoint.getValue() - TOLERANCE) {
+                _rampingState = RampingState.Done;
+                metric("RampUp/RampedSpeed", 0);
+                return 0;
+            };
         } else if (_rampDirection < 0) {
-            speed = -SPEED_DOWN;
+            goalSpeed = SPEED_DOWN;
+            if (_elevator.isAtBottom() || _position <= _setpoint.getValue() + TOLERANCE) {
+                _rampingState = RampingState.Done;
+                metric("RampUp/RampedSpeed", 0);
+                return 0;
+            };
         }
-
+        speed = goalSpeed;
 
         metric("RampUp/RawSpeed", speed);
         metric("RampUp/Mode", _rampingState.name());
@@ -132,31 +145,41 @@ public class MoveElevatorToSetPoint extends OutliersCommand {
 
         switch(_rampingState) {
             case RampUp:
-                if (_rampDirection>0 && _position >= _rampMid) {
+                speed = minSpeed + _step * ((goalSpeed - minSpeed) / STEPS_UP);
+                if (_rampDirection>0 && _position >= _rampMid
+                        || _rampDirection < 0 && _position <= _rampMid) {
                     // Halfway there . . . switch to ramping down
                     _step = 0;
                     _rampingState = RampingState.RampDown;
-                }
-                if(Math.abs(_setpoint.getValue() - _elevator.getPosition()) <=  TICKS_PER_STEP * STEPS_DOWN) {
+                } else if(Math.abs(_setpoint.getValue() - _elevator.getPosition()) <=  TICKS_PER_STEP * STEPS_DOWN) {
+                    // We've reached the slow-down range
                     _step = 0;
                     _rampingState = RampingState.RampDown;
                 } else if (_step >= STEPS_UP) {
+                    // Fully ramped up--switch to steady-state
                     _rampingState = RampingState.Steady;
                 }
-                speed = MIN_SPEED + _step * ((GOAL_SPEED - MIN_SPEED) / STEPS_UP);
                 break;
             case Steady:
+                speed = goalSpeed;
                 if(Math.abs(_setpoint.getValue() - _elevator.getPosition()) <=  TICKS_PER_STEP * STEPS_DOWN) {
                     _step = 0;
                     _rampingState = RampingState.RampDown;
                 }
                 break;
             case RampDown:
-                speed = MIN_SPEED + (STEPS_DOWN - _step) * ((GOAL_SPEED - MIN_SPEED) / STEPS_DOWN);
+                //DriverStation.reportError("" + (minSpeed + (STEPS_DOWN - _step) * ((speed - minSpeed) / STEPS_DOWN)) + " = " + minSpeed + " + ( " + STEPS_DOWN + " - " + _step + ") * (( " + speed + " - " + minSpeed + ") / " + STEPS_DOWN+ ")", false );
+                speed = minSpeed + (STEPS_DOWN - _step) * ((goalSpeed - minSpeed) / STEPS_DOWN);
                 //speed = (Constants.Elevator.GOAL_SPEED -(_step/Constants.Elevator.STEPS))* (Constants.Elevator.GOAL_SPEED - Constants.Elevator.MIN_SPEED);
                 //if (_elevator.getRawMAGEncoder() == _setpoint.getValue()) {
                 //}
+                break;
+            case Done:
+                speed = 0;
+                break;
         }
+        speed = limit(speed, minSpeed, goalSpeed);
+        speed = speed * _rampDirection;
 
         metric("RampUp/RampedSpeed", speed);
 
@@ -176,12 +199,7 @@ public class MoveElevatorToSetPoint extends OutliersCommand {
             case Path:
                 return _pathFollower.isFinished();
             case Ramp:
-                if (_rampDirection > 0) {
-                    return _position > _setpoint.getValue();
-                }
-                if (_rampDirection < 0) {
-                    return _position < _setpoint.getValue();
-                }
+                return _rampingState == RampingState.Done;
         }
         return false;
     }
@@ -242,7 +260,8 @@ public class MoveElevatorToSetPoint extends OutliersCommand {
     private enum RampingState {
         RampUp(0),
         Steady(1),
-        RampDown(2);
+        RampDown(2),
+        Done(3);
 
         private int _value;
 

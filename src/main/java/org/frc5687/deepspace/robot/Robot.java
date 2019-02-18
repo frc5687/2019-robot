@@ -77,6 +77,7 @@ public class Robot extends TimedRobot implements ILoggingSource {
         _limelight.setStreamingMode(Limelight.StreamMode.PIP_SECONDARY);
         _status.setConfiguration(Configuration.starting);
         _arm.resetEncoder();
+        _imu.reset();
 
         _arm.enableBrakeMode();
         _elevator.enableBrakeMode();
@@ -150,13 +151,14 @@ public class Robot extends TimedRobot implements ILoggingSource {
 
     @Override
     public void disabledInit() {
-/*
+
         RioLogger.getInstance().forceSync();
         RioLogger.getInstance().close();
         _arm.enableCoastMode();
         _elevator.enableCoastMode();
         _stilt.enableCoastMode();
-         */
+        _driveTrain.enableCoastMode();
+
     }
 
 

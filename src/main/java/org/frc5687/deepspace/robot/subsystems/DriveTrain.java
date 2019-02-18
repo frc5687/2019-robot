@@ -28,11 +28,9 @@ public class DriveTrain extends OutliersSubsystem implements PIDSource {
     private CANSparkMax _leftFollower;
     private CANSparkMax _rightFollower;
 
-    private CANEncoder _leftEncoder;
-    private CANEncoder _rightEncoder;
 
-    private Encoder _leftMagEncoder;
-    private Encoder _rightMagEncoder;
+    private Encoder _leftEncoder;
+    private Encoder _rightEncoder;
 
     private IRDistanceSensor _frontDistance;
 
@@ -40,7 +38,7 @@ public class DriveTrain extends OutliersSubsystem implements PIDSource {
     private AHRS _imu;
 
     private double _leftOffset;
-    private double _rightOffset;
+    private double  _rightOffset;
 
     private double _oldLeftSpeed;
     private double _oldRightSpeed;
@@ -72,17 +70,13 @@ public class DriveTrain extends OutliersSubsystem implements PIDSource {
             _leftFollower.follow(_leftMaster);
             _rightFollower.follow(_rightMaster);
 
-            debug("Configuring encoders");
-            _leftEncoder = _leftMaster.getEncoder();
-            _rightEncoder = _rightMaster.getEncoder();
-
         } catch (Exception e) {
             error("Exception allocating drive motor controllers: " + e.getMessage());
         }
 
         debug("Configuring mag encoders");
-        _leftMagEncoder = new Encoder(RobotMap.DIO.DRIVE_LEFT_A, RobotMap.DIO.DRIVE_LEFT_B);
-        _rightMagEncoder = new Encoder(RobotMap.DIO.DRIVE_RIGHT_A, RobotMap.DIO.DRIVE_RIGHT_B);
+        _leftEncoder = new Encoder(RobotMap.DIO.DRIVE_LEFT_A, RobotMap.DIO.DRIVE_LEFT_B);
+        _rightEncoder = new Encoder(RobotMap.DIO.DRIVE_RIGHT_A, RobotMap.DIO.DRIVE_RIGHT_B);
 
     }
 
@@ -106,8 +100,10 @@ public class DriveTrain extends OutliersSubsystem implements PIDSource {
         metric("Neo/Distance/Left", getLeftDistance());
         metric("Neo/Distance/Right", getRightDistance());
         metric("Neo/Distance/Total", getDistance());
-        metric("Mag/Ticks/Left", _leftMagEncoder.get());
-        metric("Mag/Ticks/Right", _rightMagEncoder.get());
+        metric("Mag/Ticks/Left", _leftEncoder.get());
+        metric("Mag/Ticks/Right", _rightEncoder.get());
+        metric("Mag/RightRaw", _rightEncoder.getRaw());
+        metric("Mag/LeftRaw", _leftEncoder.getRaw());
 
     }
 
@@ -206,14 +202,12 @@ public class DriveTrain extends OutliersSubsystem implements PIDSource {
     }
 
     public double getLeftTicks() {
-        if (_leftEncoder==null) { return 0; }
-        return _leftEncoder.getPosition();
+        return _leftEncoder.get();
     }
 
 
     public double getRightTicks() {
-        if (_rightEncoder==null) { return 0; }
-        return _rightEncoder.getPosition();
+        return _rightEncoder.get();
     }
 
     public double getDistance() {

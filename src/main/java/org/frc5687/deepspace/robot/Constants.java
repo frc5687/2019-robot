@@ -5,7 +5,7 @@ public class Constants {
      *
      */
     public static final int CYCLES_PER_SECOND = 50;
-    public static final int TICKS_PER_UPDATE = 10;
+    public static final int TICKS_PER_UPDATE = 1;
 
     public class DriveTrain {
 
@@ -17,8 +17,8 @@ public class Constants {
         public static final double TURNING_SENSITIVITY_HIGH_GEAR = 0.75;
         public static final double TURNING_SENSITIVITY_LOW_GEAR = 0.75;
 
-        public static final double LEFT_RATIO = 1.090909090909;
-        public static final double RIGHT_RATIO = 1.090909090909;
+        public static final double LEFT_RATIO = 0.02758620689655172413793103448276;
+        public static final double RIGHT_RATIO = 0.02758620689655172413793103448276;
 
         public static final boolean LEFT_MOTORS_INVERTED = true;
         public static final boolean RIGHT_MOTORS_INVERTED = false;
@@ -131,14 +131,34 @@ public class Constants {
             public static final double STEADY_TIME = 60;
 
         }
+        public class DriveToTarget {
+
+            public static final double SPEED = 0.2;
+            public static final double TURN_SPEED = 0.1;
+
+            public static final double kPAngle = 0.04;
+            public static final double kIAngle = 0.002;
+            public static final double kDAngle = 0.2;
+
+            public static final double kPDistance = 0.4;
+            public static final double kIDistance = 0.000;
+            public static final double kDDistance = 0.25;
+
+            public static final double ANGLE_TOLERANCE = .5;
+            public static final double DISTANCE_TOLERANCE = .5;
+
+            public static final double TARGET_HEIGHT = 29;
+            public static final double LIGHT_HEIGHT = 38;
+
+        }
         public class Align {
             public static final double SPEED = 1.0;
 
-            public static final double kP = 0.04;
-            public static final double kI = 0.002;
-            public static final double kD = 0.4;
+            public static final double kP = 0.05;
+            public static final double kI = 0;
+            public static final double kD = .418;
             public static final double TOLERANCE = .5; // 0.5
-            public static final double MINIMUM_SPEED = 0.2;
+            public static final double MINIMUM_SPEED = 0;
             public static final double MAX_OUTPUT = 0;
             /*
              *time the angle must be on target for to be considered steady

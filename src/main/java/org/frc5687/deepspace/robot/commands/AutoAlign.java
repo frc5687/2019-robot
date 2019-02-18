@@ -132,6 +132,8 @@ public class AutoAlign extends OutliersCommand implements PIDOutput {
         } else if (_driveTrainBehavior == DriveTrainBehavior.leftOnly) {
             driveTrain.setPower(pidOut, 0);
         }
+        metric("pidOut", pidOut);
+        metric("Angle", angle);
     }
 
     @Override
@@ -150,11 +152,6 @@ public class AutoAlign extends OutliersCommand implements PIDOutput {
             if (_onTargetSince == 0) {
                 info("AutoAlign reached target " + imu.getYaw());
                 _onTargetSince = System.currentTimeMillis();
-            }
-
-            if (System.currentTimeMillis() > _onTargetSince + Constants.Auto.Align.STEADY_TIME) {
-                info("AutoAlign complete after " + Constants.Auto.Align.STEADY_TIME + " at " + imu.getYaw());
-                return  true;
             }
         }
 
@@ -176,9 +173,6 @@ public class AutoAlign extends OutliersCommand implements PIDOutput {
         //SmartDashboard.putNumber("AutoAlign/pidOut", pidOut);
     }
 
-    public void setAngle(double angle) {
-        this.angle = angle;
-    }
 
     /*
     Used in AutoAlign to select which types of turns to do.

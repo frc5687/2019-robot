@@ -97,6 +97,8 @@ public class Limelight extends OutliersProxy {
         return _tx.getDouble(0.0);
     }
 
+    public double getVerticalAngle() { return _ty.getDouble(0.0);}
+
     @Override
     public void updateDashboard() {
         metric("tx",_tx.getDouble(0.0));

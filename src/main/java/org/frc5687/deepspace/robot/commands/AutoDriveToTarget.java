@@ -23,6 +23,7 @@ public class AutoDriveToTarget extends OutliersCommand {
     private double _distanceTolerance;
 
     private double _speed;
+    private double _currentTargetDistance;
 
     private double _anglePIDOut;
     private double _distancePIDOut;
@@ -47,6 +48,7 @@ public class AutoDriveToTarget extends OutliersCommand {
 
     @Override
     protected void initialize() {
+        _driveTrain.resetDriveEncoders();
         _startTimeMillis = System.currentTimeMillis();
         error("Running AutoDriveToTarget to " + _distanceTarget + " inches at " + _speed);
         double kPAngle = Constants.Auto.DriveToTarget.kPAngle; // Double.parseDouble(SmartDashboard.getString("DB/String 0", ".04"));
@@ -78,8 +80,10 @@ public class AutoDriveToTarget extends OutliersCommand {
         _angleController.enable();
 
         double currentTargetDistance = _driveTrain.getFrontDistance();
+        error("entering IR mode");
         if (currentTargetDistance > Constants.Auto.IR_THRESHOLD) {
             currentTargetDistance = _limelight.getTargetDistance();
+            error("entering LimeLight mode");
         }
 
         double distanceSetPoint = _driveTrain.getDistance() + currentTargetDistance - _distanceTarget;
@@ -92,6 +96,8 @@ public class AutoDriveToTarget extends OutliersCommand {
         _distanceController.enable();
 
         metric("distance/setpoint", distanceSetPoint);
+        metric("distance/currentTargetDistance", currentTargetDistance);
+        metric("distance/distanceTarget", _distanceTarget);
 
 
     }
@@ -110,9 +116,9 @@ public class AutoDriveToTarget extends OutliersCommand {
             _angleController.setSetpoint(_angleTarget);
             metric("angle/setpoint", _angleTarget);
         }
-        double currentTargetDistance = _limelight.getTargetDistance();
+        _currentTargetDistance = _limelight.getTargetDistance();
 
-        double distanceSetPoint = _driveTrain.getDistance() + currentTargetDistance - _distanceTarget;
+        double distanceSetPoint = _driveTrain.getDistance() + _currentTargetDistance - _distanceTarget;
         double oldSetpoint = _distanceController.getSetpoint();
 
         if (Math.abs(distanceSetPoint - oldSetpoint) > _distanceTolerance) {
@@ -125,7 +131,7 @@ public class AutoDriveToTarget extends OutliersCommand {
 
         metric("angle/yaw", _imu.getYaw());
 
-        metric("currentTargetDistance", currentTargetDistance);
+        metric("currentTargetDistance", _currentTargetDistance);
         metric("angle/PIDOut", _anglePIDOut);
         metric("distance/PIDOut", _distancePIDOut);
         metric("distance/target", distanceSetPoint);
@@ -142,18 +148,16 @@ public class AutoDriveToTarget extends OutliersCommand {
             return true;
         }
 
-        if (_driveTrain.getDistance() >= _distanceController.getSetpoint()) { return true; }
+        if (Math.abs(_currentTargetDistance - _distanceTarget) <= _distanceTolerance) { return true; }
 
         return false;
     }
 
     @Override
     protected void end() {
-        double currentTargetDistance = _limelight.getTargetDistance();
-
         _driveTrain.enableBrakeMode();
         _driveTrain.setPower(0,0, true);
-        error("AutoDriveToTarget finished: angle=" + _imu.getYaw() + ", distance=" + currentTargetDistance + ", time=" + (System.currentTimeMillis() - _startTimeMillis));
+        error("AutoDriveToTarget finished: angle=" + _imu.getYaw() + ", distance=" + _currentTargetDistance + ", time=" + (System.currentTimeMillis() - _startTimeMillis));
         _distanceController.disable();
         _angleController.disable();
     }

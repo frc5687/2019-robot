@@ -3,7 +3,6 @@ package org.frc5687.deepspace.robot.subsystems;
 import com.revrobotics.CANEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.PIDSource;
 import edu.wpi.first.wpilibj.PIDSourceType;
@@ -12,7 +11,8 @@ import org.frc5687.deepspace.robot.Robot;
 import org.frc5687.deepspace.robot.RobotMap;
 import org.frc5687.deepspace.robot.commands.DriveElevator;
 import org.frc5687.deepspace.robot.utils.HallEffect;
-import org.frc5687.deepspace.robot.utils.Helpers;
+import static org.frc5687.deepspace.robot.utils.Helpers.*;
+import static org.frc5687.deepspace.robot.Constants.Elevator.*;
 
 public class Elevator extends OutliersSubsystem implements PIDSource {
 
@@ -43,11 +43,25 @@ public class Elevator extends OutliersSubsystem implements PIDSource {
 
     }
     public void setSpeed(double speed) {
-        speed = Helpers.limit(speed, -Constants.Elevator.MAX_ELEVATOR_SPEED_DOWN,  Constants.Elevator.MAX_ELEVATOR_SPEED_UP);
-        if (speed > 0 && isAtTop()) {
-            speed = 0;
-        } else if (speed < 0 && isAtBottom()) {
-            speed = 0;
+        setSpeed(speed, false);
+    }
+    public void setSpeed(double speed, boolean overrideRamp) {
+        speed = limit(speed, -MAX_SPEED_DOWN, MAX_SPEED_UP);
+        if (!overrideRamp) {
+            if (speed > 0) {
+                speed = limit(speed, -MAX_SPEED_DOWN, _elevator.get() + (MAX_SPEED_UP / STEPS_UP));
+            } else if (speed < 0) {
+                speed = limit(speed, _elevator.get() - (MAX_SPEED_DOWN / STEPS_UP), MAX_SPEED_UP);
+            }
+        }
+        if (isAtTop()) {
+            speed = limit(speed, -MAX_SPEED_DOWN,  0);
+        } else if (isNearTop()) {
+            speed = limit(speed, -MAX_SPEED_DOWN,  JELLO_SPEED_UP);
+        } else if (isAtBottom()) {
+            speed = limit(speed, 0, MAX_SPEED_UP);
+        } else if (isNearBottom()) {
+            speed = limit(speed, -JELLO_SPEED_DOWN, MAX_SPEED_UP);
         }
         metric("ElevatorSpeed",speed);
 
@@ -70,12 +84,12 @@ public class Elevator extends OutliersSubsystem implements PIDSource {
         // _elevator.setIdleMode(CANSparkMax.IdleMode.kCoast);
     }
 
-    public double getRawNeoEncoder() {
+    private double getRawNeoEncoder() {
         if (_elevator==null) { return 0; }
         return 0;
     }
 
-    public double getRawMAGEncoder() {
+    private double getRawMAGEncoder() {
         return _elevatorEncoder.get();
     }
 
@@ -93,7 +107,11 @@ public class Elevator extends OutliersSubsystem implements PIDSource {
     }
     public boolean isAtTop() { return _topHall.get(); }
 
+    public boolean isNearTop() { return isAtTop() || (getPosition() > Setpoint.Top.getValue() - TOP_JELLO_ZONE); }
+
     public boolean isAtBottom() { return _bottomHall.get(); }
+
+    public boolean isNearBottom() { return isAtBottom() || (getPosition() < Setpoint.Bottom.getValue() + BOTTOM_JELLO_ZONE); }
 
     public void resetEncoder() {
         resetEncoder(0);
@@ -172,7 +190,8 @@ public class Elevator extends OutliersSubsystem implements PIDSource {
     public enum MotionMode {
         Simple(0),
         PID(1),
-        Path(2);
+        Path(2),
+        Ramp(3);
 
         private int _value;
 

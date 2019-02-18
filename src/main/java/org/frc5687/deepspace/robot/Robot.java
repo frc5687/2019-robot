@@ -51,6 +51,7 @@ public class Robot extends TimedRobot implements ILoggingSource {
     public void robotInit() {
         loadConfigFromUSB();
         RioLogger.getInstance().init(_fileLogLevel, _dsLogLevel);
+        metric("Branch", Version.BRANCH);
         info("Starting " + this.getClass().getCanonicalName() + " from branch " + Version.BRANCH);
         info("Robot " + _name + " running in " + _identityMode.toString() + " mode");
 

@@ -78,11 +78,7 @@ public class AutoDriveToTarget extends OutliersCommand {
         _angleController.setSetpoint(_angleTarget);
         _angleController.enable();
 
-        double limeLightYAngle = _limelight.getVerticalAngle();
-        double fixedAngle = 0.0;
-        double angleY = fixedAngle + limeLightYAngle;
-        double tanY = Math.tan(angleY * (Math.PI / 180));
-        double currentTargetDistance = (Constants.Auto.DriveToTarget.TARGET_HEIGHT + Constants.Auto.DriveToTarget.LIGHT_HEIGHT)/tanY;
+        double currentTargetDistance = _limelight.getTargetDistance();
 
         double distanceSetPoint = _driveTrain.getDistance() + currentTargetDistance - _distanceTarget;
 
@@ -112,11 +108,7 @@ public class AutoDriveToTarget extends OutliersCommand {
             _angleController.setSetpoint(_angleTarget);
             metric("angle/setpoint", _angleTarget);
         }
-        double limeLightYAngle = _limelight.getVerticalAngle();
-        double fixedAngle = 0.0;
-        double angleY = fixedAngle + limeLightYAngle;
-        double tanY = Math.tan(angleY * (Math.PI / 180));
-        double currentTargetDistance = (Constants.Auto.DriveToTarget.TARGET_HEIGHT + Constants.Auto.DriveToTarget.LIGHT_HEIGHT)/tanY;
+        double currentTargetDistance = _limelight.getTargetDistance();
 
         double distanceSetPoint = _driveTrain.getDistance() + currentTargetDistance - _distanceTarget;
         double oldSetpoint = _distanceController.getSetpoint();
@@ -157,11 +149,7 @@ public class AutoDriveToTarget extends OutliersCommand {
 
     @Override
     protected void end() {
-        double limeLightYAngle = _limelight.getVerticalAngle();
-        double fixedAngle = 0.0;
-        double angleY = fixedAngle + limeLightYAngle;
-        double tanY = Math.tan(angleY * (Math.PI / 180));
-        double currentTargetDistance = (Constants.Auto.DriveToTarget.TARGET_HEIGHT + Constants.Auto.DriveToTarget.LIGHT_HEIGHT)/tanY;
+        double currentTargetDistance = _limelight.getTargetDistance();
 
         _driveTrain.enableBrakeMode();
         _driveTrain.setPower(0,0, true);

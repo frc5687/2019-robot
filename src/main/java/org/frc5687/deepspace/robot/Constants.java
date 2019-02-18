@@ -147,8 +147,6 @@ public class Constants {
             public static final double ANGLE_TOLERANCE = .5;
             public static final double DISTANCE_TOLERANCE = .5;
 
-            public static final double TARGET_HEIGHT = 29;
-            public static final double LIGHT_HEIGHT = 38;
 
         }
         public class Align {
@@ -244,6 +242,11 @@ public class Constants {
     }
 
 
+    public class Limelight {
+        public static final double TARGET_HEIGHT = 29;
+        public static final double LIMELIGHT_HEIGHT = 42;
+        public static final double LIMELIGHT_ANGLE= 0.0;
+    }
     /*
      There should be a nested static class for each subsystem and for each autonomous command that needs tuning constants.
      For example:

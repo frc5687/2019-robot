@@ -3,6 +3,8 @@ package org.frc5687.deepspace.robot.utils;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import org.frc5687.deepspace.robot.Constants;
+import static org.frc5687.deepspace.robot.Constants.Limelight.*;
 
 public class Limelight extends OutliersProxy {
     NetworkTable _table;
@@ -99,11 +101,22 @@ public class Limelight extends OutliersProxy {
 
     public double getVerticalAngle() { return _ty.getDouble(0.0);}
 
+    public double getTargetDistance() {
+        double limeLightYAngle = Math.abs(getVerticalAngle());
+        double angleY = LIMELIGHT_ANGLE + limeLightYAngle;
+        double tanY = Math.tan(angleY * (Math.PI / 180));
+        return(LIMELIGHT_HEIGHT- TARGET_HEIGHT)/tanY;
+
+    }
+
     @Override
     public void updateDashboard() {
         metric("tx",_tx.getDouble(0.0));
         metric("ty",_ty.getDouble(0.0));
         metric("tv", _tv.getDouble(0.0));
+        metric("targetHAngle", getHorizontalAngle());
+        metric("targetVAngle", getVerticalAngle());
+        metric("targetDistance", getTargetDistance());
     }
 
     public enum StreamMode {

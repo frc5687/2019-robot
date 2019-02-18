@@ -4,11 +4,11 @@ import org.frc5687.deepspace.robot.OI;
 import org.frc5687.deepspace.robot.commands.OutliersCommand;
 import org.frc5687.deepspace.robot.subsystems.Stilt;
 
-public class RunStilt extends OutliersCommand {
+public class DriveStilt extends OutliersCommand {
     private Stilt _stilt;
     private OI _oi;
 
-    public RunStilt(Stilt stilt, OI oi) {
+    public DriveStilt(Stilt stilt, OI oi) {
         _stilt = stilt;
         _oi = oi;
         requires(_stilt);

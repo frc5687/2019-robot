@@ -18,7 +18,7 @@ public class MoveElevatorToSetPoint extends OutliersCommand {
     private Elevator _elevator;
     private Elevator.Setpoint _setpoint;
     private Elevator.MotionMode _mode;
-    private RampingMode _rampingMode;
+    private RampingState _rampingState;
     private double _position = 0;
 
     private double _pidOutput;
@@ -31,6 +31,8 @@ public class MoveElevatorToSetPoint extends OutliersCommand {
     private Notifier _pathNotifier;
     private long _startTime;
     private double _step;
+    private int _rampDirection = 0;
+    private double _rampMid = 0;
 
     public MoveElevatorToSetPoint(Elevator elevator, Elevator.Setpoint setpoint, Elevator.MotionMode mode) {
         _elevator = elevator;
@@ -68,7 +70,18 @@ public class MoveElevatorToSetPoint extends OutliersCommand {
                 _pathNotifier.startPeriodic(_trajectory.get(0).dt);
                 break;
             case Ramp:
-                _rampingMode = RampingMode.Ramp;
+                _rampingState = RampingState.RampUp;
+                double startPosition = _elevator.getPosition();
+                if (_setpoint.getValue() > startPosition) {
+                    _rampDirection = +1;
+                    _rampMid = startPosition + (_setpoint.getValue() - startPosition)/2;
+                } else if (_setpoint.getValue() < _elevator.getPosition()) {
+                    _rampDirection = -1;
+                    _rampMid = startPosition + (_setpoint.getValue() - startPosition)/2;
+                } else {
+                    _rampDirection = 0;
+                }
+                break;
         }
         _startTime = System.currentTimeMillis();
     }
@@ -96,13 +109,7 @@ public class MoveElevatorToSetPoint extends OutliersCommand {
                 _elevator.setSpeed(_pathOutput);
                 break;
             case Ramp:
-                if (_position  < _setpoint.getValue() - TOLERANCE) {
-                    _elevator.setSpeed(getRampedSpeed(SPEED_UP));
-                } else if (_position > _setpoint.getValue() + TOLERANCE) {
-                    _elevator.setSpeed(getRampedSpeed(-SPEED_DOWN));
-                } else {
-                    _elevator.setSpeed(0);
-                }
+                _elevator.setSpeed(getRampedSpeed());
                 break;
             default:
                 _elevator.setSpeed(0);
@@ -110,35 +117,48 @@ public class MoveElevatorToSetPoint extends OutliersCommand {
         }
     }
 
-    private double getRampedSpeed(double speed) {
-        metric("Ramp/RawSpeed", speed);
-        metric("Ramp/Mode", _rampingMode.name());
-        metric("Ramp/Step", _step);
+    private double getRampedSpeed() {
+        double speed = 0;
+        if (_rampDirection > 0) {
+            speed = SPEED_UP;
+        } else if (_rampDirection < 0) {
+            speed = -SPEED_DOWN;
+        }
 
-        switch(_rampingMode) {
-            case Ramp:
-                speed = MIN_SPEED + _step * ((GOAL_SPEED - MIN_SPEED) / STEPS_UP);
+
+        metric("RampUp/RawSpeed", speed);
+        metric("RampUp/Mode", _rampingState.name());
+        metric("RampUp/Step", _step);
+
+        switch(_rampingState) {
+            case RampUp:
+                if (_rampDirection>0 && _position >= _rampMid) {
+                    // Halfway there . . . switch to ramping down
+                    _step = 0;
+                    _rampingState = RampingState.RampDown;
+                }
                 if(Math.abs(_setpoint.getValue() - _elevator.getPosition()) <=  TICKS_PER_STEP * STEPS_DOWN) {
                     _step = 0;
-                    _rampingMode = RampingMode.Down;
+                    _rampingState = RampingState.RampDown;
                 } else if (_step >= STEPS_UP) {
-                    _rampingMode = RampingMode.Steady;
+                    _rampingState = RampingState.Steady;
                 }
+                speed = MIN_SPEED + _step * ((GOAL_SPEED - MIN_SPEED) / STEPS_UP);
                 break;
             case Steady:
                 if(Math.abs(_setpoint.getValue() - _elevator.getPosition()) <=  TICKS_PER_STEP * STEPS_DOWN) {
                     _step = 0;
-                    _rampingMode = RampingMode.Down;
+                    _rampingState = RampingState.RampDown;
                 }
                 break;
-            case Down:
+            case RampDown:
                 speed = MIN_SPEED + (STEPS_DOWN - _step) * ((GOAL_SPEED - MIN_SPEED) / STEPS_DOWN);
                 //speed = (Constants.Elevator.GOAL_SPEED -(_step/Constants.Elevator.STEPS))* (Constants.Elevator.GOAL_SPEED - Constants.Elevator.MIN_SPEED);
                 //if (_elevator.getRawMAGEncoder() == _setpoint.getValue()) {
                 //}
         }
 
-        metric("Ramp/RampedSpeed", speed);
+        metric("RampUp/RampedSpeed", speed);
 
         return speed;
     }
@@ -155,6 +175,13 @@ public class MoveElevatorToSetPoint extends OutliersCommand {
                 return _pidController.onTarget();
             case Path:
                 return _pathFollower.isFinished();
+            case Ramp:
+                if (_rampDirection > 0) {
+                    return _position > _setpoint.getValue();
+                }
+                if (_rampDirection < 0) {
+                    return _position < _setpoint.getValue();
+                }
         }
         return false;
     }
@@ -212,14 +239,14 @@ public class MoveElevatorToSetPoint extends OutliersCommand {
     }
 
 
-    private enum RampingMode {
-        Ramp(0),
+    private enum RampingState {
+        RampUp(0),
         Steady(1),
-        Down(2);
+        RampDown(2);
 
         private int _value;
 
-        RampingMode(int value) { this._value = value; }
+        RampingState(int value) { this._value = value; }
 
         public int getValue() { return _value; }
     }

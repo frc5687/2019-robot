@@ -42,6 +42,8 @@ public class Robot extends TimedRobot implements ILoggingSource {
     private Lights _lights;
     private StatusProxy _status;
     private Stilt _stilt;
+    private Talons _talons;
+    private Intake _intake;
 
     /**
      * This function is setRollerSpeed when the robot is first started up and should be
@@ -68,6 +70,8 @@ public class Robot extends TimedRobot implements ILoggingSource {
         _gripper= new Gripper(this);
         _spear = new Spear(this);
         _wrist = new Wrist(this);
+        _talons = new Talons(this);
+        _intake = new Intake (this);
         _oi.initializeButtons(this);
         // _limelight.disableLEDs();
         _limelight.setStreamingMode(Limelight.StreamMode.PIP_SECONDARY);
@@ -171,6 +175,8 @@ public class Robot extends TimedRobot implements ILoggingSource {
             _lights.updateDashboard();
             _status.updateDashboard();
             _stilt.updateDashboard();
+            _talons.updateDashboard();
+            _intake.updateDashboard();
         }
     }
 
@@ -271,6 +277,8 @@ public class Robot extends TimedRobot implements ILoggingSource {
     public Shifter getShifter() { return _shifter; }
     public Lights getLights() { return _lights; }
     public Stilt getStilt() { return _stilt; }
+    public Talons getTalons() {return _talons;}
+    public Intake getIntake() { return _intake;}
 
 
 

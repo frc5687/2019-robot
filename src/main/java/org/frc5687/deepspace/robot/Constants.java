@@ -247,7 +247,7 @@ public class Constants {
     public class Limelight {
         public static final double TARGET_HEIGHT = 29;
         public static final double LIMELIGHT_HEIGHT = 42;
-        public static final double LIMELIGHT_ANGLE= 0.0;
+        public static final double LIMELIGHT_ANGLE= -12.0;
     }
     /*
      There should be a nested static class for each subsystem and for each autonomous command that needs tuning constants.

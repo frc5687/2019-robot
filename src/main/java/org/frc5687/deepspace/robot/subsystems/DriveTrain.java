@@ -220,6 +220,10 @@ public class DriveTrain extends OutliersSubsystem implements PIDSource {
         return (getLeftDistance() + getRightDistance()) / 2;
     }
 
+    public double getFrontDistance() {
+        return _frontDistance.getDistance();
+    }
+
     public void resetDriveEncoders() {
         _leftOffset = getLeftTicks();
         _rightOffset = getRightTicks();

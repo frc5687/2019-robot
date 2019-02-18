@@ -77,7 +77,10 @@ public class AutoDriveToTarget extends OutliersCommand {
         _angleController.setSetpoint(_angleTarget);
         _angleController.enable();
 
-        double currentTargetDistance = _limelight.getTargetDistance();
+        double currentTargetDistance = _driveTrain.getFrontDistance();
+        if (currentTargetDistance > Constants.Auto.IR_THRESHOLD) {
+            currentTargetDistance = _limelight.getTargetDistance();
+        }
 
         double distanceSetPoint = _driveTrain.getDistance() + currentTargetDistance - _distanceTarget;
 

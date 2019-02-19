@@ -3,7 +3,6 @@ package org.frc5687.deepspace.robot.subsystems;
 import com.revrobotics.CANEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.PIDSource;
 import edu.wpi.first.wpilibj.PIDSourceType;
@@ -12,7 +11,8 @@ import org.frc5687.deepspace.robot.Robot;
 import org.frc5687.deepspace.robot.RobotMap;
 import org.frc5687.deepspace.robot.commands.DriveElevator;
 import org.frc5687.deepspace.robot.utils.HallEffect;
-import org.frc5687.deepspace.robot.utils.Helpers;
+import static org.frc5687.deepspace.robot.utils.Helpers.*;
+import static org.frc5687.deepspace.robot.Constants.Elevator.*;
 
 public class Elevator extends OutliersSubsystem implements PIDSource {
 
@@ -23,6 +23,8 @@ public class Elevator extends OutliersSubsystem implements PIDSource {
 
     private HallEffect _topHall;
     private HallEffect _bottomHall;
+
+    private double _offset = 0;
 
     public Elevator(Robot robot) {
         _robot = robot;
@@ -40,16 +42,35 @@ public class Elevator extends OutliersSubsystem implements PIDSource {
         _bottomHall = new HallEffect(RobotMap.DIO.ELEVATOR_BOTTOM_HALL);
 
     }
-    public void setElevatorSpeeds(double speed) {
-        speed = Helpers.limit(speed, -Constants.Elevator.MAX_ELEVATOR_SPEED_DOWN,  Constants.Elevator.MAX_ELEVATOR_SPEED_UP);
-        if (speed > 0 && isAtTop()) {
-            speed = 0;
-        } else if (speed < 0 && isAtBottom()) {
-            speed = 0;
+    public void setSpeed(double speed) {
+        setSpeed(speed, false);
+    }
+    public void setSpeed(double speed, boolean overrideRamp) {
+        speed = limit(speed, -MAX_SPEED_DOWN, MAX_SPEED_UP);
+        if (!overrideRamp) {
+            if (speed > 0) {
+                speed = limit(speed, -MAX_SPEED_DOWN, _elevator.get() + (MAX_SPEED_UP / STEPS_UP));
+            } else if (speed < 0) {
+                speed = limit(speed, _elevator.get() - (MAX_SPEED_DOWN / STEPS_UP), MAX_SPEED_UP);
+            }
+        }
+        if (isAtTop()) {
+            speed = limit(speed, -MAX_SPEED_DOWN,  0);
+        } else if (isNearTop()) {
+            speed = limit(speed, -MAX_SPEED_DOWN,  JELLO_SPEED_UP);
+        } else if (isAtBottom()) {
+            speed = limit(speed, 0, MAX_SPEED_UP);
+        } else if (isNearBottom()) {
+            speed = limit(speed, -JELLO_SPEED_DOWN, MAX_SPEED_UP);
         }
         metric("ElevatorSpeed",speed);
 
         if (_elevator==null) { return; }
+        if (isAtTop()) {
+            resetEncoder(Setpoint.Top.getValue());
+        } else if (isAtBottom()) {
+            resetEncoder(Setpoint.Bottom.getValue());
+        }
         _elevator.set(speed);
     }
 
@@ -63,12 +84,12 @@ public class Elevator extends OutliersSubsystem implements PIDSource {
         // _elevator.setIdleMode(CANSparkMax.IdleMode.kCoast);
     }
 
-    public double getRawNeoEncoder() {
+    private double getRawNeoEncoder() {
         if (_elevator==null) { return 0; }
-        return _neoElevatorEncoder.getPosition();
+        return 0;
     }
 
-    public double getRawMAGEncoder() {
+    private double getRawMAGEncoder() {
         return _elevatorEncoder.get();
     }
 
@@ -80,15 +101,38 @@ public class Elevator extends OutliersSubsystem implements PIDSource {
     @Override
     public void updateDashboard() {
         metric("MAGEncoder", getRawMAGEncoder());
-        metric("NEOEncoder", getRawNeoEncoder());
-
+        metric("Position", getPosition());
+        metric("Bottom", isAtBottom());
+        metric("Top", isAtTop());
     }
     public boolean isAtTop() { return _topHall.get(); }
 
+    public boolean isNearTop() { return isAtTop() || (getPosition() > Setpoint.Top.getValue() - TOP_JELLO_ZONE); }
+
     public boolean isAtBottom() { return _bottomHall.get(); }
 
+    public boolean isNearBottom() { return isAtBottom() || (getPosition() < Setpoint.Bottom.getValue() + BOTTOM_JELLO_ZONE); }
+
+    public void resetEncoder() {
+        resetEncoder(0);
+    }
+
+    public void resetEncoder(long position) {
+        _offset = position - getRawMAGEncoder();
+    }
+
     public double getPosition() {
-        return getRawMAGEncoder();
+        return getRawMAGEncoder() + _offset;
+    }
+
+    public boolean isHallEffectTriggered(HallEffectSensor hall) {
+        switch(hall) {
+            case TOP:
+                return isAtTop();
+            case BOTTOM:
+                return isAtBottom();
+        }
+        return false;
     }
 
     @Override
@@ -105,33 +149,49 @@ public class Elevator extends OutliersSubsystem implements PIDSource {
         return getPosition();
     }
 
+    public enum HallEffectSensor {
+        BOTTOM,
+        TOP
+    }
+
 
     public enum Setpoint {
-        Bottom(0),
-        Port1(132),
-        Hatch1(133),
+        Bottom(0, HallEffectSensor.BOTTOM),
+        Port1(1, HallEffectSensor.BOTTOM),
+        Hatch1(2, HallEffectSensor.BOTTOM),
+        Secure(450),
+        ClearRoller(935),
+        HPMode(1450),
         Port2(2168),
         Hatch2(2169),
-        Port3(4100),
-        Hatch3(4100),
-        Top(4100);
+        Port3(4098, HallEffectSensor.TOP),
+        Hatch3(4099, HallEffectSensor.TOP),
+        Top(4100, HallEffectSensor.TOP);
 
         private int _value;
+        private HallEffectSensor _hall;
 
         Setpoint(int value) {
             this._value = value;
+        }
+
+        Setpoint(int value, HallEffectSensor hall) {
+            this(value);
+            this._hall = hall;
         }
 
         public int getValue() {
             return _value;
         }
 
+        public HallEffectSensor getHall() { return _hall; }
     }
 
     public enum MotionMode {
         Simple(0),
         PID(1),
-        Path(2);
+        Path(2),
+        Ramp(3);
 
         private int _value;
 

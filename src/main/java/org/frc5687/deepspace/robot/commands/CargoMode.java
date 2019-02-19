@@ -11,7 +11,6 @@ public class CargoMode extends CommandGroup {
         addSequential(new MoveElevatorToSetPoint(robot.getElevator(), Elevator.Setpoint.ClearRoller, Elevator.MotionMode.PID));
         addSequential(new MoveArmToSetPoint(robot.getArm(), Arm.Setpoint.Intake, Arm.HallEffectSensor.INTAKE, Arm.MotionMode.Simple));
         addSequential(new WristDown(robot, robot.getWrist()));
-        robot.getOI()._cargoBlinking = true;
         //addSequential(new MoveElevatorToSetPoint(robot.getElevator(), Elevator.Setpoint.ClearRoller, Elevator.MotionMode.PID));
         addSequential(new SetConfiguration(robot, Robot.Configuration.cargo));
     }

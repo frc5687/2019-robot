@@ -155,6 +155,9 @@ public class Constants {
         public static final double SOLID_HOT_PINK = 0.57;
 
         public static final double CONFETTI = -0.87;
+
+
+
     }
     public class Stilt {
         public static final double MAX_Stilt_SPEED = 0.25;

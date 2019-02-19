@@ -57,9 +57,6 @@ public class Roller extends OutliersSubsystem {
     }
 
     public boolean isBallDetected() {
-        if(_ballIR.getValue() > Constants.Roller.CARGO_DETECTED_THRESHOLD){
-            _robot.getOI()._cargoBlinking = false;
-        }
         return _ballIR.getValue() > Constants.Roller.CARGO_DETECTED_THRESHOLD;
     }
 

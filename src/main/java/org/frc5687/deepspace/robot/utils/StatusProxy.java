@@ -50,19 +50,29 @@ public class StatusProxy extends OutliersProxy {
                 }
                 break;
             case hatch:
+
                 if (_hatchSecured) {
                     _lights.setColor(Constants.Lights.SOLID_PURPLE, 0);
+                    _oi._hatchBlinking = false;
+                    _oi._hatchMode.set(true);
                 } else {
                     _lights.setColor(Constants.Lights.SOLID_PURPLE, 2);
+                    _oi._hatchBlinking = true;
+                    _oi._hatchMode.set(false);
                 }
                 break;
             case cargo:
                 if (_cargoSecured) {
                     _lights.setColor(Constants.Lights.SOLID_ORANGE, 0);
+                    _oi._cargoBlinking = false;
+                    _oi._cargoMode.set(true);
                 } else if (_cargoDetcted) {
                     _lights.setColor(Constants.Lights.SOLID_ORANGE, 4);
+                    _oi._cargoBlinking = true;
                 } else {
                     _lights.setColor(Constants.Lights.SOLID_ORANGE, 2);
+                    _oi._cargoBlinking = true;
+                    _oi._cargoMode.set(false);
                 }
                 break;
             case climb:

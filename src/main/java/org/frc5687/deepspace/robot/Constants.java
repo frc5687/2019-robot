@@ -124,10 +124,10 @@ public class Constants {
         public class AlignToTarget {
             public static final double SPEED = 1.0;
 
-            public static final double kP = 0.04;
-            public static final double kI = 0.002;
-            public static final double kD = 0.4;
-            public static final double TOLERANCE = .5; // 0.5
+            public static final double kP = 0.05;
+            public static final double kI = 0.000;
+            public static final double kD = 0.418;
+            public static final double TOLERANCE = 1; // 0.5
             public static final double MINIMUM_SPEED = 0.2;
             public static final double STEADY_TIME = 60;
 
@@ -153,8 +153,8 @@ public class Constants {
 
             public static final double kP = 0.05;
             public static final double kI = 0;
-            public static final double kD = .418;
-            public static final double TOLERANCE = .5; // 0.5
+            public static final double kD = 0.418;
+            public static final double TOLERANCE = .05; // 0.5
             public static final double MINIMUM_SPEED = 0;
             public static final double MAX_OUTPUT = 0;
             /*

@@ -1,6 +1,7 @@
 package org.frc5687.deepspace.robot.commands;
 
 import com.kauailabs.navx.frc.AHRS;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.PIDOutput;
 import org.frc5687.deepspace.robot.Constants;
@@ -121,12 +122,14 @@ public class AutoDriveToTarget extends OutliersCommand {
             _distanceController.setSetpoint(distanceSetPoint);
             metric("distance/setpoint", distanceSetPoint);
             oldSetpoint = distanceSetPoint;
+            _distanceController.enable();
         }
 
         if (_speed > 0.3 && Math.abs(oldSetpoint - _driveTrain.getDistance()) <= 36) {
+            DriverStation.reportError("CAPPING", false);
             _distanceController.setOutputRange(-0.3, 0.3);
+            _distanceController.enable();
         }
-        _distanceController.enable();
 
 
         if (!irMode && _limelight.isTargetSighted()) {

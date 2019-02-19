@@ -139,7 +139,7 @@ public class OI extends OutliersProxy {
         _driverYButton.whenPressed(new MoveArmToSetPoint(robot.getArm(), Arm.Setpoint.Floor, Arm.HallEffectSensor.LOW, Arm.MotionMode.Simple));
         _driverBButton.whenPressed(new MoveArmToSetPoint(robot.getArm(), Arm.Setpoint.Intake, Arm.HallEffectSensor.INTAKE, Arm.MotionMode.Simple));
         _driverXButton.whenPressed(new MoveArmToSetPoint(robot.getArm(), Arm.Setpoint.Secure, Arm.HallEffectSensor.SECURE, Arm.MotionMode.Simple));
-        _driverAButton.whenPressed(new AutoDriveToTarget(robot, .6,12,1,"debug"));
+        _driverAButton.whenPressed(new AutoDriveToTarget(robot, .6,14,2,"debug"));
 
     }
     public boolean isAutoTargetPressed() {return _driverAButton.get();}

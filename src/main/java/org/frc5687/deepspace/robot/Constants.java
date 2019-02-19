@@ -5,7 +5,7 @@ public class Constants {
      *
      */
     public static final int CYCLES_PER_SECOND = 50;
-    public static final int TICKS_PER_UPDATE = 1;
+    public static final int TICKS_PER_UPDATE = 10;
 
     public class DriveTrain {
 
@@ -138,7 +138,7 @@ public class Constants {
 
             public static final double kPAngle = 0.005;
             public static final double kIAngle = 0.00;
-            public static final double kDAngle = 0.01;
+            public static final double kDAngle = 0.1;
 
             public static final double kPDistance = 0.01;
             public static final double kIDistance = 0.000;

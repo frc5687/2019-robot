@@ -5,7 +5,6 @@ import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.PIDOutput;
 import org.frc5687.deepspace.robot.Constants;
 import org.frc5687.deepspace.robot.subsystems.DriveTrain;
-import org.frc5687.deepspace.robot.utils.RioLogger;
 
 public class AutoAlign extends OutliersCommand implements PIDOutput {
     private PIDController _controller;
@@ -13,7 +12,7 @@ public class AutoAlign extends OutliersCommand implements PIDOutput {
     private double _speed;
     private long _timeout = 2000;
 
-    private double pidOut;
+    private double _pidOut;
 
     private long _onTargetSince;
     private long _startTimeMillis;
@@ -61,7 +60,7 @@ public class AutoAlign extends OutliersCommand implements PIDOutput {
 
     @Override
     protected void execute() {
-        //actOnPidOut();
+        actOnPidOut();
         // Check pitch and tilt
         double pitch = _imu.getPitch();
         double roll = _imu.getRoll();
@@ -83,13 +82,15 @@ public class AutoAlign extends OutliersCommand implements PIDOutput {
     }
 
     private void actOnPidOut() {
-        if (pidOut > 0 && pidOut < Constants.Auto.Align.MINIMUM_SPEED) {
-            pidOut = Constants.Auto.Align.MINIMUM_SPEED;
+        if (_pidOut > 0 && _pidOut < Constants.Auto.Align.MINIMUM_SPEED) {
+            _pidOut = Constants.Auto.Align.MINIMUM_SPEED;
         }
-        if (pidOut < 0 && pidOut > -Constants.Auto.Align.MINIMUM_SPEED) {
-            pidOut = -Constants.Auto.Align.MINIMUM_SPEED;
+        if (_pidOut < 0 && _pidOut > -Constants.Auto.Align.MINIMUM_SPEED) {
+            _pidOut = -Constants.Auto.Align.MINIMUM_SPEED;
         }
-        metric("pidOut", pidOut);
+        _driveTrain.setPower(_pidOut, -_pidOut, true);
+
+        metric("pidOut", _pidOut);
         metric("Angle", _angle);
     }
 
@@ -125,8 +126,17 @@ public class AutoAlign extends OutliersCommand implements PIDOutput {
 
     @Override
     public void pidWrite(double output) {
-        pidOut = output;
+        _pidOut = output;
         actOnPidOut();
     }
+
+
+    /*
+    Used in AutoAlign to select which types of turns to do.
+    bothSides will turn normally, or "in place" (hah!)
+    leftOnly will use the pidOut to drive the left side of the drivetrain, but the right side will be in 0in/s talon velocity pid mode.
+    rightOnly will use the pidOut to drive the right side of the drivetrain, but the left side will be in 0in/s talon velocity pid mode.
+     */
+
 
 }

@@ -6,10 +6,13 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.PIDOutput;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.frc5687.deepspace.robot.Constants;
 import org.frc5687.deepspace.robot.OI;
 import org.frc5687.deepspace.robot.Robot;
 import org.frc5687.deepspace.robot.subsystems.DriveTrain;
+import org.frc5687.deepspace.robot.utils.Limelight;
+import org.frc5687.deepspace.robot.utils.RioLogger;
 
 
 public class AutoAlignToTarget extends OutliersCommand implements PIDOutput {
@@ -28,10 +31,10 @@ public class AutoAlignToTarget extends OutliersCommand implements PIDOutput {
 
     private DriveTrain _driveTrain;
     private AHRS _imu;
+    private Limelight _limelight;
 
     private String _stage = "";
 
-    NetworkTable _table;
 
     private OI _oi;
 
@@ -39,14 +42,14 @@ public class AutoAlignToTarget extends OutliersCommand implements PIDOutput {
     private double _tolerance;
 
     public AutoAlignToTarget(Robot robot, double speed, long timeout, double tolerance) {
-        this(robot.getDriveTrain(), robot.getIMU(), speed, timeout, tolerance, "");
+        this(robot, robot.getDriveTrain(), robot.getIMU(), speed, timeout, tolerance, "");
         _oi = robot.getOI();
     }
 
 
-    public AutoAlignToTarget(DriveTrain driveTrain, AHRS imu, double speed, long timeout, double tolerance, String stage) {
+    public AutoAlignToTarget(Robot robot, DriveTrain driveTrain, AHRS imu, double speed, long timeout, double tolerance, String stage) {
         requires(driveTrain);
-        _angle = _angle;
+        _limelight = robot.getLimelight();
         _speed = speed;
         _driveTrain = driveTrain;
         _imu = imu;
@@ -57,6 +60,7 @@ public class AutoAlignToTarget extends OutliersCommand implements PIDOutput {
 
     @Override
     protected void initialize() {
+        _driveTrain.resetDriveEncoders();
         double kP = Constants.Auto.AlignToTarget.kP; // Double.parseDouble(SmartDashboard.getString("DB/String 0", ".04"));
         double kI = Constants.Auto.AlignToTarget.kI; // Double.parseDouble(SmartDashboard.getString("DB/String 1", ".006"));
         double kD = Constants.Auto.AlignToTarget.kD; //Double.parseDouble(SmartDashboard.getString("DB/String 2", ".09"));
@@ -64,11 +68,9 @@ public class AutoAlignToTarget extends OutliersCommand implements PIDOutput {
         // 1: Read current target angle from limelight
         // 2: Read current yaw from navX
         // 3: Set controller.angle to sum
-        _table = NetworkTableInstance.getDefault().getTable("limelight");
-        NetworkTableEntry tx = _table.getEntry("tx");
 
-        double limeLightAngle = tx.getDouble(0.0);
-        double yawAngle = _imu.getAngle();
+        double limeLightAngle = _limelight.getHorizontalAngle();
+        double yawAngle = _imu.getYaw();
         _angle = limeLightAngle + yawAngle;
 
         metric("LimeLightAngle", limeLightAngle);
@@ -93,9 +95,8 @@ public class AutoAlignToTarget extends OutliersCommand implements PIDOutput {
 
     @Override
     protected void execute() {
-        NetworkTableEntry tx = _table.getEntry("tx");
-        double limeLightAngle = tx.getDouble(0.0);
-        double yawAngle = _imu.getAngle();
+        double limeLightAngle = _limelight.getHorizontalAngle();
+        double yawAngle = _imu.getYaw();
         _angle = limeLightAngle + yawAngle;
 
         metric("startoffset", limeLightAngle);
@@ -108,20 +109,11 @@ public class AutoAlignToTarget extends OutliersCommand implements PIDOutput {
         }
         metric("onTarget", _controller.onTarget());
         metric("yaw", _imu.getYaw());
-
-        actOnPidOut();
-
-
-    }
-
-    private void actOnPidOut() {
-        if (_pidOut > 0 && _pidOut < Constants.Auto.AlignToTarget.MINIMUM_SPEED) {
-            _pidOut = Constants.Auto.AlignToTarget.MINIMUM_SPEED;
-        }
-        if (_pidOut < 0 && _pidOut > -Constants.Auto.AlignToTarget.MINIMUM_SPEED) {
-            _pidOut = -Constants.Auto.AlignToTarget.MINIMUM_SPEED;
-        }
         metric("pidOut", _pidOut);
+
+        _driveTrain.setPower(_pidOut, -_pidOut, true);
+
+
     }
     @Override
     protected boolean isFinished() {

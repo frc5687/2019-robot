@@ -134,22 +134,18 @@ public class Constants {
         }
         public class DriveToTarget {
 
-            public static final double SPEED = 0.2;
             public static final double TURN_SPEED = 0.1;
 
-            public static final double kPAngle = 0.05;
+            public static final double kPAngle = 0.005;
             public static final double kIAngle = 0.00;
-            public static final double kDAngle = 0.418;
+            public static final double kDAngle = 0.01;
 
-            public static final double kPDistance = 0.4;
+            public static final double kPDistance = 0.01;
             public static final double kIDistance = 0.000;
-            public static final double kDDistance = 0.3;
+            public static final double kDDistance = 0.0;
 
             public static final double ANGLE_TOLERANCE = .5;
             public static final double DISTANCE_TOLERANCE = .5;
-
-            public static final double TARGET_HEIGHT = 29;
-            public static final double LIGHT_HEIGHT = 41.5;
 
         }
         public class Align {

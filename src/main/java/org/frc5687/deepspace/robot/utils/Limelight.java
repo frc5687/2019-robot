@@ -68,15 +68,15 @@ public class Limelight extends OutliersProxy {
 
 
     public void defaultLEDs() {
-        _ledmode.setNumber(0);
+        _ledmode.setNumber(0.0);
     }
 
     public void enableLEDs() {
-        _ledmode.setNumber(3);
+        _ledmode.setNumber(3.0);
     }
 
     public void disableLEDs() {
-        _ledmode.setNumber(1);
+        _ledmode.setNumber(1.0);
 
     }
     public void blinkLEDs() {
@@ -92,7 +92,7 @@ public class Limelight extends OutliersProxy {
     }
 
     public boolean isTargetSighted() {
-        return (int)_tv.getNumber(0) > 0;
+        return _tv.getNumber(0).intValue() > 0;
     }
 
     public double getHorizontalAngle() {

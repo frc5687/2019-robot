@@ -88,6 +88,9 @@ public class DriveTrain extends OutliersSubsystem implements PIDSource {
 
     @Override
     public void updateDashboard() {
+        metric("Distance/Left", getLeftDistance());
+        metric("Distance/Right", getRightDistance());
+        metric("Distance/Total", getDistance());
         metric("Front/Value", _frontDistance.getValue());
         metric("Front/Voltage", _frontDistance.getVoltage());
         metric("Front/PID", _frontDistance.pidGet());
@@ -95,15 +98,11 @@ public class DriveTrain extends OutliersSubsystem implements PIDSource {
         metric("Front/AverageVoltage", _frontDistance.getAverageVoltage());
         metric("Front/Value", _frontDistance.getValue());
         metric("Front/Inches", _frontDistance.getDistance());
-        metric("Neo/Ticks/Left", getLeftTicks());
-        metric("Neo/Ticks/Right", getRightTicks());
-        metric("Neo/Distance/Left", getLeftDistance());
-        metric("Neo/Distance/Right", getRightDistance());
-        metric("Neo/Distance/Total", getDistance());
         metric("Mag/Ticks/Left", _leftEncoder.get());
         metric("Mag/Ticks/Right", _rightEncoder.get());
         metric("Mag/RightRaw", _rightEncoder.getRaw());
         metric("Mag/LeftRaw", _leftEncoder.getRaw());
+        metric("Imu/Angle", _imu.getYaw());
 
     }
 

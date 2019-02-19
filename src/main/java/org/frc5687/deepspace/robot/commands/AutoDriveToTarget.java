@@ -8,6 +8,7 @@ import org.frc5687.deepspace.robot.OI;
 import org.frc5687.deepspace.robot.Robot;
 import org.frc5687.deepspace.robot.subsystems.DriveTrain;
 import org.frc5687.deepspace.robot.utils.Limelight;
+import static org.frc5687.deepspace.robot.Constants.Auto.DriveToTarget.*;
 
 public class AutoDriveToTarget extends OutliersCommand {
     private DriveTrain _driveTrain;
@@ -48,45 +49,25 @@ public class AutoDriveToTarget extends OutliersCommand {
 
     @Override
     protected void initialize() {
+        _aborted = false;
         _driveTrain.resetDriveEncoders();
         _startTimeMillis = System.currentTimeMillis();
         error("Running AutoDriveToTarget to " + _distanceTarget + " inches at " + _speed);
-        double kPAngle = Constants.Auto.DriveToTarget.kPAngle; // Double.parseDouble(SmartDashboard.getString("DB/String 0", ".04"));
-        double kIAngle = Constants.Auto.DriveToTarget.kIAngle; // Double.parseDouble(SmartDashboard.getString("DB/String 1", ".006"));
-        double kDAngle = Constants.Auto.DriveToTarget.kDAngle; //Double.parseDouble(SmartDashboard.getString("DB/String 2", ".09"));
 
-        double kPDistance = Constants.Auto.DriveToTarget.kPDistance; // Double.parseDouble(SmartDashboard.getString("DB/String 0", ".04"));
-        double kIDistance = Constants.Auto.DriveToTarget.kIDistance; // Double.parseDouble(SmartDashboard.getString("DB/String 1", ".006"));
-        double kDDistance = Constants.Auto.DriveToTarget.kDDistance; //Double.parseDouble(SmartDashboard.getString("DB/String 2", ".09"));
+        boolean irMode = true;
 
-        // 1: Read current target _angleTarget from limelight
-        // 2: Read current yaw from navX
-        // 3: Set _angleController._angleTarget to sum
-
-        double limeLightAngle = _limelight.getHorizontalAngle();
-        double yawAngle = _imu.getAngle();
-        _angleTarget = limeLightAngle + yawAngle;
-
-        metric ("angle/startoffset", limeLightAngle);
-        metric("angle/startyaw", yawAngle);
-        metric("angle/target", _angleTarget);
-
-        _angleController = new PIDController(kPAngle, kIAngle, kDAngle, _imu, new AngleListener(), 0.01);
-        _angleController.setInputRange(Constants.Auto.MIN_IMU_ANGLE, Constants.Auto.MAX_IMU_ANGLE);
-        _angleController.setOutputRange(-Constants.Auto.DriveToTarget.TURN_SPEED, Constants.Auto.DriveToTarget.TURN_SPEED);
-        _angleController.setAbsoluteTolerance(Constants.Auto.DriveToTarget.ANGLE_TOLERANCE);
-        _angleController.setContinuous();
-        _angleController.setSetpoint(_angleTarget);
-        _angleController.enable();
-
-        double currentTargetDistance = _driveTrain.getFrontDistance();
-        error("entering IR mode");
-        if (currentTargetDistance > Constants.Auto.IR_THRESHOLD) {
-            currentTargetDistance = _limelight.getTargetDistance();
-            error("entering LimeLight mode");
+        _currentTargetDistance = _driveTrain.getFrontDistance();
+        if (_currentTargetDistance > Constants.Auto.IR_THRESHOLD) {
+            irMode = false;
+            if (_limelight.isTargetSighted()) {
+                _currentTargetDistance = _limelight.getTargetDistance();
+            } else {
+                _aborted = true;
+            }
         }
+        metric("distance/IRMode", irMode);
 
-        double distanceSetPoint = _driveTrain.getDistance() + currentTargetDistance - _distanceTarget;
+        double distanceSetPoint = _driveTrain.getDistance() + _currentTargetDistance - _distanceTarget;
 
         _distanceController = new PIDController(kPDistance, kIDistance, kDDistance, _driveTrain, new DistanceListener(), 0.1);
         _distanceController.setOutputRange(-_speed, _speed);
@@ -96,27 +77,42 @@ public class AutoDriveToTarget extends OutliersCommand {
         _distanceController.enable();
 
         metric("distance/setpoint", distanceSetPoint);
-        metric("distance/currentTargetDistance", currentTargetDistance);
+        metric("distance/currentTargetDistance", _currentTargetDistance);
         metric("distance/distanceTarget", _distanceTarget);
 
+        // 1: Read current target _angleTarget from limelight
+        // 2: Read current yaw from navX
+        // 3: Set _angleController._angleTarget to sum
 
+        // If we can't see the target, don't use limelight's angle!
+        double limeLightAngle = irMode ? 0 : _limelight.getHorizontalAngle();
+        double yawAngle = _imu.getYaw();
+        _angleTarget = limeLightAngle + yawAngle;
+
+        metric ("angle/startoffset", limeLightAngle);
+        metric("angle/startyaw", yawAngle);
+        metric("angle/target", _angleTarget);
+
+        _angleController = new PIDController(kPAngle, kIAngle, kDAngle, _imu, new AngleListener(), 0.1);
+        _angleController.setInputRange(Constants.Auto.MIN_IMU_ANGLE, Constants.Auto.MAX_IMU_ANGLE);
+        _angleController.setOutputRange(-TURN_SPEED, TURN_SPEED);
+        _angleController.setAbsoluteTolerance(ANGLE_TOLERANCE);
+        _angleController.setContinuous();
+        _angleController.setSetpoint(_angleTarget);
+        _angleController.enable();
     }
 
     @Override
     protected void execute() {
-        double limeLightAngle = _limelight.getHorizontalAngle();
-        double yawAngle = _imu.getAngle();
-        _angleTarget = limeLightAngle + yawAngle;
+        boolean irMode = true;
 
-        metric("angle/startoffset", limeLightAngle);
-        metric("angle/startyaw", yawAngle);
-        metric("angle/target", _angleTarget);
-
-        if (Math.abs(_angleTarget - _angleController.getSetpoint()) > Constants.Auto.DriveToTarget.ANGLE_TOLERANCE) {
-            _angleController.setSetpoint(_angleTarget);
-            metric("angle/setpoint", _angleTarget);
+        _currentTargetDistance = _driveTrain.getFrontDistance();
+        if (_currentTargetDistance > Constants.Auto.IR_THRESHOLD) {
+            irMode = false;
+            if (_limelight.isTargetSighted()) {
+                _currentTargetDistance = _limelight.getTargetDistance();
+            }
         }
-        _currentTargetDistance = _limelight.getTargetDistance();
 
         double distanceSetPoint = _driveTrain.getDistance() + _currentTargetDistance - _distanceTarget;
         double oldSetpoint = _distanceController.getSetpoint();
@@ -124,19 +120,38 @@ public class AutoDriveToTarget extends OutliersCommand {
         if (Math.abs(distanceSetPoint - oldSetpoint) > _distanceTolerance) {
             _distanceController.setSetpoint(distanceSetPoint);
             metric("distance/setpoint", distanceSetPoint);
+            oldSetpoint = distanceSetPoint;
         }
 
-        _distanceController.setSetpoint(distanceSetPoint);
+        if (_speed > 0.3 && Math.abs(oldSetpoint - _driveTrain.getDistance()) <= 36) {
+            _distanceController.setOutputRange(-0.3, 0.3);
+        }
         _distanceController.enable();
+
+
+        if (!irMode && _limelight.isTargetSighted()) {
+            double limeLightAngle = _limelight.getHorizontalAngle();
+            double yawAngle = _imu.getYaw();
+            _angleTarget = limeLightAngle + yawAngle;
+
+            metric("angle/startoffset", limeLightAngle);
+            metric("angle/startyaw", yawAngle);
+            metric("angle/target", _angleTarget);
+
+            if (Math.abs(_angleTarget - _angleController.getSetpoint()) > Constants.Auto.DriveToTarget.ANGLE_TOLERANCE) {
+                _angleController.setSetpoint(_angleTarget);
+                metric("angle/setpoint", _angleTarget);
+            }
+        }
 
         metric("angle/yaw", _imu.getYaw());
 
-        metric("currentTargetDistance", _currentTargetDistance);
+        metric("distance/currentTargetDistance", _currentTargetDistance);
         metric("angle/PIDOut", _anglePIDOut);
         metric("distance/PIDOut", _distancePIDOut);
         metric("distance/target", distanceSetPoint);
-        metric("/distance/current", _driveTrain.getDistance());
-
+        metric("distance/current", _driveTrain.getDistance());
+        metric("distance/IRMode", irMode);
         _driveTrain.setPower(_distancePIDOut + _anglePIDOut , _distancePIDOut - _anglePIDOut, true); // positive output is clockwise
 
     }

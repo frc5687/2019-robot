@@ -100,7 +100,6 @@ public class Robot extends TimedRobot implements ILoggingSource {
     }
 
     public void teleopInit() {
-        _oi._testLight.set(true);
         _arm.enableBrakeMode();
         _elevator.enableBrakeMode();
     }

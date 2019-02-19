@@ -40,7 +40,15 @@ public class OI extends OutliersProxy {
     private Button _driverStartButton;
     private Button _driverBackButton;
 
-    public JoystickLight _testLight;
+    public JoystickLight _hatchMode;
+    public JoystickLight _cargoMode;
+    public JoystickLight _targetCenter;
+    public JoystickLight _targetLeft;
+    public JoystickLight _targetRight;
+
+
+
+
 
     public OI(){
         _driverGamepad = new Gamepad(0);
@@ -72,8 +80,11 @@ public class OI extends OutliersProxy {
 
         _driverStartButton = new JoystickButton(_driverGamepad, Gamepad.Buttons.START.getNumber());
         _driverBackButton = new JoystickButton(_driverGamepad, Gamepad.Buttons.BACK.getNumber());
-
-        _testLight = new JoystickLight(_launchpad, Launchpad.LEDs.A.getNumber());
+        _hatchMode = new JoystickLight(_launchpad, Launchpad.LEDs.A.getNumber());
+        _cargoMode = new JoystickLight(_launchpad, Launchpad.LEDs.B.getNumber());
+        _targetCenter = new JoystickLight(_launchpad, Launchpad.LEDs.C.getNumber());
+        _targetLeft = new JoystickLight(_launchpad, Launchpad.LEDs.D.getNumber());
+        _targetRight = new JoystickLight(_launchpad, Launchpad.LEDs.E.getNumber());
 
     }
     public void initializeButtons(Robot robot){
@@ -99,7 +110,6 @@ public class OI extends OutliersProxy {
         _driverBButton.whenPressed(new MoveArmToSetPoint(robot.getArm(), Arm.Setpoint.Intake, Arm.HallEffectSensor.INTAKE, Arm.MotionMode.Simple));
         _driverXButton.whenPressed(new MoveArmToSetPoint(robot.getArm(), Arm.Setpoint.Secure, Arm.HallEffectSensor.SECURE, Arm.MotionMode.Simple));
         _driverYButton.whenPressed(new MoveArmToSetPoint(robot.getArm(), Arm.Setpoint.Stowed, Arm.HallEffectSensor.STOWED, Arm.MotionMode.Simple));
-
     }
     public double getDriveSpeed() {
         double speed = -getSpeedFromAxis(_driverGamepad, Gamepad.Axes.LEFT_Y.getNumber());

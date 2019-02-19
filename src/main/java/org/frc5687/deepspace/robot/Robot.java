@@ -33,7 +33,7 @@ public class Robot extends TimedRobot implements ILoggingSource {
     private DriveTrain _driveTrain;
     private Elevator _elevator;
     private PDP _pdp;
-    private Gripper _gripper;
+    //private Gripper _gripper;
     private Spear _spear;
     private Arm _arm;
     private Wrist _wrist;
@@ -42,7 +42,6 @@ public class Robot extends TimedRobot implements ILoggingSource {
     private Lights _lights;
     private StatusProxy _status;
     private Stilt _stilt;
-    private Talons _talons;
     private Intake _intake;
 
     /**
@@ -67,10 +66,9 @@ public class Robot extends TimedRobot implements ILoggingSource {
         _elevator = new Elevator(this);
         _stilt = new Stilt(this);
         _pdp = new PDP();
-        _gripper= new Gripper(this);
+        //_gripper= new Gripper(this);
         _spear = new Spear(this);
         _wrist = new Wrist(this);
-        _talons = new Talons(this);
         _intake = new Intake (this);
         _oi.initializeButtons(this);
         // _limelight.disableLEDs();
@@ -175,7 +173,6 @@ public class Robot extends TimedRobot implements ILoggingSource {
             _lights.updateDashboard();
             _status.updateDashboard();
             _stilt.updateDashboard();
-            _talons.updateDashboard();
             _intake.updateDashboard();
         }
     }
@@ -268,7 +265,7 @@ public class Robot extends TimedRobot implements ILoggingSource {
         return _limelight;
     }
     public PDP getPDP() { return _pdp; }
-    public Gripper getGripper() { return _gripper; }
+    //public Gripper getGripper() { return _gripper; }
     public Spear getSpear() { return _spear; }
     public Wrist getWrist() { return _wrist; }
     public Roller getRoller() { return _roller; }
@@ -277,7 +274,6 @@ public class Robot extends TimedRobot implements ILoggingSource {
     public Shifter getShifter() { return _shifter; }
     public Lights getLights() { return _lights; }
     public Stilt getStilt() { return _stilt; }
-    public Talons getTalons() {return _talons;}
     public Intake getIntake() { return _intake;}
 
 

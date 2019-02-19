@@ -101,11 +101,11 @@ public class OI extends OutliersProxy {
     public void initializeButtons(Robot robot){
 
 
-        _driverStartButton.whenPressed(new OpenSpear(robot.getSpear()));
-        _driverBackButton.whenPressed(new CloseSpear(robot.getSpear()));
+        _driverStartButton.whenPressed(new OpenSpear(robot.getIntake()));
+        _driverBackButton.whenPressed(new CloseSpear(robot.getIntake()));
 
-        _operatorStartButton.whenPressed(new StartGripper(robot.getGripper()));
-        _operatorBackButton.whenPressed(new StopGripper(robot.getGripper()));
+        //_operatorStartButton.whenPressed(new StartGripper(robot.getGripper()));
+        //_operatorBackButton.whenPressed(new StopGripper(robot.getGripper()));
 
 //        _operatorStartButton.whenPressed(new WristUp(robot,robot.getWrist()));
 //        _operatorBackButton.whenReleased(new WristDown(robot, robot.getWrist()));
@@ -120,8 +120,8 @@ public class OI extends OutliersProxy {
         _operatorRightTrigger.whenPressed(new Intake(robot));
         _operatorLeftTrigger.whileHeld(new HoldSpearOpen(robot));
 
-        _driverRightTrigger.whenPressed(new EjectCargo(robot));
-        _driverLeftTrigger.whileHeld(new HoldSpearOpen(robot));
+        _driverRightTrigger.whenPressed(new RunIntake(robot, robot.getIntake()));
+        _driverLeftTrigger.whenPressed(new StopRoller(robot.getIntake()));
 
 
 //        _operatorUpButton.whenPressed(new Manual(robot));
@@ -129,8 +129,8 @@ public class OI extends OutliersProxy {
 //        _driverUpButton.whenPressed(new Manual(robot));
 //        _driverDownButton.whenPressed(new CancelAuto(robot));
 
-        _operatorRightXAxisLeftButton.whenPressed(new WristDown(robot, robot.getWrist()));
-        _operatorRightXAxisRightButton.whenPressed(new WristUp(robot, robot.getWrist()));
+        _operatorRightXAxisLeftButton.whenPressed(new WristDown(robot, robot.getIntake()));
+        _operatorRightXAxisRightButton.whenPressed(new WristUp(robot, robot.getIntake()));
 
 
         _operatorAButton.whenPressed(new MoveElevatorToSetPoint(robot.getElevator(), Elevator.Setpoint.Hatch1, Elevator.MotionMode.PID));

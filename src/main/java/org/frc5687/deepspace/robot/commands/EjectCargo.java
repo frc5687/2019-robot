@@ -7,7 +7,7 @@ import org.frc5687.deepspace.robot.subsystems.Elevator;
 
 public class EjectCargo extends CommandGroup {
     public EjectCargo(Robot robot) {
-        addParallel(new StopGripper(robot.getGripper()));
-        addParallel(new CloseSpear(robot.getSpear()));
+        //addParallel(new StopGripper(robot.getGripper()));
+        addParallel(new CloseSpear(robot.getIntake()));
     }
 }

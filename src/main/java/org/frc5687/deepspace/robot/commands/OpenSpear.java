@@ -1,19 +1,19 @@
 package org.frc5687.deepspace.robot.commands;
 
 import org.frc5687.deepspace.robot.Constants;
-import org.frc5687.deepspace.robot.Robot;
+import org.frc5687.deepspace.robot.subsystems.Intake;
 import org.frc5687.deepspace.robot.subsystems.Spear;
 public class OpenSpear extends OutliersCommand {
-    private Spear _spear;
+    private Intake _intake;
     private long _startTime;
 
-    public OpenSpear(Spear spear) {
-        _spear = spear;
-        requires(_spear);
+    public OpenSpear(Intake intake) {
+        _intake = intake;
+        requires(_intake);
     }
     @Override
     protected void initialize() {
-        _spear.open();
+        _intake.openTalons();
         _startTime = System.currentTimeMillis();
     }
 

@@ -12,7 +12,7 @@ public class Wrist extends OutliersSubsystem {
 
     public Wrist (Robot robot){
         _robot = robot;
-        _wristSolenoid = new DoubleSolenoid(RobotMap.PCM.WRIST_DOWN, RobotMap.PCM.WRIST_UP);
+        //_wristSolenoid = new DoubleSolenoid(RobotMap.PCM.WRIST_DOWN, RobotMap.PCM.WRIST_UP);
     }
     public void Up(){
         _wristSolenoid.set(DoubleSolenoid.Value.kReverse);

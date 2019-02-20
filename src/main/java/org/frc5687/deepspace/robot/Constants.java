@@ -12,8 +12,8 @@ public class Constants {
         public static final double DEADBAND = 0.05;
         public static final double SPEED_SENSITIVITY = 0.50;
         public static final double ROTATION_SENSITIVITY = 0.75;
-        public static final double ROTATION_SENSITIVITY_HIGH_GEAR = 0.5;
-        public static final double ROTATION_SENSITIVITY_LOW_GEAR = 0.5;
+        public static final double ROTATION_SENSITIVITY_HIGH_GEAR = 0.25;
+        public static final double ROTATION_SENSITIVITY_LOW_GEAR = 0.25;
         public static final double TURNING_SENSITIVITY_HIGH_GEAR = 0.75;
         public static final double TURNING_SENSITIVITY_LOW_GEAR = 0.75;
 
@@ -63,17 +63,29 @@ public class Constants {
     }
 
     public static class Elevator {
-        public static final double MAX_ELEVATOR_SPEED = 0.5;
-        public static final double MAX_ELEVATOR_SPEED_UP = 0.5;
-        public static final double MAX_ELEVATOR_SPEED_DOWN = 0.2;
+        public static final double MAX_SPEED = 1.0;
+        public static final double MAX_SPEED_UP = 1.0;
+        public static final double MAX_SPEED_DOWN = 0.8;
+        public static final double SPEED_UP = 1.0;
+        public static final double SPEED_DOWN = 0.8;
+
+        public static final double JELLO_SPEED_UP = 0.2;
+        public static final double JELLO_SPEED_DOWN = 0.2;
+
+        public static final double TOP_JELLO_ZONE = 500;
+        public static final double BOTTOM_JELLO_ZONE = 1000;
+
         public static final double DEADBAND = 0.1;
         public static final double SENSITIVITY = 0.5;
         public static final boolean ELEVATOR_MOTOR_INVERTED = true;
         public static final int TOLERANCE = 10;
-        public static final double SPEED_UP = 1.0;
-        public static final double SPEED_DOWN = 0.1;
         public static final double MAX_VELOCITY_IPS = 27.0;
         public static final double TICKS_PER_INCH = 111.1111111;
+        public static final double STEPS_UP = 10;
+        public static final double STEPS_DOWN = 30;
+        public static final double TICKS_PER_STEP = 50;
+        public static final double MIN_SPEED = 0.2;
+        public static final double GOAL_SPEED = 0.5;
 
         public static class PID {
             public static final double kP = 0.1;
@@ -152,10 +164,11 @@ public class Constants {
         public static final double CONFETTI = -0.87;
     }
     public class Stilt {
-        public static final double MAX_Stilt_SPEED = 0.25;
+        public static final boolean MOTOR_INVERTED = false;
         public static final double SENSITVITY = 0.1;
         public static final double DEADBAND = 0.1;
-        public static final boolean MOTOR_INVERTED = false;
+        public static final double MAX_UP_SPEED= 0.5;
+        public static final double MAX_DOWN_SPEED = 0.4;
         public static final double STILT_HOLD_SPEED = 0.07;
     }
 

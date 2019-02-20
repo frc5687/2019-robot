@@ -35,6 +35,7 @@ public class RobotMap {
      */
     public static class PWM {
         public static final int Blinkin = 0;
+        public static final int Wheelie = 2;
         /*  Example:
         public static final int ARM_VICTORSP = 0;
         */
@@ -77,11 +78,12 @@ public class RobotMap {
      * Note that for Analog only one device can connect to each port, so the numbers should be unique.
      */
     public static class Analog {
-        public static final int BALL_IR = 1;
         /*
         public static final int ARM_POTENTIOMETER = 7;
          */
         public static final int FRONT_IR = 0;
+        public static final int BALL_IR = 1;
+        public static final int DOWN_IR = 2;
     }
 
     /**
@@ -94,15 +96,19 @@ public class RobotMap {
         public static final int ELEVATOR_TOP_HALL = 2;
         public static final int ELEVATOR_BOTTOM_HALL = 3;
 
-        public static final int ARM_LOW_HALL = 9;
-        public static final int ARM_INTAKE_HALL = 8;
+        public static final int STILT_HIGH = 4;
+        public static final int STILT_LOW = 5;
+
         public static final int ARM_SECURE_HALL = 6;
         public static final int ARM_STOWED_HALL = 7;
+        public static final int ARM_INTAKE_HALL = 8;
+        public static final int ARM_LOW_HALL = 9;
 
-        public static final int DRIVE_LEFT_A = 23;
-        public static final int DRIVE_LEFT_B = 21;
-        public static final int DRIVE_RIGHT_A = 19;
         public static final int DRIVE_RIGHT_B = 13;
+        public static final int DRIVE_RIGHT_A = 19;
+        public static final int DRIVE_LEFT_B = 21;
+        public static final int DRIVE_LEFT_A = 23;
+
 
 
         /* Example:

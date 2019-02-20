@@ -52,25 +52,32 @@ public class Robot extends TimedRobot implements ILoggingSource {
     public void robotInit() {
         loadConfigFromUSB();
         RioLogger.getInstance().init(_fileLogLevel, _dsLogLevel);
+        metric("Branch", Version.BRANCH);
         info("Starting " + this.getClass().getCanonicalName() + " from branch " + Version.BRANCH);
         info("Robot " + _name + " running in " + _identityMode.toString() + " mode");
 
+        // OI must be first...
         _oi = new OI();
+
+        // then proxies...
         _lights = new Lights(this);
         _status = new StatusProxy(this);
         _limelight = new Limelight("limelight");
+        _pdp = new PDP();
+
+        // Then subsystems....
         _shifter = new Shifter(this);
         _driveTrain = new DriveTrain(this);
         _arm = new Arm(this);
         _roller = new Roller(this);
         _elevator = new Elevator(this);
         _stilt = new Stilt(this);
-        _pdp = new PDP();
-        //_gripper= new Gripper(this);
-        _spear = new Spear(this);
-        _wrist = new Wrist(this);
         _intake = new Intake (this);
+
+        // Must initialize buttons AFTER subsystems are allocated...
         _oi.initializeButtons(this);
+
+        // Initialize the other stuff
         // _limelight.disableLEDs();
         _limelight.setStreamingMode(Limelight.StreamMode.PIP_SECONDARY);
         _status.setConfiguration(Configuration.starting);

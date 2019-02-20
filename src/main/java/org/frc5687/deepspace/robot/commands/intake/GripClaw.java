@@ -1,13 +1,14 @@
-package org.frc5687.deepspace.robot.commands;
+package org.frc5687.deepspace.robot.commands.intake;
 
 import org.frc5687.deepspace.robot.Constants;
+import org.frc5687.deepspace.robot.commands.OutliersCommand;
 import org.frc5687.deepspace.robot.subsystems.Intake;
 
-public class CloseSpear extends OutliersCommand {
+public class GripClaw extends OutliersCommand {
     public Intake _intake;
     private long _startTime;
 
-    public CloseSpear(Intake intake) {
+    public GripClaw(Intake intake) {
         _intake = intake;
         requires(_intake);
     }

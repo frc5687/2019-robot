@@ -22,7 +22,7 @@ public class RunIntake extends OutliersCommand {
     @Override
     public void execute() {
         double speed = _oi.getRollerSpeed();
-        _intake.setSpeed(speed);
+        _intake.setRollerSpeed(speed);
     }
 
 

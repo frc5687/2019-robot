@@ -57,8 +57,8 @@ public class RobotMap {
         public static final int WRIST_UP = 0;
         public static final int SHIFTER_HIGH = 4;
         public static final int SHIFTER_LOW = 5;
-        public static final int TALONS_OPEN = 2;
-        public static final int TALONS_CLOSE = 3;
+        public static final int CLAW_OPEN = 2;
+        public static final int CLAW_CLOSE = 3;
 
     }
 

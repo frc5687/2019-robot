@@ -1,25 +1,26 @@
-package org.frc5687.deepspace.robot.commands;
+package org.frc5687.deepspace.robot.commands.intake;
 
 import org.frc5687.deepspace.robot.Constants;
+import org.frc5687.deepspace.robot.commands.OutliersCommand;
 import org.frc5687.deepspace.robot.subsystems.Intake;
 
-public class CloseSpear extends OutliersCommand {
-    public Intake _intake;
+public class PointClaw extends OutliersCommand {
+    private Intake _intake;
     private long _startTime;
 
-    public CloseSpear(Intake intake) {
+    public PointClaw(Intake intake) {
         _intake = intake;
         requires(_intake);
     }
     @Override
     protected void initialize() {
-        _intake.pointClaw();
+        _intake.gripClaw();
         _startTime = System.currentTimeMillis();
     }
 
     @Override
     protected boolean isFinished() {
-        return System.currentTimeMillis() > _startTime + Constants.Spear.CLOSE_MILLI_SEC;
+        return System.currentTimeMillis() > _startTime + Constants.Spear.OPEN_MILLI_SEC;
     }
 
     @Override

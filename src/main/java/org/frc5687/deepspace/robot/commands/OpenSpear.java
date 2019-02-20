@@ -2,7 +2,7 @@ package org.frc5687.deepspace.robot.commands;
 
 import org.frc5687.deepspace.robot.Constants;
 import org.frc5687.deepspace.robot.subsystems.Intake;
-import org.frc5687.deepspace.robot.subsystems.Spear;
+
 public class OpenSpear extends OutliersCommand {
     private Intake _intake;
     private long _startTime;
@@ -13,7 +13,7 @@ public class OpenSpear extends OutliersCommand {
     }
     @Override
     protected void initialize() {
-        _intake.openTalons();
+        _intake.gripClaw();
         _startTime = System.currentTimeMillis();
     }
 

@@ -1,5 +1,6 @@
 package org.frc5687.deepspace.robot.subsystems;
 
+import com.revrobotics.CANEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
 import edu.wpi.first.wpilibj.AnalogInput;
@@ -16,12 +17,14 @@ public class Roller extends OutliersSubsystem {
     private AnalogInput _ballIR;
     private boolean _forceOn;
     private RollerMode _rollerMode;
+    private CANEncoder _rollerEncoder;
 
 
     public Roller(Robot robot) {
         _robot = robot;
         try {
             _roller = new CANSparkMax(RobotMap.CAN.SPARKMAX.ROLLER, CANSparkMaxLowLevel.MotorType.kBrushless);
+            _rollerEncoder = _roller.getEncoder();
             _roller.setInverted(Constants.Roller.MOTOR_INVERTED);
         } catch (Exception e) {
             error("Unable to allocate roller controller: " + e.getMessage());
@@ -42,6 +45,13 @@ public class Roller extends OutliersSubsystem {
     public void stop() {
         _forceOn = false;
         metric("ForceOn", _forceOn);
+    }
+
+    public CANEncoder getRollerEncoder(){
+        return _rollerEncoder;
+    }
+    public double getRollerEncoderPos(){
+        return _rollerEncoder.getPosition();
     }
 
     public void setSpeed(double speed) {

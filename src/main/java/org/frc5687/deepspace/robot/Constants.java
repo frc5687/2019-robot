@@ -105,6 +105,8 @@ public class Constants {
         public static final double INTAKE_SPEED = 1.0;
         public static final long TIME_MILLI_SEC = 1000;
         public static final int CARGO_DETECTED_THRESHOLD = 2000;
+        public static final double CLIMB_SPEED_CONSTANT  = 0.5;
+        public static final double CLIMB_ANGLE_MAX = 0.3;
     }
 
     public class Arm {

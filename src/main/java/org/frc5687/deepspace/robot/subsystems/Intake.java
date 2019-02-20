@@ -77,7 +77,6 @@ public class Intake extends OutliersSubsystem {
         if (_roller == null) {
             return;
         }
-        speed = _speed;
         _roller.set(ControlMode.PercentOutput, speed);
     }
     public void run() {

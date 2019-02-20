@@ -16,6 +16,7 @@ public class AutoClimb extends OutliersCommand {
     private CANEncoder _encoder;
     private double _angleCos;
     private double _encoderOffset;
+    private boolean isDone = false;
 
     public AutoClimb(Robot robot) {
         _robot = robot;
@@ -31,7 +32,7 @@ public class AutoClimb extends OutliersCommand {
     protected void initialize() {
        _encoderOffset = _encoder.getPosition();
        _climbState = ClimbState.MoveRoller;
-       _driveTrain
+       _driveTrain.enableBrakeMode();
     }
 
     @Override
@@ -46,12 +47,16 @@ public class AutoClimb extends OutliersCommand {
             case MoveRollerAndStilt:
                 _angleCos = Math.cos(_roller.getRollerEncoderPos()) * Constants.Roller.CLIMB_SPEED_CONSTANT;
                 _stilt.drive(0.5 );
+                break;
+            case Done:
+                isDone = true;
+                break;
         }
     }
 
     @Override
     protected boolean isFinished() {
-        return false;
+        return isDone;
     }
 
     enum ClimbState {

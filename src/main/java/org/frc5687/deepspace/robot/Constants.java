@@ -12,8 +12,8 @@ public class Constants {
         public static final double DEADBAND = 0.05;
         public static final double SPEED_SENSITIVITY = 0.50;
         public static final double ROTATION_SENSITIVITY = 0.75;
-        public static final double ROTATION_SENSITIVITY_HIGH_GEAR = 0.5;
-        public static final double ROTATION_SENSITIVITY_LOW_GEAR = 0.5;
+        public static final double ROTATION_SENSITIVITY_HIGH_GEAR = 0.25;
+        public static final double ROTATION_SENSITIVITY_LOW_GEAR = 0.25;
         public static final double TURNING_SENSITIVITY_HIGH_GEAR = 0.75;
         public static final double TURNING_SENSITIVITY_LOW_GEAR = 0.75;
 
@@ -159,10 +159,11 @@ public class Constants {
         public static final double CONFETTI = -0.87;
     }
     public class Stilt {
-        public static final double MAX_Stilt_SPEED = 0.25;
+        public static final boolean MOTOR_INVERTED = false;
         public static final double SENSITVITY = 0.1;
         public static final double DEADBAND = 0.1;
-        public static final boolean MOTOR_INVERTED = false;
+        public static final double MAX_UP_SPEED= 0.5;
+        public static final double MAX_DOWN_SPEED = 0.4;
         public static final double STILT_HOLD_SPEED = 0.07;
     }
 

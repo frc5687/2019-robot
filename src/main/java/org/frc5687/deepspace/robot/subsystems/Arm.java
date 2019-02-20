@@ -94,6 +94,7 @@ public class Arm extends OutliersSubsystem implements PIDSource {
         metric("StowedHall", _stowedHall.get());
         if (_shoulderEncoder==null) { return; }
         metric("Encoder", getPosition());
+        metric("Angle", getAngle());
     }
 
     public boolean isStowed() { return _stowedHall.get(); }

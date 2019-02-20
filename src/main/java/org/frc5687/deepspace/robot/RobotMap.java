@@ -18,8 +18,8 @@ public class RobotMap {
             public static final int DRIVE_LEFT_FOLLOWER = 14;
             public static final int DRIVE_RIGHT_FOLLOWER = 8;
             public static final int ELEVATOR_MOTOR = 5;
-            public static final int ROLLER = 9;
-            public static final int ARM = 16;
+            public static final int ROLLER = 16;
+            public static final int ARM = 9;
             public static final int INTAKE_VACUUM = 0; //vacuum motor for intake is currently not set up, set to 0 for now.
             public static final int STILT = 13;
         }

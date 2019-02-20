@@ -2,6 +2,7 @@ package org.frc5687.deepspace.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.SpeedController;
 import org.frc5687.deepspace.robot.Constants;
@@ -23,6 +24,7 @@ public class Intake extends OutliersSubsystem {
     private TalonSRX _roller;
     private boolean _forceOn;
     private double _speed;
+    private AnalogInput _ballIR;
 
     public Intake (Robot robot) {
         _robot = robot;
@@ -38,10 +40,13 @@ public class Intake extends OutliersSubsystem {
         } catch (Exception e) {
             error("Unable to allocate roller controller: " + e.getMessage());
         }
+        _ballIR = new AnalogInput(RobotMap.Analog.BALL_IR);
     }
 
     @Override
     public void updateDashboard() {
+        metric("IRValue", _ballIR.getValue());
+        metric ("BallDetected", isBallDetected());
     }
 
     public void startRollers() {
@@ -81,6 +86,9 @@ public class Intake extends OutliersSubsystem {
     }
     public void run() {
         _roller.set(ControlMode.PercentOutput, _speed);
+    }
+
+    public boolean isBallDetected() { return _ballIR.getValue() > Constants.Intake.CARGO_DETECTED_THRESHOLD;
     }
 
     @Override

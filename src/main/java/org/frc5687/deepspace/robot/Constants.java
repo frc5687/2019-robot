@@ -27,6 +27,7 @@ public class Constants {
         public static final double HIGH_POW = 1.0;
         public static final double LOW_POW = -HIGH_POW;
         public static final double ROLLER_SPEED = 0.5;
+        public static final int CARGO_DETECTED_THRESHOLD = 600;
 
     }
     public class Shifter {

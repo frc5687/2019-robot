@@ -105,8 +105,6 @@ public class Constants {
         public static final double INTAKE_SPEED = 1.0;
         public static final long TIME_MILLI_SEC = 1000;
         public static final int CARGO_DETECTED_THRESHOLD = 2000;
-        public static final double CLIMB_SPEED_CONSTANT  = 0.5;
-        public static final double CLIMB_ANGLE_MAX = 0.3;
     }
 
     public class Arm {
@@ -125,6 +123,11 @@ public class Constants {
         public static final double SPEED_UP = 0.75;
         public static final double SPEED_DOWN = 0.75;
 
+        public static final double DEGREES_PER_TICK = 360 / 42;
+
+        public static final double STOWED_ANGLE = 0.0;
+        public static final double CONTACT_ANGLE = 90.0;
+        public static final double BOTTOM_ANGLE = 180.0;
     }
 
     public class Lights {
@@ -181,4 +184,14 @@ public class Constants {
     }
      */
 
+
+    public static class Auto {
+        public static class Climb {
+            public static final double STILT_SPEED = 0.5;
+            public static final double ARM_SPEED_SCALAR = 0.5;
+
+            public static final double INITIAL_ARM_SPEED = 0.6;
+
+        }
+    }
 }

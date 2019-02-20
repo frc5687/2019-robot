@@ -128,6 +128,10 @@ public class Arm extends OutliersSubsystem implements PIDSource {
         DriverStation.reportError("Resetting arm offset to " + _offset , false);
     }
 
+    public double getAngle() {
+        return Constants.Arm.STOWED_ANGLE + (_shoulderEncoder.getPosition() * Constants.Arm.DEGREES_PER_TICK);
+    }
+
     public enum HallEffectSensor {
         LOW,
         INTAKE,

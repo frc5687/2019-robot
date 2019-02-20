@@ -1,6 +1,5 @@
 package org.frc5687.deepspace.robot.subsystems;
 
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.frc5687.deepspace.robot.utils.ILoggingSource;
@@ -8,7 +7,7 @@ import org.frc5687.deepspace.robot.utils.MetricTracker;
 import org.frc5687.deepspace.robot.utils.RioLogger;
 
 public abstract class OutliersSubsystem extends Subsystem implements ILoggingSource {
-    protected MetricTracker _metricTracker = MetricTracker.createMetricTracker(this);
+    private MetricTracker _metricTracker = MetricTracker.createMetricTracker(this);
 
     @Override
     public void error(String message) {
@@ -43,6 +42,21 @@ public abstract class OutliersSubsystem extends Subsystem implements ILoggingSou
     public void metric(String name, boolean value) {
         SmartDashboard.putBoolean(getClass().getSimpleName() + "/" + name, value);
         _metricTracker.put(name, value);
+    }
+
+    // Example of metrics collection. In a child class's constructor:
+    // getMetricTracker().registerReportableMetricName("foo");
+    // getMetricTracker().registerReportableMetricName("bar");
+    // getMetricTracker().registerReportableMetricName("baz");
+    //
+    // Later on in the child class...
+    // metric("foo", 123);
+    // metric("bar", "elvis");
+    // metric("baz", 42.42);
+    // metric("pants", 99);    <~ This metric won't get written to USB storage because it wasn't registered.
+
+    protected MetricTracker getMetricTracker() {
+        return _metricTracker;
     }
     
     public abstract void updateDashboard();

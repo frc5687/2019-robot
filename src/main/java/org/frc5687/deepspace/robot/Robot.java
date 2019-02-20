@@ -1,6 +1,6 @@
 package org.frc5687.deepspace.robot;
 
-import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -54,6 +54,9 @@ public class Robot extends TimedRobot implements ILoggingSource {
         RioLogger.getInstance().init(_fileLogLevel, _dsLogLevel);
         info("Starting " + this.getClass().getCanonicalName() + " from branch " + Version.BRANCH);
         info("Robot " + _name + " running in " + _identityMode.toString() + " mode");
+
+        // Periodically flushes metrics (might be good to configure enable/disable via USB config file)
+        new Notifier(MetricTracker::flushAll);
 
         _oi = new OI();
         _lights = new Lights(this);
@@ -151,14 +154,12 @@ public class Robot extends TimedRobot implements ILoggingSource {
 
     @Override
     public void disabledInit() {
-        MetricTracker.flushAll();
-
         RioLogger.getInstance().forceSync();
         RioLogger.getInstance().close();
         _arm.enableCoastMode();
         _elevator.enableCoastMode();
         _stilt.enableCoastMode();
-
+        MetricTracker.flushAll();
     }
 
 

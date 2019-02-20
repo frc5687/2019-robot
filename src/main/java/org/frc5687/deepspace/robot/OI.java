@@ -117,8 +117,8 @@ public class OI extends OutliersProxy {
         _driverLeftBumper.whenPressed(new Shift(robot.getDriveTrain(), robot.getShifter(), Shifter.Gear.HIGH, false));
 
 //        _operatorRightTrigger.whenPressed(new Score(robot));
-        _operatorRightTrigger.whenPressed(new Intake(robot));
-        _operatorLeftTrigger.whileHeld(new HoldSpearOpen(robot));
+          _operatorRightTrigger.whenPressed(new Intake(robot));
+          _operatorLeftTrigger.whileHeld(new HoldSpearOpen(robot));
 
         _driverRightTrigger.whenPressed(new EjectCargo(robot));
         _driverLeftTrigger.whileHeld(new HoldSpearOpen(robot));
@@ -172,10 +172,19 @@ public class OI extends OutliersProxy {
     }
     public double getStiltSpeed() {
         return 0;
-//        double speed = getSpeedFromAxis(_operatorGamepad, Gamepad.Axes.RIGHT_TRIGGER.getNumber())*Constants.Stilt.MAX_Stilt_SPEED;
+//        double speed = getSpeedFromAxis(_operatorGamepad, Gamepad.Axes.RIGHT_TRIGGER.getNumber())*Constants.Stilt.MAX_UP_SPEED;
 //        speed = applyDeadband(speed, Constants.Stilt.DEADBAND);
-//        return applySensitivityFactor(speed,Constants.Stilt.SENSITVITY);
+//        return speed;
     }
+
+    public double getWheelieSpeed() {
+        return 0;
+//        double speed = getSpeedFromAxis(_operatorGamepad, Gamepad.Axes.LEFT_TRIGGER.getNumber());
+//        speed = applyDeadband(speed, Constants.Stilt.DEADBAND);
+//        return speed;
+    }
+
+
     public int getOperatorPOV() {
         return POV.fromWPILIbAngle(0, _operatorGamepad.getPOV()).getDirectionValue();
     }
@@ -195,5 +204,6 @@ public class OI extends OutliersProxy {
     public boolean getAbort() {
         return false;
     }
+
 }
 

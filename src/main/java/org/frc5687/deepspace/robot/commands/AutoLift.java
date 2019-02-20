@@ -1,6 +1,5 @@
 package org.frc5687.deepspace.robot.commands;
 
-import org.frc5687.deepspace.robot.Constants;
 import org.frc5687.deepspace.robot.subsystems.Arm;
 import org.frc5687.deepspace.robot.subsystems.Stilt;
 
@@ -22,13 +21,13 @@ public class AutoLift extends OutliersCommand {
     @Override
     protected void execute() {
         _arm.setSpeed(armSpeed);
-        _stilt.drive(stiltSpeed);
+        _stilt.setLifterSpeed(stiltSpeed);
     }
 
     @Override
     protected void end() {
         _arm.setSpeed(0.0);
-        _stilt.drive(0.0);
+        _stilt.setLifterSpeed(0.0);
     }
 
     @Override

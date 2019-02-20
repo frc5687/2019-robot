@@ -34,6 +34,7 @@ public class RobotMap {
      */
     public static class PWM {
         public static final int Blinkin = 0;
+        public static final int Wheelie = 2;
         /*  Example:
         public static final int ARM_VICTORSP = 0;
         */

@@ -17,10 +17,12 @@ public class DriveStilt extends OutliersCommand {
     @Override
     protected void execute() {
         // Get value from OI
-        double speed = _oi.getStiltSpeed();
+        double lifterSpeed = _oi.getStiltSpeed();
+        double whelieSpeed = _oi.getWheelieSpeed();
 
         // write to stilt
-        _stilt.drive(speed);
+        _stilt.setLifterSpeed(lifterSpeed);
+        _stilt.setWheelieSpeed(whelieSpeed);
     }
 
     @Override

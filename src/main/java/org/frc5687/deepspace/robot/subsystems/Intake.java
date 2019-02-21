@@ -19,6 +19,7 @@ public class Intake extends OutliersSubsystem {
     private DoubleSolenoid _wristSolenoid;
     private DoubleSolenoid _clawSolenoid;
     private TalonSRX _roller;
+    private RollerMode _rollerMode;
     private boolean _forceOn;
     private AnalogInput _ballIR;
 
@@ -95,6 +96,28 @@ public class Intake extends OutliersSubsystem {
         setDefaultCommand(new RunIntake(_robot, this));
     }
 
+    public void setRollerMode(RollerMode rollerMode) {
+        _rollerMode = rollerMode;
+    }
+    public RollerMode getRollerMode() {
+        return _rollerMode;
+    }
+    public enum RollerMode {
+        RUNNING(0),
+        WAITING(1),
+        DONE(2);
+
+        private int _value;
+
+        RollerMode(int value) {
+            this._value = value;
+        }
+
+        public int getValue() {
+            return _value;
+        }
+
+    }
 
 }
 

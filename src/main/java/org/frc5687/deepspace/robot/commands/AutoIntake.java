@@ -1,7 +1,6 @@
 package org.frc5687.deepspace.robot.commands;
 
 import org.frc5687.deepspace.robot.Robot;
-import org.frc5687.deepspace.robot.subsystems.Spear;
 
 public class AutoIntake extends OutliersCommand {
 
@@ -15,7 +14,7 @@ public class AutoIntake extends OutliersCommand {
     @Override
     protected void initialize() {
         if (_robot.getConfiguration() == Robot.Configuration.hatch) {
-            (new OpenSpear(_robot.getIntake())).start();
+            (new GripClaw(_robot.getIntake())).start();
         } else if(_robot.getConfiguration() == Robot.Configuration.cargo) {
             (new CargoIntake(_robot)).start();
         }

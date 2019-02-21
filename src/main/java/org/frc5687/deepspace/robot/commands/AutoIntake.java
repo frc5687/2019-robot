@@ -1,6 +1,7 @@
 package org.frc5687.deepspace.robot.commands;
 
 import org.frc5687.deepspace.robot.Robot;
+import org.frc5687.deepspace.robot.commands.intake.GripClaw;
 
 public class AutoIntake extends OutliersCommand {
 

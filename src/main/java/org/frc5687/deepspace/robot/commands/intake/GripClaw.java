@@ -20,7 +20,7 @@ public class GripClaw extends OutliersCommand {
 
     @Override
     protected boolean isFinished() {
-        return System.currentTimeMillis() > _startTime + Constants.Spear.CLOSE_MILLI_SEC;
+        return System.currentTimeMillis() > _startTime + Constants.Intake.CLOSE_CLAW_MILLI_SEC;
     }
 
     @Override

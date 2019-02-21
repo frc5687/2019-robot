@@ -11,12 +11,8 @@ public class KillAll extends OutliersCommand {
     public KillAll(Robot robot) {
         requires(robot.getArm());
         requires(robot.getElevator());
-        requires(robot.getRoller());
         requires(robot.getDriveTrain());
-        //requires(robot.getGripper());
         requires(robot.getStilt());
-        requires(robot.getWrist());
-        requires(robot.getSpear());
         requires(robot.getIntake());
 
         _robot = robot;
@@ -24,8 +20,6 @@ public class KillAll extends OutliersCommand {
 
     @Override
     protected void initialize() {
-        _robot.getRoller().stop();
-        //_robot.getGripper().stop();
         _finished = true;
         DriverStation.reportError("Initialize KillAll Command", false);
     }

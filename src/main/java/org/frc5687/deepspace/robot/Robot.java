@@ -33,11 +33,7 @@ public class Robot extends TimedRobot implements ILoggingSource {
     private DriveTrain _driveTrain;
     private Elevator _elevator;
     private PDP _pdp;
-    //private Gripper _gripper;
-    private Spear _spear;
     private Arm _arm;
-    private Wrist _wrist;
-    private Roller _roller;
     private Shifter _shifter;
     private Lights _lights;
     private StatusProxy _status;
@@ -69,7 +65,6 @@ public class Robot extends TimedRobot implements ILoggingSource {
         _shifter = new Shifter(this);
         _driveTrain = new DriveTrain(this);
         _arm = new Arm(this);
-        _roller = new Roller(this);
         _elevator = new Elevator(this);
         _stilt = new Stilt(this);
         _intake = new Intake (this);
@@ -173,7 +168,6 @@ public class Robot extends TimedRobot implements ILoggingSource {
             _driveTrain.updateDashboard();
             _limelight.updateDashboard();
             _arm.updateDashboard();
-            _roller.updateDashboard();
             _elevator.updateDashboard();
             _pdp.updateDashboard();
             _shifter.updateDashboard();
@@ -272,10 +266,6 @@ public class Robot extends TimedRobot implements ILoggingSource {
         return _limelight;
     }
     public PDP getPDP() { return _pdp; }
-    //public Gripper getGripper() { return _gripper; }
-    public Spear getSpear() { return _spear; }
-    public Wrist getWrist() { return _wrist; }
-    public Roller getRoller() { return _roller; }
     public Arm getArm() { return _arm; }
     public Elevator getElevator() { return _elevator; }
     public Shifter getShifter() { return _shifter; }

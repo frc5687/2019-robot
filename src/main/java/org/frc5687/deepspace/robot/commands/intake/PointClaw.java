@@ -20,7 +20,7 @@ public class PointClaw extends OutliersCommand {
 
     @Override
     protected boolean isFinished() {
-        return System.currentTimeMillis() > _startTime + Constants.Spear.OPEN_MILLI_SEC;
+        return System.currentTimeMillis() > _startTime + Constants.Intake.OPEN_CLAW_MILLI_SEC;
     }
 
     @Override

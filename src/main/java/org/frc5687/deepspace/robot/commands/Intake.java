@@ -1,6 +1,7 @@
 package org.frc5687.deepspace.robot.commands;
 
 import org.frc5687.deepspace.robot.Robot;
+import org.frc5687.deepspace.robot.commands.intake.GripClaw;
 
 public class Intake extends OutliersCommand{
     private Robot _robot;
@@ -16,7 +17,6 @@ public class Intake extends OutliersCommand{
         } else if (_robot.getConfiguration() == Robot.Configuration.cargo) {
             (new CargoIntake(_robot)).start();
         }
-//        metric("Mode", _robot.getConfiguration().toString());
     }
 
     @Override

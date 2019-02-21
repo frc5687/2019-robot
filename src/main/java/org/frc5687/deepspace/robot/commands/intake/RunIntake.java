@@ -1,7 +1,8 @@
-package org.frc5687.deepspace.robot.commands;
+package org.frc5687.deepspace.robot.commands.intake;
 
 import org.frc5687.deepspace.robot.OI;
 import org.frc5687.deepspace.robot.Robot;
+import org.frc5687.deepspace.robot.commands.OutliersCommand;
 import org.frc5687.deepspace.robot.subsystems.Intake;
 
 public class RunIntake extends OutliersCommand {

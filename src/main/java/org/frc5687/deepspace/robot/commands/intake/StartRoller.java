@@ -1,6 +1,7 @@
-package org.frc5687.deepspace.robot.commands;
+package org.frc5687.deepspace.robot.commands.intake;
 
 import org.frc5687.deepspace.robot.Constants;
+import org.frc5687.deepspace.robot.commands.OutliersCommand;
 import org.frc5687.deepspace.robot.subsystems.Intake;
 
 import static org.frc5687.deepspace.robot.Constants.Intake.ROLLER_SPEED;
@@ -37,7 +38,7 @@ public class StartRoller extends OutliersCommand {
                 }
                 break;
             case WAITING:
-                if (System.currentTimeMillis() > _time + Constants.Roller.TIME_MILLI_SEC) {
+                if (System.currentTimeMillis() > _time + Constants.Intake.ROLLER_TIME_MILLI_SEC) {
                     _intake.setRollerMode(DONE);
                 }
         }

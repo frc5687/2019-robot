@@ -24,10 +24,23 @@ public class Constants {
         public static final boolean RIGHT_MOTORS_INVERTED = false;
     }
     public class Intake {
+        //Roller
         public static final double HIGH_POW = 1.0;
         public static final double LOW_POW = -HIGH_POW;
         public static final double ROLLER_SPEED = 0.5;
+        public static final double MAX_ROLLER_SPEED = 1.0;
+        public static final boolean MOTOR_INVERTED = false;
+        public static final double DEADBAND = 0.1;
+        public static final double SENSITIVITY = 0.5;
+        public static final long ROLLER_TIME_MILLI_SEC = 1000;
         public static final int CARGO_DETECTED_THRESHOLD = 600;
+        //Wrist
+        public static final long RAISE_WRIST_MILLI_SEC = 500;
+        public static final long LOWER_WRIST_MILLI_SEC = 500;
+        //Claw
+        public static final long OPEN_CLAW_MILLI_SEC = 40;
+        public static final long CLOSE_CLAW_MILLI_SEC = 40;
+
 
     }
     public class Shifter {
@@ -39,27 +52,7 @@ public class Constants {
 
         public static final long AUTO_WAIT_PERIOD = 500;
         public static final long MANUAL_WAIT_PERIOD = 3000;
-    }
-    public class Wrist {
 
-        public static final long RAISE_MILLI_SEC = 500;
-        public static final long LOWER_MILLI_SEC = 500;
-    }
-
-    public class Gripper{
-        public static final double HIGH_POW = 1.0;
-        public static final double LOW_POW = -HIGH_POW;
-        public static final double VACUUM_SPEED = 1.0;
-        public static final boolean MOTOR_INVERTED =     false;
-        public static final double VACUUM_STOP = 0.0;
-        public static final double SECURED_AMP_MIN = 3.0;
-        public static final double SECURED_AMP_MAX = 4.5;
-        public static final long STARTUP_DELAY = 250;
-    }
-    public class Spear {
-
-        public static final long OPEN_MILLI_SEC = 40;
-        public static final long CLOSE_MILLI_SEC = 40;
     }
 
     public static class Elevator {
@@ -102,16 +95,7 @@ public class Constants {
         public static final double AXIS_BUTTON_THRESHHOLD = 0.2;
         public static final long RUMBLE_MILLIS = 250;
         public static final double RUMBLE_INTENSITY = 1.0;
-    }
 
-    public class Roller {
-        public static final double MAX_SPEED = 1.0;
-        public static final boolean MOTOR_INVERTED = false;
-        public static final double DEADBAND = 0.1;
-        public static final double SENSITIVITY = 0.5;
-        public static final double INTAKE_SPEED = 1.0;
-        public static final long TIME_MILLI_SEC = 1000;
-        public static final int CARGO_DETECTED_THRESHOLD = 2000;
     }
 
     public class Arm {

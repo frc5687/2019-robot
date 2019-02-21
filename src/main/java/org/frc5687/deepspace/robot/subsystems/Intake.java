@@ -7,7 +7,7 @@ import edu.wpi.first.wpilibj.DoubleSolenoid;
 import org.frc5687.deepspace.robot.Constants;
 import org.frc5687.deepspace.robot.Robot;
 import org.frc5687.deepspace.robot.RobotMap;
-import org.frc5687.deepspace.robot.commands.RunIntake;
+import org.frc5687.deepspace.robot.commands.intake.RunIntake;
 import org.frc5687.deepspace.robot.utils.Helpers;
 
 import static org.frc5687.deepspace.robot.Constants.Intake.*;
@@ -33,7 +33,7 @@ public class Intake extends OutliersSubsystem {
             _roller.configPeakOutputReverse(LOW_POW,0);
             _roller.configNominalOutputForward(0.0, 0);
             _roller.configNominalOutputReverse(0.0, 0);
-            _roller.setInverted(Constants.Roller.MOTOR_INVERTED);
+            _roller.setInverted(Constants.Intake.MOTOR_INVERTED);
         } catch (Exception e) {
             error("Unable to allocate roller controller: " + e.getMessage());
         }
@@ -74,8 +74,10 @@ public class Intake extends OutliersSubsystem {
         _wristSolenoid.set(DoubleSolenoid.Value.kForward);
     }
 
+    public void releaseWrist() { _wristSolenoid.set(DoubleSolenoid.Value.kOff); }
+
     private void setRollerSpeed(double speed) {
-        speed = Helpers.limit(speed, Constants.Roller.MAX_SPEED);
+        speed = Helpers.limit(speed, Constants.Intake.MAX_ROLLER_SPEED);
         metric("Speed", speed);
         if (_roller == null) {
             return;

@@ -120,7 +120,7 @@ public class OI extends OutliersProxy {
           _operatorRightTrigger.whenPressed(new Intake(robot));
           _operatorLeftTrigger.whileHeld(new HoldSpearOpen(robot));
 
-        _driverRightTrigger.whenPressed(new EjectCargo(robot));
+        _driverRightTrigger.whenPressed(new CargoIntake(robot));
         _driverLeftTrigger.whileHeld(new HoldSpearOpen(robot));
 
 

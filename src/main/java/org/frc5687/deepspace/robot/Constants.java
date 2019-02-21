@@ -104,7 +104,7 @@ public class Constants {
         public static final double SENSITIVITY = 0.5;
         public static final double INTAKE_SPEED = 1.0;
         public static final long TIME_MILLI_SEC = 1000;
-        public static final int CARGO_DETECTED_THRESHOLD = 2000;
+        public static final int CARGO_DETECTED_THRESHOLD = 600;
     }
 
     public class Arm {

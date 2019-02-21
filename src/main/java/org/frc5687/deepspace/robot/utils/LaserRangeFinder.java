@@ -109,7 +109,7 @@ public class LaserRangeFinder extends OutliersProxy {
     private int measurementTimingBudgetMicrosec = 0, measurementTimingBudget = 0;
 
     public LaserRangeFinder(Robot robot) {
-        _rangeFinder = new I2C(I2C.Port.kOnboard, 0x52);
+        _rangeFinder = new I2C(I2C.Port.kOnboard, 0x29);
 //		if (this.readU8(0xC0) != 0xEE || this.readU8(0xC1) != 0xAA || this.readU8(0xC2) != 0x10) {
         if (!_rangeFinder.verifySensor(0xC0, 3, hexStringToByteArray("EEAA10"))) {
             error("Unable to initialize RangeFinder.");

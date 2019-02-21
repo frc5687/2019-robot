@@ -43,7 +43,6 @@ public class RioLogger {
     }
 
     private FileWriter fwriter;
-    long log_write_index;
     String log_name = null;
     String output_dir = "/U/"; // USB drive is mounted to /U on roboRIO
     BufferedWriter log_file = null;
@@ -56,6 +55,10 @@ public class RioLogger {
         _fileLogLevel = fileLogLevel;
         _dsLogLevel = dsLogLevel;
 
+        if (_fileLogLevel == LogLevel.none) {
+            return 0;
+        }
+
         if (log_open) {
             System.out.println("Warning - log is already open!");
             return 0;
@@ -63,19 +66,14 @@ public class RioLogger {
 
         log_open = false;
         try {
-            // Reset state variables
-            log_write_index = 0;
-
             // Determine a unique file name
             log_name = output_dir + "log_" + getDateTimeString() + ".txt";
-            File fileText = new File(log_name);
             // Open File
             FileWriter fstream = new FileWriter(log_name, true);
-            log_file = new BufferedWriter(fstream);
+            log_file = new BufferedWriter(fstream);  // 8K by default. Probably big enough but size is 2nd arg if not.
             // End of line
-            log_file.write("\n");
+            log_file.write("\n\r");
             log_open = true;
-
         }
         // Catch ALL the errors!!!
         catch (IOException e) {
@@ -99,13 +97,17 @@ public class RioLogger {
         if (level.getValue() >= _dsLogLevel.getValue()) {
             DriverStation.reportError(level.toString() + "\t" + source + "\t" + message, false);
         }
+        if (_fileLogLevel==LogLevel.none) {
+            return;
+        }
+
         if (level.getValue() >= _fileLogLevel.getValue()) {
             writeData(getDateTimeString(), level.toString(), source, message);
         }
     }
 
     public int writeData(String... data_elements) {
-        String line_to_write = "";
+        StringBuilder line_to_write = new StringBuilder();
 
         if (log_open == false) {
             System.out.println("Error - Log is not yet opened, cannot write!");
@@ -116,25 +118,21 @@ public class RioLogger {
 
             // Write user-defined data
             for (String data_val : data_elements) {
-                line_to_write += data_val + " ";
+                line_to_write.append(data_val).append(" ");
             }
 
             // End of line
-            line_to_write = line_to_write + "\n";
+            line_to_write.append("\r\n");
 
             // write constructed string out to file
 
-            log_file.write(line_to_write);
-
-
+            log_file.write(line_to_write.toString());
         }
         // Catch ALL the errors!!!
         catch (IOException e) {
             System.out.println("Error writing to log file: " + e.getMessage());
             return -1;
         }
-
-        log_write_index++;
         return 0;
     }
 
@@ -194,10 +192,11 @@ public class RioLogger {
     }
 
     public enum LogLevel {
-        debug(0),
-        info(1),
-        warn(2),
-        error(3);
+        none(0),
+        debug(1),
+        info(2),
+        warn(3),
+        error(4);
 
         private int _value;
 

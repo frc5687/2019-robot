@@ -9,20 +9,19 @@ public class Helpers {
      * Limit motor values to the -1.0 to +1.0 range.
      */
     public static double limit(double value) {
-        if (value > 1.0) {
-            return 1.0;
-        }
-        if (value < -1.0) {
-            return -1.0;
-        }
-        return value;
+        return limit(value, 1.0);
     }
+
     public static double limit(double value, double limitVal) {
-        if (value > limitVal) {
-            return limitVal;
+        return limit(value, -limitVal, limitVal);
+    }
+
+    public static double limit(double value, double limitValLow, double limitValHigh) {
+        if (value > limitValHigh) {
+            return limitValHigh;
         }
-        if (value < -limitVal) {
-            return -limitVal;
+        if (value < limitValLow) {
+            return limitValLow;
         }
         return value;
     }

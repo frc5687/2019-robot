@@ -112,8 +112,9 @@ public class Constants {
         public static final double SENSITIVITY = 0.5;
         public static final double DEADBAND = 0.1;
         public static final double MAX_DRIVE_SPEED = 1;
-        public static final boolean MOTOR_INVERTED = true;
-        public static final int SHOULDER_STALL_LIMIT = 10;
+        public static final boolean LEFT_MOTOR_INVERTED = true;
+        public static final boolean RIGHT_MOTOR_INVERTED = false;
+        public static final int SHOULDER_STALL_LIMIT = 60;
         public static final int SHOULDER_FREE_LIMIT = 80;
         public static final double kI = 0;
         public static final double kP = 0.1;

@@ -9,11 +9,11 @@ import org.frc5687.deepspace.robot.Robot;
 import org.frc5687.deepspace.robot.RobotMap;
 import org.frc5687.deepspace.robot.commands.DriveArm;
 import org.frc5687.deepspace.robot.utils.HallEffect;
-import org.frc5687.deepspace.robot.utils.Helpers;
 
 public class Arm extends OutliersSubsystem implements PIDSource {
 
-    private CANSparkMax _arm;
+    private CANSparkMax _leftSpark;
+    private CANSparkMax _rightSpark;
 
     private CANEncoder _shoulderEncoder;
     
@@ -32,11 +32,19 @@ public class Arm extends OutliersSubsystem implements PIDSource {
         _robot = robot;
 
         try {
-            _arm = new CANSparkMax(RobotMap.CAN.SPARKMAX.ARM, CANSparkMaxLowLevel.MotorType.kBrushless);
-            _arm.setInverted(Constants.Arm.MOTOR_INVERTED);
-            _arm.setSmartCurrentLimit(Constants.Arm.SHOULDER_STALL_LIMIT, Constants.Arm.SHOULDER_FREE_LIMIT);
+            _leftSpark = new CANSparkMax(RobotMap.CAN.SPARKMAX.LEFT_ARM, CANSparkMaxLowLevel.MotorType.kBrushless);
+            _rightSpark = new CANSparkMax(RobotMap.CAN.SPARKMAX.RIGHT_ARM, CANSparkMaxLowLevel.MotorType.kBrushless);
 
-            _shoulderEncoder = _arm.getEncoder();
+
+            _leftSpark.setInverted(Constants.Arm.LEFT_MOTOR_INVERTED);
+            _rightSpark.setInverted(Constants.Arm.RIGHT_MOTOR_INVERTED);
+
+            _leftSpark.setSmartCurrentLimit(Constants.Arm.SHOULDER_STALL_LIMIT, Constants.Arm.SHOULDER_FREE_LIMIT);
+            _rightSpark.setSmartCurrentLimit(Constants.Arm.SHOULDER_STALL_LIMIT, Constants.Arm.SHOULDER_FREE_LIMIT);
+
+            _rightSpark.follow(_leftSpark);
+
+            _shoulderEncoder = _leftSpark.getEncoder();
         } catch (Exception e) {
             error("Unable to allocate arm controller: " + e.getMessage());
         }
@@ -49,21 +57,21 @@ public class Arm extends OutliersSubsystem implements PIDSource {
     }
 
     public void enableBrakeMode() {
-        if (_arm==null) { return; }
-        _arm.setIdleMode(CANSparkMax.IdleMode.kBrake);
+        if (_leftSpark ==null) { return; }
+        _leftSpark.setIdleMode(CANSparkMax.IdleMode.kBrake);
     }
 
     public void enableCoastMode() {
-        if (_arm==null) { return; }
-        _arm.setIdleMode(CANSparkMax.IdleMode.kCoast);
+        if (_leftSpark ==null) { return; }
+        _leftSpark.setIdleMode(CANSparkMax.IdleMode.kCoast);
     }
 
     public void setSpeed(double speed) {
-        if (_arm==null) { return; }
+        if (_leftSpark ==null) { return; }
         // speed = Helpers.limit(speed, Constants.Arm.MAX_DRIVE_SPEED);
 
         metric("Speed", speed);
-        _arm.set(speed);
+        _leftSpark.set(speed);
     }
 
     public void drive(double desiredSpeed, boolean overrideCaps) {
@@ -77,8 +85,8 @@ public class Arm extends OutliersSubsystem implements PIDSource {
         }
         metric("rawSpeed", desiredSpeed);
         metric("speed", speed);
-        if (_arm==null) { return; }
-        _arm.set(speed);
+        if (_leftSpark ==null) { return; }
+        _leftSpark.set(speed);
     }
 
     @Override

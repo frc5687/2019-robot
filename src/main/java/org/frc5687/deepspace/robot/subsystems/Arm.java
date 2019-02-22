@@ -18,8 +18,8 @@ public class Arm extends OutliersSubsystem implements PIDSource {
     private CANEncoder _shoulderEncoder;
     
     // private HallEffect _lowHall;
-    // private HallEffect _intakeHall;
-    // private HallEffect _secureHall;
+    private HallEffect _intakeHall;
+    private HallEffect _secureHall;
     // private HallEffect _stowedHall;
     private HallEffect _rightStowedhall;
     private HallEffect _leftStowedhall;
@@ -52,8 +52,8 @@ public class Arm extends OutliersSubsystem implements PIDSource {
         }
 
         // _lowHall = new HallEffect(RobotMap.DIO.ARM_LOW_HALL);
-        // _intakeHall = new HallEffect(RobotMap.DIO.ARM_INTAKE_HALL);
-        // _secureHall = new HallEffect(RobotMap.DIO.ARM_SECURE_HALL);
+        _intakeHall = new HallEffect(RobotMap.DIO.ARM_INTAKE_HALL);
+        _secureHall = new HallEffect(RobotMap.DIO.ARM_SECURE_HALL);
         //_stowedHall = new HallEffect(RobotMap.DIO.ARM_STOWED_HALL);
         _rightStowedhall = new HallEffect(RobotMap.DIO.ARM_RIGHT_STOWED_HALL);
         _leftStowedhall = new HallEffect(RobotMap.DIO.ARM_LEFT_STOWED_HALL);
@@ -118,18 +118,16 @@ public class Arm extends OutliersSubsystem implements PIDSource {
     }
 
     public boolean isStowed() {
-        return _rightStowedhall.get();
-       // return _leftStowedhall.get();
+        return _rightStowedhall.get() ||  _leftStowedhall.get();
 
     }
 
-    //public boolean isIntake() { return _intakeHall.get(); }
+    public boolean isIntake() { return _intakeHall.get(); }
 
-    //public boolean isSecured() { return _secureHall.get(); }
+    public boolean isSecured() { return _secureHall.get(); }
 
     public boolean isLow() {
-        return _rightLowhall.get();
-        //return _leftLowhall.get();
+        return _rightLowhall.get() || _leftLowhall.get();
     }
 
     @Override
@@ -162,8 +160,8 @@ public class Arm extends OutliersSubsystem implements PIDSource {
 
     public enum HallEffectSensor {
         LOW,
-        //INTAKE,
-        //SECURE,
+        INTAKE,
+        SECURE,
         STOWED
     }
 

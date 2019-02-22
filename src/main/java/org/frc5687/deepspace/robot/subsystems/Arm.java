@@ -17,10 +17,14 @@ public class Arm extends OutliersSubsystem implements PIDSource {
 
     private CANEncoder _shoulderEncoder;
     
-    private HallEffect _lowHall;
-    private HallEffect _intakeHall;
-    private HallEffect _secureHall;
-    private HallEffect _stowedHall;
+    // private HallEffect _lowHall;
+    // private HallEffect _intakeHall;
+    // private HallEffect _secureHall;
+    // private HallEffect _stowedHall;
+    private HallEffect _rightStowedhall;
+    private HallEffect _leftStowedhall;
+    private HallEffect _rightLowhall;
+    private HallEffect _leftLowhall;
 
 
     private double _offset = 0;
@@ -47,10 +51,14 @@ public class Arm extends OutliersSubsystem implements PIDSource {
             error("Unable to allocate arm controller: " + e.getMessage());
         }
 
-        _lowHall = new HallEffect(RobotMap.DIO.ARM_LOW_HALL);
-        _intakeHall = new HallEffect(RobotMap.DIO.ARM_INTAKE_HALL);
-        _secureHall = new HallEffect(RobotMap.DIO.ARM_SECURE_HALL);
-        _stowedHall = new HallEffect(RobotMap.DIO.ARM_STOWED_HALL);
+        // _lowHall = new HallEffect(RobotMap.DIO.ARM_LOW_HALL);
+        // _intakeHall = new HallEffect(RobotMap.DIO.ARM_INTAKE_HALL);
+        // _secureHall = new HallEffect(RobotMap.DIO.ARM_SECURE_HALL);
+        //_stowedHall = new HallEffect(RobotMap.DIO.ARM_STOWED_HALL);
+        _rightStowedhall = new HallEffect(RobotMap.DIO.ARM_RIGHT_STOWED_HALL);
+        _leftStowedhall = new HallEffect(RobotMap.DIO.ARM_LEFT_STOWED_HALL);
+        _rightLowhall = new HallEffect(RobotMap.DIO.ARM_RIGHT_LOW_HALL);
+        _leftLowhall = new HallEffect(RobotMap.DIO.ARM_LEFT_LOW_HALL);
 
     }
 
@@ -98,22 +106,32 @@ public class Arm extends OutliersSubsystem implements PIDSource {
 
     @Override
     public void updateDashboard() {
-        metric("LowHall", _lowHall.get());
-        metric("IntakeHall", _intakeHall.get());
-        metric("SecureHall", _secureHall.get());
-        metric("StowedHall", _stowedHall.get());
+        metric("LowRightHall", _rightLowhall.get());
+        metric("LowLeftHall", _leftLowhall.get());
+        //metric("IntakeHall", _intakeHall.get());
+        //metric("SecureHall", _secureHall.get());
+        metric("StowedRightHall", _rightStowedhall.get());
+        metric("StowedLeftHall", _leftStowedhall.get());
         if (_shoulderEncoder==null) { return; }
         metric("Encoder", getPosition());
         metric("Angle", getAngle());
     }
 
-    public boolean isStowed() { return _stowedHall.get(); }
+    public boolean isStowed() {
+        return _rightStowedhall.get();
+    or;
+        return _leftStowedhall.get();
+    }
 
-    public boolean isIntake() { return _intakeHall.get(); }
+    //public boolean isIntake() { return _intakeHall.get(); }
 
-    public boolean isSecured() { return _secureHall.get(); }
+    //public boolean isSecured() { return _secureHall.get(); }
 
-    public boolean isLow() { return _lowHall.get(); }
+    public boolean isLow() {
+        return _rightLowhall.get();
+    or;
+        return _leftLowhall.get();
+    }
 
     @Override
     public void setPIDSourceType(PIDSourceType pidSource) {
@@ -145,8 +163,8 @@ public class Arm extends OutliersSubsystem implements PIDSource {
 
     public enum HallEffectSensor {
         LOW,
-        INTAKE,
-        SECURE,
+        //INTAKE,
+        //SECURE,
         STOWED
     }
 

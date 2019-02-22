@@ -119,8 +119,8 @@ public class Arm extends OutliersSubsystem implements PIDSource {
 
     public boolean isStowed() {
         return _rightStowedhall.get();
-    or;
-        return _leftStowedhall.get();
+       // return _leftStowedhall.get();
+
     }
 
     //public boolean isIntake() { return _intakeHall.get(); }
@@ -129,8 +129,7 @@ public class Arm extends OutliersSubsystem implements PIDSource {
 
     public boolean isLow() {
         return _rightLowhall.get();
-    or;
-        return _leftLowhall.get();
+        //return _leftLowhall.get();
     }
 
     @Override

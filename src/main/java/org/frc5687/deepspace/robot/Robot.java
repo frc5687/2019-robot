@@ -1,7 +1,9 @@
 package org.frc5687.deepspace.robot;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.command.Scheduler;
+import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.frc5687.deepspace.robot.commands.KillAll;
 import org.frc5687.deepspace.robot.subsystems.*;
@@ -50,6 +52,7 @@ public class Robot extends TimedRobot implements ILoggingSource {
      */
     @Override
     public void robotInit() {
+        LiveWindow.disableAllTelemetry();
         loadConfigFromUSB();
         RioLogger.getInstance().init(_fileLogLevel, _dsLogLevel);
         metric("Branch", Version.BRANCH);
@@ -63,7 +66,7 @@ public class Robot extends TimedRobot implements ILoggingSource {
         _lights = new Lights(this);
         _status = new StatusProxy(this);
         _limelight = new Limelight("limelight");
-        _pdp = new PDP();
+        // _pdp = new PDP();
 
         // Then subsystems....
         _shifter = new Shifter(this);
@@ -175,7 +178,7 @@ public class Robot extends TimedRobot implements ILoggingSource {
             _arm.updateDashboard();
             _roller.updateDashboard();
             _elevator.updateDashboard();
-            _pdp.updateDashboard();
+            //_pdp.updateDashboard();
             _shifter.updateDashboard();
             _lights.updateDashboard();
             _status.updateDashboard();

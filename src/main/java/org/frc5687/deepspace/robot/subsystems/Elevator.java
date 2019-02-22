@@ -28,7 +28,6 @@ public class Elevator extends OutliersSubsystem implements PIDSource {
     private Encoder _elevatorEncoder;
     private CANEncoder _neoElevatorEncoder;
     private Robot _robot;
-    private LaserRangeFinder _rangeFinder;
 
     private HallEffect _topHall;
     private HallEffect _bottomHall;
@@ -52,7 +51,6 @@ public class Elevator extends OutliersSubsystem implements PIDSource {
         _topHall = new HallEffect(RobotMap.DIO.ELEVATOR_TOP_HALL);
         _bottomHall = new HallEffect(RobotMap.DIO.ELEVATOR_BOTTOM_HALL);
         _elevator.setInverted(Constants.Elevator.ELEVATOR_MOTOR_INVERTED);
-        _rangeFinder = new LaserRangeFinder(robot);
 
 
     }
@@ -119,15 +117,12 @@ public class Elevator extends OutliersSubsystem implements PIDSource {
         metric("Position", getPosition());
         metric("Bottom", isAtBottom());
         metric("Top", isAtTop());
-        metric("RangeFinder", getRange());
     }
     public boolean isAtTop() { return _topHall.get(); }
 
     public boolean isNearTop() { return isAtTop() || (getPosition() > Setpoint.Top.getValue() - TOP_JELLO_ZONE); }
 
     public boolean isAtBottom() { return _bottomHall.get(); }
-
-    public int getRange() { return _rangeFinder.range(); }
 
     public boolean isNearBottom() { return isAtBottom() || (getPosition() < Setpoint.Bottom.getValue() + BOTTOM_JELLO_ZONE); }
 

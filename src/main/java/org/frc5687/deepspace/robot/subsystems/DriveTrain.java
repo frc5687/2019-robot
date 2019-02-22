@@ -13,6 +13,7 @@ import org.frc5687.deepspace.robot.Robot;
 import org.frc5687.deepspace.robot.RobotMap;
 import org.frc5687.deepspace.robot.commands.Drive;
 import org.frc5687.deepspace.robot.utils.IRDistanceSensor;
+import org.frc5687.deepspace.robot.utils.LaserRangeFinder;
 
 import static org.frc5687.deepspace.robot.utils.Helpers.applySensitivityFactor;
 import static org.frc5687.deepspace.robot.utils.Helpers.limit;
@@ -34,9 +35,10 @@ public class DriveTrain extends OutliersSubsystem {
 
     private OI _oi;
 
+    private LaserRangeFinder _rangeFinder;
+
     private double _leftOffset;
     private double _rightOffset;
-    private Elevator _elevator;
 
     private double _oldLeftSpeed;
     private double _oldRightSpeed;
@@ -82,6 +84,12 @@ public class DriveTrain extends OutliersSubsystem {
         _leftMagEncoder = new Encoder(RobotMap.DIO.DRIVE_LEFT_A, RobotMap.DIO.DRIVE_LEFT_B);
         _rightMagEncoder = new Encoder(RobotMap.DIO.DRIVE_RIGHT_A, RobotMap.DIO.DRIVE_RIGHT_B);
 
+        try {
+            _rangeFinder = new LaserRangeFinder();
+        } catch (Exception e) {
+            DriverStation.reportError(e.getMessage(), true);
+        }
+
     }
 
     public void enableBrakeMode() {
@@ -120,6 +128,7 @@ public class DriveTrain extends OutliersSubsystem {
         metric("Neo/Distance/Total", getDistance());
         metric("Mag/Ticks/Left", _leftMagEncoder.get());
         metric("Mag/Ticks/Right", _rightMagEncoder.get());
+        metric("Range", getRange());
 
     }
 
@@ -230,6 +239,9 @@ public class DriveTrain extends OutliersSubsystem {
         }
         return (getLeftDistance() + getRightDistance()) / 2;
     }
+
+    public int getRange() {
+        return _rangeFinder.range(); }
 
     public void resetDriveEncoders() {
         _leftOffset = getLeftTicks();

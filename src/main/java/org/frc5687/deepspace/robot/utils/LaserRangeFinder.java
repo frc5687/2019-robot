@@ -1,5 +1,6 @@
 package org.frc5687.deepspace.robot.utils;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.I2C;
 import org.frc5687.deepspace.robot.Robot;
 
@@ -11,8 +12,8 @@ import static org.frc5687.deepspace.robot.utils.Helpers.hexStringToByteArray;
  */
 
 public class LaserRangeFinder extends OutliersProxy {
-    private I2C _rangeFinder;
-    public final static int _rangeFinder_I2CADDR = 0x29;
+    private I2C _port;
+    public final static int VL53L0X_I2CADDR = 0x29;
 
     private final static int SYSRANGE_START = 0x00;
     private final static int SYSTEM_THRESH_HIGH = 0x0C;
@@ -101,47 +102,55 @@ public class LaserRangeFinder extends OutliersProxy {
         return (int)(((timeoutPeriodMclks * macroPeriodNs) + (int)(macroPeriodNs / 2f)) / 1_000f);
     }
 
-    private int ioTimeout = 0;
-    private int stopVariable = 0;
-    private int configControl = 0;
+    private int _ioTimeout = 0;
+    private int _stopVariable = 0;
+    private int _configControl = 0;
     private float signalRateLimit = 0f;
 
     private int measurementTimingBudgetMicrosec = 0, measurementTimingBudget = 0;
 
-    public LaserRangeFinder(Robot robot) {
-        _rangeFinder = new I2C(I2C.Port.kOnboard, 0x29);
-//		if (this.readU8(0xC0) != 0xEE || this.readU8(0xC1) != 0xAA || this.readU8(0xC2) != 0x10) {
-        if (!_rangeFinder.verifySensor(0xC0, 3, hexStringToByteArray("EEAA10"))) {
-            error("Unable to initialize RangeFinder.");
-        }
-    }
+
     public LaserRangeFinder(){
-        this(_rangeFinder_I2CADDR);
+        this(VL53L0X_I2CADDR);
     }
 
     public LaserRangeFinder(int address){
         this(address, 0);
     }
 
-    public LaserRangeFinder(int adress, int timeout) {
-        this.ioTimeout = timeout;
+    public LaserRangeFinder(int address, int timeout) {
+        _ioTimeout = timeout;
 
-        _rangeFinder = new I2C(I2C.Port.kOnboard, 0x52);
-        this._rangeFinder.write((byte) 0x88, (byte) 0x00);
-        this._rangeFinder.write((byte) 0x80, (byte) 0x01);
-        this._rangeFinder.write((byte) 0xFF, (byte) 0x01);
-        this._rangeFinder.write((byte) 0x00, (byte) 0x00);
-        this.stopVariable = this.readU8(0x91);
-        this._rangeFinder.write((byte) 0x00, (byte) 0x01);
-        this._rangeFinder.write((byte) 0xFF, (byte) 0x00);
-        this._rangeFinder.write((byte) 0x80, (byte) 0x00);
+        _port = new I2C(I2C.Port.kOnboard, address);
+        info("Connected to rangefinder at address " + address);
+        int r0 = readU8(0xC0);
+        int r1 = readU8(0xC1);
+        int r2 = readU8(0xC2);
+
+        DriverStation.reportError("0xC0: " +  r0, false);
+        DriverStation.reportError("0xC1: " +  r1, false);
+        DriverStation.reportError("0xC2: " +  r2, false);
+
+        if (r0 != 0xEE || r1 != 0xAA || r2 != 0x10) {
+            error("Failed to find expected ID register values. Check wiring!");
+            throw new RuntimeException("Failed to find expected ID register values. Check wiring!");
+        }
+
+        _port.write((byte) 0x88, (byte) 0x00);
+        _port.write((byte) 0x80, (byte) 0x01);
+        _port.write((byte) 0xFF, (byte) 0x01);
+        _port.write((byte) 0x00, (byte) 0x00);
+        _stopVariable = readU8(0x91);
+        _port.write((byte) 0x00, (byte) 0x01);
+        _port.write((byte) 0xFF, (byte) 0x00);
+        _port.write((byte) 0x80, (byte) 0x00);
 
         // disable SIGNAL_RATE_MSRC (bit 1) and SIGNAL_RATE_PRE_RANGE (bit 4) limit checks
-        this.configControl = this.readU8(MSRC_CONFIG_CONTROL) | 0x12;
-        this._rangeFinder.write((byte) MSRC_CONFIG_CONTROL, (byte) this.configControl);
+        _configControl = readU8(MSRC_CONFIG_CONTROL) | 0x12;
+        _port.write((byte) MSRC_CONFIG_CONTROL, (byte) _configControl);
         // set final range signal rate limit to 0.25 MCPS (million counts per second)
-        this.signalRateLimit = 0.25f;
-        this._rangeFinder.write((byte) SYSTEM_SEQUENCE_CONFIG, (byte) 0xFF);
+        signalRateLimit = 0.25f;
+        _port.write((byte) SYSTEM_SEQUENCE_CONFIG, (byte) 0xFF);
 
         SPADInfo spadInfo = getSpadInfo();
         // The SPAD map (RefGoodSpadMap) is read by _rangeFinder_get_info_from_device() in the API, but the same data seems to
@@ -149,17 +158,17 @@ public class LaserRangeFinder extends OutliersProxy {
         byte[] refSpadMap = new byte[7];
         refSpadMap[0] = (byte) GLOBAL_CONFIG_SPAD_ENABLES_REF_0;
 //
-//        this._rangeFinder.write(refSpadMap, 0,1);
+//        _rangeFinder.write(refSpadMap, 0,1);
 ////		self._device.readinto(ref_spad_map, start=1)
-//        this._rangeFinder.read(refSpadMap, 1,6); // TODO Verify
-        this._rangeFinder.writeBulk(refSpadMap,1);
-        this._rangeFinder.readOnly(refSpadMap,0);
+//        _rangeFinder.read(refSpadMap, 1,6); // TODO Verify
+        _port.writeBulk(refSpadMap,1);
+        _port.readOnly(refSpadMap,0);
 
-        this._rangeFinder.write((byte) 0xFF, (byte) 0x01);
-        this._rangeFinder.write((byte) DYNAMIC_SPAD_REF_EN_START_OFFSET, (byte) 0x00);
-        this._rangeFinder.write((byte) DYNAMIC_SPAD_NUM_REQUESTED_REF_SPAD, (byte) 0x2C);
-        this._rangeFinder.write((byte) 0xFF, (byte) 0x00);
-        this._rangeFinder.write((byte) GLOBAL_CONFIG_REF_EN_START_SELECT, (byte) 0xB4);
+        _port.write((byte) 0xFF, (byte) 0x01);
+        _port.write((byte) DYNAMIC_SPAD_REF_EN_START_OFFSET, (byte) 0x00);
+        _port.write((byte) DYNAMIC_SPAD_NUM_REQUESTED_REF_SPAD, (byte) 0x2C);
+        _port.write((byte) 0xFF, (byte) 0x00);
+        _port.write((byte) GLOBAL_CONFIG_REF_EN_START_SELECT, (byte) 0xB4);
         int firstSpadToEnable = spadInfo.isAperture ? 12 : 0;
         int spadsEnabled = 0;
         for (int i = 0; i < 48; i++) {
@@ -172,130 +181,119 @@ public class LaserRangeFinder extends OutliersProxy {
             }
         }
 
-        this._rangeFinder.writeBulk(refSpadMap);
+        _port.writeBulk(refSpadMap);
 
-        this._rangeFinder.write((byte) 0xFF, (byte) 0x01);
-        this._rangeFinder.write((byte) 0x00, (byte) 0x00);
-        this._rangeFinder.write((byte) 0xFF, (byte) 0x00);
-        this._rangeFinder.write((byte) 0x09, (byte) 0x00);
-        this._rangeFinder.write((byte) 0x10, (byte) 0x00);
-        this._rangeFinder.write((byte) 0x11, (byte) 0x00);
-        this._rangeFinder.write((byte) 0x24, (byte) 0x01);
-        this._rangeFinder.write((byte) 0x25, (byte) 0xFF);
-        this._rangeFinder.write((byte) 0x75, (byte) 0x00);
-        this._rangeFinder.write((byte) 0xFF, (byte) 0x01);
-        this._rangeFinder.write((byte) 0x4E, (byte) 0x2C);
-        this._rangeFinder.write((byte) 0x48, (byte) 0x00);
-        this._rangeFinder.write((byte) 0x30, (byte) 0x20);
-        this._rangeFinder.write((byte) 0xFF, (byte) 0x00);
-        this._rangeFinder.write((byte) 0x30, (byte) 0x09);
-        this._rangeFinder.write((byte) 0x54, (byte) 0x00);
-        this._rangeFinder.write((byte) 0x31, (byte) 0x04);
-        this._rangeFinder.write((byte) 0x32, (byte) 0x03);
-        this._rangeFinder.write((byte) 0x40, (byte) 0x83);
-        this._rangeFinder.write((byte) 0x46, (byte) 0x25);
-        this._rangeFinder.write((byte) 0x60, (byte) 0x00);
-        this._rangeFinder.write((byte) 0x27, (byte) 0x00);
-        this._rangeFinder.write((byte) 0x50, (byte) 0x06);
-        this._rangeFinder.write((byte) 0x51, (byte) 0x00);
-        this._rangeFinder.write((byte) 0x52, (byte) 0x96);
-        this._rangeFinder.write((byte) 0x56, (byte) 0x08);
-        this._rangeFinder.write((byte) 0x57, (byte) 0x30);
-        this._rangeFinder.write((byte) 0x61, (byte) 0x00);
-        this._rangeFinder.write((byte) 0x62, (byte) 0x00);
-        this._rangeFinder.write((byte) 0x64, (byte) 0x00);
-        this._rangeFinder.write((byte) 0x65, (byte) 0x00);
-        this._rangeFinder.write((byte) 0x66, (byte) 0xA0);
-        this._rangeFinder.write((byte) 0xFF, (byte) 0x01);
-        this._rangeFinder.write((byte) 0x22, (byte) 0x32);
-        this._rangeFinder.write((byte) 0x47, (byte) 0x14);
-        this._rangeFinder.write((byte) 0x49, (byte) 0xFF);
-        this._rangeFinder.write((byte) 0x4A, (byte) 0x00);
-        this._rangeFinder.write((byte) 0xFF, (byte) 0x00);
-        this._rangeFinder.write((byte) 0x7A, (byte) 0x0A);
-        this._rangeFinder.write((byte) 0x7B, (byte) 0x00);
-        this._rangeFinder.write((byte) 0x78, (byte) 0x21);
-        this._rangeFinder.write((byte) 0xFF, (byte) 0x01);
-        this._rangeFinder.write((byte) 0x23, (byte) 0x34);
-        this._rangeFinder.write((byte) 0x42, (byte) 0x00);
-        this._rangeFinder.write((byte) 0x44, (byte) 0xFF);
-        this._rangeFinder.write((byte) 0x45, (byte) 0x26);
-        this._rangeFinder.write((byte) 0x46, (byte) 0x05);
-        this._rangeFinder.write((byte) 0x40, (byte) 0x40);
-        this._rangeFinder.write((byte) 0x0E, (byte) 0x06);
-        this._rangeFinder.write((byte) 0x20, (byte) 0x1A);
-        this._rangeFinder.write((byte) 0x43, (byte) 0x40);
-        this._rangeFinder.write((byte) 0xFF, (byte) 0x00);
-        this._rangeFinder.write((byte) 0x34, (byte) 0x03);
-        this._rangeFinder.write((byte) 0x35, (byte) 0x44);
-        this._rangeFinder.write((byte) 0xFF, (byte) 0x01);
-        this._rangeFinder.write((byte) 0x31, (byte) 0x04);
-        this._rangeFinder.write((byte) 0x4B, (byte) 0x09);
-        this._rangeFinder.write((byte) 0x4C, (byte) 0x05);
-        this._rangeFinder.write((byte) 0x4D, (byte) 0x04);
-        this._rangeFinder.write((byte) 0xFF, (byte) 0x00);
-        this._rangeFinder.write((byte) 0x44, (byte) 0x00);
-        this._rangeFinder.write((byte) 0x45, (byte) 0x20);
-        this._rangeFinder.write((byte) 0x47, (byte) 0x08);
-        this._rangeFinder.write((byte) 0x48, (byte) 0x28);
-        this._rangeFinder.write((byte) 0x67, (byte) 0x00);
-        this._rangeFinder.write((byte) 0x70, (byte) 0x04);
-        this._rangeFinder.write((byte) 0x71, (byte) 0x01);
-        this._rangeFinder.write((byte) 0x72, (byte) 0xFE);
-        this._rangeFinder.write((byte) 0x76, (byte) 0x00);
-        this._rangeFinder.write((byte) 0x77, (byte) 0x00);
-        this._rangeFinder.write((byte) 0xFF, (byte) 0x01);
-        this._rangeFinder.write((byte) 0x0D, (byte) 0x01);
-        this._rangeFinder.write((byte) 0xFF, (byte) 0x00);
-        this._rangeFinder.write((byte) 0x80, (byte) 0x01);
-        this._rangeFinder.write((byte) 0x01, (byte) 0xF8);
-        this._rangeFinder.write((byte) 0xFF, (byte) 0x01);
-        this._rangeFinder.write((byte) 0x8E, (byte) 0x01);
-        this._rangeFinder.write((byte) 0x00, (byte) 0x01);
-        this._rangeFinder.write((byte) 0xFF, (byte) 0x00);
-        this._rangeFinder.write((byte) 0x80, (byte) 0x00);
-        this._rangeFinder.write((byte) SYSTEM_INTERRUPT_CONFIG_GPIO, (byte) 0x04);
-        int gpioHvMuxActiveHigh = this.readU8(GPIO_HV_MUX_ACTIVE_HIGH);
-        this._rangeFinder.write((byte) GPIO_HV_MUX_ACTIVE_HIGH, (byte) (gpioHvMuxActiveHigh & ~0x10)); // active low
-        this._rangeFinder.write((byte) SYSTEM_INTERRUPT_CLEAR, (byte) 0x01);
-        this.measurementTimingBudgetMicrosec = this.measurementTimingBudget;
-        this._rangeFinder.write((byte) SYSTEM_SEQUENCE_CONFIG, (byte) 0xE8);
-        this.measurementTimingBudget = this.measurementTimingBudgetMicrosec;
-        this._rangeFinder.write((byte) SYSTEM_SEQUENCE_CONFIG, (byte) 0x01);
-        this.performSingleRefCalibration(0x40);
-        this._rangeFinder.write((byte) SYSTEM_SEQUENCE_CONFIG, (byte) 0x02);
-        this.performSingleRefCalibration(0x00);
+        _port.write((byte) 0xFF, (byte) 0x01);
+        _port.write((byte) 0x00, (byte) 0x00);
+        _port.write((byte) 0xFF, (byte) 0x00);
+        _port.write((byte) 0x09, (byte) 0x00);
+        _port.write((byte) 0x10, (byte) 0x00);
+        _port.write((byte) 0x11, (byte) 0x00);
+        _port.write((byte) 0x24, (byte) 0x01);
+        _port.write((byte) 0x25, (byte) 0xFF);
+        _port.write((byte) 0x75, (byte) 0x00);
+        _port.write((byte) 0xFF, (byte) 0x01);
+        _port.write((byte) 0x4E, (byte) 0x2C);
+        _port.write((byte) 0x48, (byte) 0x00);
+        _port.write((byte) 0x30, (byte) 0x20);
+        _port.write((byte) 0xFF, (byte) 0x00);
+        _port.write((byte) 0x30, (byte) 0x09);
+        _port.write((byte) 0x54, (byte) 0x00);
+        _port.write((byte) 0x31, (byte) 0x04);
+        _port.write((byte) 0x32, (byte) 0x03);
+        _port.write((byte) 0x40, (byte) 0x83);
+        _port.write((byte) 0x46, (byte) 0x25);
+        _port.write((byte) 0x60, (byte) 0x00);
+        _port.write((byte) 0x27, (byte) 0x00);
+        _port.write((byte) 0x50, (byte) 0x06);
+        _port.write((byte) 0x51, (byte) 0x00);
+        _port.write((byte) 0x52, (byte) 0x96);
+        _port.write((byte) 0x56, (byte) 0x08);
+        _port.write((byte) 0x57, (byte) 0x30);
+        _port.write((byte) 0x61, (byte) 0x00);
+        _port.write((byte) 0x62, (byte) 0x00);
+        _port.write((byte) 0x64, (byte) 0x00);
+        _port.write((byte) 0x65, (byte) 0x00);
+        _port.write((byte) 0x66, (byte) 0xA0);
+        _port.write((byte) 0xFF, (byte) 0x01);
+        _port.write((byte) 0x22, (byte) 0x32);
+        _port.write((byte) 0x47, (byte) 0x14);
+        _port.write((byte) 0x49, (byte) 0xFF);
+        _port.write((byte) 0x4A, (byte) 0x00);
+        _port.write((byte) 0xFF, (byte) 0x00);
+        _port.write((byte) 0x7A, (byte) 0x0A);
+        _port.write((byte) 0x7B, (byte) 0x00);
+        _port.write((byte) 0x78, (byte) 0x21);
+        _port.write((byte) 0xFF, (byte) 0x01);
+        _port.write((byte) 0x23, (byte) 0x34);
+        _port.write((byte) 0x42, (byte) 0x00);
+        _port.write((byte) 0x44, (byte) 0xFF);
+        _port.write((byte) 0x45, (byte) 0x26);
+        _port.write((byte) 0x46, (byte) 0x05);
+        _port.write((byte) 0x40, (byte) 0x40);
+        _port.write((byte) 0x0E, (byte) 0x06);
+        _port.write((byte) 0x20, (byte) 0x1A);
+        _port.write((byte) 0x43, (byte) 0x40);
+        _port.write((byte) 0xFF, (byte) 0x00);
+        _port.write((byte) 0x34, (byte) 0x03);
+        _port.write((byte) 0x35, (byte) 0x44);
+        _port.write((byte) 0xFF, (byte) 0x01);
+        _port.write((byte) 0x31, (byte) 0x04);
+        _port.write((byte) 0x4B, (byte) 0x09);
+        _port.write((byte) 0x4C, (byte) 0x05);
+        _port.write((byte) 0x4D, (byte) 0x04);
+        _port.write((byte) 0xFF, (byte) 0x00);
+        _port.write((byte) 0x44, (byte) 0x00);
+        _port.write((byte) 0x45, (byte) 0x20);
+        _port.write((byte) 0x47, (byte) 0x08);
+        _port.write((byte) 0x48, (byte) 0x28);
+        _port.write((byte) 0x67, (byte) 0x00);
+        _port.write((byte) 0x70, (byte) 0x04);
+        _port.write((byte) 0x71, (byte) 0x01);
+        _port.write((byte) 0x72, (byte) 0xFE);
+        _port.write((byte) 0x76, (byte) 0x00);
+        _port.write((byte) 0x77, (byte) 0x00);
+        _port.write((byte) 0xFF, (byte) 0x01);
+        _port.write((byte) 0x0D, (byte) 0x01);
+        _port.write((byte) 0xFF, (byte) 0x00);
+        _port.write((byte) 0x80, (byte) 0x01);
+        _port.write((byte) 0x01, (byte) 0xF8);
+        _port.write((byte) 0xFF, (byte) 0x01);
+        _port.write((byte) 0x8E, (byte) 0x01);
+        _port.write((byte) 0x00, (byte) 0x01);
+        _port.write((byte) 0xFF, (byte) 0x00);
+        _port.write((byte) 0x80, (byte) 0x00);
+        _port.write((byte) SYSTEM_INTERRUPT_CONFIG_GPIO, (byte) 0x04);
+        int gpioHvMuxActiveHigh = readU8(GPIO_HV_MUX_ACTIVE_HIGH);
+        _port.write((byte) GPIO_HV_MUX_ACTIVE_HIGH, (byte) (gpioHvMuxActiveHigh & ~0x10)); // active low
+        _port.write((byte) SYSTEM_INTERRUPT_CLEAR, (byte) 0x01);
+        measurementTimingBudgetMicrosec = measurementTimingBudget;
+        _port.write((byte) SYSTEM_SEQUENCE_CONFIG, (byte) 0xE8);
+        measurementTimingBudget = measurementTimingBudgetMicrosec;
+        _port.write((byte) SYSTEM_SEQUENCE_CONFIG, (byte) 0x01);
+        performSingleRefCalibration(0x40);
+        _port.write((byte) SYSTEM_SEQUENCE_CONFIG, (byte) 0x02);
+        performSingleRefCalibration(0x00);
         // restore the previous Sequence Config
-        this._rangeFinder.write((byte) SYSTEM_SEQUENCE_CONFIG, (byte) 0xE8);
+        _port.write((byte) SYSTEM_SEQUENCE_CONFIG, (byte) 0xE8);
     }
     private int readU8(int register){
-        return EndianReaders.readU8(this._rangeFinder, _rangeFinder_I2CADDR, register);
-    }
-
-    private int readS8(int register){
-        return EndianReaders.readS8(this._rangeFinder, _rangeFinder_I2CADDR, register);
-    }
-
-    private int readU16LE(int register) {
-        return EndianReaders.readU16LE(this._rangeFinder, _rangeFinder_I2CADDR, register);
+        return EndianReaders.readU8(_port, register);
     }
 
     private int readU16BE(int register){
-        return EndianReaders.readU16BE(this._rangeFinder, _rangeFinder_I2CADDR, register);
+        return EndianReaders.readU16BE(_port, register);
     }
 
-    private int readS16LE(int register) {
-        return EndianReaders.readS16LE(this._rangeFinder, _rangeFinder_I2CADDR, register);
-    }
 
 //    private byte[] readBlockData(int register, int nb){
 //        byte[] data = new byte[nb];
-//        this._rangeFinder.read(register, nb, data);
+//        _rangeFinder.read(register, nb, data);
 //        return data;
 //    }
 //
 //    private void writeU16(int address, int val) {
-//        this._rangeFinder.write(address & 0xFF, new byte[] { (byte)((val >> 8) & 0xFF), (byte)(val & 0xFF) });
+//        _rangeFinder.write(address & 0xFF, new byte[] { (byte)((val >> 8) & 0xFF), (byte)(val & 0xFF) });
 //    }
 
     private static class SPADInfo {
@@ -303,11 +301,11 @@ public class LaserRangeFinder extends OutliersProxy {
         boolean isAperture;
 
         public SPADInfo setCount(int count) {
-            this.count = count;
+            count = count;
             return this;
         }
         public SPADInfo setAperture(boolean aperture) {
-            this.isAperture = aperture;
+            isAperture = aperture;
             return this;
         }
     }
@@ -320,56 +318,56 @@ public class LaserRangeFinder extends OutliersProxy {
      * We miss the tuples in Java, though. I'll do a Scala implementation, later.
      */
     private SPADInfo getSpadInfo()   {
-        this._rangeFinder.write((byte)0x80, (byte)0x01);
-        this._rangeFinder.write((byte)0xFF, (byte)0x01);
-        this._rangeFinder.write((byte)0x00, (byte)0x00);
-        this._rangeFinder.write((byte)0xFF, (byte)0x06);
-        this._rangeFinder.write((byte)0x83, (byte)(this.readU8(0x83) | 0x04));
-        this._rangeFinder.write((byte)0xFF, (byte)0x07);
-        this._rangeFinder.write((byte)0x81, (byte)0x01);
-        this._rangeFinder.write((byte)0x80, (byte)0x01);
-        this._rangeFinder.write((byte)0x94, (byte)0x6b);
-        this._rangeFinder.write((byte)0x83, (byte)0x00);
+        _port.write((byte)0x80, (byte)0x01);
+        _port.write((byte)0xFF, (byte)0x01);
+        _port.write((byte)0x00, (byte)0x00);
+        _port.write((byte)0xFF, (byte)0x06);
+        _port.write((byte)0x83, (byte)(readU8(0x83) | 0x04));
+        _port.write((byte)0xFF, (byte)0x07);
+        _port.write((byte)0x81, (byte)0x01);
+        _port.write((byte)0x80, (byte)0x01);
+        _port.write((byte)0x94, (byte)0x6b);
+        _port.write((byte)0x83, (byte)0x00);
         long start = System.currentTimeMillis();
-        while (this.readU8(0x83) == 0x00) {
-            if (this.ioTimeout > 0 && ((System.currentTimeMillis() - start) / 1000) >= this.ioTimeout) {
-                throw new RuntimeException ("Timeout waiting for _rangeFinder!");
+        while (readU8(0x83) == 0x00) {
+            if (_ioTimeout > 0 && ((System.currentTimeMillis() - start) / 1000) >= _ioTimeout) {
+                throw new RuntimeException ("Timeout waiting for _port!");
             }
         }
-        this._rangeFinder.write((byte)0x83, (byte)0x01);
-        int tmp = this.readU8(0x92);
+        _port.write((byte)0x83, (byte)0x01);
+        int tmp = readU8(0x92);
         int count = tmp & 0x7F;
         boolean isAperture = ((tmp >> 7) & 0x01) == 1;
-        this._rangeFinder.write((byte)0x81, (byte)0x00);
-        this._rangeFinder.write((byte)0xFF, (byte)0x06);
-        this._rangeFinder.write((byte)0x83, (byte)(this.readU8(0x83) & ~0x04));
-        this._rangeFinder.write((byte)0xFF, (byte)0x01);
-        this._rangeFinder.write((byte)0x00, (byte)0x01);
-        this._rangeFinder.write((byte)0xFF, (byte)0x00);
-        this._rangeFinder.write((byte)0x80, (byte)0x00);
+        _port.write((byte)0x81, (byte)0x00);
+        _port.write((byte)0xFF, (byte)0x06);
+        _port.write((byte)0x83, (byte)(readU8(0x83) & ~0x04));
+        _port.write((byte)0xFF, (byte)0x01);
+        _port.write((byte)0x00, (byte)0x01);
+        _port.write((byte)0xFF, (byte)0x00);
+        _port.write((byte)0x80, (byte)0x00);
         return (new SPADInfo().setCount(count).setAperture(isAperture));
     }
 
     private void performSingleRefCalibration(int vhvInitByte)
               {
         // based on _rangeFinder_perform_single_ref_calibration() from ST API.
-        this._rangeFinder.write((byte)SYSRANGE_START, (byte)(0x01 | vhvInitByte & 0xFF));
+        _port.write((byte)SYSRANGE_START, (byte)(0x01 | vhvInitByte & 0xFF));
         long start = System.currentTimeMillis();
-        while ((this.readU8(RESULT_INTERRUPT_STATUS) & 0x07) == 0){
-            if (this.ioTimeout > 0 && ((System.currentTimeMillis() - start) / 1_000) >= this.ioTimeout) {
-                throw new RuntimeException("Timeout waiting for _rangeFinder!");
+        while ((readU8(RESULT_INTERRUPT_STATUS) & 0x07) == 0){
+            if (_ioTimeout > 0 && ((System.currentTimeMillis() - start) / 1_000) >= _ioTimeout) {
+                throw new RuntimeException("Timeout waiting for _port!");
             }
         }
-        this._rangeFinder.write((byte)SYSTEM_INTERRUPT_CLEAR, (byte)0x01);
-        this._rangeFinder.write((byte)SYSRANGE_START, (byte)0x00);
+        _port.write((byte)SYSTEM_INTERRUPT_CLEAR, (byte)0x01);
+        _port.write((byte)SYSRANGE_START, (byte)0x00);
     }
 
 //    private int getVcselPulsePeriod(int vcsel_period_type)   {
 //        if (vcsel_period_type == VCSEL_PERIOD_PRE_RANGE ) {
-//            int val = this.readU8(PRE_RANGE_CONFIG_VCSEL_PERIOD);
+//            int val = readU8(PRE_RANGE_CONFIG_VCSEL_PERIOD);
 //            return (((val) + 1) & 0xFF) << 1;
 //        } else if (vcsel_period_type == VCSEL_PERIOD_FINAL_RANGE) {
-//            int val = this.readU8(FINAL_RANGE_CONFIG_VCSEL_PERIOD);
+//            int val = readU8(FINAL_RANGE_CONFIG_VCSEL_PERIOD);
 //            return (((val) + 1) & 0xFF) << 1;
 //        }
 //        return 255;
@@ -379,30 +377,30 @@ public class LaserRangeFinder extends OutliersProxy {
 //        boolean tcc, dss, msrc, preRange, finalRange;
 //
 //        public SequenceStep tcc(boolean tcc) {
-//            this.tcc = tcc;
+//            tcc = tcc;
 //            return this;
 //        }
 //        public SequenceStep dss(boolean dss) {
-//            this.dss = dss;
+//            dss = dss;
 //            return this;
 //        }
 //        public SequenceStep msrc(boolean msrc) {
-//            this.msrc = msrc;
+//            msrc = msrc;
 //            return this;
 //        }
 //        public SequenceStep preRange(boolean preRange) {
-//            this.preRange = preRange;
+//            preRange = preRange;
 //            return this;
 //        }
 //        public SequenceStep finalRange(boolean finalRange) {
-//            this.finalRange = finalRange;
+//            finalRange = finalRange;
 //            return this;
 //        }
 //    }
 
 //    // based on _rangeFinder_GetSequenceStepEnables() from ST API
 //    private SequenceStep getSequenceStepEnables()   {
-//        int	sequenceConfig = this.readU8(SYSTEM_SEQUENCE_CONFIG);
+//        int	sequenceConfig = readU8(SYSTEM_SEQUENCE_CONFIG);
 //        return (new SequenceStep()
 //                .tcc(((sequenceConfig >> 4) & 0x1) > 0)
 //                .dss(((sequenceConfig >> 3) & 0x1) > 0)
@@ -418,23 +416,23 @@ public class LaserRangeFinder extends OutliersProxy {
 //                finalRangeVcselPeriodPclks,
 //                preRangeMclks;
 //        public SequenceStepTimeouts msrcDssTccMicrosec(int msrcDssTccMicrosec) {
-//            this.msrcDssTccMicrosec = msrcDssTccMicrosec;
+//            msrcDssTccMicrosec = msrcDssTccMicrosec;
 //            return this;
 //        }
 //        public SequenceStepTimeouts preRangeMicrosec(int preRangeMicrosec) {
-//            this.preRangeMicrosec = preRangeMicrosec;
+//            preRangeMicrosec = preRangeMicrosec;
 //            return this;
 //        }
 //        public SequenceStepTimeouts finalRangeMicorsec(int finalRangeMicorsec) {
-//            this.finalRangeMicorsec = finalRangeMicorsec;
+//            finalRangeMicorsec = finalRangeMicorsec;
 //            return this;
 //        }
 //        public SequenceStepTimeouts finalRangeVcselPeriodPclks(int finalRangeVcselPeriodPclks) {
-//            this.finalRangeVcselPeriodPclks = finalRangeVcselPeriodPclks;
+//            finalRangeVcselPeriodPclks = finalRangeVcselPeriodPclks;
 //            return this;
 //        }
 //        public SequenceStepTimeouts preRangeMclks(int preRangeMclks) {
-//            this.preRangeMclks = preRangeMclks;
+//            preRangeMclks = preRangeMclks;
 //            return this;
 //        }
 //    }
@@ -443,13 +441,13 @@ public class LaserRangeFinder extends OutliersProxy {
      *    https://github.com/pololu/_rangeFinder-arduino/blob/master/_rangeFinder.cpp
      */
 //    private SequenceStepTimeouts getSequenceStepTimeouts(boolean preRange) throws Exception {
-//        int preRangeVcselPeriodPclks = this.getVcselPulsePeriod(VCSEL_PERIOD_PRE_RANGE);
-//        int msrcDssTccMclks = (this.readU8(MSRC_CONFIG_TIMEOUT_MACROP) + 1) & 0xFF;
+//        int preRangeVcselPeriodPclks = getVcselPulsePeriod(VCSEL_PERIOD_PRE_RANGE);
+//        int msrcDssTccMclks = (readU8(MSRC_CONFIG_TIMEOUT_MACROP) + 1) & 0xFF;
 //        int msrcDssTccMicrosec = timeoutMclksToMicroSeconds(msrcDssTccMclks, preRangeVcselPeriodPclks);
-//        int preRangeMclks = decodeTimeout(this.readU16BE(PRE_RANGE_CONFIG_TIMEOUT_MACROP_HI));
+//        int preRangeMclks = decodeTimeout(readU16BE(PRE_RANGE_CONFIG_TIMEOUT_MACROP_HI));
 //        int preRangeMicrosec = timeoutMclksToMicroSeconds(preRangeMclks, preRangeVcselPeriodPclks);
-//        int finalRangeVcselPeriodPclks = this.getVcselPulsePeriod(VCSEL_PERIOD_FINAL_RANGE);
-//        int finalRangeMclks = decodeTimeout(this.readU16BE(FINAL_RANGE_CONFIG_TIMEOUT_MACROP_HI));
+//        int finalRangeVcselPeriodPclks = getVcselPulsePeriod(VCSEL_PERIOD_FINAL_RANGE);
+//        int finalRangeMclks = decodeTimeout(readU16BE(FINAL_RANGE_CONFIG_TIMEOUT_MACROP_HI));
 //        if (preRange) {
 //            finalRangeMclks -= preRangeMclks;
 //        }
@@ -464,25 +462,25 @@ public class LaserRangeFinder extends OutliersProxy {
 
 //    /* The signal rate limit in mega counts per second. */
 //    public float getSignalRateLimit() throws Exception {
-//        int val = this.readU16BE(FINAL_RANGE_CONFIG_MIN_COUNT_RATE_RTN_LIMIT);
+//        int val = readU16BE(FINAL_RANGE_CONFIG_MIN_COUNT_RATE_RTN_LIMIT);
 //        // Return value converted from 16 - bit 9.7 fixed point to float.
-//        this.signalRateLimit = (float)val / (float)(1 << 7);
-//        return this.signalRateLimit;
+//        signalRateLimit = (float)val / (float)(1 << 7);
+//        return signalRateLimit;
 //    }
 
 //    public void setSignalRateLimit(float val)   {
 //        assert(0.0 <= val && val <= 511.99);
 //        // Convert to 16 - bit 9.7 fixed point value from a float.
 //        int	value = (int)(val * (1 << 7));
-//        this.writeU16(FINAL_RANGE_CONFIG_MIN_COUNT_RATE_RTN_LIMIT, value);
+//        writeU16(FINAL_RANGE_CONFIG_MIN_COUNT_RATE_RTN_LIMIT, value);
 //    }
 //
 //    /* The measurement timing budget in microseconds. */
 //    public int getMeasurementTimingBudget() throws Exception {
 //        int budget_us = 1_910 + 960;  // Start overhead +end overhead.
 //        boolean tcc, dss, msrc, pre_range, final_range;
-//        SequenceStep sequenceStep = this.getSequenceStepEnables();
-//        SequenceStepTimeouts step_timeouts = this.getSequenceStepTimeouts(sequenceStep.preRange);
+//        SequenceStep sequenceStep = getSequenceStepEnables();
+//        SequenceStepTimeouts step_timeouts = getSequenceStepTimeouts(sequenceStep.preRange);
 //        if (sequenceStep.tcc) {
 //            budget_us += (step_timeouts.msrcDssTccMicrosec + 590);
 //        }
@@ -497,15 +495,15 @@ public class LaserRangeFinder extends OutliersProxy {
 //        if (sequenceStep.finalRange) {
 //            budget_us += (step_timeouts.finalRangeMicorsec + 550);
 //        }
-//        this.measurementTimingBudgetMicrosec = budget_us;
+//        measurementTimingBudgetMicrosec = budget_us;
 //        return budget_us;
 //    }
 
 //    public void setMeasurementTimingBudget(int budgetMicrosec) throws Exception {
 //        assert(budgetMicrosec >= 20_000);
 //        int usedBudgetMicrosec = 1_320 + 960;  // Start(diff from get) + end overhead
-//        SequenceStep sequenceStepEnables = this.getSequenceStepEnables();
-//        SequenceStepTimeouts sequenceStepTimeouts = this.getSequenceStepTimeouts(sequenceStepEnables.preRange);
+//        SequenceStep sequenceStepEnables = getSequenceStepEnables();
+//        SequenceStepTimeouts sequenceStepTimeouts = getSequenceStepTimeouts(sequenceStepEnables.preRange);
 //        if (sequenceStepEnables.tcc) {
 //            usedBudgetMicrosec += (sequenceStepTimeouts.msrcDssTccMicrosec + 590);
 //        }
@@ -533,8 +531,8 @@ public class LaserRangeFinder extends OutliersProxy {
 //        if (sequenceStepEnables.preRange) {
 //            finalRangeTimeoutMclks += sequenceStepTimeouts.preRangeMclks;
 //        }
-//        this.writeU16(FINAL_RANGE_CONFIG_TIMEOUT_MACROP_HI, encodeTimeout(finalRangeTimeoutMclks));
-//        this.measurementTimingBudgetMicrosec = budgetMicrosec;
+//        writeU16(FINAL_RANGE_CONFIG_TIMEOUT_MACROP_HI, encodeTimeout(finalRangeTimeoutMclks));
+//        measurementTimingBudgetMicrosec = budgetMicrosec;
 //    }
 
     /**
@@ -546,30 +544,30 @@ public class LaserRangeFinder extends OutliersProxy {
      * @return the distance in mm
      */
     public int range()  {
-        this._rangeFinder.write((byte)0x80, (byte)0x01);
-        this._rangeFinder.write((byte)0xFF, (byte)0x01);
-        this._rangeFinder.write((byte)0x00, (byte)0x00);
-        this._rangeFinder.write((byte)0x91, (byte)this.stopVariable);
-        this._rangeFinder.write((byte)0x00, (byte)0x01);
-        this._rangeFinder.write((byte)0xFF, (byte)0x00);
-        this._rangeFinder.write((byte)0x80, (byte)0x00);
-        this._rangeFinder.write((byte)SYSRANGE_START, (byte)0x01);
+        _port.write((byte)0x80, (byte)0x01);
+        _port.write((byte)0xFF, (byte)0x01);
+        _port.write((byte)0x00, (byte)0x00);
+        _port.write((byte)0x91, (byte)_stopVariable);
+        _port.write((byte)0x00, (byte)0x01);
+        _port.write((byte)0xFF, (byte)0x00);
+        _port.write((byte)0x80, (byte)0x00);
+        _port.write((byte)SYSRANGE_START, (byte)0x01);
         long start = System.currentTimeMillis();
-        while ((this.readU8(SYSRANGE_START) & 0x01) > 0) {
-            if (this.ioTimeout > 0 && ((System.currentTimeMillis() - start) / 1_000) >= this.ioTimeout) {
-                throw new RuntimeException("Timeout waiting for _rangeFinder!");
+        while ((readU8(SYSRANGE_START) & 0x01) > 0) {
+            if (_ioTimeout > 0 && ((System.currentTimeMillis() - start) / 1_000) >= _ioTimeout) {
+                throw new RuntimeException("Timeout waiting for _port!");
             }
         }
         start = System.currentTimeMillis();
-        while ((this.readU8(RESULT_INTERRUPT_STATUS) & 0x07) == 0) {
-            if (this.ioTimeout > 0 && ((System.currentTimeMillis() - start) / 1_000) >= this.ioTimeout) {
-                throw new RuntimeException("Timeout waiting for _rangeFinder!");
+        while ((readU8(RESULT_INTERRUPT_STATUS) & 0x07) == 0) {
+            if (_ioTimeout > 0 && ((System.currentTimeMillis() - start) / 1_000) >= _ioTimeout) {
+                throw new RuntimeException("Timeout waiting for _port!");
             }
         }
         // assumptions: Linearity Corrective Gain is 1000 (default)
         // fractional ranging is not enabled
-        int rangeMm = this.readU16BE(RESULT_RANGE_STATUS + 10);
-        this._rangeFinder.write((byte)SYSTEM_INTERRUPT_CLEAR, (byte)0x01);
+        int rangeMm = readU16BE(RESULT_RANGE_STATUS + 10);
+        _port.write((byte)SYSTEM_INTERRUPT_CLEAR, (byte)0x01);
         return rangeMm;
     }
 

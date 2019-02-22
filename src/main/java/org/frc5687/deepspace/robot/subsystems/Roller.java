@@ -23,7 +23,7 @@ public class Roller extends OutliersSubsystem {
     public Roller(Robot robot) {
         _robot = robot;
         try {
-            _roller = new CANSparkMax(RobotMap.CAN.SPARKMAX.ROLLER, CANSparkMaxLowLevel.MotorType.kBrushless);
+            // _roller = new CANSparkMax(RobotMap.CAN.SPARKMAX.ROLLER, CANSparkMaxLowLevel.MotorType.kBrushless);
             _rollerEncoder = _roller.getEncoder();
             _roller.setInverted(Constants.Roller.MOTOR_INVERTED);
         } catch (Exception e) {

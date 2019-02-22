@@ -42,8 +42,6 @@ public class Arm extends OutliersSubsystem implements PIDSource {
             _leftSpark.setSmartCurrentLimit(Constants.Arm.SHOULDER_STALL_LIMIT, Constants.Arm.SHOULDER_FREE_LIMIT);
             _rightSpark.setSmartCurrentLimit(Constants.Arm.SHOULDER_STALL_LIMIT, Constants.Arm.SHOULDER_FREE_LIMIT);
 
-            _rightSpark.follow(_leftSpark);
-
             _shoulderEncoder = _leftSpark.getEncoder();
         } catch (Exception e) {
             error("Unable to allocate arm controller: " + e.getMessage());
@@ -59,11 +57,13 @@ public class Arm extends OutliersSubsystem implements PIDSource {
     public void enableBrakeMode() {
         if (_leftSpark ==null) { return; }
         _leftSpark.setIdleMode(CANSparkMax.IdleMode.kBrake);
+        _rightSpark.setIdleMode(CANSparkMax.IdleMode.kBrake);
     }
 
     public void enableCoastMode() {
         if (_leftSpark ==null) { return; }
         _leftSpark.setIdleMode(CANSparkMax.IdleMode.kCoast);
+        _rightSpark.setIdleMode(CANSparkMax.IdleMode.kCoast);
     }
 
     public void setSpeed(double speed) {
@@ -72,6 +72,7 @@ public class Arm extends OutliersSubsystem implements PIDSource {
 
         metric("Speed", speed);
         _leftSpark.set(speed);
+        _rightSpark.set(speed);
     }
 
     public void drive(double desiredSpeed, boolean overrideCaps) {
@@ -87,6 +88,7 @@ public class Arm extends OutliersSubsystem implements PIDSource {
         metric("speed", speed);
         if (_leftSpark ==null) { return; }
         _leftSpark.set(speed);
+        _rightSpark.set(speed);
     }
 
     @Override

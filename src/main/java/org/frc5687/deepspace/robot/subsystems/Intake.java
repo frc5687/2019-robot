@@ -87,6 +87,7 @@ public class Intake extends OutliersSubsystem {
 
     public void run(double speed) {
         if (_forceOn) { speed = ROLLER_SPEED; }
+        metric("RollerSpeed", speed);
         _roller.set(ControlMode.PercentOutput, speed);
     }
 

@@ -99,7 +99,9 @@ public class Limelight extends OutliersProxy {
         return _tx.getDouble(0.0);
     }
 
-    public double getVerticalAngle() { return _ty.getDouble(0.0);}
+    public double getVerticalAngle() { return _ty.getDouble(0.0); }
+
+    public double getTargetArea() { return _ta.getDouble(0.0); }
 
     public double getTargetDistance() {
         double limeLightYAngle = Math.abs(getVerticalAngle());
@@ -114,8 +116,10 @@ public class Limelight extends OutliersProxy {
         metric("tx",_tx.getDouble(0.0));
         metric("ty",_ty.getDouble(0.0));
         metric("tv", _tv.getDouble(0.0));
+        metric( "ta", _ta.getDouble(0.0));
         metric("targetHAngle", getHorizontalAngle());
         metric("targetVAngle", getVerticalAngle());
+        metric("targetArea", getTargetArea());
         metric("targetDistance", getTargetDistance());
     }
 

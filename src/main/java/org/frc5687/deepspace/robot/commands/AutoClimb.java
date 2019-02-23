@@ -5,6 +5,7 @@ import org.frc5687.deepspace.robot.subsystems.Arm;
 import org.frc5687.deepspace.robot.subsystems.DriveTrain;
 import org.frc5687.deepspace.robot.subsystems.Stilt;
 import static org.frc5687.deepspace.robot.Constants.Auto.Climb.*;
+import static org.frc5687.deepspace.robot.Constants.Arm.*;
 
 public class AutoClimb extends OutliersCommand {
     private Stilt _stilt;
@@ -27,14 +28,20 @@ public class AutoClimb extends OutliersCommand {
 
     @Override
     protected void initialize() {
-        _arm.resetEncoder();
-       _climbState = ClimbState.PositionArm;
+       _climbState =  ClimbState.PositionArm;
        _driveTrain.enableBrakeMode();
+        metric("ClimbState", _climbState.name());
     }
 
     @Override
     public void execute() {
         switch (_climbState) {
+            case StowArm:
+                _arm.setSpeed(STOW_SPEED);
+                if (_arm.isLeftStowed() && _arm.isRightStowed()) {
+                    _climbState = ClimbState.PositionArm;
+                }
+                break;
             case PositionArm:
                 _arm.setSpeed(INITIAL_ARM_SPEED);
                 if (_arm.getAngle() >= Constants.Arm.CONTACT_ANGLE) {
@@ -43,17 +50,37 @@ public class AutoClimb extends OutliersCommand {
                 break;
             case MoveRollerAndStilt:
                 _stilt.setLifterSpeed(STILT_SPEED);
-                double armSpeed = Math.cos(Math.toRadians(_arm.getAngle())) * ARM_SPEED_SCALAR;
+                double armSpeed = ARM_SPEED; // Math.cos(Math.toRadians(_arm.getAngle())) * ARM_SPEED_SCALAR;
                 _arm.setSpeed(armSpeed);
-                if (_arm.getAngle() >= Constants.Arm.BOTTOM_ANGLE) {
-                    _climbState = ClimbState.Done;
+                if ((_arm.isLow() || _arm.getAngle() >= Constants.Arm.BOTTOM_ANGLE)
+                && _stilt.isAtTop()) {
+                    _climbState = ClimbState.WheelieForward;
                 }
                 break;
+            case WheelieForward:
+                _stilt.setWheelieSpeed(WHEELIE_FORWARD_SPEED);
+                if (_stilt.isOnSurface()) {
+                    _stilt.setWheelieSpeed(0);
+                    _climbState = ClimbState.LiftStilt;
+                }
+            case LiftStilt:
+                _stilt.setLifterSpeed(RAISE_STILT_SPEED);
+                if (_stilt.isAtBottom()) {
+                    _driveTrain.resetDriveEncoders();
+                    _climbState = ClimbState.LiftStilt;
+                }
+            case Park:
+                _driveTrain.cheesyDrive(PARK_SPEED, 0);
+                if (_driveTrain.getDistance() > PARK_DISTANCE) {
+                    _driveTrain.cheesyDrive(0.0,0);
+                    _climbState = ClimbState.Done;
+                }
             case Done:
                 _stilt.setLifterSpeed(0);
                 _arm.setSpeed(0);
                 break;
         }
+        metric("ClimbState", _climbState.name());
     }
 
     @Override
@@ -62,9 +89,13 @@ public class AutoClimb extends OutliersCommand {
     }
 
     enum ClimbState {
-        PositionArm(0),
-        MoveRollerAndStilt(1),
-        Done(2);
+        StowArm(0),
+        PositionArm(1),
+        MoveRollerAndStilt(2),
+        WheelieForward(3),
+        LiftStilt(4),
+        Park(5),
+        Done(6);
 
         private int _value;
 

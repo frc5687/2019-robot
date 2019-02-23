@@ -78,7 +78,7 @@ public class Stilt extends OutliersSubsystem {
     }
 
     public boolean isOnSurface() {
-        return false;
+        return _downIR.getRaw() > 1000;
     }
 
     @Override
@@ -92,5 +92,6 @@ public class Stilt extends OutliersSubsystem {
         metric("AtBottom", isAtBottom());
         metric("IRValue", _downIR.getAverageValue());
         metric("IRVoltage", _downIR.getAverageVoltage());
+        metric("OnSurface", isOnSurface());
     }
 }

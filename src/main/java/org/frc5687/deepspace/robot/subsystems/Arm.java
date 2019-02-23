@@ -9,25 +9,25 @@ import org.frc5687.deepspace.robot.Robot;
 import org.frc5687.deepspace.robot.RobotMap;
 import org.frc5687.deepspace.robot.commands.DriveArm;
 import org.frc5687.deepspace.robot.utils.HallEffect;
+import static org.frc5687.deepspace.robot.Constants.Arm.*;
+import static org.frc5687.deepspace.robot.utils.Helpers.*;
 
 public class Arm extends OutliersSubsystem implements PIDSource {
 
     private CANSparkMax _leftSpark;
     private CANSparkMax _rightSpark;
 
-    private CANEncoder _shoulderEncoder;
-    
-    // private HallEffect _lowHall;
-    private HallEffect _intakeHall;
-    private HallEffect _secureHall;
-    // private HallEffect _stowedHall;
+    private CANEncoder _leftEncoder;
+    private CANEncoder _rightEncoder;
+
     private HallEffect _rightStowedhall;
     private HallEffect _leftStowedhall;
     private HallEffect _rightLowhall;
     private HallEffect _leftLowhall;
 
 
-    private double _offset = 0;
+    private double _leftOffset = 0;
+    private double _rightOffset = 0;
 
     // Need private double _pidOut
     private double _pidOut;
@@ -46,15 +46,12 @@ public class Arm extends OutliersSubsystem implements PIDSource {
             _leftSpark.setSmartCurrentLimit(Constants.Arm.SHOULDER_STALL_LIMIT, Constants.Arm.SHOULDER_FREE_LIMIT);
             _rightSpark.setSmartCurrentLimit(Constants.Arm.SHOULDER_STALL_LIMIT, Constants.Arm.SHOULDER_FREE_LIMIT);
 
-            _shoulderEncoder = _leftSpark.getEncoder();
+            _leftEncoder = _leftSpark.getEncoder();
+            _rightEncoder  = _rightSpark.getEncoder();
         } catch (Exception e) {
             error("Unable to allocate arm controller: " + e.getMessage());
         }
 
-        // _lowHall = new HallEffect(RobotMap.DIO.ARM_LOW_HALL);
-        _intakeHall = new HallEffect(RobotMap.DIO.ARM_INTAKE_HALL);
-        _secureHall = new HallEffect(RobotMap.DIO.ARM_SECURE_HALL);
-        //_stowedHall = new HallEffect(RobotMap.DIO.ARM_STOWED_HALL);
         _rightStowedhall = new HallEffect(RobotMap.DIO.ARM_RIGHT_STOWED_HALL);
         _leftStowedhall = new HallEffect(RobotMap.DIO.ARM_LEFT_STOWED_HALL);
         _rightLowhall = new HallEffect(RobotMap.DIO.ARM_RIGHT_LOW_HALL);
@@ -75,29 +72,32 @@ public class Arm extends OutliersSubsystem implements PIDSource {
     }
 
     public void setSpeed(double speed) {
-        if (_leftSpark ==null) { return; }
-        // speed = Helpers.limit(speed, Constants.Arm.MAX_DRIVE_SPEED);
+        if (_leftSpark == null || _rightSpark==null) { return; }
+        setLeftSpeed(speed);
+        setRightSpeed(speed);
+    }
 
-        metric("Speed", speed);
+
+    public void setLeftSpeed(double speed) {
+        if (_leftSpark == null) { return; }
+        speed = limit(speed,
+                isLeftStowed() ? 0 : -MAX_DRIVE_SPEED ,
+                isLeftLow() ? HOLD_SPEED : MAX_DRIVE_SPEED);
+        metric("LeftSpeed", speed);
+        if(isLeftStowed()) { resetLeftEncoder(); }
         _leftSpark.set(speed);
+    }
+
+    public void setRightSpeed(double speed) {
+        if (_rightSpark == null) { return; }
+        speed = limit(speed,
+                isRightStowed() ? 0 : -MAX_DRIVE_SPEED ,
+                isRightLow() ? HOLD_SPEED : MAX_DRIVE_SPEED);
+        metric("RightSpeed", speed);
+        if(isRightStowed()) { resetRightEncoder(); }
         _rightSpark.set(speed);
     }
 
-    public void drive(double desiredSpeed, boolean overrideCaps) {
-        double speed = desiredSpeed;
-        if (!overrideCaps) {
-            if (speed > 0 && isStowed()) {
-                speed = 0;
-            } else if (speed < 0 && isLow()) {
-                speed = 0;
-            }
-        }
-        metric("rawSpeed", desiredSpeed);
-        metric("speed", speed);
-        if (_leftSpark ==null) { return; }
-        _leftSpark.set(speed);
-        _rightSpark.set(speed);
-    }
 
     @Override
     protected void initDefaultCommand() {
@@ -108,26 +108,42 @@ public class Arm extends OutliersSubsystem implements PIDSource {
     public void updateDashboard() {
         metric("LowRightHall", _rightLowhall.get());
         metric("LowLeftHall", _leftLowhall.get());
-        //metric("IntakeHall", _intakeHall.get());
-        //metric("SecureHall", _secureHall.get());
         metric("StowedRightHall", _rightStowedhall.get());
         metric("StowedLeftHall", _leftStowedhall.get());
-        if (_shoulderEncoder==null) { return; }
-        metric("Encoder", getPosition());
+        metric("LeftEncoder", getLeftPosition());
+        metric("RightEncoder", getRightPosition());
+        metric("Position", getPosition());
         metric("Angle", getAngle());
     }
 
     public boolean isStowed() {
-        return _rightStowedhall.get() ||  _leftStowedhall.get();
+        return isLeftStowed() || isRightStowed();
 
     }
 
-    public boolean isIntake() { return _intakeHall.get(); }
+    public boolean isRightStowed() {
+        return _rightStowedhall.get();
 
-    public boolean isSecured() { return _secureHall.get(); }
+    }
+
+    public boolean isLeftStowed() {
+        return _leftStowedhall.get();
+
+    }
+
+    public boolean isRightLow() {
+        return _rightLowhall.get();
+
+    }
+
+    public boolean isLeftLow() {
+        return _leftLowhall.get();
+
+    }
+
 
     public boolean isLow() {
-        return _rightLowhall.get() || _leftLowhall.get();
+        return isLeftLow() || isRightLow();
     }
 
     @Override
@@ -144,18 +160,33 @@ public class Arm extends OutliersSubsystem implements PIDSource {
         return getPosition();
     }
 
-
     public double getPosition() {
-        return _shoulderEncoder.getPosition() - _offset;
+        return (getLeftPosition() + getRightPosition())/2;
     }
 
-    public void resetEncoder() {
-        _offset = _shoulderEncoder.getPosition();
-        DriverStation.reportError("Resetting arm offset to " + _offset , false);
+    public double getLeftPosition() {
+        return _leftEncoder.getPosition() - _leftOffset;
+    }
+
+    public double getRightPosition() {
+        return _rightEncoder.getPosition() - _rightOffset;
+    }
+
+    public void resetEncoders() {
+        resetLeftEncoder();
+        resetRightEncoder();
+    }
+
+    public void resetLeftEncoder() {
+        _leftOffset = _leftEncoder.getPosition();
+    }
+
+    public void resetRightEncoder() {
+        _rightOffset = _rightEncoder.getPosition();
     }
 
     public double getAngle() {
-        return Constants.Arm.STOWED_ANGLE + (_shoulderEncoder.getPosition() * Constants.Arm.DEGREES_PER_TICK);
+        return Constants.Arm.STOWED_ANGLE + (getPosition() * Constants.Arm.DEGREES_PER_TICK);
     }
 
     public enum HallEffectSensor {

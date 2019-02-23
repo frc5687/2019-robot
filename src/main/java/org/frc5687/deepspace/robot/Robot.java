@@ -83,7 +83,7 @@ public class Robot extends TimedRobot implements ILoggingSource {
         // _limelight.disableLEDs();
         _limelight.setStreamingMode(Limelight.StreamMode.PIP_SECONDARY);
         _status.setConfiguration(Configuration.starting);
-        _arm.resetEncoder();
+        _arm.resetEncoders();
 
         _arm.enableBrakeMode();
         _elevator.enableBrakeMode();

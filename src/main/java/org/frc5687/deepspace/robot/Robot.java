@@ -33,15 +33,12 @@ public class Robot extends TimedRobot implements ILoggingSource {
     private DriveTrain _driveTrain;
     private Elevator _elevator;
     private PDP _pdp;
-    private Gripper _gripper;
-    private Spear _spear;
     private Arm _arm;
-    private Wrist _wrist;
-    private Roller _roller;
     private Shifter _shifter;
     private Lights _lights;
     private StatusProxy _status;
     private Stilt _stilt;
+    private Intake _intake;
 
     /**
      * This function is setRollerSpeed when the robot is first started up and should be
@@ -68,13 +65,9 @@ public class Robot extends TimedRobot implements ILoggingSource {
         _shifter = new Shifter(this);
         _driveTrain = new DriveTrain(this);
         _arm = new Arm(this);
-        _roller = new Roller(this);
         _elevator = new Elevator(this);
         _stilt = new Stilt(this);
-        _gripper= new Gripper(this);
-        _spear = new Spear(this);
-        _wrist = new Wrist(this);
-
+        _intake = new Intake (this);
 
         // Must initialize buttons AFTER subsystems are allocated...
         _oi.initializeButtons(this);
@@ -175,13 +168,13 @@ public class Robot extends TimedRobot implements ILoggingSource {
             _driveTrain.updateDashboard();
             _limelight.updateDashboard();
             _arm.updateDashboard();
-            _roller.updateDashboard();
             _elevator.updateDashboard();
             _pdp.updateDashboard();
             _shifter.updateDashboard();
             _lights.updateDashboard();
             _status.updateDashboard();
             _stilt.updateDashboard();
+            _intake.updateDashboard();
         }
     }
 
@@ -273,15 +266,12 @@ public class Robot extends TimedRobot implements ILoggingSource {
         return _limelight;
     }
     public PDP getPDP() { return _pdp; }
-    public Gripper getGripper() { return _gripper; }
-    public Spear getSpear() { return _spear; }
-    public Wrist getWrist() { return _wrist; }
-    public Roller getRoller() { return _roller; }
     public Arm getArm() { return _arm; }
     public Elevator getElevator() { return _elevator; }
     public Shifter getShifter() { return _shifter; }
     public Lights getLights() { return _lights; }
     public Stilt getStilt() { return _stilt; }
+    public Intake getIntake() { return _intake;}
 
 
 

@@ -33,6 +33,7 @@ public class Stilt extends OutliersSubsystem {
             _lifterSpark = new CANSparkMax(RobotMap.CAN.SPARKMAX.STILT, CANSparkMaxLowLevel.MotorType.kBrushless);
             _lifterSpark.setInverted(MOTOR_INVERTED);
             _neoStiltEncoder = _lifterSpark.getEncoder();
+            enableBrakeMode();
         }catch (Exception e) {
             error("Unable to allocate stilt controller: " + e.getMessage());
         }
@@ -78,7 +79,7 @@ public class Stilt extends OutliersSubsystem {
     }
 
     public boolean isOnSurface() {
-        return _downIR.getRaw() > 1000;
+        return _downIR.getAverageValue() > 1000;
     }
 
     @Override

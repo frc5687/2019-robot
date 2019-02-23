@@ -32,7 +32,8 @@ public class RobotMap {
      * Note that for PWM only one device can connect to each port, so the numbers should be unique.
      */
     public static class PWM {
-        public static final int Blinkin = 0;
+        public static final int LeftBlinkin = 0;
+        public static final int RightBlinkin = 1;
         public static final int Wheelie = 2;
         /*  Example:
         public static final int ARM_VICTORSP = 0;
@@ -86,8 +87,8 @@ public class RobotMap {
      * Note that for DIO only one device can connect to each port, so the numbers should be unique.
      */
     public static class DIO {
-        public static final int ELEVATOR_B = 0;
-        public static final int ELEVATOR_A = 1;
+        public static final int ELEVATOR_A = 0;
+        public static final int ELEVATOR_B = 1;
         public static final int ELEVATOR_TOP_HALL = 2;
         public static final int ELEVATOR_BOTTOM_HALL = 3;
 

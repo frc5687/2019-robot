@@ -1,5 +1,6 @@
 package org.frc5687.deepspace.robot.commands;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import org.frc5687.deepspace.robot.Constants;
 import org.frc5687.deepspace.robot.subsystems.Arm;
 import org.frc5687.deepspace.robot.subsystems.DriveTrain;
@@ -21,6 +22,7 @@ public class AutoClimb extends OutliersCommand {
         _stilt = stilt;
         _arm = arm;
         _driveTrain = driveTrain;
+
         requires(_stilt);
         requires(_arm);
         requires(_driveTrain);
@@ -28,7 +30,7 @@ public class AutoClimb extends OutliersCommand {
 
     @Override
     protected void initialize() {
-       _climbState =  ClimbState.PositionArm;
+       _climbState =  ClimbState.StowArm;
        _driveTrain.enableBrakeMode();
         metric("ClimbState", _climbState.name());
     }
@@ -39,48 +41,79 @@ public class AutoClimb extends OutliersCommand {
             case StowArm:
                 _arm.setSpeed(STOW_SPEED);
                 if (_arm.isLeftStowed() && _arm.isRightStowed()) {
+                    DriverStation.reportError("Transitioning to " + ClimbState.PositionArm.name(), false);
                     _climbState = ClimbState.PositionArm;
                 }
                 break;
             case PositionArm:
                 _arm.setSpeed(INITIAL_ARM_SPEED);
                 if (_arm.getAngle() >= Constants.Arm.CONTACT_ANGLE) {
+                    DriverStation.reportError("Transitioning to " + ClimbState.MoveRollerAndStilt.name(), false);
                     _climbState = ClimbState.MoveRollerAndStilt;
                 }
                 break;
             case MoveRollerAndStilt:
                 _stilt.setLifterSpeed(STILT_SPEED);
+                metric("StiltSpeed", STILT_SPEED);
                 double armSpeed = ARM_SPEED; // Math.cos(Math.toRadians(_arm.getAngle())) * ARM_SPEED_SCALAR;
                 _arm.setSpeed(armSpeed);
+                metric("ArmSpeed", armSpeed);
                 if ((_arm.isLow() || _arm.getAngle() >= Constants.Arm.BOTTOM_ANGLE)
                 && _stilt.isAtTop()) {
+                    metric("StiltSpeed", 0);
+                    metric("ArmSpeed", 0);
+                    _arm.setSpeed(ARM_HOLD_SPEED);
+                    _driveTrain.enableBrakeMode();
+                    DriverStation.reportError("Transitioning to " + ClimbState.WheelieForward.name(), false);
                     _climbState = ClimbState.WheelieForward;
                 }
                 break;
             case WheelieForward:
+                _stilt.setLifterSpeed(STILT_HOLD_SPEED);
                 _stilt.setWheelieSpeed(WHEELIE_FORWARD_SPEED);
+                _driveTrain.cheesyDrive(DRIVE_FORWARD_SPEED,0);
+                metric("WheelieSpeed", WHEELIE_FORWARD_SPEED);
+                metric("DriveSpeed", DRIVE_FORWARD_SPEED);
+                metric("StiltSpeed", STILT_HOLD_SPEED);
                 if (_stilt.isOnSurface()) {
+                    metric("WheelieSpeed", 0);
+                    metric("DriveSpeed", 0);
+                    metric("StiltSpeed", 0);
                     _stilt.setWheelieSpeed(0);
+                    DriverStation.reportError("Transitioning to " + ClimbState.LiftStilt.name(), false);
                     _climbState = ClimbState.LiftStilt;
                 }
+                break;
             case LiftStilt:
                 _stilt.setLifterSpeed(RAISE_STILT_SPEED);
+                metric("StiltSpeed", RAISE_STILT_SPEED);
                 if (_stilt.isAtBottom()) {
                     _driveTrain.resetDriveEncoders();
-                    _climbState = ClimbState.LiftStilt;
+                    _climbState = ClimbState.Park;
                 }
+                break;
             case Park:
+                metric("DriveSpeed", PARK_SPEED);
                 _driveTrain.cheesyDrive(PARK_SPEED, 0);
                 if (_driveTrain.getDistance() > PARK_DISTANCE) {
+                    metric("DriveSpeed", 0);
                     _driveTrain.cheesyDrive(0.0,0);
+                    DriverStation.reportError("Transitioning to " + ClimbState.Done.name(), false);
                     _climbState = ClimbState.Done;
                 }
+                break;
             case Done:
                 _stilt.setLifterSpeed(0);
                 _arm.setSpeed(0);
                 break;
         }
         metric("ClimbState", _climbState.name());
+    }
+
+    @Override
+    protected void end() {
+        _stilt.enableCoastMode();
+        _arm.enableCoastMode();
     }
 
     @Override

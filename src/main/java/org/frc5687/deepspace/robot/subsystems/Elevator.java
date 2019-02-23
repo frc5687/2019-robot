@@ -36,7 +36,7 @@ public class Elevator extends OutliersSubsystem implements PIDSource {
         } catch (Exception e) {
             error("Unable to allocate elevator controller: " + e.getMessage());
         }
-        _elevatorEncoder = new Encoder(RobotMap.DIO.ELEVATOR_A, RobotMap.DIO.ELEVATOR_B);
+        _elevatorEncoder = new Encoder(RobotMap.DIO.ELEVATOR_B, RobotMap.DIO.ELEVATOR_A);
 
         _topHall = new HallEffect(RobotMap.DIO.ELEVATOR_TOP_HALL);
         _bottomHall = new HallEffect(RobotMap.DIO.ELEVATOR_BOTTOM_HALL);

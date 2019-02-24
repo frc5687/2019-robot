@@ -40,8 +40,8 @@ public class Constants {
         //Claw
         public static final long OPEN_CLAW_MILLI_SEC = 40;
         public static final long CLOSE_CLAW_MILLI_SEC = 40;
-
-
+        public static final long CLAW_RAISE_WRIST_MILLI_SEC = 300;
+        public static final long CLAW_LOWER_WRIST_MILLI_SEC = 300;
     }
     public class Shifter {
         public static final long STOP_MOTOR_TIME = 60;

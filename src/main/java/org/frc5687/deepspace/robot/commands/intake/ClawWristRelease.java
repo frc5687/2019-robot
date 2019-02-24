@@ -3,10 +3,10 @@ package org.frc5687.deepspace.robot.commands.intake;
 import org.frc5687.deepspace.robot.commands.OutliersCommand;
 import org.frc5687.deepspace.robot.subsystems.Intake;
 
-public class WristRelease extends OutliersCommand {
+public class ClawWristRelease extends OutliersCommand {
     public Intake _intake;
 
-    public WristRelease(Intake intake) {
+    public ClawWristRelease(Intake intake) {
         _intake = intake;
         requires(_intake);
     }
@@ -19,6 +19,6 @@ public class WristRelease extends OutliersCommand {
     }
     @Override
     protected void execute(){
-        _intake.releaseWrist();
+        _intake.releaseClawWrist();
     }
 }

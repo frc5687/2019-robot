@@ -18,6 +18,7 @@ public class Intake extends OutliersSubsystem {
     private Robot _robot;
     private DoubleSolenoid _wristSolenoid;
     private DoubleSolenoid _clawSolenoid;
+    private DoubleSolenoid _clawWristSolenoid;
     private TalonSRX _roller;
     private RollerMode _rollerMode;
     private boolean _forceOn;
@@ -27,6 +28,7 @@ public class Intake extends OutliersSubsystem {
         _robot = robot;
         _wristSolenoid = new DoubleSolenoid(RobotMap.PCM.WRIST_UP, RobotMap.PCM.WRIST_DOWN);
         _clawSolenoid = new DoubleSolenoid(RobotMap.PCM.CLAW_OPEN, RobotMap.PCM.CLAW_CLOSE);
+        _clawWristSolenoid = new DoubleSolenoid(RobotMap.PCM.CLAW_WRIST_UP, RobotMap.PCM.CLAW_WRIST_DOWN);
         try {
             _roller = new TalonSRX(RobotMap.CAN.TALONSRX.ROLLER);
             _roller.configPeakOutputForward(HIGH_POW, 0);
@@ -75,6 +77,12 @@ public class Intake extends OutliersSubsystem {
     }
 
     public void releaseWrist() { _wristSolenoid.set(DoubleSolenoid.Value.kOff); }
+
+    public void raiseClawWrist() { _clawWristSolenoid.set(DoubleSolenoid.Value.kReverse); }
+
+    public void lowerClawWrist() { _clawWristSolenoid.set(DoubleSolenoid.Value.kForward); }
+
+    public void releaseClawWrist() { _clawWristSolenoid.set(DoubleSolenoid.Value.kOff); }
 
     private void setRollerSpeed(double speed) {
         speed = Helpers.limit(speed, Constants.Intake.MAX_ROLLER_SPEED);

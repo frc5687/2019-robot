@@ -39,6 +39,8 @@ public class AutoClimb extends OutliersCommand {
     public void execute() {
         switch (_climbState) {
             case StowArm:
+                _arm.enableBrakeMode();
+                _stilt.enableBrakeMode();
                 _arm.setSpeed(STOW_SPEED);
                 if (_arm.isLeftStowed() && _arm.isRightStowed()) {
                     DriverStation.reportError("Transitioning to " + ClimbState.PositionArm.name(), false);
@@ -63,7 +65,7 @@ public class AutoClimb extends OutliersCommand {
                     metric("StiltSpeed", 0);
                     metric("ArmSpeed", 0);
                     _arm.setSpeed(ARM_HOLD_SPEED);
-                    _driveTrain.enableBrakeMode();
+                    _driveTrain.disableBrakeMode();
                     DriverStation.reportError("Transitioning to " + ClimbState.WheelieForward.name(), false);
                     _climbState = ClimbState.WheelieForward;
                 }
@@ -79,11 +81,20 @@ public class AutoClimb extends OutliersCommand {
                     metric("WheelieSpeed", 0);
                     metric("DriveSpeed", 0);
                     metric("StiltSpeed", 0);
+                    _arm.enableCoastMode();
                     _stilt.setWheelieSpeed(0);
                     DriverStation.reportError("Transitioning to " + ClimbState.LiftStilt.name(), false);
+                    _climbState = ClimbState.LiftArm;
+                }
+                break;
+            case LiftArm:
+                _arm.setSpeed(RAISE_ARM_SPEED);
+                if (_arm.getAngle() <= ARM_RETRACT_ANGLE) {
+                    _arm.setSpeed(0);
                     _climbState = ClimbState.LiftStilt;
                 }
                 break;
+
             case LiftStilt:
                 _stilt.setLifterSpeed(RAISE_STILT_SPEED);
                 metric("StiltSpeed", RAISE_STILT_SPEED);
@@ -112,8 +123,8 @@ public class AutoClimb extends OutliersCommand {
 
     @Override
     protected void end() {
-        _stilt.enableCoastMode();
-        _arm.enableCoastMode();
+        // _stilt.enableCoastMode();
+        // _arm.enableCoastMode();
     }
 
     @Override
@@ -126,9 +137,10 @@ public class AutoClimb extends OutliersCommand {
         PositionArm(1),
         MoveRollerAndStilt(2),
         WheelieForward(3),
-        LiftStilt(4),
-        Park(5),
-        Done(6);
+        LiftArm(4),
+        LiftStilt(5),
+        Park(6),
+        Done(7);
 
         private int _value;
 

@@ -50,12 +50,12 @@ public class RobotMap {
         //PCM ports are not in the robot yet, using 0 and 1.
         public static final int WRIST_DOWN = 1;
         public static final int WRIST_UP = 0;
-        public static final int SHIFTER_HIGH = 4;
-        public static final int SHIFTER_LOW = 5;
+        public static final int SHIFTER_HIGH = 6;
+        public static final int SHIFTER_LOW = 7;
         public static final int CLAW_OPEN = 2;
         public static final int CLAW_CLOSE = 3;
-        public static final int CLAW_WRIST_UP = 6;
-        public static final int CLAW_WRIST_DOWN = 7;
+        public static final int CLAW_WRIST_UP = 4;
+        public static final int CLAW_WRIST_DOWN = 5;
     }
 
     /**

@@ -9,9 +9,11 @@ import org.frc5687.deepspace.robot.subsystems.Elevator;
 public class CargoIntake extends CommandGroup {
 
     public CargoIntake(Robot robot) {
-        addSequential(new GripClaw(robot.getIntake()));
-        addSequential(new MoveElevatorToSetPoint(robot.getElevator(), Elevator.Setpoint.Bottom, Elevator.MotionMode.PID));
-        addSequential(new WristDown(robot));
+//        addSequential(new GripClaw(robot.getIntake()));
+        addSequential(new MoveElevatorToSetPoint(robot.getElevator(), Elevator.Setpoint.Hatch1, Elevator.MotionMode.Ramp));
+        addParallel(new WristDown(robot));
+        addParallel(new ClawWristDown(robot));
+        addSequential(new MoveElevatorToSetPoint(robot.getElevator(), Elevator.Setpoint.Bottom, Elevator.MotionMode.Ramp));
         addSequential(new StartRoller(robot.getIntake(), true));
         addSequential(new StopRoller(robot.getIntake()));
         // addSequential(new MoveArmToSetPoint(robot.getArm(), Arm.Setpoint.Secure, Arm.HallEffectSensor.SECURE, Arm.MotionMode.Simple));

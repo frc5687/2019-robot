@@ -5,7 +5,6 @@ import edu.wpi.first.wpilibj.buttons.Button;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import org.frc5687.deepspace.robot.commands.*;
 import org.frc5687.deepspace.robot.commands.intake.*;
-import org.frc5687.deepspace.robot.subsystems.Arm;
 import org.frc5687.deepspace.robot.subsystems.Elevator;
 import org.frc5687.deepspace.robot.subsystems.Shifter;
 import org.frc5687.deepspace.robot.utils.AxisButton;
@@ -111,15 +110,16 @@ public class OI extends OutliersProxy {
 //        _operatorStartButton.whenPressed(new WristUp(robot,robot.getWrist()));
 //        _operatorBackButton.whenReleased(new WristDown(robot, robot.getWrist()));
 
-        _operatorRightBumper.whenPressed(new CargoMode(robot));
-        _operatorLeftBumper.whenPressed(new HatchMode(robot));
+        _operatorRightBumper.whenPressed(new ClawWristUp(robot));
+        _operatorLeftBumper.whenPressed(new ClawWristDown(robot));
 
-        _driverRightBumper.whenPressed(new Shift(robot.getDriveTrain(), robot.getShifter(), Shifter.Gear.LOW, false));
-        _driverLeftBumper.whenPressed(new Shift(robot.getDriveTrain(), robot.getShifter(), Shifter.Gear.HIGH, false));
+       // _driverRightBumper.whenPressed(new Shift(robot.getDriveTrain(), robot.getShifter(), Shifter.Gear.LOW, false));
+        //
+        // _driverLeftBumper.whenPressed(new Shift(robot.getDriveTrain(), robot.getShifter(), Shifter.Gear.HIGH, false));
 
 //        _operatorRightTrigger.whenPressed(new Score(robot));
-        _operatorRightTrigger.whenPressed(new Intake(robot));
-        _operatorLeftTrigger.whileHeld(new HoldSpearOpen(robot));
+        _operatorRightTrigger.whenPressed(new CargoIntake(robot));
+        _operatorLeftTrigger.whileHeld(new HoldClawOpen(robot));
 
         _driverRightTrigger.whenPressed(new RunIntake(robot, robot.getIntake()));
         _driverLeftTrigger.whenPressed(new StopRoller(robot.getIntake()));

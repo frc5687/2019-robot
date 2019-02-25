@@ -101,8 +101,8 @@ public class OI extends OutliersProxy {
     public void initializeButtons(Robot robot){
 
 
-        _driverStartButton.whenPressed(new GripClaw(robot.getIntake()));
-        _driverBackButton.whenPressed(new PointClaw(robot.getIntake()));
+        _driverStartButton.whenPressed(new AutoClimb(robot.getStilt(), robot.getArm(), robot.getDriveTrain()));
+//        _driverBackButton.whenPressed(new CloseSpear(robot.getSpear()));
 
         //_operatorStartButton.whenPressed(new StartGripper(robot.getGripper()));
         //_operatorBackButton.whenPressed(new StopGripper(robot.getGripper()));
@@ -173,16 +173,15 @@ public class OI extends OutliersProxy {
     }
     public double getStiltSpeed() {
         return 0;
-//        double speed = getSpeedFromAxis(_operatorGamepad, Gamepad.Axes.RIGHT_TRIGGER.getNumber())*Constants.Stilt.MAX_UP_SPEED;
+//        double speed = getSpeedFromAxis(_operatorGamepad, Gamepad.Axes.RIGHT_Y.getNumber())*Constants.Stilt.MAX_UP_SPEED;
 //        speed = applyDeadband(speed, Constants.Stilt.DEADBAND);
 //        return speed;
     }
 
     public double getWheelieSpeed() {
-        return 0;
-//        double speed = getSpeedFromAxis(_operatorGamepad, Gamepad.Axes.LEFT_TRIGGER.getNumber());
-//        speed = applyDeadband(speed, Constants.Stilt.DEADBAND);
-//        return speed;
+        double speed = getSpeedFromAxis(_operatorGamepad, Gamepad.Axes.LEFT_TRIGGER.getNumber());
+        speed = applyDeadband(speed, Constants.Stilt.DEADBAND);
+        return speed;
     }
 
 

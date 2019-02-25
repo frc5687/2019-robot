@@ -10,7 +10,8 @@ public class Lights extends OutliersSubsystem {
 
 
     private Robot _robot;
-    private Spark _top;
+    private Spark _right;
+    private Spark _left;
     private DriverStation.Alliance _alliance;
 
     private double _mainColor;
@@ -18,7 +19,8 @@ public class Lights extends OutliersSubsystem {
 
     public Lights(Robot robot) {
         _robot = robot;
-        _top = new Spark(RobotMap.PWM.Blinkin);
+        _right = new Spark(RobotMap.PWM.LeftBlinkin);
+        _left = new Spark(RobotMap.PWM.RightBlinkin);
     }
 
     public void initialize() {
@@ -30,9 +32,13 @@ public class Lights extends OutliersSubsystem {
         setDefaultCommand(new DriveLights(_robot.getLights()));
     }
 
-    public void setTop(double val) {
+    public void setRight(double val) {
         // DriverStation.reportError("Setting left to " + val, false);
-        _top.set(val);
+        _right.set(val);
+    }
+    public void setLeft(double val) {
+        // DriverStation.reportError("Setting left to " + val, false);
+        _left.set(val);
     }
     public void setColor(double color, int blink) {
         _mainColor = color;
@@ -41,11 +47,14 @@ public class Lights extends OutliersSubsystem {
 
     public void setColors(long cycle) {
         if (_blink==0) {
-            setTop(_mainColor);
+            setRight(_mainColor);
+            setLeft(_mainColor);
         } else if ((cycle % _blink) == 0) {
-            setTop(_mainColor);
+            setRight(_mainColor);
+            setLeft(_mainColor);
         } else {
-            setTop(0);
+            setRight(0);
+            setLeft(0);
         }
     }
 

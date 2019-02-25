@@ -10,11 +10,11 @@ public class Constants {
     public class DriveTrain {
 
         public static final double DEADBAND = 0.05;
-        public static final double SPEED_SENSITIVITY = 0.50;
+        public static final double SPEED_SENSITIVITY = 0.80;
         public static final double ROTATION_SENSITIVITY = 0.75;
-        public static final double ROTATION_SENSITIVITY_HIGH_GEAR = 0.25;
+        public static final double ROTATION_SENSITIVITY_HIGH_GEAR = 0.95;
         public static final double ROTATION_SENSITIVITY_LOW_GEAR = 0.25;
-        public static final double TURNING_SENSITIVITY_HIGH_GEAR = 0.75;
+        public static final double TURNING_SENSITIVITY_HIGH_GEAR = 0.95;
         public static final double TURNING_SENSITIVITY_LOW_GEAR = 0.75;
 
         public static final double LEFT_RATIO = 1.090909090909;
@@ -101,7 +101,7 @@ public class Constants {
     public class Arm {
         public static final double MAX_INTAKE_SPEED = 0.3;
         public static final double SENSITIVITY = 0.5;
-        public static final double DEADBAND = 0.1;
+        public static final double DEADBAND = 0.4;
         public static final double MAX_DRIVE_SPEED = 0.75;
         public static final boolean MOTOR_INVERTED = true;
         public static final int SHOULDER_STALL_LIMIT = 10;

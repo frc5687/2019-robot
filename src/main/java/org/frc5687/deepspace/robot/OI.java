@@ -100,7 +100,7 @@ public class OI extends OutliersProxy {
     public void initializeButtons(Robot robot){
 
 
-        _driverStartButton.whenPressed(new AutoClimb(robot.getStilt(), robot.getArm(), robot.getDriveTrain()));
+        _driverStartButton.whenPressed(new AutoClimb(robot.getStilt(), robot.getArm(), robot.getDriveTrain(), robot.getCargoIntake(), robot.getHatchIntake()));
 //        _driverBackButton.whenPressed(new CloseSpear(robot.getSpear()));
 
         //_operatorStartButton.whenPressed(new StartGripper(robot.getGripper()));

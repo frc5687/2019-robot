@@ -128,8 +128,6 @@ public class Constants {
         public static final double DEGREES_PER_TICK = 90.0 / 70.0;
 
         public static final double STOWED_ANGLE = 0.0;
-        public static final double CONTACT_ANGLE = 95.0;
-        public static final double BOTTOM_ANGLE = 180.0;
     }
 
     public class Lights {
@@ -194,19 +192,27 @@ public class Constants {
             public static final double RAISE_STILT_SPEED = -0.2;
 
             public static final double ARM_SPEED = 0.4;
+            public static final double ARM_SLOW_SPEED = 0.2;
             public static final double ARM_HOLD_SPEED = 0.0;
             public static final double RAISE_ARM_SPEED = -0.2;
+
+            public static final double CONTACT_ANGLE = 95.0;
+            public static final double SLOW_ANGLE = 165.0;
+            public static final double BOTTOM_ANGLE = 175.0;
 
             public static final double ARM_RETRACT_ANGLE = 165.0;
 
             public static final double INITIAL_ARM_SPEED = 0.6;
 
-            public static final double WHEELIE_FORWARD_SPEED = 0.6;
+            public static final double WHEELIE_FORWARD_SPEED = 1.0;
 
             public static final double DRIVE_FORWARD_SPEED = 0.2;
 
             public static final double PARK_SPEED = 0.01;
             public static final double PARK_DISTANCE = 18;
+
+            public static final long STILT_TIMEOUT = 2000;
+
         }
     }
 }

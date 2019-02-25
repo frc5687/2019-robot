@@ -103,7 +103,7 @@ public class OI extends OutliersProxy {
 
 
         _driverStartButton.whenPressed(new AutoClimb(robot.getStilt(), robot.getArm(), robot.getDriveTrain()));
-        _driverBackButton.whenPressed(new CloseSpear(robot.getSpear()));
+//        _driverBackButton.whenPressed(new CloseSpear(robot.getSpear()));
 
         //_operatorStartButton.whenPressed(new StartGripper(robot.getGripper()));
         //_operatorBackButton.whenPressed(new StopGripper(robot.getGripper()));

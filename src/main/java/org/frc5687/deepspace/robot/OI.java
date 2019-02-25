@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.buttons.Button;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import org.frc5687.deepspace.robot.commands.*;
+import org.frc5687.deepspace.robot.commands.intake.*;
 import org.frc5687.deepspace.robot.subsystems.Arm;
 import org.frc5687.deepspace.robot.subsystems.Elevator;
 import org.frc5687.deepspace.robot.subsystems.Shifter;
@@ -104,8 +105,8 @@ public class OI extends OutliersProxy {
         _driverStartButton.whenPressed(new AutoClimb(robot.getStilt(), robot.getArm(), robot.getDriveTrain()));
         _driverBackButton.whenPressed(new CloseSpear(robot.getSpear()));
 
-        _operatorStartButton.whenPressed(new StartGripper(robot.getGripper()));
-        _operatorBackButton.whenPressed(new StopGripper(robot.getGripper()));
+        //_operatorStartButton.whenPressed(new StartGripper(robot.getGripper()));
+        //_operatorBackButton.whenPressed(new StopGripper(robot.getGripper()));
 
 //        _operatorStartButton.whenPressed(new WristUp(robot,robot.getWrist()));
 //        _operatorBackButton.whenReleased(new WristDown(robot, robot.getWrist()));
@@ -120,8 +121,8 @@ public class OI extends OutliersProxy {
         _operatorRightTrigger.whenPressed(new Intake(robot));
         //_operatorLeftTrigger.whileHeld(new HoldSpearOpen(robot));
 
-        _driverRightTrigger.whenPressed(new EjectCargo(robot));
-        _driverLeftTrigger.whileHeld(new HoldSpearOpen(robot));
+        _driverRightTrigger.whenPressed(new RunIntake(robot, robot.getIntake()));
+        _driverLeftTrigger.whenPressed(new StopRoller(robot.getIntake()));
 
 
 //        _operatorUpButton.whenPressed(new Manual(robot));
@@ -129,8 +130,8 @@ public class OI extends OutliersProxy {
 //        _driverUpButton.whenPressed(new Manual(robot));
 //        _driverDownButton.whenPressed(new CancelAuto(robot));
 
-        _operatorRightXAxisLeftButton.whenPressed(new WristDown(robot, robot.getWrist()));
-        _operatorRightXAxisRightButton.whenPressed(new WristUp(robot, robot.getWrist()));
+        _operatorRightXAxisLeftButton.whenPressed(new WristDown(robot));
+        _operatorRightXAxisRightButton.whenPressed(new WristUp(robot));
 
 
         _operatorAButton.whenPressed(new MoveElevatorToSetPoint(robot.getElevator(), Elevator.Setpoint.Hatch1, Elevator.MotionMode.Ramp));
@@ -138,10 +139,10 @@ public class OI extends OutliersProxy {
         _operatorYButton.whenPressed(new MoveElevatorToSetPoint(robot.getElevator(), Elevator.Setpoint.Hatch3, Elevator.MotionMode.Ramp));
         _operatorXButton.whenPressed(new MoveElevatorToSetPoint(robot.getElevator(), Elevator.Setpoint.HPMode, Elevator.MotionMode.Ramp));
 
-        _driverYButton.whenPressed(new MoveArmToSetPoint(robot.getArm(), Arm.Setpoint.Floor, Arm.HallEffectSensor.LOW, Arm.MotionMode.Simple));
-        _driverBButton.whenPressed(new MoveArmToSetPoint(robot.getArm(), Arm.Setpoint.Intake, Arm.HallEffectSensor.INTAKE, Arm.MotionMode.Simple));
-        _driverXButton.whenPressed(new MoveArmToSetPoint(robot.getArm(), Arm.Setpoint.Secure, Arm.HallEffectSensor.SECURE, Arm.MotionMode.Simple));
-        _driverAButton.whenPressed(new MoveArmToSetPoint(robot.getArm(), Arm.Setpoint.Stowed, Arm.HallEffectSensor.STOWED, Arm.MotionMode.Simple));
+        //_driverYButton.whenPressed(new MoveArmToSetPoint(robot.getArm(), Arm.Setpoint.Floor, Arm.HallEffectSensor.LOW, Arm.MotionMode.Simple));
+        //_driverBButton.whenPressed(new MoveArmToSetPoint(robot.getArm(), Arm.Setpoint.Intake, Arm.HallEffectSensor.INTAKE, Arm.MotionMode.Simple));
+        //_driverXButton.whenPressed(new MoveArmToSetPoint(robot.getArm(), Arm.Setpoint.Secure, Arm.HallEffectSensor.SECURE, Arm.MotionMode.Simple));
+        //_driverAButton.whenPressed(new MoveArmToSetPoint(robot.getArm(), Arm.Setpoint.Stowed, Arm.HallEffectSensor.STOWED, Arm.MotionMode.Simple));
 
     }
     public double getDriveSpeed() {
@@ -161,9 +162,9 @@ public class OI extends OutliersProxy {
         return applySensitivityFactor(speed, Constants.Arm.SENSITIVITY);
     }
     public double getRollerSpeed() {
-        double speed = getSpeedFromAxis(_operatorGamepad, Gamepad.Axes.LEFT_X.getNumber()) * Constants.Roller.MAX_SPEED;
-        speed = applyDeadband(speed, Constants.Roller.DEADBAND);
-        return applySensitivityFactor(speed, Constants.Roller.SENSITIVITY);
+        double speed = getSpeedFromAxis(_operatorGamepad, Gamepad.Axes.LEFT_X.getNumber()) * Constants.Intake.MAX_ROLLER_SPEED;
+        speed = applyDeadband(speed, Constants.Intake.DEADBAND);
+        return applySensitivityFactor(speed, Constants.Intake.SENSITIVITY);
     }
     public double getElevatorSpeed() {
         return 0;

@@ -2,18 +2,18 @@ package org.frc5687.deepspace.robot.commands.intake;
 
 import org.frc5687.deepspace.robot.Constants;
 import org.frc5687.deepspace.robot.commands.OutliersCommand;
-import org.frc5687.deepspace.robot.subsystems.Intake;
+import org.frc5687.deepspace.robot.subsystems.CargoIntake;
 
 import static org.frc5687.deepspace.robot.Constants.Intake.ROLLER_SPEED;
-import static org.frc5687.deepspace.robot.subsystems.Intake.RollerMode.DONE;
-import static org.frc5687.deepspace.robot.subsystems.Intake.RollerMode.WAITING;
+import static org.frc5687.deepspace.robot.subsystems.CargoIntake.RollerMode.DONE;
+import static org.frc5687.deepspace.robot.subsystems.CargoIntake.RollerMode.WAITING;
 
 public class StartRoller extends OutliersCommand {
-    private Intake _intake;
+    private CargoIntake _intake;
     private boolean _stopWhenSecured;
     private long _time;
 
-    public StartRoller(Intake intake, boolean stopWhenSecured) {
+    public StartRoller(CargoIntake intake, boolean stopWhenSecured) {
         _intake = intake;
         _stopWhenSecured = stopWhenSecured;
         requires(_intake);
@@ -21,13 +21,13 @@ public class StartRoller extends OutliersCommand {
     
     @Override
     protected void initialize() {
-        _intake.setRollerMode(Intake.RollerMode.RUNNING);
+        _intake.setRollerMode(CargoIntake.RollerMode.RUNNING);
         _intake.startRoller();
     }
 
     @Override
     protected void execute() {
-        Intake.RollerMode rollerMode = _intake.getRollerMode();
+        CargoIntake.RollerMode rollerMode = _intake.getRollerMode();
         switch(rollerMode) {
             case RUNNING:
                 _intake.run(ROLLER_SPEED);
@@ -46,7 +46,7 @@ public class StartRoller extends OutliersCommand {
 
     @Override
     protected void end() {
-        if (_intake.getRollerMode() == Intake.RollerMode.DONE) {
+        if (_intake.getRollerMode() == CargoIntake.RollerMode.DONE) {
             _intake.stopRoller();
         }
     }

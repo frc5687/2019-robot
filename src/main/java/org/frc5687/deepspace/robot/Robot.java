@@ -38,7 +38,8 @@ public class Robot extends TimedRobot implements ILoggingSource {
     private Lights _lights;
     private StatusProxy _status;
     private Stilt _stilt;
-    private Intake _intake;
+    private CargoIntake _cargoIntake;
+    private HatchIntake _hatchIntake;
 
     /**
      * This function is setRollerSpeed when the robot is first started up and should be
@@ -67,7 +68,8 @@ public class Robot extends TimedRobot implements ILoggingSource {
         _arm = new Arm(this);
         _elevator = new Elevator(this);
         _stilt = new Stilt(this);
-        _intake = new Intake (this);
+        _cargoIntake = new CargoIntake(this);
+        _hatchIntake = new HatchIntake(this);
 
         // Must initialize buttons AFTER subsystems are allocated...
         _oi.initializeButtons(this);
@@ -174,7 +176,8 @@ public class Robot extends TimedRobot implements ILoggingSource {
             _lights.updateDashboard();
             _status.updateDashboard();
             _stilt.updateDashboard();
-            _intake.updateDashboard();
+            _cargoIntake.updateDashboard();
+            _hatchIntake.updateDashboard();
         }
     }
 
@@ -271,7 +274,8 @@ public class Robot extends TimedRobot implements ILoggingSource {
     public Shifter getShifter() { return _shifter; }
     public Lights getLights() { return _lights; }
     public Stilt getStilt() { return _stilt; }
-    public Intake getIntake() { return _intake;}
+    public CargoIntake getCargoIntake() { return _cargoIntake;}
+    public HatchIntake getHatchIntake() { return _hatchIntake;}
 
 
 

@@ -13,7 +13,8 @@ public class KillAll extends OutliersCommand {
         requires(robot.getElevator());
         requires(robot.getDriveTrain());
         requires(robot.getStilt());
-        requires(robot.getIntake());
+        requires(robot.getCargoIntake());
+        requires(robot.getHatchIntake());
 
         _robot = robot;
     }

@@ -42,6 +42,11 @@ public class Constants {
         public static final long CLOSE_CLAW_MILLI_SEC = 40;
         public static final long CLAW_RAISE_WRIST_MILLI_SEC = 300;
         public static final long CLAW_LOWER_WRIST_MILLI_SEC = 300;
+
+
+        public static final long CARGO_EJECT_MILLIS = 200;
+        public static final double CARGO_EJECT_SPEED = -0.5;
+
     }
     public class Shifter {
         public static final long STOP_MOTOR_TIME = 60;

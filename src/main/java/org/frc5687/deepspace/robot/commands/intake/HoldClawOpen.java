@@ -2,20 +2,21 @@ package org.frc5687.deepspace.robot.commands.intake;
 
 import org.frc5687.deepspace.robot.Robot;
 import org.frc5687.deepspace.robot.commands.OutliersCommand;
-import org.frc5687.deepspace.robot.subsystems.Intake;
+import org.frc5687.deepspace.robot.subsystems.CargoIntake;
+import org.frc5687.deepspace.robot.subsystems.HatchIntake;
 
 public class HoldClawOpen extends OutliersCommand {
     private Robot _robot;
-    private Intake _intake;
+    private HatchIntake _hatchIntake;
 
     public HoldClawOpen(Robot robot) {
         _robot = robot;
-        _intake = robot.getIntake();
-        requires(_intake);
+        _hatchIntake = robot.getHatchIntake();
+        requires(_hatchIntake);
     }
     @Override
     protected void initialize() {
-        _intake.gripClaw();
+        _hatchIntake.pointClaw();
     }
 
     @Override
@@ -25,7 +26,7 @@ public class HoldClawOpen extends OutliersCommand {
 
     @Override
     protected void end() {
-            _intake.pointClaw();
+            _hatchIntake.gripClaw();
     }
 
     @Override

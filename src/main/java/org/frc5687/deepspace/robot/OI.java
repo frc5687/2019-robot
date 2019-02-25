@@ -6,7 +6,6 @@ import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import org.frc5687.deepspace.robot.commands.*;
 import org.frc5687.deepspace.robot.commands.intake.*;
 import org.frc5687.deepspace.robot.subsystems.Elevator;
-import org.frc5687.deepspace.robot.subsystems.Shifter;
 import org.frc5687.deepspace.robot.utils.AxisButton;
 import org.frc5687.deepspace.robot.utils.Gamepad;
 import org.frc5687.deepspace.robot.utils.OutliersProxy;
@@ -107,8 +106,8 @@ public class OI extends OutliersProxy {
         //_operatorStartButton.whenPressed(new StartGripper(robot.getGripper()));
         //_operatorBackButton.whenPressed(new StopGripper(robot.getGripper()));
 
-//        _operatorStartButton.whenPressed(new WristUp(robot,robot.getWrist()));
-//        _operatorBackButton.whenReleased(new WristDown(robot, robot.getWrist()));
+//        _operatorStartButton.whenPressed(new CargoIntakeUp(robot,robot.getWrist()));
+//        _operatorBackButton.whenReleased(new CargoIntakeDown(robot, robot.getWrist()));
 
         _operatorRightBumper.whenPressed(new ClawWristUp(robot));
         _operatorLeftBumper.whenPressed(new ClawWristDown(robot));
@@ -118,11 +117,11 @@ public class OI extends OutliersProxy {
         // _driverLeftBumper.whenPressed(new Shift(robot.getDriveTrain(), robot.getShifter(), Shifter.Gear.HIGH, false));
 
 //        _operatorRightTrigger.whenPressed(new Score(robot));
-        _operatorRightTrigger.whenPressed(new CargoIntake(robot));
+        _operatorRightTrigger.whenPressed(new IntakeCargo(robot));
         _operatorLeftTrigger.whileHeld(new HoldClawOpen(robot));
 
-        _driverRightTrigger.whenPressed(new RunIntake(robot, robot.getIntake()));
-        _driverLeftTrigger.whenPressed(new StopRoller(robot.getIntake()));
+        _driverRightTrigger.whenPressed(new RunIntake(robot, robot.getCargoIntake()));
+        _driverLeftTrigger.whenPressed(new StopRoller(robot.getCargoIntake()));
 
 
 //        _operatorUpButton.whenPressed(new Manual(robot));
@@ -130,8 +129,8 @@ public class OI extends OutliersProxy {
 //        _driverUpButton.whenPressed(new Manual(robot));
 //        _driverDownButton.whenPressed(new CancelAuto(robot));
 
-        _operatorRightXAxisLeftButton.whenPressed(new WristDown(robot));
-        _operatorRightXAxisRightButton.whenPressed(new WristUp(robot));
+        _operatorRightXAxisLeftButton.whenPressed(new CargoIntakeDown(robot));
+        _operatorRightXAxisRightButton.whenPressed(new CargoIntakeUp(robot));
 
 
         _operatorAButton.whenPressed(new MoveElevatorToSetPoint(robot.getElevator(), Elevator.Setpoint.Hatch1, Elevator.MotionMode.Ramp));

@@ -2,19 +2,20 @@ package org.frc5687.deepspace.robot.commands.intake;
 
 import org.frc5687.deepspace.robot.Constants;
 import org.frc5687.deepspace.robot.commands.OutliersCommand;
-import org.frc5687.deepspace.robot.subsystems.Intake;
+import org.frc5687.deepspace.robot.subsystems.CargoIntake;
+import org.frc5687.deepspace.robot.subsystems.HatchIntake;
 
 public class PointClaw extends OutliersCommand {
-    private Intake _intake;
+    private HatchIntake _hatchIntake;
     private long _startTime;
 
-    public PointClaw(Intake intake) {
-        _intake = intake;
-        requires(_intake);
+    public PointClaw(HatchIntake hatchIntake) {
+        _hatchIntake = hatchIntake;
+        requires(_hatchIntake);
     }
     @Override
     protected void initialize() {
-        _intake.gripClaw();
+        _hatchIntake.gripClaw();
         _startTime = System.currentTimeMillis();
     }
 

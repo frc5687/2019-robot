@@ -1,12 +1,12 @@
 package org.frc5687.deepspace.robot.commands.intake;
 
 import org.frc5687.deepspace.robot.commands.OutliersCommand;
-import org.frc5687.deepspace.robot.subsystems.Intake;
+import org.frc5687.deepspace.robot.subsystems.CargoIntake;
 
 public class StopRoller extends OutliersCommand {
-    private Intake _intake;
+    private CargoIntake _intake;
 
-    public StopRoller(Intake intake) {
+    public StopRoller(CargoIntake intake) {
         _intake = intake;
         requires(_intake);
     }

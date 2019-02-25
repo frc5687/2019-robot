@@ -3,15 +3,16 @@ package org.frc5687.deepspace.robot.commands.intake;
 import org.frc5687.deepspace.robot.Constants;
 import org.frc5687.deepspace.robot.Robot;
 import org.frc5687.deepspace.robot.commands.OutliersCommand;
-import org.frc5687.deepspace.robot.subsystems.Intake;
+import org.frc5687.deepspace.robot.subsystems.CargoIntake;
+import org.frc5687.deepspace.robot.subsystems.HatchIntake;
 
 public class ClawWristDown extends OutliersCommand {
-    private Intake _intake;
+    private HatchIntake _intake;
     private Robot _robot;
     private long _startTime;
 
     public ClawWristDown(Robot robot) {
-        _intake = robot.getIntake();
+        _intake = robot.getHatchIntake();
         _robot = robot;
         requires(_intake);
     }
@@ -25,6 +26,6 @@ public class ClawWristDown extends OutliersCommand {
     }
     @Override
     protected void execute(){
-        _intake.lowerClawWrist();
+        _intake.lowerWrist();
     }
 }

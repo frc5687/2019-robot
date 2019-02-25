@@ -85,11 +85,9 @@ public class MoveArmToSetPoint extends OutliersCommand {
                 return 1;
             case INTAKE:
                 if (_arm.isLow()) {return -1;}
-                if (_arm.isIntake()) {return 0;}
                 return 1;
             case SECURE:
                 if (_arm.isStowed()) {return 1;}
-                if (_arm.isSecured()) {return 0;}
                 return -1;
             case STOWED:
                 if (_arm.isStowed()) {return 0;}
@@ -108,16 +106,6 @@ public class MoveArmToSetPoint extends OutliersCommand {
         switch (_hallEffectSensor){
             case LOW:
                 if(_arm.isLow()){
-                    return true;
-                }
-                break;
-            case INTAKE:
-                if(_arm.isIntake()){
-                    return true;
-                }
-                break;
-            case SECURE:
-                if(_arm.isSecured()){
                     return true;
                 }
                 break;

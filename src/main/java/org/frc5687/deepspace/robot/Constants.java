@@ -99,21 +99,32 @@ public class Constants {
     }
 
     public class Arm {
-        public static final double MAX_INTAKE_SPEED = 0.3;
         public static final double SENSITIVITY = 0.5;
         public static final double DEADBAND = 0.1;
-        public static final double MAX_DRIVE_SPEED = 0.75;
-        public static final boolean MOTOR_INVERTED = true;
+
+        public static final double MAX_DRIVE_SPEED = 1;
+        public static final double HOLD_SPEED = 0.01;
+        public static final double STOW_SPEED = -0.2;
+
+        public static final boolean LEFT_MOTOR_INVERTED = true;
+        public static final boolean RIGHT_MOTOR_INVERTED = false;
+
         public static final int SHOULDER_STALL_LIMIT = 10;
         public static final int SHOULDER_FREE_LIMIT = 80;
+
         public static final double kI = 0;
         public static final double kP = 0.1;
         public static final double kD = 0;
         public static final double TOLERANCE = 2.0;
-        public static final double SPEED = 0.75;
-        public static final double SPEED_UP = 0.75;
-        public static final double SPEED_DOWN = 0.75;
+        public static final double SPEED = 1;
+        public static final double SPEED_UP = 1;
+        public static final double SPEED_DOWN = 1;
 
+        public static final double DEGREES_PER_TICK = 90.0 / 70.0;
+
+        public static final double STOWED_ANGLE = 0.0;
+        public static final double CONTACT_ANGLE = 95.0;
+        public static final double BOTTOM_ANGLE = 180.0;
     }
 
     public class Lights {
@@ -170,4 +181,27 @@ public class Constants {
     }
      */
 
+
+    public static class Auto {
+        public static class Climb {
+            public static final double STILT_SPEED = 0.55;
+            public static final double STILT_HOLD_SPEED = 0.4;
+            public static final double RAISE_STILT_SPEED = -0.2;
+
+            public static final double ARM_SPEED = 0.4;
+            public static final double ARM_HOLD_SPEED = 0.0;
+            public static final double RAISE_ARM_SPEED = -0.2;
+
+            public static final double ARM_RETRACT_ANGLE = 165.0;
+
+            public static final double INITIAL_ARM_SPEED = 0.6;
+
+            public static final double WHEELIE_FORWARD_SPEED = 0.6;
+
+            public static final double DRIVE_FORWARD_SPEED = 0.2;
+
+            public static final double PARK_SPEED = 0.01;
+            public static final double PARK_DISTANCE = 18;
+        }
+    }
 }

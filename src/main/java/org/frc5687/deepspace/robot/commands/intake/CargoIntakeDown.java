@@ -6,14 +6,12 @@ import org.frc5687.deepspace.robot.commands.OutliersCommand;
 import org.frc5687.deepspace.robot.subsystems.CargoIntake;
 
 public class CargoIntakeDown extends OutliersCommand {
-    private CargoIntake _intake;
-    private Robot _robot;
+    private CargoIntake _cargoIntake;
     private long _startTime;
 
-    public CargoIntakeDown(Robot robot) {
-        _intake = robot.getCargoIntake();
-        _robot = robot;
-        requires(_intake);
+    public CargoIntakeDown(CargoIntake cargoIntake) {
+        _cargoIntake = cargoIntake;
+        requires(_cargoIntake);
     }
     @Override
     protected boolean isFinished() {
@@ -25,6 +23,6 @@ public class CargoIntakeDown extends OutliersCommand {
         }
     @Override
     protected void execute(){
-        _intake.lowerWrist();
+        _cargoIntake.lowerWrist();
     }
 }

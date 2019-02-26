@@ -178,9 +178,10 @@ public class OI extends OutliersProxy {
     }
 
     public double getWheelieSpeed() {
-        double speed = getSpeedFromAxis(_operatorGamepad, Gamepad.Axes.LEFT_TRIGGER.getNumber());
-        speed = applyDeadband(speed, Constants.Stilt.DEADBAND);
-        return speed;
+        return 0;
+//        double speed = getSpeedFromAxis(_operatorGamepad, Gamepad.Axes.LEFT_TRIGGER.getNumber());
+//        speed = applyDeadband(speed, Constants.Stilt.DEADBAND);
+//        return speed;
     }
 
 

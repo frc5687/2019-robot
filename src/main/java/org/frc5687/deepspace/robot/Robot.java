@@ -1,5 +1,7 @@
 package org.frc5687.deepspace.robot;
 
+import com.kauailabs.navx.frc.AHRS;
+import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -28,6 +30,7 @@ public class Robot extends TimedRobot implements ILoggingSource {
     private int _updateTick = 0;
 
     private String _name;
+    private AHRS _imu;
     private OI _oi;
     private Limelight _limelight;
     private DriveTrain _driveTrain;
@@ -57,6 +60,7 @@ public class Robot extends TimedRobot implements ILoggingSource {
         _oi = new OI();
 
         // then proxies...
+        _imu = new AHRS(SPI.Port.kMXP, (byte) 100);
         _lights = new Lights(this);
         _status = new StatusProxy(this);
         _limelight = new Limelight("limelight");
@@ -270,6 +274,7 @@ public class Robot extends TimedRobot implements ILoggingSource {
     }
     public PDP getPDP() { return _pdp; }
     public Arm getArm() { return _arm; }
+    public AHRS getIMU() { return _imu; }
     public Elevator getElevator() { return _elevator; }
     public Shifter getShifter() { return _shifter; }
     public Lights getLights() { return _lights; }

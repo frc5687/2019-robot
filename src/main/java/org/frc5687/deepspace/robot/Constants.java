@@ -186,6 +186,12 @@ public class Constants {
 
 
     public static class Auto {
+        public static final double MIN_IMU_ANGLE = -180;
+        public static final double MAX_IMU_ANGLE = 180;
+
+        public static final double MAX_PITCH = 20.0;
+        public static final double MAX_ROLL = 20.0;
+        public static final double IR_THRESHOLD = 24.0;
         public static class Climb {
             public static final double STILT_SPEED = 0.55;
             public static final double STILT_HOLD_SPEED = 0.4;
@@ -212,6 +218,18 @@ public class Constants {
             public static final double PARK_DISTANCE = 18;
 
             public static final long STILT_TIMEOUT = 2000;
+
+        }
+        public static class AutoAlignWhileDriving {
+
+            public static final double SPEED = 1.0;
+
+            public static final double kP = 0.05;
+            public static final double kI = 0.000;
+            public static final double kD = 0.418;
+            public static final double TOLERANCE = 1; // 0.5
+            public static final double MINIMUM_SPEED = 0.2;
+            public static final double STEADY_TIME = 60;
 
         }
     }

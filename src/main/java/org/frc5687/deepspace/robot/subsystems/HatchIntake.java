@@ -7,7 +7,9 @@ import edu.wpi.first.wpilibj.DoubleSolenoid;
 import org.frc5687.deepspace.robot.Constants;
 import org.frc5687.deepspace.robot.Robot;
 import org.frc5687.deepspace.robot.RobotMap;
+import org.frc5687.deepspace.robot.commands.intake.GripClaw;
 import org.frc5687.deepspace.robot.commands.intake.HoldClawOpen;
+import org.frc5687.deepspace.robot.commands.intake.IdleHatchIntake;
 import org.frc5687.deepspace.robot.commands.intake.RunIntake;
 import org.frc5687.deepspace.robot.utils.Helpers;
 
@@ -49,7 +51,7 @@ public class HatchIntake extends OutliersSubsystem {
 
     @Override
     protected void initDefaultCommand() {
-        setDefaultCommand(new HoldClawOpen(_robot));
+        setDefaultCommand(new IdleHatchIntake(this));
     }
 }
 

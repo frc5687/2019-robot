@@ -230,7 +230,9 @@ public class Constants {
             public static final double TOLERANCE = 1; // 0.5
             public static final double MINIMUM_SPEED = 0.2;
             public static final double STEADY_TIME = 60;
-
+            public static final double TURN_SPEED = .5;
+            public static final double TOLORANCE = 1;
+            public static final double DEADBAND = .5;
         }
     }
 }

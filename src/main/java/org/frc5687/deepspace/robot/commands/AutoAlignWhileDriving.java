@@ -38,8 +38,6 @@ public class AutoAlignWhileDriving extends OutliersCommand {
     }
 
     protected void initialize() {
-        _driveTrain.resetDriveEncoders();
-
         double limeLightAngle = _limelight.getHorizontalAngle();
         double yawAngle = _imu.getYaw();
         _angleTarget = limeLightAngle + yawAngle;
@@ -75,7 +73,7 @@ public class AutoAlignWhileDriving extends OutliersCommand {
                 metric("angle/setpoint", _angleTarget);
             }
         }
-        _driveTrain.cheesyDrive(stickSpeed, _PIDOut);
+        _driveTrain.cheesyDrive(stickSpeed, _PIDOut, true);
     }
 
     protected boolean isFinished() {
@@ -85,7 +83,10 @@ public class AutoAlignWhileDriving extends OutliersCommand {
 
         return false;}
 
-    protected void end() {}
+    protected void end() {
+
+        _pidController.disable();
+    }
 
     private class PIDListener implements PIDOutput {
 

@@ -170,6 +170,11 @@ public class OI extends OutliersProxy {
         speed = applyDeadband(speed, Constants.Elevator.DEADBAND);
         return applySensitivityFactor(speed, Constants.Elevator.SENSITIVITY);
     }
+    public double getDriverRightYAxix() {
+        double speed = -getSpeedFromAxis(_operatorGamepad, Gamepad.Axes.RIGHT_Y.getNumber());
+        speed = applyDeadband(speed, Constants.Auto.AutoAlignWhileDriving.DEADBAND);
+        return speed;
+    }
     public double getStiltSpeed() {
         return 0;
 //        double speed = getSpeedFromAxis(_operatorGamepad, Gamepad.Axes.RIGHT_Y.getNumber())*Constants.Stilt.MAX_UP_SPEED;

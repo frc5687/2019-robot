@@ -12,21 +12,19 @@ import org.frc5687.deepspace.robot.utils.Helpers;
 
 import static org.frc5687.deepspace.robot.Constants.Intake.*;
 
-public class Intake extends OutliersSubsystem {
+public class CargoIntake extends OutliersSubsystem {
 
 
     private Robot _robot;
     private DoubleSolenoid _wristSolenoid;
-    private DoubleSolenoid _clawSolenoid;
     private TalonSRX _roller;
     private RollerMode _rollerMode;
     private boolean _forceOn;
     private AnalogInput _ballIR;
 
-    public Intake (Robot robot) {
+    public CargoIntake(Robot robot) {
         _robot = robot;
         _wristSolenoid = new DoubleSolenoid(RobotMap.PCM.WRIST_UP, RobotMap.PCM.WRIST_DOWN);
-        _clawSolenoid = new DoubleSolenoid(RobotMap.PCM.CLAW_OPEN, RobotMap.PCM.CLAW_CLOSE);
         try {
             _roller = new TalonSRX(RobotMap.CAN.TALONSRX.ROLLER);
             _roller.configPeakOutputForward(HIGH_POW, 0);
@@ -58,14 +56,6 @@ public class Intake extends OutliersSubsystem {
         metric("ForceOn", _forceOn);
     }
 
-    public void gripClaw(){
-         _clawSolenoid.set(DoubleSolenoid.Value.kForward);
-    }
-
-    public void pointClaw() {
-        _clawSolenoid.set(DoubleSolenoid.Value.kReverse);
-    }
-
     public void raiseWrist() {
         _wristSolenoid.set(DoubleSolenoid.Value.kReverse);
     }
@@ -76,7 +66,7 @@ public class Intake extends OutliersSubsystem {
 
     public void releaseWrist() { _wristSolenoid.set(DoubleSolenoid.Value.kOff); }
 
-    private void setRollerSpeed(double speed) {
+    public void setRollerSpeed(double speed) {
         speed = Helpers.limit(speed, Constants.Intake.MAX_ROLLER_SPEED);
         metric("Speed", speed);
         if (_roller == null) {

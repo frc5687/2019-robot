@@ -63,7 +63,7 @@ public class DriveTrain extends OutliersSubsystem {
             _rightMaster.setInverted(Constants.DriveTrain.RIGHT_MOTORS_INVERTED);
             _rightFollower.setInverted(Constants.DriveTrain.RIGHT_MOTORS_INVERTED);
 
-            enableBrakeMode();
+            disableBrakeMode();
 
             debug("Configuring followers");
             _leftFollower.follow(_leftMaster);

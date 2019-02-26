@@ -2,11 +2,12 @@ package org.frc5687.deepspace.robot.commands.intake;
 
 import org.frc5687.deepspace.robot.commands.OutliersCommand;
 import org.frc5687.deepspace.robot.subsystems.CargoIntake;
+import org.frc5687.deepspace.robot.subsystems.HatchIntake;
 
-public class WristRelease extends OutliersCommand {
-    public CargoIntake _intake;
+public class ClawWristRelease extends OutliersCommand {
+    public HatchIntake _intake;
 
-    public WristRelease(CargoIntake intake) {
+    public ClawWristRelease(HatchIntake intake) {
         _intake = intake;
         requires(_intake);
     }

@@ -133,7 +133,7 @@ public class DriveTrain extends OutliersSubsystem {
         setDefaultCommand(new Drive(this, _oi, _limelight, _imu));
     }
 
-    public void cheesyDrive(double speed, double rotation, boolean overridetranform) {
+    public void cheesyDrive(double speed, double rotation, boolean override) {
         if (!assertMotorControllers()) { return; }
         metric("Speed", speed);
         metric("Rotation", rotation);
@@ -150,7 +150,7 @@ public class DriveTrain extends OutliersSubsystem {
 
         if (speed < Constants.DriveTrain.DEADBAND && speed > -Constants.DriveTrain.DEADBAND) {
             metric("Rot/Raw", rotation);
-            if(!overridetranform){
+            if(!override){
                 rotation = applySensitivityFactor(rotation, _shifter.getGear()== Shifter.Gear.HIGH  ? Constants.DriveTrain.ROTATION_SENSITIVITY_HIGH_GEAR : Constants.DriveTrain.ROTATION_SENSITIVITY_LOW_GEAR);
             }
             metric("Rot/Transformed", rotation);
@@ -164,10 +164,11 @@ public class DriveTrain extends OutliersSubsystem {
             metric("Str/Raw", speed);
             speed = Math.copySign(applySensitivityFactor(speed, Constants.DriveTrain.SPEED_SENSITIVITY), speed);
             metric("Str/Trans", speed);
-            if(!overridetranform) {
+            if(!override) {
+                error("Using rotation");
                 rotation = applySensitivityFactor(rotation, _shifter.getGear() == Shifter.Gear.HIGH ? Constants.DriveTrain.TURNING_SENSITIVITY_HIGH_GEAR : Constants.DriveTrain.TURNING_SENSITIVITY_LOW_GEAR);
             }
-            double delta = rotation * Math.abs(speed);
+            double delta = override ? rotation : rotation * Math.abs(speed);
             leftMotorOutput = speed + delta;
             rightMotorOutput = speed - delta;
             metric("Str/LeftMotor", leftMotorOutput);

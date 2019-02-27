@@ -60,7 +60,7 @@ public class RioLogger {
         }
 
         if (log_open) {
-            System.out.println("Warning - log is already open!");
+            // System.out.println("Warning - log is already open!");
             return 0;
         }
 
@@ -110,7 +110,7 @@ public class RioLogger {
         StringBuilder line_to_write = new StringBuilder();
 
         if (log_open == false) {
-            System.out.println("Error - Log is not yet opened, cannot write!");
+            // System.out.println("Error - Log is not yet opened, cannot write!");
             return -1;
         }
 
@@ -148,7 +148,7 @@ public class RioLogger {
      */
     public int forceSync() {
         if (log_open == false) {
-            System.out.println("Error - Log is not yet opened, cannot sync!");
+            // System.out.println("Error - Log is not yet opened, cannot sync!");
             return -1;
         }
         try {
@@ -156,7 +156,7 @@ public class RioLogger {
         }
         // Catch ALL the errors!!!
         catch (IOException e) {
-            System.out.println("Error flushing IO stream file: " + e.getMessage());
+            // System.out.println("Error flushing IO stream file: " + e.getMessage());
             return -1;
         }
 

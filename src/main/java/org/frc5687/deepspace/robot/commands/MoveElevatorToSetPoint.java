@@ -19,7 +19,7 @@ public class MoveElevatorToSetPoint extends OutliersCommand {
     private Elevator _elevator;
     private Elevator.Setpoint _setpoint;
     private Elevator.MotionMode _mode;
-    private RampingState _rampingState;
+    private RampingState _rampingState = RampingState.Done;
     private double _position = 0;
 
     private double _pidOutput;
@@ -128,7 +128,7 @@ public class MoveElevatorToSetPoint extends OutliersCommand {
                 _rampingState = RampingState.Done;
                 metric("RampUp/RampedSpeed", 0);
                 return 0;
-            };
+            }
         } else if (_rampDirection < 0) {
             goalSpeed = SPEED_DOWN;
             if (_elevator.isAtBottom() || _position <= _setpoint.getValue() + TOLERANCE) {

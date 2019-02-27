@@ -43,10 +43,10 @@ public class Drive extends OutliersCommand {
         _pidController = new PIDController(kP, kI, kD, _imu, new PIDListener(), 0.1);
         _pidController.setInputRange(Constants.Auto.MIN_IMU_ANGLE, Constants.Auto.MAX_IMU_ANGLE);
         _pidController.setOutputRange(-TURN_SPEED, TURN_SPEED);
-        _pidController.setAbsoluteTolerance(TOLORANCE);
+        _pidController.setAbsoluteTolerance(TOLERANCE);
         _pidController.setContinuous();
         _pidController.setSetpoint(_angleTarget);
-        _pidController.enable();
+        // _pidController.enable();
 
     }
 
@@ -59,8 +59,11 @@ public class Drive extends OutliersCommand {
         double wheelRotation = _oi.getDriveRotation();
 
         double yAxisSpeed = _oi.getDriverRightYAxix();
-        error("not in AutoAlign");
-        if (yAxisSpeed > THRESHHOLD && _limelight.isTargetSighted()) {
+        metric("yAxisSpeed", yAxisSpeed);
+        metric("isTargetSIghted", _limelight.isTargetSighted());
+        metric("wheelROtation", wheelRotation);
+
+        if (yAxisSpeed > THRESHOLD  && Math.abs(wheelRotation) < Constants.DriveTrain.DEADBAND  && _limelight.isTargetSighted()) {
             error("Aligning to target!");
 
             double limeLightAngle = _limelight.getHorizontalAngle();
@@ -71,11 +74,21 @@ public class Drive extends OutliersCommand {
             metric("angle/startyaw", yawAngle);
             metric("angle/target", _angleTarget);
 
-            if (Math.abs(_angleTarget - _pidController.getSetpoint()) > TOLORANCE) {
+            if (Math.abs(_angleTarget - _pidController.getSetpoint()) > TOLERANCE) {
                 _pidController.setSetpoint(_angleTarget);
                 metric("angle/setpoint", _angleTarget);
             }
+            if (!_pidController.isEnabled()) {
+                error("enabling pid");
+                _pidController.enable();
+            }
             _driveTrain.cheesyDrive(stickSpeed, _PIDOut, true);
+            metric("PIDOut", _PIDOut);
+        } else {
+            error("not in AutoAlign: " + yAxisSpeed + ", " + wheelRotation + ", " + _limelight.isTargetSighted());
+            if (_pidController.isEnabled()) {
+                _pidController.disable();
+            }
         }
 
 

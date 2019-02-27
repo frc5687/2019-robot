@@ -34,15 +34,13 @@ public class Robot extends TimedRobot implements ILoggingSource {
     private DriveTrain _driveTrain;
     private Elevator _elevator;
     private PDP _pdp;
-    private Gripper _gripper;
-    private Spear _spear;
     private Arm _arm;
-    private Wrist _wrist;
-    private Roller _roller;
     private Shifter _shifter;
     private Lights _lights;
     private StatusProxy _status;
     private Stilt _stilt;
+    private CargoIntake _cargoIntake;
+    private HatchIntake _hatchIntake;
 
     /**
      * This function is setRollerSpeed when the robot is first started up and should be
@@ -56,25 +54,33 @@ public class Robot extends TimedRobot implements ILoggingSource {
         info("Starting " + this.getClass().getCanonicalName() + " from branch " + Version.BRANCH);
         info("Robot " + _name + " running in " + _identityMode.toString() + " mode");
 
+        // OI must be first...
         _oi = new OI();
+
+        // then proxies...
         _lights = new Lights(this);
         _status = new StatusProxy(this);
         _limelight = new Limelight("limelight");
+        _pdp = new PDP();
+
+        // Then subsystems....
         _shifter = new Shifter(this);
         _driveTrain = new DriveTrain(this);
         _arm = new Arm(this);
-        _roller = new Roller(this);
         _elevator = new Elevator(this);
         _stilt = new Stilt(this);
-        _pdp = new PDP();
-        _gripper= new Gripper(this);
-        _spear = new Spear(this);
-        _wrist = new Wrist(this);
+        _cargoIntake = new CargoIntake(this);
+        _hatchIntake = new HatchIntake(this);
+
+        // Must initialize buttons AFTER subsystems are allocated...
         _oi.initializeButtons(this);
+
+        // Initialize the other stuff
         // _limelight.disableLEDs();
         _limelight.setStreamingMode(Limelight.StreamMode.PIP_SECONDARY);
         _status.setConfiguration(Configuration.starting);
         _arm.resetEncoder();
+        _arm.resetEncoders();
         _arm.enableBrakeMode();
         _elevator.enableBrakeMode();
         _stilt.enableBrakeMode();
@@ -165,13 +171,14 @@ public class Robot extends TimedRobot implements ILoggingSource {
             _driveTrain.updateDashboard();
             _limelight.updateDashboard();
             _arm.updateDashboard();
-            _roller.updateDashboard();
             _elevator.updateDashboard();
             _pdp.updateDashboard();
             _shifter.updateDashboard();
             _lights.updateDashboard();
             _status.updateDashboard();
             _stilt.updateDashboard();
+            _cargoIntake.updateDashboard();
+            _hatchIntake.updateDashboard();
         }
     }
 
@@ -263,15 +270,13 @@ public class Robot extends TimedRobot implements ILoggingSource {
         return _limelight;
     }
     public PDP getPDP() { return _pdp; }
-    public Gripper getGripper() { return _gripper; }
-    public Spear getSpear() { return _spear; }
-    public Wrist getWrist() { return _wrist; }
-    public Roller getRoller() { return _roller; }
     public Arm getArm() { return _arm; }
     public Elevator getElevator() { return _elevator; }
     public Shifter getShifter() { return _shifter; }
     public Lights getLights() { return _lights; }
     public Stilt getStilt() { return _stilt; }
+    public CargoIntake getCargoIntake() { return _cargoIntake;}
+    public HatchIntake getHatchIntake() { return _hatchIntake;}
 
 
 

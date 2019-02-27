@@ -9,19 +9,44 @@ public class Constants {
 
     public class DriveTrain {
 
-        public static final double DEADBAND = 0.05;
-        public static final double SPEED_SENSITIVITY = 0.50;
+        public static final double DEADBAND = 0.1;
+        public static final double SPEED_SENSITIVITY = 0.80;
         public static final double ROTATION_SENSITIVITY = 0.75;
-        public static final double ROTATION_SENSITIVITY_HIGH_GEAR = 0.5;
-        public static final double ROTATION_SENSITIVITY_LOW_GEAR = 0.5;
-        public static final double TURNING_SENSITIVITY_HIGH_GEAR = 0.75;
-        public static final double TURNING_SENSITIVITY_LOW_GEAR = 0.75;
+        public static final double ROTATION_SENSITIVITY_HIGH_GEAR = 0.9;
+        public static final double ROTATION_SENSITIVITY_LOW_GEAR = 0.9;
+        public static final double TURNING_SENSITIVITY_HIGH_GEAR = 0.9;
+        public static final double TURNING_SENSITIVITY_LOW_GEAR = 0.9;
 
         public static final double LEFT_RATIO = 1.090909090909;
         public static final double RIGHT_RATIO = 1.090909090909;
 
         public static final boolean LEFT_MOTORS_INVERTED = true;
         public static final boolean RIGHT_MOTORS_INVERTED = false;
+    }
+    public class Intake {
+        //Roller
+        public static final double HIGH_POW = 1.0;
+        public static final double LOW_POW = -HIGH_POW;
+        public static final double ROLLER_SPEED = 0.5;
+        public static final double MAX_ROLLER_SPEED = 1.0;
+        public static final boolean MOTOR_INVERTED = false;
+        public static final double DEADBAND = 0.1;
+        public static final double SENSITIVITY = 0.5;
+        public static final long ROLLER_TIME_MILLI_SEC = 1000;
+        public static final int CARGO_DETECTED_THRESHOLD = 600;
+        //Wrist
+        public static final long RAISE_WRIST_MILLI_SEC = 500;
+        public static final long LOWER_WRIST_MILLI_SEC = 500;
+        //Claw
+        public static final long OPEN_CLAW_MILLI_SEC = 40;
+        public static final long CLOSE_CLAW_MILLI_SEC = 40;
+        public static final long CLAW_RAISE_WRIST_MILLI_SEC = 300;
+        public static final long CLAW_LOWER_WRIST_MILLI_SEC = 300;
+
+
+        public static final long CARGO_EJECT_MILLIS = 200;
+        public static final double CARGO_EJECT_SPEED = -0.5;
+
     }
     public class Shifter {
         public static final long STOP_MOTOR_TIME = 60;
@@ -32,27 +57,7 @@ public class Constants {
 
         public static final long AUTO_WAIT_PERIOD = 500;
         public static final long MANUAL_WAIT_PERIOD = 3000;
-    }
-    public class Wrist {
 
-        public static final long RAISE_MILLI_SEC = 500;
-        public static final long LOWER_MILLI_SEC = 500;
-    }
-
-    public class Gripper{
-        public static final double HIGH_POW = 1.0;
-        public static final double LOW_POW = -HIGH_POW;
-        public static final double VACUUM_SPEED = 1.0;
-        public static final boolean MOTOR_INVERTED =     false;
-        public static final double VACUUM_STOP = 0.0;
-        public static final double SECURED_AMP_MIN = 3.0;
-        public static final double SECURED_AMP_MAX = 4.5;
-        public static final long STARTUP_DELAY = 250;
-    }
-    public class Spear {
-
-        public static final long OPEN_MILLI_SEC = 40;
-        public static final long CLOSE_MILLI_SEC = 40;
     }
 
     public static class Elevator {
@@ -95,34 +100,34 @@ public class Constants {
         public static final double AXIS_BUTTON_THRESHHOLD = 0.2;
         public static final long RUMBLE_MILLIS = 250;
         public static final double RUMBLE_INTENSITY = 1.0;
-    }
 
-    public class Roller {
-        public static final double MAX_SPEED = 1.0;
-        public static final boolean MOTOR_INVERTED = false;
-        public static final double DEADBAND = 0.1;
-        public static final double SENSITIVITY = 0.5;
-        public static final double INTAKE_SPEED = 1.0;
-        public static final long TIME_MILLI_SEC = 1000;
-        public static final int CARGO_DETECTED_THRESHOLD = 2000;
     }
 
     public class Arm {
-        public static final double MAX_INTAKE_SPEED = 0.3;
         public static final double SENSITIVITY = 0.5;
-        public static final double DEADBAND = 0.1;
-        public static final double MAX_DRIVE_SPEED = 0.75;
-        public static final boolean MOTOR_INVERTED = true;
+        public static final double DEADBAND = 0.4;
+
+        public static final double MAX_DRIVE_SPEED = 1;
+        public static final double HOLD_SPEED = 0.01;
+        public static final double STOW_SPEED = -0.2;
+
+        public static final boolean LEFT_MOTOR_INVERTED = true;
+        public static final boolean RIGHT_MOTOR_INVERTED = false;
+
         public static final int SHOULDER_STALL_LIMIT = 10;
         public static final int SHOULDER_FREE_LIMIT = 80;
+
         public static final double kI = 0;
         public static final double kP = 0.1;
         public static final double kD = 0;
         public static final double TOLERANCE = 2.0;
-        public static final double SPEED = 0.75;
-        public static final double SPEED_UP = 0.75;
-        public static final double SPEED_DOWN = 0.75;
+        public static final double SPEED = 1;
+        public static final double SPEED_UP = 1;
+        public static final double SPEED_DOWN = 1;
 
+        public static final double DEGREES_PER_TICK = 90.0 / 70.0;
+
+        public static final double STOWED_ANGLE = 0.0;
     }
 
     public class Lights {
@@ -160,10 +165,11 @@ public class Constants {
 
     }
     public class Stilt {
-        public static final double MAX_Stilt_SPEED = 0.25;
+        public static final boolean MOTOR_INVERTED = false;
         public static final double SENSITVITY = 0.1;
         public static final double DEADBAND = 0.1;
-        public static final boolean MOTOR_INVERTED = false;
+        public static final double MAX_UP_SPEED= 0.5;
+        public static final double MAX_DOWN_SPEED = 0.4;
         public static final double STILT_HOLD_SPEED = 0.07;
     }
 
@@ -181,4 +187,35 @@ public class Constants {
     }
      */
 
+
+    public static class Auto {
+        public static class Climb {
+            public static final double STILT_SPEED = 0.55;
+            public static final double STILT_HOLD_SPEED = 0.4;
+            public static final double RAISE_STILT_SPEED = -0.2;
+
+            public static final double ARM_SPEED = 0.4;
+            public static final double ARM_SLOW_SPEED = 0.2;
+            public static final double ARM_HOLD_SPEED = 0.0;
+            public static final double RAISE_ARM_SPEED = -0.2;
+
+            public static final double CONTACT_ANGLE = 95.0;
+            public static final double SLOW_ANGLE = 165.0;
+            public static final double BOTTOM_ANGLE = 175.0;
+
+            public static final double ARM_RETRACT_ANGLE = 165.0;
+
+            public static final double INITIAL_ARM_SPEED = 0.6;
+
+            public static final double WHEELIE_FORWARD_SPEED = 1.0;
+
+            public static final double DRIVE_FORWARD_SPEED = 0.2;
+
+            public static final double PARK_SPEED = 0.01;
+            public static final double PARK_DISTANCE = 18;
+
+            public static final long STILT_TIMEOUT = 2000;
+
+        }
+    }
 }

@@ -9,21 +9,25 @@ import org.frc5687.deepspace.robot.Robot;
 import org.frc5687.deepspace.robot.RobotMap;
 import org.frc5687.deepspace.robot.commands.DriveArm;
 import org.frc5687.deepspace.robot.utils.HallEffect;
-import org.frc5687.deepspace.robot.utils.Helpers;
+import static org.frc5687.deepspace.robot.Constants.Arm.*;
+import static org.frc5687.deepspace.robot.utils.Helpers.*;
 
 public class Arm extends OutliersSubsystem implements PIDSource {
 
-    private CANSparkMax _arm;
+    private CANSparkMax _leftSpark;
+    private CANSparkMax _rightSpark;
 
-    private CANEncoder _shoulderEncoder;
-    
-    private HallEffect _lowHall;
-    private HallEffect _intakeHall;
-    private HallEffect _secureHall;
-    private HallEffect _stowedHall;
+    private CANEncoder _leftEncoder;
+    private CANEncoder _rightEncoder;
+
+    private HallEffect _rightStowedhall;
+    private HallEffect _leftStowedhall;
+    private HallEffect _rightLowhall;
+    private HallEffect _leftLowhall;
 
 
-    private double _offset = 0;
+    private double _leftOffset = 0;
+    private double _rightOffset = 0;
 
     // Need private double _pidOut
     private double _pidOut;
@@ -32,54 +36,68 @@ public class Arm extends OutliersSubsystem implements PIDSource {
         _robot = robot;
 
         try {
-            _arm = new CANSparkMax(RobotMap.CAN.SPARKMAX.ARM, CANSparkMaxLowLevel.MotorType.kBrushless);
-            _arm.setInverted(Constants.Arm.MOTOR_INVERTED);
-            _arm.setSmartCurrentLimit(Constants.Arm.SHOULDER_STALL_LIMIT, Constants.Arm.SHOULDER_FREE_LIMIT);
+            _leftSpark = new CANSparkMax(RobotMap.CAN.SPARKMAX.LEFT_ARM, CANSparkMaxLowLevel.MotorType.kBrushless);
+            _rightSpark = new CANSparkMax(RobotMap.CAN.SPARKMAX.RIGHT_ARM, CANSparkMaxLowLevel.MotorType.kBrushless);
 
-            _shoulderEncoder = _arm.getEncoder();
+
+            _leftSpark.setInverted(Constants.Arm.LEFT_MOTOR_INVERTED);
+            _rightSpark.setInverted(Constants.Arm.RIGHT_MOTOR_INVERTED);
+
+            _leftSpark.setSmartCurrentLimit(Constants.Arm.SHOULDER_STALL_LIMIT, Constants.Arm.SHOULDER_FREE_LIMIT);
+            _rightSpark.setSmartCurrentLimit(Constants.Arm.SHOULDER_STALL_LIMIT, Constants.Arm.SHOULDER_FREE_LIMIT);
+
+            _leftEncoder = _leftSpark.getEncoder();
+            _rightEncoder  = _rightSpark.getEncoder();
         } catch (Exception e) {
             error("Unable to allocate arm controller: " + e.getMessage());
         }
 
-        _lowHall = new HallEffect(RobotMap.DIO.ARM_LOW_HALL);
-        _intakeHall = new HallEffect(RobotMap.DIO.ARM_INTAKE_HALL);
-        _secureHall = new HallEffect(RobotMap.DIO.ARM_SECURE_HALL);
-        _stowedHall = new HallEffect(RobotMap.DIO.ARM_STOWED_HALL);
+        _rightStowedhall = new HallEffect(RobotMap.DIO.ARM_RIGHT_STOWED_HALL);
+        _leftStowedhall = new HallEffect(RobotMap.DIO.ARM_LEFT_STOWED_HALL);
+        _rightLowhall = new HallEffect(RobotMap.DIO.ARM_RIGHT_LOW_HALL);
+        _leftLowhall = new HallEffect(RobotMap.DIO.ARM_LEFT_LOW_HALL);
 
     }
 
     public void enableBrakeMode() {
-        if (_arm==null) { return; }
-        _arm.setIdleMode(CANSparkMax.IdleMode.kBrake);
+        if (_leftSpark ==null) { return; }
+        _leftSpark.setIdleMode(CANSparkMax.IdleMode.kBrake);
+        _rightSpark.setIdleMode(CANSparkMax.IdleMode.kBrake);
     }
 
     public void enableCoastMode() {
-        if (_arm==null) { return; }
-        _arm.setIdleMode(CANSparkMax.IdleMode.kCoast);
+        if (_leftSpark ==null) { return; }
+        _leftSpark.setIdleMode(CANSparkMax.IdleMode.kCoast);
+        _rightSpark.setIdleMode(CANSparkMax.IdleMode.kCoast);
     }
 
     public void setSpeed(double speed) {
-        if (_arm==null) { return; }
-        // speed = Helpers.limit(speed, Constants.Arm.MAX_DRIVE_SPEED);
-
-        metric("Speed", speed);
-        _arm.set(speed);
+        if (_leftSpark == null || _rightSpark==null) { return; }
+        setLeftSpeed(speed);
+        setRightSpeed(speed);
     }
 
-    public void drive(double desiredSpeed, boolean overrideCaps) {
-        double speed = desiredSpeed;
-        if (!overrideCaps) {
-            if (speed > 0 && isStowed()) {
-                speed = 0;
-            } else if (speed < 0 && isLow()) {
-                speed = 0;
-            }
-        }
-        metric("rawSpeed", desiredSpeed);
-        metric("speed", speed);
-        if (_arm==null) { return; }
-        _arm.set(speed);
+
+    public void setLeftSpeed(double speed) {
+        if (_leftSpark == null) { return; }
+        speed = limit(speed,
+                isLeftStowed() ? 0 : -MAX_DRIVE_SPEED ,
+                isLeftLow() ? HOLD_SPEED : MAX_DRIVE_SPEED);
+        metric("LeftSpeed", speed);
+        if(isLeftStowed()) { resetLeftEncoder(); }
+        _leftSpark.set(speed);
     }
+
+    public void setRightSpeed(double speed) {
+        if (_rightSpark == null) { return; }
+        speed = limit(speed,
+                isRightStowed() ? 0 : -MAX_DRIVE_SPEED ,
+                isRightLow() ? HOLD_SPEED : MAX_DRIVE_SPEED);
+        metric("RightSpeed", speed);
+        if(isRightStowed()) { resetRightEncoder(); }
+        _rightSpark.set(speed);
+    }
+
 
     @Override
     protected void initDefaultCommand() {
@@ -88,21 +106,45 @@ public class Arm extends OutliersSubsystem implements PIDSource {
 
     @Override
     public void updateDashboard() {
-        metric("LowHall", _lowHall.get());
-        metric("IntakeHall", _intakeHall.get());
-        metric("SecureHall", _secureHall.get());
-        metric("StowedHall", _stowedHall.get());
-        if (_shoulderEncoder==null) { return; }
-        metric("Encoder", getPosition());
+        metric("LowRightHall", _rightLowhall.get());
+        metric("LowLeftHall", _leftLowhall.get());
+        metric("StowedRightHall", _rightStowedhall.get());
+        metric("StowedLeftHall", _leftStowedhall.get());
+        metric("LeftEncoder", getLeftPosition());
+        metric("RightEncoder", getRightPosition());
+        metric("Position", getPosition());
+        metric("Angle", getAngle());
     }
 
-    public boolean isStowed() { return _stowedHall.get(); }
+    public boolean isStowed() {
+        return isLeftStowed() || isRightStowed();
 
-    public boolean isIntake() { return _intakeHall.get(); }
+    }
 
-    public boolean isSecured() { return _secureHall.get(); }
+    public boolean isRightStowed() {
+        return _rightStowedhall.get();
 
-    public boolean isLow() { return _lowHall.get(); }
+    }
+
+    public boolean isLeftStowed() {
+        return _leftStowedhall.get();
+
+    }
+
+    public boolean isRightLow() {
+        return _rightLowhall.get();
+
+    }
+
+    public boolean isLeftLow() {
+        return _leftLowhall.get();
+
+    }
+
+
+    public boolean isLow() {
+        return isLeftLow() || isRightLow();
+    }
 
     @Override
     public void setPIDSourceType(PIDSourceType pidSource) {
@@ -118,46 +160,70 @@ public class Arm extends OutliersSubsystem implements PIDSource {
         return getPosition();
     }
 
-
     public double getPosition() {
-        return _shoulderEncoder.getPosition() - _offset;
+        return (getLeftPosition() + getRightPosition())/2;
+    }
+
+    public double getLeftPosition() {
+        return _leftEncoder.getPosition() - _leftOffset;
+    }
+
+    public double getRightPosition() {
+        return _rightEncoder.getPosition() - _rightOffset;
+    }
+
+    public void resetEncoders() {
+        resetLeftEncoder();
+        resetRightEncoder();
+    }
+
+    public void resetLeftEncoder() {
+        _leftOffset = _leftEncoder.getPosition();
+    }
+
+    public void resetRightEncoder() {
+        _rightOffset = _rightEncoder.getPosition();
     }
 
     public void resetEncoder() {
         //_offset = _shoulderEncoder.getPosition();
-        DriverStation.reportError("Resetting arm offset to " + _offset , false);
+        //DriverStation.reportError("Resetting arm offset to " + _offset, false);
     }
-
-    public enum HallEffectSensor {
-        LOW,
-        INTAKE,
-        SECURE,
-        STOWED
-    }
-
-    public enum Setpoint {
-        Stowed(0),
-        Secure(45),
-        Intake(80),
-        Handoff(100),
-        Floor(110),
-        Climb(120);
-
-        private int _value;
-
-        Setpoint(int value) {
-            this._value = value;
+        public double getAngle () {
+            return Constants.Arm.STOWED_ANGLE + (getPosition() * Constants.Arm.DEGREES_PER_TICK);
         }
 
-        public int getValue() {
-            return _value;
+
+        public enum HallEffectSensor {
+            LOW,
+            INTAKE,
+            SECURE,
+            STOWED
         }
 
-        public int getPosition() {
-            return _value;
-        }
+        public enum Setpoint {
+            Stowed(0),
+            Secure(45),
+            Intake(80),
+            Handoff(100),
+            Floor(110),
+            Climb(120);
 
-    }
+            private int _value;
+
+            Setpoint(int value) {
+                this._value = value;
+            }
+
+            public int getValue() {
+                return _value;
+            }
+
+            public int getPosition() {
+                return _value;
+            }
+
+        }
 
     public enum MotionMode {
         HallOnly(0),
@@ -176,7 +242,7 @@ public class Arm extends OutliersSubsystem implements PIDSource {
         }
 
     }
-
 }
+
 
 

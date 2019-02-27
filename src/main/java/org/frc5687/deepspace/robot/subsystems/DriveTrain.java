@@ -1,5 +1,6 @@
 package org.frc5687.deepspace.robot.subsystems;
 
+import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
@@ -13,6 +14,7 @@ import org.frc5687.deepspace.robot.Robot;
 import org.frc5687.deepspace.robot.RobotMap;
 import org.frc5687.deepspace.robot.commands.Drive;
 import org.frc5687.deepspace.robot.utils.IRDistanceSensor;
+import org.frc5687.deepspace.robot.utils.Limelight;
 
 import static org.frc5687.deepspace.robot.utils.Helpers.applySensitivityFactor;
 import static org.frc5687.deepspace.robot.utils.Helpers.limit;
@@ -33,6 +35,8 @@ public class DriveTrain extends OutliersSubsystem {
     private IRDistanceSensor _frontDistance;
 
     private OI _oi;
+    private Limelight _limelight;
+    private AHRS _imu;
 
     private double _leftOffset;
     private double _rightOffset;
@@ -46,6 +50,8 @@ public class DriveTrain extends OutliersSubsystem {
     public DriveTrain(Robot robot) {
         info("Constructing DriveTrain class.");
         _oi = robot.getOI();
+        _limelight = robot.getLimelight();
+        _imu = robot.getIMU();
         _shifter = robot.getShifter();
 
         _frontDistance = new IRDistanceSensor(RobotMap.Analog.FRONT_IR, IRDistanceSensor.Type.MEDIUM);
@@ -124,7 +130,7 @@ public class DriveTrain extends OutliersSubsystem {
 
     @Override
     protected void initDefaultCommand() {
-        setDefaultCommand(new Drive(this, _oi));
+        setDefaultCommand(new Drive(this, _oi, _limelight, _imu));
     }
 
     public void cheesyDrive(double speed, double rotation, boolean overridetranform) {

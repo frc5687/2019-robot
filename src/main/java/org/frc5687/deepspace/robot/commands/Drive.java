@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.PIDOutput;
 import org.frc5687.deepspace.robot.Constants;
 import org.frc5687.deepspace.robot.OI;
+import org.frc5687.deepspace.robot.Robot;
 import org.frc5687.deepspace.robot.subsystems.DriveTrain;
 import org.frc5687.deepspace.robot.utils.Limelight;
 
@@ -23,9 +24,11 @@ public class Drive extends OutliersCommand {
     private double _angleTarget;
 
 
-    public Drive(DriveTrain driveTrain, OI oi) {
+    public Drive(DriveTrain driveTrain, OI oi, Limelight limelight, AHRS imu) {
         _driveTrain = driveTrain;
         _oi = oi;
+        _limelight = limelight;
+        _imu = imu;
         requires(_driveTrain);
     }
     protected void initialize() {
@@ -54,8 +57,12 @@ public class Drive extends OutliersCommand {
 
         // Get the rotation from the tiller
         double wheelRotation = _oi.getDriveRotation();
+
         double yAxisSpeed = _oi.getDriverRightYAxix();
-        if (yAxisSpeed > DEADBAND && _limelight.isTargetSighted()) {
+        error("not in AutoAlign");
+        if (yAxisSpeed > THRESHHOLD && _limelight.isTargetSighted()) {
+            error("Aligning to target!");
+
             double limeLightAngle = _limelight.getHorizontalAngle();
             double yawAngle = _imu.getYaw();
             _angleTarget = limeLightAngle + yawAngle;
@@ -68,8 +75,9 @@ public class Drive extends OutliersCommand {
                 _pidController.setSetpoint(_angleTarget);
                 metric("angle/setpoint", _angleTarget);
             }
+            _driveTrain.cheesyDrive(stickSpeed, _PIDOut, true);
         }
-        _driveTrain.cheesyDrive(stickSpeed, _PIDOut, true);
+
 
         _driveTrain.cheesyDrive(stickSpeed, wheelRotation, false);
     }

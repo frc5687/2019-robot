@@ -232,7 +232,8 @@ public class Constants {
             public static final double STEADY_TIME = 60;
             public static final double TURN_SPEED = .5;
             public static final double TOLORANCE = 1;
-            public static final double DEADBAND = .5;
+            public static final double DEADBAND = .3;
+            public static final double THRESHHOLD = .5;
         }
     }
 }

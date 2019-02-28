@@ -100,7 +100,7 @@ public class OI extends OutliersProxy {
     }
     public void initializeButtons(Robot robot){
         _driverStartButton.whenPressed(new OpenSpear(robot.getSpear()));
-        _driverBackButton.whenPressed(new CloseSpear(robot.getSpear()));
+        _driverBackButton.whenPressed(new WristUp(robot, robot.getWrist()));
 
         _operatorStartButton.whenPressed(new StartGripper(robot.getGripper()));
         _operatorBackButton.whenPressed(new StopGripper(robot.getGripper()));
@@ -139,7 +139,7 @@ public class OI extends OutliersProxy {
 //        _driverYButton.whenPressed(new MoveArmToSetPoint(robot.getArm(), Arm.Setpoint.Floor, Arm.HallEffectSensor.LOW, Arm.MotionMode.Simple));
 //        _driverBButton.whenPressed(new MoveArmToSetPoint(robot.getArm(), Arm.Setpoint.Intake, Arm.HallEffectSensor.INTAKE, Arm.MotionMode.Simple));
 //        _driverXButton.whenPressed(new MoveArmToSetPoint(robot.getArm(), Arm.Setpoint.Secure, Arm.HallEffectSensor.SECURE, Arm.MotionMode.Simple));
-        _driverAButton.whenPressed(new AutoDriveToTarget(robot,0.2, 1,"debug"));
+        _driverAButton.whenPressed(new AutoDriveToTarget(robot,0.3, 1,"debug"));
 
     }
     public boolean isAutoTargetPressed() {return _driverAButton.get();}

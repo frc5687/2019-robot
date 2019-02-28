@@ -156,8 +156,8 @@ public class AutoDriveToTarget extends OutliersCommand {
             if (_forwardSpeed < 0.05 & _forwardSpeed > 0) {
                 _forwardSpeed = 0;
             }
-            if (_forwardSpeed > 0.35) {
-                _forwardSpeed = 0.35;
+            if (_forwardSpeed > 0.6) {
+                _forwardSpeed = 0.6;
             }
         }
 

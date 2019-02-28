@@ -148,9 +148,13 @@ public class AutoDriveToTarget extends OutliersCommand {
             }
 
             double targetArea = _limelight.getTargetArea();
-            _forwardSpeed = (TARGET_AREA - targetArea) * _speed;
             if (targetArea >= TARGET_AREA) {
                 _forwardSpeed = 0;
+            } else {
+                _forwardSpeed = (TARGET_AREA - targetArea) * _speed;
+            }
+            if (_forwardSpeed > MAX_SPEED) {
+                _forwardSpeed = MAX_SPEED;
             }
 
             metric("targetArea", targetArea);
@@ -171,6 +175,7 @@ public class AutoDriveToTarget extends OutliersCommand {
     }
     @Override
     protected boolean isFinished() {
+        if (!_limelight.isTargetSighted()) { return true; }
         if (_limelight.getTargetArea() > 6.5 && _limelight.getTargetArea() < 8) { return true; }
         if (_aborted) { return true; }
 

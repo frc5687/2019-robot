@@ -134,7 +134,7 @@ public class Constants {
         }
         public class DriveToTarget {
 
-            public static final double TURN_SPEED = 0.1;
+            public static final double TURN_SPEED = 0.15;
 
             public static final double kPAngle = 0.005;
             public static final double kIAngle = 0.00;
@@ -148,7 +148,7 @@ public class Constants {
             public static final double DISTANCE_TOLERANCE = .5;
 
             public static final double MAX_SPEED = .7;
-            public static final double DESIRED_TARGET_AREA = 7;
+            public static final double DESIRED_TARGET_AREA = 5;
         }
         public class Align {
             public static final double SPEED = 1.0;

@@ -27,6 +27,7 @@ public class AutoDriveToTarget extends OutliersCommand {
     private double _speed;
     private double _forwardSpeed;
     private double _currentTargetDistance;
+    private double _delta;
 
     private double _anglePIDOut;
     private double _distancePIDOut;
@@ -106,6 +107,7 @@ public class AutoDriveToTarget extends OutliersCommand {
 
     @Override
     protected void execute() {
+        _driveTrain.enableBrakeMode();
 //        boolean irMode = true;
 //
 //        _currentTargetDistance = _driveTrain.getFrontDistance();
@@ -131,9 +133,8 @@ public class AutoDriveToTarget extends OutliersCommand {
 //            _distanceController.setOutputRange(-0.3, 0.3);
 //            _distanceController.enable();
 //        }
-
-
         if (_limelight.isTargetSighted()) {
+            _limelight.enableLEDs();
             double limeLightAngle = _limelight.getHorizontalAngle();
             double yawAngle = _imu.getYaw();
             _angleTarget = limeLightAngle + yawAngle;
@@ -148,17 +149,23 @@ public class AutoDriveToTarget extends OutliersCommand {
             }
 
             double targetArea = _limelight.getTargetArea();
-            double delta = DESIRED_TARGET_AREA - targetArea;
-             // _forwardSpeed = (TARGET_AREA - targetArea) * _speed;
-            _forwardSpeed = calcSpeedByDeltaTargetArea(delta);
-
+            //_delta = DESIRED_TARGET_AREA - _limelight.getTargetArea();
+            _forwardSpeed = (DESIRED_TARGET_AREA - targetArea) * _speed;
+            //metric("forwardSpeed", calcSpeedByDeltaTargetArea(_delta));
             metric("targetArea", targetArea);
+            if (_forwardSpeed < 0.05 & _forwardSpeed > 0) {
+                _forwardSpeed = 0;
+            }
+            if (_forwardSpeed > 0.35) {
+                _forwardSpeed = 0.35;
+            }
         }
 
 
 
         metric("angle/yaw", _imu.getYaw());
         metric("forwardSpeed", _forwardSpeed);
+        //metric("delta", _delta);
         //metric("distance/currentTargetDistance", _currentTargetDistance);
         metric("angle/PIDOut", _anglePIDOut);
         //metric("distance/PIDOut", _distancePIDOut);
@@ -171,7 +178,7 @@ public class AutoDriveToTarget extends OutliersCommand {
     @Override
     protected boolean isFinished() {
         if (!_limelight.isTargetSighted()) { return true; }
-        if (_limelight.getTargetArea() > 6.5 && _limelight.getTargetArea() < 8) { return true; }
+        if (_limelight.getTargetArea() > 5 && _limelight.getTargetArea() < 6) { return true; }
         if (_aborted) { return true; }
 
 //        if (_distanceController.onTarget()) {

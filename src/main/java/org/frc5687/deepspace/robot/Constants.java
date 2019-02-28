@@ -23,6 +23,7 @@ public class Constants {
         public static final boolean LEFT_MOTORS_INVERTED = true;
         public static final boolean RIGHT_MOTORS_INVERTED = false;
     }
+
     public class Intake {
         //Roller
         public static final double HIGH_POW = 1.0;
@@ -48,6 +49,7 @@ public class Constants {
         public static final double CARGO_EJECT_SPEED = -0.5;
 
     }
+
     public class Shifter {
         public static final long STOP_MOTOR_TIME = 60;
         public static final long SHIFT_TIME = 60;
@@ -90,12 +92,14 @@ public class Constants {
             public static final double kI = 0.0;
             public static final double kD = 0.0;
         }
+
         public static class Path {
             public static final double kP = 1.0;
             public static final double kI = 0.0;
             public static final double kD = 0.0;
         }
     }
+
     public static class OI {
         public static final double AXIS_BUTTON_THRESHHOLD = 0.2;
         public static final long RUMBLE_MILLIS = 250;
@@ -129,14 +133,43 @@ public class Constants {
 
         public static final double STOWED_ANGLE = 0.0;
     }
-    public class Auto {
+
+    public static class Auto {
 
         public static final double MIN_IMU_ANGLE = -180;
         public static final double MAX_IMU_ANGLE = 180;
-
         public static final double MAX_PITCH = 20.0;
         public static final double MAX_ROLL = 20.0;
-        public static final double IR_THRESHOLD = 24.0;
+
+
+        public static class Climb {
+            public static final double STILT_SPEED = 0.55;
+            public static final double STILT_HOLD_SPEED = 0.4;
+            public static final double RAISE_STILT_SPEED = -0.2;
+
+            public static final double ARM_SPEED = 0.4;
+            public static final double ARM_SLOW_SPEED = 0.2;
+            public static final double ARM_HOLD_SPEED = 0.0;
+            public static final double RAISE_ARM_SPEED = -0.2;
+
+            public static final double CONTACT_ANGLE = 95.0;
+            public static final double SLOW_ANGLE = 165.0;
+            public static final double BOTTOM_ANGLE = 175.0;
+
+            public static final double ARM_RETRACT_ANGLE = 165.0;
+
+            public static final double INITIAL_ARM_SPEED = 0.6;
+
+            public static final double WHEELIE_FORWARD_SPEED = 1.0;
+
+            public static final double DRIVE_FORWARD_SPEED = 0.2;
+
+            public static final double PARK_SPEED = 0.01;
+            public static final double PARK_DISTANCE = 18;
+
+            public static final long STILT_TIMEOUT = 2000;
+
+        }
 
         public class AlignToTarget {
             public static final double SPEED = 1.0;
@@ -149,6 +182,7 @@ public class Constants {
             public static final double STEADY_TIME = 60;
 
         }
+
         public class DriveToTarget {
 
             public static final double TURN_SPEED = 0.1;
@@ -167,6 +201,7 @@ public class Constants {
             public static final double MAX_SPEED = .7;
             public static final double DESIRED_TARGET_AREA = 5;
         }
+
         public class Align {
             public static final double SPEED = 1.0;
 
@@ -181,6 +216,7 @@ public class Constants {
              */
             public static final double STEADY_TIME = 60;
         }
+
         public class Drive {
             public static final double SPEED = 1.0;
 
@@ -209,10 +245,12 @@ public class Constants {
                 public static final double kP = 0.4;
                 public static final double kI = 0.006;
                 public static final double kD = 0.09;
+
                 public class kV {
                     public static final double MPS = 1.0 / MaxVel.MPS;
                     public static final double IPS = 1.0 / MaxVel.IPS;
                 }
+
                 public static final double PATH_TURN = 0.4; // 1.0
                 public static final double MAX_DIFFERENCE = 0.4;
                 public static final double TOLERANCE = .5;
@@ -251,11 +289,12 @@ public class Constants {
 
         public static final double CONFETTI = -0.87;
     }
+
     public class Stilt {
         public static final boolean MOTOR_INVERTED = false;
         public static final double SENSITVITY = 0.1;
         public static final double DEADBAND = 0.1;
-        public static final double MAX_UP_SPEED= 0.5;
+        public static final double MAX_UP_SPEED = 0.5;
         public static final double MAX_DOWN_SPEED = 0.4;
         public static final double STILT_HOLD_SPEED = 0.07;
     }
@@ -280,34 +319,4 @@ public class Constants {
      */
 
 
-    public static class Auto {
-        public static class Climb {
-            public static final double STILT_SPEED = 0.55;
-            public static final double STILT_HOLD_SPEED = 0.4;
-            public static final double RAISE_STILT_SPEED = -0.2;
-
-            public static final double ARM_SPEED = 0.4;
-            public static final double ARM_SLOW_SPEED = 0.2;
-            public static final double ARM_HOLD_SPEED = 0.0;
-            public static final double RAISE_ARM_SPEED = -0.2;
-
-            public static final double CONTACT_ANGLE = 95.0;
-            public static final double SLOW_ANGLE = 165.0;
-            public static final double BOTTOM_ANGLE = 175.0;
-
-            public static final double ARM_RETRACT_ANGLE = 165.0;
-
-            public static final double INITIAL_ARM_SPEED = 0.6;
-
-            public static final double WHEELIE_FORWARD_SPEED = 1.0;
-
-            public static final double DRIVE_FORWARD_SPEED = 0.2;
-
-            public static final double PARK_SPEED = 0.01;
-            public static final double PARK_DISTANCE = 18;
-
-            public static final long STILT_TIMEOUT = 2000;
-
-        }
-    }
 }

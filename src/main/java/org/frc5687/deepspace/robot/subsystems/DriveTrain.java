@@ -243,18 +243,6 @@ public class DriveTrain extends OutliersSubsystem implements PIDSource {
         _leftOffset = getLeftTicks();
         _rightOffset = getRightTicks();
     }
-    public void enableBrakeMode() {
-        try {
-            _leftMaster.setIdleMode(CANSparkMax.IdleMode.kBrake);
-            _rightMaster.setIdleMode(CANSparkMax.IdleMode.kBrake);
-            _leftFollower.setIdleMode(CANSparkMax.IdleMode.kBrake);
-            _rightFollower.setIdleMode(CANSparkMax.IdleMode.kBrake);
-
-        } catch (Exception e) {
-            RioLogger.error(this.getClass().getSimpleName(), "DriveTrain.enableBrakeMode exception: " + e.toString());
-        }
-        SmartDashboard.putString("DriveTrain/neutralMode", "Brake");
-    }
 
 
     public void enableCoastMode() {

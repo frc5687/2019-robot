@@ -148,14 +148,9 @@ public class AutoDriveToTarget extends OutliersCommand {
             }
 
             double targetArea = _limelight.getTargetArea();
-            if (targetArea >= TARGET_AREA) {
-                _forwardSpeed = 0;
-            } else {
-                _forwardSpeed = (TARGET_AREA - targetArea) * _speed;
-            }
-            if (_forwardSpeed > MAX_SPEED) {
-                _forwardSpeed = MAX_SPEED;
-            }
+            double delta = DESIRED_TARGET_AREA - targetArea;
+             // _forwardSpeed = (TARGET_AREA - targetArea) * _speed;
+            _forwardSpeed = calcSpeedByDeltaTargetArea(delta);
 
             metric("targetArea", targetArea);
         }
@@ -195,6 +190,22 @@ public class AutoDriveToTarget extends OutliersCommand {
         error("AutoDriveToTarget finished: angle=" + _imu.getYaw() + ", distance=" + _currentTargetDistance + ", time=" + (System.currentTimeMillis() - _startTimeMillis));
         //_distanceController.disable();
         _angleController.disable();
+    }
+    private double calcSpeedByDeltaTargetArea(double deltaTargetArea) {
+        double A = 0.14;
+        double B = 2;
+        double C = 4;
+        double D = 0.1;
+
+        double speed;
+        if(deltaTargetArea < 0) {
+            speed = 0;
+        } else if (Math.abs(deltaTargetArea) < D){
+            speed = 0;
+        } else {
+            speed = A * (Math.log(deltaTargetArea / B) + C);
+        }
+        return speed;
     }
 
     private class AngleListener implements PIDOutput {

@@ -147,8 +147,8 @@ public class Constants {
             public static final double ANGLE_TOLERANCE = .5;
             public static final double DISTANCE_TOLERANCE = .5;
 
-            public static final double TARGET_AREA = 6.5;
             public static final double MAX_SPEED = .7;
+            public static final double DESIRED_TARGET_AREA = 7;
         }
         public class Align {
             public static final double SPEED = 1.0;

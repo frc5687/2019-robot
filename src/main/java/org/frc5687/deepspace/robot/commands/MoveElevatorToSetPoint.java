@@ -19,7 +19,7 @@ public class MoveElevatorToSetPoint extends OutliersCommand {
     private Elevator _elevator;
     private Elevator.Setpoint _setpoint;
     private Elevator.MotionMode _mode;
-    private RampingState _rampingState;
+    private RampingState _rampingState = RampingState.Done;
     private double _position = 0;
 
     private double _pidOutput;

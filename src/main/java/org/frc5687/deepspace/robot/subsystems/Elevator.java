@@ -161,9 +161,9 @@ public class Elevator extends OutliersSubsystem implements PIDSource {
         Hatch1(2, HallEffectSensor.BOTTOM),
         Secure(450),
         ClearRoller(935),
-        HPMode(1450),
+        HPMode(1230),
         Port2(2168),
-        Hatch2(2169),
+        Hatch2(1954),
         Port3(4098, HallEffectSensor.TOP),
         Hatch3(4099, HallEffectSensor.TOP),
         Top(4100, HallEffectSensor.TOP);

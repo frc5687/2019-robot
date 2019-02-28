@@ -4,9 +4,8 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.buttons.Button;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import org.frc5687.deepspace.robot.commands.*;
-import org.frc5687.deepspace.robot.subsystems.Arm;
+import org.frc5687.deepspace.robot.commands.intake.*;
 import org.frc5687.deepspace.robot.subsystems.Elevator;
-import org.frc5687.deepspace.robot.subsystems.Shifter;
 import org.frc5687.deepspace.robot.utils.AxisButton;
 import org.frc5687.deepspace.robot.utils.Gamepad;
 import org.frc5687.deepspace.robot.utils.OutliersProxy;
@@ -99,27 +98,28 @@ public class OI extends OutliersProxy {
         // _operatorPOV = new POV();
     }
     public void initializeButtons(Robot robot){
-        _driverStartButton.whenPressed(new OpenSpear(robot.getSpear()));
-        _driverBackButton.whenPressed(new WristUp(robot, robot.getWrist()));
+        _driverStartButton.whenPressed(new AutoClimb(robot.getStilt(), robot.getArm(), robot.getDriveTrain(), robot.getCargoIntake(), robot.getHatchIntake()));
+//        _driverBackButton.whenPressed(new CloseSpear(robot.getSpear()));
 
-        _operatorStartButton.whenPressed(new StartGripper(robot.getGripper()));
-        _operatorBackButton.whenPressed(new StopGripper(robot.getGripper()));
+        //_operatorStartButton.whenPressed(new StartGripper(robot.getGripper()));
+        //_operatorBackButton.whenPressed(new StopGripper(robot.getGripper()));
 
-//        _operatorStartButton.whenPressed(new WristUp(robot,robot.getWrist()));
-//        _operatorBackButton.whenReleased(new WristDown(robot, robot.getWrist()));
+//        _operatorStartButton.whenPressed(new CargoIntakeUp(robot,robot.getWrist()));
+//        _operatorBackButton.whenReleased(new CargoIntakeDown(robot, robot.getWrist()));
 
-        _operatorRightBumper.whenPressed(new CargoMode(robot));
-        _operatorLeftBumper.whenPressed(new HatchMode(robot));
+        _operatorRightBumper.whenPressed(new ClawWristUp(robot));
+        _operatorLeftBumper.whenPressed(new ClawWristDown(robot));
 
-        _driverRightBumper.whenPressed(new Shift(robot.getDriveTrain(), robot.getShifter(), Shifter.Gear.LOW, false));
-        _driverLeftBumper.whenPressed(new Shift(robot.getDriveTrain(), robot.getShifter(), Shifter.Gear.HIGH, false));
+       // _driverRightBumper.whenPressed(new Shift(robot.getDriveTrain(), robot.getShifter(), Shifter.Gear.LOW, false));
+        //
+        // _driverLeftBumper.whenPressed(new Shift(robot.getDriveTrain(), robot.getShifter(), Shifter.Gear.HIGH, false));
 
 //        _operatorRightTrigger.whenPressed(new Score(robot));
-        _operatorRightTrigger.whenPressed(new Intake(robot));
-        _operatorLeftTrigger.whileHeld(new HoldSpearOpen(robot));
+        _operatorRightTrigger.whenPressed(new IntakeCargo(robot));
+        _operatorLeftTrigger.whileHeld(new HoldClawOpen(robot));
 
-        _driverRightTrigger.whenPressed(new EjectCargo(robot));
-        _driverLeftTrigger.whileHeld(new HoldSpearOpen(robot));
+        _driverRightTrigger.whenPressed(new RunIntake(robot, robot.getCargoIntake()));
+        _driverLeftTrigger.whenPressed(new StopRoller(robot.getCargoIntake()));
 
 
 //        _operatorUpButton.whenPressed(new Manual(robot));
@@ -127,14 +127,14 @@ public class OI extends OutliersProxy {
 //        _driverUpButton.whenPressed(new Manual(robot));
 //        _driverDownButton.whenPressed(new CancelAuto(robot));
 
-        _operatorRightXAxisLeftButton.whenPressed(new WristDown(robot, robot.getWrist()));
-        _operatorRightXAxisRightButton.whenPressed(new WristUp(robot, robot.getWrist()));
+        _operatorRightXAxisLeftButton.whenPressed(new CargoIntakeDown(robot.getCargoIntake()));
+        _operatorRightXAxisRightButton.whenPressed(new CargoIntakeUp(robot.getCargoIntake()));
 
 
-        _operatorAButton.whenPressed(new MoveElevatorToSetPoint(robot.getElevator(), Elevator.Setpoint.Hatch1, Elevator.MotionMode.PID));
-        _operatorBButton.whenPressed(new MoveElevatorToSetPoint(robot.getElevator(), Elevator.Setpoint.Hatch2, Elevator.MotionMode.PID));
-        _operatorYButton.whenPressed(new MoveElevatorToSetPoint(robot.getElevator(), Elevator.Setpoint.Hatch3, Elevator.MotionMode.PID));
-        _operatorXButton.whenPressed(new MoveElevatorToSetPoint(robot.getElevator(), Elevator.Setpoint.HPMode, Elevator.MotionMode.PID));
+        _operatorAButton.whenPressed(new MoveElevatorToSetPoint(robot.getElevator(), Elevator.Setpoint.Hatch1, Elevator.MotionMode.Ramp));
+        _operatorBButton.whenPressed(new MoveElevatorToSetPoint(robot.getElevator(), Elevator.Setpoint.Hatch2, Elevator.MotionMode.Ramp));
+        _operatorYButton.whenPressed(new MoveElevatorToSetPoint(robot.getElevator(), Elevator.Setpoint.Hatch3, Elevator.MotionMode.Ramp));
+        _operatorXButton.whenPressed(new MoveElevatorToSetPoint(robot.getElevator(), Elevator.Setpoint.HPMode, Elevator.MotionMode.Ramp));
 
 //        _driverYButton.whenPressed(new MoveArmToSetPoint(robot.getArm(), Arm.Setpoint.Floor, Arm.HallEffectSensor.LOW, Arm.MotionMode.Simple));
 //        _driverBButton.whenPressed(new MoveArmToSetPoint(robot.getArm(), Arm.Setpoint.Intake, Arm.HallEffectSensor.INTAKE, Arm.MotionMode.Simple));
@@ -161,21 +161,30 @@ public class OI extends OutliersProxy {
         return applySensitivityFactor(speed, Constants.Arm.SENSITIVITY);
     }
     public double getRollerSpeed() {
-        double speed = getSpeedFromAxis(_operatorGamepad, Gamepad.Axes.LEFT_X.getNumber()) * Constants.Roller.MAX_SPEED;
-        speed = applyDeadband(speed, Constants.Roller.DEADBAND);
-        return applySensitivityFactor(speed, Constants.Roller.SENSITIVITY);
+        double speed = getSpeedFromAxis(_operatorGamepad, Gamepad.Axes.LEFT_X.getNumber()) * Constants.Intake.MAX_ROLLER_SPEED;
+        speed = applyDeadband(speed, Constants.Intake.DEADBAND);
+        return applySensitivityFactor(speed, Constants.Intake.SENSITIVITY);
     }
     public double getElevatorSpeed() {
-        double speed = -getSpeedFromAxis(_operatorGamepad, Gamepad.Axes.RIGHT_Y.getNumber()) * Constants.Elevator.MAX_ELEVATOR_SPEED;
+        double speed = -getSpeedFromAxis(_operatorGamepad, Gamepad.Axes.RIGHT_Y.getNumber()) * Constants.Elevator.MAX_SPEED;
         speed = applyDeadband(speed, Constants.Elevator.DEADBAND);
         return applySensitivityFactor(speed, Constants.Elevator.SENSITIVITY);
     }
     public double getStiltSpeed() {
         return 0;
-//        double speed = getSpeedFromAxis(_operatorGamepad, Gamepad.Axes.RIGHT_TRIGGER.getNumber())*Constants.Stilt.MAX_Stilt_SPEED;
+//        double speed = getSpeedFromAxis(_operatorGamepad, Gamepad.Axes.RIGHT_Y.getNumber())*Constants.Stilt.MAX_UP_SPEED;
 //        speed = applyDeadband(speed, Constants.Stilt.DEADBAND);
-//        return applySensitivityFactor(speed,Constants.Stilt.SENSITVITY);
+//        return speed;
     }
+
+    public double getWheelieSpeed() {
+        return 0;
+//        double speed = getSpeedFromAxis(_operatorGamepad, Gamepad.Axes.LEFT_TRIGGER.getNumber());
+//        speed = applyDeadband(speed, Constants.Stilt.DEADBAND);
+//        return speed;
+    }
+
+
     public int getOperatorPOV() {
         return POV.fromWPILIbAngle(0, _operatorGamepad.getPOV()).getDirectionValue();
     }
@@ -195,5 +204,6 @@ public class OI extends OutliersProxy {
     public boolean getAbort() {
         return false;
     }
+
 }
 

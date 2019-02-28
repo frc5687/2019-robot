@@ -66,6 +66,8 @@ public class DriveTrain extends OutliersSubsystem implements PIDSource {
             _rightMaster.setInverted(Constants.DriveTrain.RIGHT_MOTORS_INVERTED);
             _rightFollower.setInverted(Constants.DriveTrain.RIGHT_MOTORS_INVERTED);
 
+            disableBrakeMode();
+
             debug("Configuring followers");
             _leftFollower.follow(_leftMaster);
             _rightFollower.follow(_rightMaster);
@@ -78,6 +80,20 @@ public class DriveTrain extends OutliersSubsystem implements PIDSource {
         _leftEncoder = new Encoder(RobotMap.DIO.DRIVE_LEFT_A, RobotMap.DIO.DRIVE_LEFT_B);
         _rightEncoder = new Encoder(RobotMap.DIO.DRIVE_RIGHT_A, RobotMap.DIO.DRIVE_RIGHT_B);
 
+    }
+
+    public void enableBrakeMode() {
+        _leftMaster.setIdleMode(CANSparkMax.IdleMode.kCoast);
+        _leftFollower.setIdleMode(CANSparkMax.IdleMode.kBrake);
+        _rightMaster.setIdleMode(CANSparkMax.IdleMode.kCoast);
+        _rightFollower.setIdleMode(CANSparkMax.IdleMode.kBrake);
+    }
+
+    public void disableBrakeMode() {
+        _leftMaster.setIdleMode(CANSparkMax.IdleMode.kCoast);
+        _leftFollower.setIdleMode(CANSparkMax.IdleMode.kCoast);
+        _rightMaster.setIdleMode(CANSparkMax.IdleMode.kCoast);
+        _rightFollower.setIdleMode(CANSparkMax.IdleMode.kCoast);
     }
 
     private boolean assertMotorControllers() {

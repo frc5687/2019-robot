@@ -19,7 +19,7 @@ public class RobotMap {
             public static final int DRIVE_RIGHT_FOLLOWER = 8;
             public static final int ELEVATOR_MOTOR = 5;
             public static final int RIGHT_ARM = 9;
-            public static final int LEFT_ARM = 16;
+            public static final int  LEFT_ARM = 16;
             public static final int STILT = 13;
         }
         public static class TALONSRX{

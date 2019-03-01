@@ -27,5 +27,6 @@ public class ClawWristDown extends OutliersCommand {
     @Override
     protected void execute(){
         _intake.lowerWrist();
+        _intake.pointClaw();
     }
 }

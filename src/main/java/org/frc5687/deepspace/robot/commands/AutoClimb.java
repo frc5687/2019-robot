@@ -36,6 +36,11 @@ public class AutoClimb extends OutliersCommand {
 
     @Override
     protected void initialize() {
+        //if (DriverStation.getInstance().isFMSAttached() && DriverStation.getInstance().getMatchTime() > ENDGAME_CUTOFF) {
+        //    _climbState = ClimbState.Done;
+        //    error("Climb pressed before endgame");
+        //}
+
        _climbState =  ClimbState.StowArm;
        _driveTrain.enableBrakeMode();
         metric("ClimbState", _climbState.name());

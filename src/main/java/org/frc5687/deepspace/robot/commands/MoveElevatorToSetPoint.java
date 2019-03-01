@@ -10,6 +10,7 @@ import jaci.pathfinder.Waypoint;
 import jaci.pathfinder.followers.DistanceFollower;
 import org.frc5687.deepspace.robot.Constants;
 import org.frc5687.deepspace.robot.subsystems.Elevator;
+import org.frc5687.deepspace.robot.OI;
 
 import static org.frc5687.deepspace.robot.Constants.Elevator.*;
 import static org.frc5687.deepspace.robot.utils.Helpers.limit;
@@ -25,6 +26,8 @@ public class MoveElevatorToSetPoint extends OutliersCommand {
     private double _pidOutput;
     private double _pathOutput;
 
+    private OI _oi;
+
     private PIDController _pidController;
 
     private Trajectory _trajectory;
@@ -36,11 +39,13 @@ public class MoveElevatorToSetPoint extends OutliersCommand {
     private double _rampMid = 0;
     private long _creepEndTime = 0;
 
-    public MoveElevatorToSetPoint(Elevator elevator, Elevator.Setpoint setpoint, Elevator.MotionMode mode) {
+    public MoveElevatorToSetPoint(Elevator elevator, Elevator.Setpoint setpoint, Elevator.MotionMode mode, OI oi) {
         _elevator = elevator;
         requires(_elevator);
         _setpoint = setpoint;
         _mode = mode;
+
+        _oi = oi;
 
         _pidController = new PIDController(PID.kP, PID.kI, PID.kD, _elevator, new PIDListener());
         _pidController.setAbsoluteTolerance(TOLERANCE);
@@ -81,10 +86,12 @@ public class MoveElevatorToSetPoint extends OutliersCommand {
                     _rampDirection = -1;
                     _rampMid = startPosition + (_setpoint.getValue() - startPosition)/2;
                 } else if (_setpoint.getHall() == Elevator.HallEffectSensor.BOTTOM && !_elevator.isAtBottom()){
+                    DriverStation.reportError("BottomCreep", false);
                     _rampingState = RampingState.Creep;
                     _creepEndTime = System.currentTimeMillis() + CREEP_TIME;
                     _rampDirection = -1;
                 } else if (_setpoint.getHall() == Elevator.HallEffectSensor.TOP && !_elevator.isAtTop()){
+                    DriverStation.reportError("TopCreep", false);
                     _rampingState = RampingState.Creep;
                     _creepEndTime = System.currentTimeMillis() + CREEP_TIME;
                     _rampDirection = 1;
@@ -156,7 +163,7 @@ public class MoveElevatorToSetPoint extends OutliersCommand {
                 _rampingState = RampingState.Done;
                 metric("RampUp/RampedSpeed", 0);
                 return 0;
-            } else if (_position >= _setpoint.getValue() + TOLERANCE) {
+            } else if (_position <= _setpoint.getValue() + TOLERANCE) {
                 if (_setpoint.getHall()== Elevator.HallEffectSensor.BOTTOM && !_elevator.isAtBottom()) {
                     if (_rampingState!=RampingState.Creep) {
                         _rampingState = RampingState.Creep;
@@ -212,6 +219,7 @@ public class MoveElevatorToSetPoint extends OutliersCommand {
                 if (System.currentTimeMillis() >= _creepEndTime) {
                     _rampingState = RampingState.Done;
                 }
+                break;
             case Done:
                 speed = 0;
                 break;
@@ -245,7 +253,7 @@ public class MoveElevatorToSetPoint extends OutliersCommand {
     @Override
     protected void end() {
         long endTime = System.currentTimeMillis();
-        DriverStation.reportError("MoveElevatorToSetpoint Ran for " + (endTime - _startTime) + " millis", false);
+        DriverStation.reportError("MoveElevatorToSetpoint Ran for " + (endTime - _startTime) + " millis, stopped at " + _position + ", state=" + _rampingState.name(), false);
         if (_pidController!=null) {
             _pidController.disable();
         }
@@ -253,6 +261,27 @@ public class MoveElevatorToSetPoint extends OutliersCommand {
             _pathNotifier.stop();
         }
         _elevator.setSpeed(0);
+
+        if (_oi!=null) {
+            switch (_setpoint) {
+                case Bottom:
+                case Hatch1:
+                case Port1:
+                case StartHatch:
+                    _oi.pulseOperator(1);
+                    break;
+                case Hatch2:
+                case Port2:
+                    _oi.pulseOperator(2);
+                    break;
+                case Top:
+                case Hatch3:
+                case Port3:
+                    _oi.pulseOperator(3);
+                    break;
+            }
+        }
+
         info("Reached setpoint " + _setpoint.name() + " (" + _position + ")");
     }
 

@@ -86,7 +86,7 @@ public class Elevator extends OutliersSubsystem implements PIDSource {
 
     private double getRawNeoEncoder() {
         if (_elevator==null) { return 0; }
-        return 0;
+        return _neoElevatorEncoder.getPosition();
     }
 
     private double getRawMAGEncoder() {
@@ -101,6 +101,7 @@ public class Elevator extends OutliersSubsystem implements PIDSource {
     @Override
     public void updateDashboard() {
         metric("MAGEncoder", getRawMAGEncoder());
+        metric("NEOEncoder", getRawNeoEncoder());
         metric("Position", getPosition());
         metric("Bottom", isAtBottom());
         metric("Top", isAtTop());
@@ -161,6 +162,7 @@ public class Elevator extends OutliersSubsystem implements PIDSource {
         Hatch1(2, HallEffectSensor.BOTTOM),
         Secure(450),
         ClearRoller(935),
+        StartHatch(710),
         HPMode(1230),
         Port2(2419),
         Hatch2(2420),

@@ -1,5 +1,6 @@
 package org.frc5687.deepspace.robot;
 
+import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.buttons.Button;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
@@ -76,7 +77,6 @@ public class OI extends OutliersProxy {
         _operatorBButton = new JoystickButton(_operatorGamepad, Gamepad.Buttons.B.getNumber());
         _operatorYButton = new JoystickButton(_operatorGamepad, Gamepad.Buttons.Y.getNumber());
         _operatorXButton = new JoystickButton(_operatorGamepad, Gamepad.Buttons.X.getNumber());
-        
 
         _driverAButton = new JoystickButton(_driverGamepad, Gamepad.Buttons.A.getNumber());
         _driverBButton = new JoystickButton(_driverGamepad, Gamepad.Buttons.B.getNumber());
@@ -108,8 +108,7 @@ public class OI extends OutliersProxy {
         _driverStartButton.whenPressed(new AutoClimb(robot.getStilt(), robot.getArm(), robot.getDriveTrain(), robot.getCargoIntake(), robot.getHatchIntake()));
 //        _driverBackButton.whenPressed(new CloseSpear(robot.getSpear()));
 
-        //_operatorStartButton.whenPressed(new StartGripper(robot.getGripper()));
-        //_operatorBackButton.whenPressed(new StopGripper(robot.getGripper()));
+        _operatorBackButton.whenPressed(new ScoreStart(robot));
 
 //        _operatorStartButton.whenPressed(new CargoIntakeUp(robot,robot.getWrist()));
 //        _operatorBackButton.whenReleased(new CargoIntakeDown(robot, robot.getWrist()));
@@ -134,10 +133,12 @@ public class OI extends OutliersProxy {
         _operatorRightXAxisRightButton.whenPressed(new CargoIntakeUp(robot.getCargoIntake()));
 
 
-        _operatorAButton.whenPressed(new MoveElevatorToSetPoint(robot.getElevator(), Elevator.Setpoint.Hatch1, Elevator.MotionMode.Ramp));
-        _operatorBButton.whenPressed(new MoveElevatorToSetPoint(robot.getElevator(), Elevator.Setpoint.Hatch2, Elevator.MotionMode.Ramp));
-        _operatorYButton.whenPressed(new MoveElevatorToSetPoint(robot.getElevator(), Elevator.Setpoint.Hatch3, Elevator.MotionMode.Ramp));
-        _operatorXButton.whenPressed(new MoveElevatorToSetPoint(robot.getElevator(), Elevator.Setpoint.HPMode, Elevator.MotionMode.Ramp));
+        _operatorAButton.whenPressed(new MoveElevatorToSetPoint(robot.getElevator(), Elevator.Setpoint.Hatch1, Elevator.MotionMode.Ramp, this));
+        _operatorBButton.whenPressed(new MoveElevatorToSetPoint(robot.getElevator(), Elevator.Setpoint.Hatch2, Elevator.MotionMode.Ramp, this));
+        _operatorYButton.whenPressed(new MoveElevatorToSetPoint(robot.getElevator(), Elevator.Setpoint.Hatch3, Elevator.MotionMode.Ramp, this));
+        _operatorXButton.whenPressed(new MoveElevatorToSetPoint(robot.getElevator(), Elevator.Setpoint.HPMode, Elevator.MotionMode.Ramp, this));
+
+        _operatorStartButton.whenPressed(new MoveElevatorToSetPoint(robot.getElevator(), Elevator.Setpoint.StartHatch, Elevator.MotionMode.Ramp, this));
 
         //_driverYButton.whenPressed(new MoveArmToSetPoint(robot.getArm(), Arm.Setpoint.Floor, Arm.HallEffectSensor.LOW, Arm.MotionMode.Simple));
         //_driverBButton.whenPressed(new MoveArmToSetPoint(robot.getArm(), Arm.Setpoint.Intake, Arm.HallEffectSensor.INTAKE, Arm.MotionMode.Simple));
@@ -200,6 +201,47 @@ public class OI extends OutliersProxy {
     @Override
     public void updateDashboard() {
 
+    }
+
+    private int _driverRumbleCount = 0;
+    private int _operatorRumbleCount = 0;
+    private long _driverRumbleTime = System.currentTimeMillis();
+    private long _operatorRumbleTime = System.currentTimeMillis();
+
+    public void pulseDriver(int count) {
+        _driverRumbleTime = System.currentTimeMillis() + Constants.OI.RUMBLE_PULSE_TIME;
+        _driverRumbleCount = count * 2;
+    }
+
+    public void pulseOperator(int count) {
+        _operatorRumbleTime = System.currentTimeMillis() + Constants.OI.RUMBLE_PULSE_TIME;
+        _operatorRumbleCount = count * 2;
+    }
+
+    public void poll() {
+        if (_driverRumbleCount > 0) {
+            _driverGamepad.setRumble(GenericHID.RumbleType.kLeftRumble, _driverRumbleCount % 2 == 0 ? 0 : 1);
+            _driverGamepad.setRumble(GenericHID.RumbleType.kRightRumble, _driverRumbleCount % 2 == 0 ? 0 : 1);
+            if (System.currentTimeMillis() > _driverRumbleTime) {
+                _driverRumbleTime = System.currentTimeMillis() + Constants.OI.RUMBLE_PULSE_TIME;
+                _driverRumbleCount--;
+            }
+        } else {
+            _driverGamepad.setRumble(GenericHID.RumbleType.kLeftRumble, 0);
+            _driverGamepad.setRumble(GenericHID.RumbleType.kRightRumble, 0);
+        }
+
+        if (_operatorRumbleCount > 0) {
+            _operatorGamepad.setRumble(GenericHID.RumbleType.kLeftRumble, _operatorRumbleCount % 2 == 0 ? 0 : 1);
+            _operatorGamepad.setRumble(GenericHID.RumbleType.kRightRumble, _operatorRumbleCount % 2 == 0 ? 0 : 1);
+            if (System.currentTimeMillis() > _operatorRumbleTime) {
+                _operatorRumbleTime = System.currentTimeMillis() + Constants.OI.RUMBLE_PULSE_TIME;
+                _operatorRumbleCount--;
+            }
+        } else {
+            _operatorGamepad.setRumble(GenericHID.RumbleType.kLeftRumble, 0);
+            _operatorGamepad.setRumble(GenericHID.RumbleType.kRightRumble, 0);
+        }
     }
 
     public boolean isCreepPressed() {

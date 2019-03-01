@@ -75,7 +75,7 @@ public class Robot extends TimedRobot implements ILoggingSource {
         _oi.initializeButtons(this);
 
         // Initialize the other stuff
-        // _limelight.disableLEDs();
+        _limelight.disableLEDs();
         _limelight.setStreamingMode(Limelight.StreamMode.PIP_SECONDARY);
         _status.setConfiguration(Configuration.starting);
         _arm.resetEncoders();
@@ -97,6 +97,7 @@ public class Robot extends TimedRobot implements ILoggingSource {
     @Override
     public void robotPeriodic() {
         updateDashboard();
+        _oi.poll();
     }
 
     /**
@@ -113,9 +114,11 @@ public class Robot extends TimedRobot implements ILoggingSource {
     @Override
     public void autonomousInit() {
         teleopInit();
+        // _limelight.enableLEDs();
     }
 
     public void teleopInit() {
+        _limelight.disableLEDs();
     }
 
     /**
@@ -156,13 +159,7 @@ public class Robot extends TimedRobot implements ILoggingSource {
 
     @Override
     public void disabledInit() {
-/*
-        RioLogger.getInstance().forceSync();
-        RioLogger.getInstance().close();
-        _arm.enableCoastMode();
-        _elevator.enableCoastMode();
-        _stilt.enableCoastMode();
-         */
+        _limelight.disableLEDs();
     }
 
 

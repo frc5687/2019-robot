@@ -48,6 +48,8 @@ public class Constants {
         public static final long CARGO_EJECT_MILLIS = 200;
         public static final double CARGO_EJECT_SPEED = -0.5;
 
+        public static final long SCORE_ROLLER_MILLIS = 120;
+        public static final long SCORE_KICK_MILLIS = 120;
     }
     public class Shifter {
         public static final long STOP_MOTOR_TIME = 60;
@@ -103,7 +105,7 @@ public class Constants {
         public static final double AXIS_BUTTON_THRESHHOLD = 0.2;
         public static final long RUMBLE_MILLIS = 250;
         public static final double RUMBLE_INTENSITY = 1.0;
-
+        public static final long RUMBLE_PULSE_TIME = 100;
     }
 
     public static class Arm {
@@ -190,6 +192,8 @@ public class Constants {
 
     public static class Auto {
         public static class Climb {
+            public static final double ENDGAME_CUTOFF = 30.0;
+
             public static final double STILT_SPEED = 0.55;
             public static final double STILT_HOLD_SPEED = 0.4;
             public static final double RAISE_STILT_SPEED = -0.2;

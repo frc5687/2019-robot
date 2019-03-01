@@ -50,8 +50,8 @@ public class Limelight extends OutliersProxy {
         _thor = _table.getEntry("thor");
         _getpipe = _table.getEntry("getpipe");
 
-        _ledmode = _table.getEntry("ledmode");
-        _cammode = _table.getEntry("cammode");
+        _ledmode = _table.getEntry("ledMode");
+        _cammode = _table.getEntry("camMode");
         _pipeline = _table.getEntry("pipeline");
         _stream = _table.getEntry("stream");
     }
@@ -78,7 +78,7 @@ public class Limelight extends OutliersProxy {
 
     }
     public void blinkLEDs() {
-        _ledmode.setNumber(3);
+        _ledmode.setNumber(2);
     }
 
     public void setPipeline(int pipeline) {

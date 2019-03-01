@@ -22,6 +22,8 @@ public class KillAll extends OutliersCommand {
     @Override
     protected void initialize() {
         _robot.getCargoIntake().stopRoller();
+        _robot.getArm().enableCoastMode();
+        _robot.getDriveTrain().enableBrakeMode();
         _finished = true;
         DriverStation.reportError("Initialize KillAll Command", false);
     }

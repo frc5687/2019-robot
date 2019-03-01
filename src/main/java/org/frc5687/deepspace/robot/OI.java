@@ -123,12 +123,6 @@ public class OI extends OutliersProxy {
         _driverRightTrigger.whenPressed(new RunIntake(robot, robot.getCargoIntake()));
         _driverLeftTrigger.whenPressed(new StopRoller(robot.getCargoIntake()));
 
-
-//        _operatorUpButton.whenPressed(new Manual(robot));
-//        _operatorDownButton.whenPressed(new CancelAuto(robot));
-//        _driverUpButton.whenPressed(new Manual(robot));
-//        _driverDownButton.whenPressed(new CancelAuto(robot));
-
         _operatorRightXAxisLeftButton.whenPressed(new CargoIntakeDown(robot.getCargoIntake()));
         _operatorRightXAxisRightButton.whenPressed(new CargoIntakeUp(robot.getCargoIntake()));
 

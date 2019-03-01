@@ -67,6 +67,8 @@ public class Constants {
         public static final double SPEED_UP = 1.0;
         public static final double SPEED_DOWN = 0.8;
 
+        public static final long CREEP_TIME = 200;
+
         public static final double JELLO_SPEED_UP = 0.2;
         public static final double JELLO_SPEED_DOWN = 0.2;
 
@@ -111,8 +113,8 @@ public class Constants {
         public static final double HOLD_SPEED = 0.01;
         public static final double STOW_SPEED = -0.2;
 
-        public static final boolean LEFT_MOTOR_INVERTED = false;
-        public static final boolean RIGHT_MOTOR_INVERTED = true;
+        public static final boolean LEFT_MOTOR_INVERTED = true;
+        public static final boolean RIGHT_MOTOR_INVERTED = false;
 
         public static final int SHOULDER_STALL_LIMIT = 30;
         public static final int SHOULDER_FREE_LIMIT = 80;

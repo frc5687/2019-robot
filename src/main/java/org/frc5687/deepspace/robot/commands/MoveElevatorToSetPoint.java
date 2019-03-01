@@ -34,6 +34,7 @@ public class MoveElevatorToSetPoint extends OutliersCommand {
     private double _step;
     private int _rampDirection = 0;
     private double _rampMid = 0;
+    private long _creepEndTime = 0;
 
     public MoveElevatorToSetPoint(Elevator elevator, Elevator.Setpoint setpoint, Elevator.MotionMode mode) {
         _elevator = elevator;
@@ -79,6 +80,14 @@ public class MoveElevatorToSetPoint extends OutliersCommand {
                 } else if (_setpoint.getValue() < _elevator.getPosition()) {
                     _rampDirection = -1;
                     _rampMid = startPosition + (_setpoint.getValue() - startPosition)/2;
+                } else if (_setpoint.getHall() == Elevator.HallEffectSensor.BOTTOM && !_elevator.isAtBottom()){
+                    _rampingState = RampingState.Creep;
+                    _creepEndTime = System.currentTimeMillis() + CREEP_TIME;
+                    _rampDirection = -1;
+                } else if (_setpoint.getHall() == Elevator.HallEffectSensor.TOP && !_elevator.isAtTop()){
+                    _rampingState = RampingState.Creep;
+                    _creepEndTime = System.currentTimeMillis() + CREEP_TIME;
+                    _rampDirection = 1;
                 } else {
                     _rampDirection = 0;
                 }
@@ -124,17 +133,41 @@ public class MoveElevatorToSetPoint extends OutliersCommand {
         double minSpeed = MIN_SPEED;
         if (_rampDirection > 0) {
             goalSpeed = SPEED_UP;
-            if (_elevator.isAtTop() || _position >= _setpoint.getValue() - TOLERANCE) {
+            if (_elevator.isAtTop()) {
                 _rampingState = RampingState.Done;
                 metric("RampUp/RampedSpeed", 0);
                 return 0;
+            } else if (_position >= _setpoint.getValue() - TOLERANCE) {
+                if (_setpoint.getHall()== Elevator.HallEffectSensor.TOP && !_elevator.isAtTop()) {
+                    if (_rampingState!=RampingState.Creep) {
+                        _rampingState = RampingState.Creep;
+                        _creepEndTime = System.currentTimeMillis() + CREEP_TIME;
+                    }
+                    metric("RampUp/RampedSpeed", minSpeed);
+                } else {
+                    _rampingState = RampingState.Done;
+                    metric("RampUp/RampedSpeed", 0);
+                    return 0;
+                }
             };
         } else if (_rampDirection < 0) {
             goalSpeed = SPEED_DOWN;
-            if (_elevator.isAtBottom() || _position <= _setpoint.getValue() + TOLERANCE) {
+            if (_elevator.isAtBottom()) {
                 _rampingState = RampingState.Done;
                 metric("RampUp/RampedSpeed", 0);
                 return 0;
+            } else if (_position >= _setpoint.getValue() + TOLERANCE) {
+                if (_setpoint.getHall()== Elevator.HallEffectSensor.BOTTOM && !_elevator.isAtBottom()) {
+                    if (_rampingState!=RampingState.Creep) {
+                        _rampingState = RampingState.Creep;
+                        _creepEndTime = System.currentTimeMillis() + CREEP_TIME;
+                    }
+                    metric("RampUp/RampedSpeed", minSpeed);
+                } else {
+                    _rampingState = RampingState.Done;
+                    metric("RampUp/RampedSpeed", 0);
+                    return 0;
+                }
             };
         }
         speed = goalSpeed;
@@ -174,6 +207,11 @@ public class MoveElevatorToSetPoint extends OutliersCommand {
                 //if (_elevator.getRawMAGEncoder() == _setpoint.getValue()) {
                 //}
                 break;
+            case Creep:
+                speed = minSpeed;
+                if (System.currentTimeMillis() >= _creepEndTime) {
+                    _rampingState = RampingState.Done;
+                }
             case Done:
                 speed = 0;
                 break;
@@ -261,7 +299,8 @@ public class MoveElevatorToSetPoint extends OutliersCommand {
         RampUp(0),
         Steady(1),
         RampDown(2),
-        Done(3);
+        Creep(3),
+        Done(4);
 
         private int _value;
 

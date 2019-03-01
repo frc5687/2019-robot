@@ -52,6 +52,8 @@ public class OI extends OutliersProxy {
     private AxisButton _operatorRightXAxisRightButton;
     private AxisButton _operatorRightXAxisLeftButton;
 
+    private Button _driverRightJoystickButton;
+
     private POV _operatorPOV;
 
     public OI(){
@@ -95,6 +97,9 @@ public class OI extends OutliersProxy {
         _operatorRightXAxisLeftButton = new AxisButton(_operatorGamepad,Gamepad.Axes.RIGHT_X.getNumber(), -.5);
         _operatorRightXAxisRightButton = new AxisButton(_operatorGamepad, Gamepad.Axes.RIGHT_X.getNumber(), .5);
 
+        _driverRightJoystickButton = new JoystickButton(_driverGamepad, Gamepad.Buttons.RIGHT_STICK.getNumber()); {
+        }
+
         // _operatorPOV = new POV();
     }
     public void initializeButtons(Robot robot){
@@ -132,7 +137,6 @@ public class OI extends OutliersProxy {
         _operatorRightXAxisLeftButton.whenPressed(new CargoIntakeDown(robot.getCargoIntake()));
         _operatorRightXAxisRightButton.whenPressed(new CargoIntakeUp(robot.getCargoIntake()));
 
-
         _operatorAButton.whenPressed(new MoveElevatorToSetPoint(robot.getElevator(), Elevator.Setpoint.Hatch1, Elevator.MotionMode.Ramp));
         _operatorBButton.whenPressed(new MoveElevatorToSetPoint(robot.getElevator(), Elevator.Setpoint.Hatch2, Elevator.MotionMode.Ramp));
         _operatorYButton.whenPressed(new MoveElevatorToSetPoint(robot.getElevator(), Elevator.Setpoint.Hatch3, Elevator.MotionMode.Ramp));
@@ -144,6 +148,7 @@ public class OI extends OutliersProxy {
         //_driverAButton.whenPressed(new MoveArmToSetPoint(robot.getArm(), Arm.Setpoint.Stowed, Arm.HallEffectSensor.STOWED, Arm.MotionMode.Simple));
 
     }
+    public boolean isCreepPressed() {return _driverRightJoystickButton.get();}
     public double getDriveSpeed() {
         double speed = -getSpeedFromAxis(_driverGamepad, Gamepad.Axes.LEFT_Y.getNumber());
         speed = applyDeadband(speed, Constants.DriveTrain.DEADBAND);

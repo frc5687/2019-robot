@@ -9,8 +9,8 @@ import org.frc5687.deepspace.robot.subsystems.Elevator;
 
 public class HatchMode extends CommandGroup {
     public HatchMode(Robot robot) {
-        addParallel(new CargoIntakeUp(robot.getCargoIntake()));
-        addParallel(new ClawWristUp(robot));
+        addSequential(new CargoIntakeUp(robot.getCargoIntake()));
+        addSequential(new ClawWristUp(robot));
         addSequential(new PointClaw(robot.getHatchIntake()));
         addSequential(new MoveElevatorToSetPoint(robot.getElevator(), Elevator.Setpoint.Bottom, Elevator.MotionMode.Ramp));
         addSequential(new SetConfiguration(robot, Robot.Configuration.hatch));

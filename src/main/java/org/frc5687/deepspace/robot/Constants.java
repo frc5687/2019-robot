@@ -76,7 +76,7 @@ public class Constants {
         public static final double DEADBAND = 0.1;
         public static final double SENSITIVITY = 0.5;
         public static final boolean ELEVATOR_MOTOR_INVERTED = true;
-        public static final int TOLERANCE = 10;
+        public static final int TOLERANCE = 5;
         public static final double MAX_VELOCITY_IPS = 27.0;
         public static final double TICKS_PER_INCH = 111.1111111;
         public static final double STEPS_UP = 10;
@@ -103,7 +103,7 @@ public class Constants {
 
     }
 
-    public class Arm {
+    public static class Arm {
         public static final double SENSITIVITY = 0.5;
         public static final double DEADBAND = 0.4;
 
@@ -111,8 +111,8 @@ public class Constants {
         public static final double HOLD_SPEED = 0.01;
         public static final double STOW_SPEED = -0.2;
 
-        public static final boolean LEFT_MOTOR_INVERTED = true;
-        public static final boolean RIGHT_MOTOR_INVERTED = false;
+        public static final boolean LEFT_MOTOR_INVERTED = false;
+        public static final boolean RIGHT_MOTOR_INVERTED = true;
 
         public static final int SHOULDER_STALL_LIMIT = 30;
         public static final int SHOULDER_FREE_LIMIT = 80;

@@ -8,8 +8,8 @@ import org.frc5687.deepspace.robot.subsystems.Elevator;
 
 public class CargoMode extends CommandGroup {
     public CargoMode(Robot robot) {
-        addParallel(new CargoIntakeDown(robot.getCargoIntake()));
-        addParallel(new ClawWristDown(robot));
+        addSequential(new ClawWristDown(robot));
+        addSequential(new CargoIntakeDown(robot.getCargoIntake()));
         addSequential(new MoveElevatorToSetPoint(robot.getElevator(), Elevator.Setpoint.Bottom, Elevator.MotionMode.Ramp));
         addSequential(new SetConfiguration(robot, Robot.Configuration.cargo));
     }

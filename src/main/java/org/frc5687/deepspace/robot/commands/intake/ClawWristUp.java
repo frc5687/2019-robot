@@ -9,7 +9,7 @@ import org.frc5687.deepspace.robot.subsystems.HatchIntake;
 public class ClawWristUp extends OutliersCommand {
     private HatchIntake _intake;
     private Robot _robot;
-    private long _startTime;
+    private long _endTime;
 
     public ClawWristUp(Robot robot) {
         _intake = robot.getHatchIntake();
@@ -18,11 +18,13 @@ public class ClawWristUp extends OutliersCommand {
     }
     @Override
     protected boolean isFinished() {
-        return System.currentTimeMillis() > _startTime + Constants.Intake.CLAW_RAISE_WRIST_MILLI_SEC;
+        return System.currentTimeMillis() > _endTime;
     }
     @Override
     protected void initialize() {
-        _startTime = System.currentTimeMillis();
+        _endTime = _intake.isUp() ? System.currentTimeMillis() : System.currentTimeMillis() + Constants.Intake.CLAW_RAISE_WRIST_MILLI_SEC;
+        _intake.raiseWrist();
+        _intake.gripClaw();
     }
     @Override
     protected void execute(){

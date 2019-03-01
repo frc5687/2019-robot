@@ -70,6 +70,7 @@ public class AutoClimb extends OutliersCommand {
                     DriverStation.reportError("Stopping arm", false);
                     _arm.setSpeed(0);
                 } else {
+                    DriverStation.reportError("Running arm", false);
                     _arm.setSpeed(armSpeed);
                 }
 

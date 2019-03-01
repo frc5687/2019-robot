@@ -110,8 +110,11 @@ public class OI extends OutliersProxy {
 //        _operatorStartButton.whenPressed(new CargoIntakeUp(robot,robot.getWrist()));
 //        _operatorBackButton.whenReleased(new CargoIntakeDown(robot, robot.getWrist()));
 
-        _operatorRightBumper.whenPressed(new ClawWristUp(robot));
-        _operatorLeftBumper.whenPressed(new ClawWristDown(robot));
+        //_operatorRightBumper.whenPressed(new ClawWristUp(robot));
+        //_operatorLeftBumper.whenPressed(new ClawWristDown(robot));
+
+        _operatorLeftBumper.whenPressed(new HatchMode(robot));
+        _operatorRightBumper.whenPressed(new CargoMode(robot));
 
         _driverRightBumper.whenPressed(new Shift(robot.getDriveTrain(), robot.getShifter(), Shifter.Gear.LOW, false));
         _driverLeftBumper.whenPressed(new Shift(robot.getDriveTrain(), robot.getShifter(), Shifter.Gear.HIGH, false));

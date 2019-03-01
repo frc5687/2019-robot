@@ -94,8 +94,8 @@ public class RobotMap {
         public static final int ELEVATOR_TOP_HALL = 2;
         public static final int ELEVATOR_BOTTOM_HALL = 3;
 
-        public static final int STILT_HIGH = 4;
-        public static final int STILT_LOW = 5;
+        public static final int STILT_HIGH = 5;
+        public static final int STILT_LOW = 4;
 
         public static final int ARM_SECURE_HALL = 6;
         //public static final int ARM_STOWED_HALL = 7;

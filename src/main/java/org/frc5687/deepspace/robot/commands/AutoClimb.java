@@ -2,7 +2,9 @@ package org.frc5687.deepspace.robot.commands;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import org.frc5687.deepspace.robot.Constants;
+import org.frc5687.deepspace.robot.Robot;
 import org.frc5687.deepspace.robot.subsystems.*;
+import org.frc5687.deepspace.robot.utils.StatusProxy;
 
 import static org.frc5687.deepspace.robot.Constants.Auto.Climb.*;
 import static org.frc5687.deepspace.robot.Constants.Arm.*;
@@ -15,13 +17,15 @@ public class AutoClimb extends OutliersCommand {
     private CargoIntake _cargoIntake;
     private HatchIntake _hatchIntake;
 
+    private StatusProxy _statusProxy;
+
     private ClimbState _climbState;
     private double _angleCos;
     private double _encoderOffset;
     private boolean isDone = false;
     private long _stiltTimeout = 0;
 
-    public AutoClimb(Stilt stilt, Arm arm, DriveTrain driveTrain, CargoIntake cargoIntake, HatchIntake hatchIntake) {
+    public AutoClimb(Stilt stilt, Arm arm, DriveTrain driveTrain, CargoIntake cargoIntake, HatchIntake hatchIntake, StatusProxy statusProxy) {
         _stilt = stilt;
         _arm = arm;
         _driveTrain = driveTrain;
@@ -29,9 +33,13 @@ public class AutoClimb extends OutliersCommand {
         _cargoIntake = cargoIntake;
         _hatchIntake = hatchIntake;
 
+        _statusProxy = statusProxy;
+
         requires(_stilt);
         requires(_arm);
         requires(_driveTrain);
+        requires(_cargoIntake);
+        requires(_hatchIntake);
     }
 
     @Override
@@ -43,7 +51,9 @@ public class AutoClimb extends OutliersCommand {
 
        _climbState =  ClimbState.StowArm;
        _driveTrain.enableBrakeMode();
+       _statusProxy.setConfiguration(Robot.Configuration.climbing);
         metric("ClimbState", _climbState.name());
+
     }
 
     @Override
@@ -51,6 +61,7 @@ public class AutoClimb extends OutliersCommand {
         switch (_climbState) {
             case StowArm:
                 _cargoIntake.raiseWrist();
+                _hatchIntake.pointClaw();
                 _hatchIntake.lowerWrist();
                 _arm.enableBrakeMode();
                 _stilt.enableBrakeMode();
@@ -156,6 +167,7 @@ public class AutoClimb extends OutliersCommand {
                 }
                 break;
             case Done:
+                _statusProxy.setConfiguration(Robot.Configuration.parked);
                 _driveTrain.enableBrakeMode();
                 _stilt.setLifterSpeed(0);
                 _arm.setSpeed(0);

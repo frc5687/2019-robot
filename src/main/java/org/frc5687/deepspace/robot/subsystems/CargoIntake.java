@@ -1,6 +1,7 @@
 package org.frc5687.deepspace.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
@@ -32,6 +33,7 @@ public class CargoIntake extends OutliersSubsystem {
             _roller.configNominalOutputForward(0.0, 0);
             _roller.configNominalOutputReverse(0.0, 0);
             _roller.setInverted(Constants.Intake.MOTOR_INVERTED);
+            _roller.setNeutralMode(NeutralMode.Brake);
         } catch (Exception e) {
             error("Unable to allocate roller controller: " + e.getMessage());
         }

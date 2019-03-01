@@ -234,11 +234,10 @@ public class Robot extends TimedRobot implements ILoggingSource {
         }
     }
     public void setConfiguration(Configuration configuration) {
-        _configuration = configuration;
         _status.setConfiguration(configuration);
     }
     public Configuration getConfiguration() {
-        return _configuration;
+        return _status.getConfiguration();
     }
     @Override
     public void error(String message) {
@@ -277,7 +276,7 @@ public class Robot extends TimedRobot implements ILoggingSource {
     public Stilt getStilt() { return _stilt; }
     public CargoIntake getCargoIntake() { return _cargoIntake;}
     public HatchIntake getHatchIntake() { return _hatchIntake;}
-
+    public StatusProxy getStatusProxy() { return _status; }
 
 
     public enum IdentityMode {
@@ -302,7 +301,8 @@ public class Robot extends TimedRobot implements ILoggingSource {
         starting(0),
         hatch(1),
         cargo(2),
-        climb(3);
+        climbing(3),
+        parked(4);
 
         private int _value;
 

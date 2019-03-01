@@ -11,7 +11,7 @@ import static org.frc5687.deepspace.robot.subsystems.CargoIntake.RollerMode.WAIT
 public class StartRoller extends OutliersCommand {
     private CargoIntake _intake;
     private boolean _stopWhenSecured;
-    private long _time;
+    private long _stopTime;
 
     public StartRoller(CargoIntake intake, boolean stopWhenSecured) {
         _intake = intake;
@@ -33,12 +33,13 @@ public class StartRoller extends OutliersCommand {
                 _intake.run(ROLLER_SPEED);
                 if (_intake.isBallDetected()) {
                     _intake.run(0);
-                    _time = System.currentTimeMillis();
+                    _stopTime = System.currentTimeMillis() + Constants.Intake.ROLLER_TIME_MILLI_SEC;
                     _intake.setRollerMode(WAITING);
                 }
                 break;
             case WAITING:
-                if (System.currentTimeMillis() > _time + Constants.Intake.ROLLER_TIME_MILLI_SEC) {
+                _intake.run(ROLLER_SPEED);
+                if (System.currentTimeMillis() > _stopTime) {
                     _intake.setRollerMode(DONE);
                 }
         }

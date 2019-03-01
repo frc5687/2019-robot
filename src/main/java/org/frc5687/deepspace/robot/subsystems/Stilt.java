@@ -39,7 +39,7 @@ public class Stilt extends OutliersSubsystem {
         }
 
         _wheelieVictor = new PWMVictorSPX(RobotMap.PWM.Wheelie);
-        _wheelieVictor.setInverted(true);
+        _wheelieVictor.setInverted(false);
     }
 
     public void setLifterSpeed(double desiredSpeed) {

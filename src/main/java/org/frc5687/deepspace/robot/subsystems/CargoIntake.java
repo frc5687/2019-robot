@@ -95,6 +95,16 @@ public class CargoIntake extends OutliersSubsystem {
     public RollerMode getRollerMode() {
         return _rollerMode;
     }
+
+    public boolean isDown() {
+        return _wristSolenoid.get() == DoubleSolenoid.Value.kForward;
+    }
+
+    public boolean isUp() {
+        return _wristSolenoid.get() == DoubleSolenoid.Value.kReverse;
+    }
+
+
     public enum RollerMode {
         RUNNING(0),
         WAITING(1),

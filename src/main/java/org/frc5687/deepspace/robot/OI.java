@@ -23,6 +23,8 @@ public class OI extends OutliersProxy {
     private Button _driverRightTrigger;
     private Button _driverLeftTrigger;
 
+    private Button _driverRightStickButton;
+
 
     private Button _operatorAButton;
     private Button _operatorBButton;
@@ -81,6 +83,8 @@ public class OI extends OutliersProxy {
         _driverXButton = new JoystickButton(_driverGamepad, Gamepad.Buttons.X.getNumber());
         _driverYButton = new JoystickButton(_driverGamepad, Gamepad.Buttons.Y.getNumber());
 
+        _driverRightStickButton = new JoystickButton(_driverGamepad, Gamepad.Buttons.RIGHT_STICK.getNumber());
+
         _operatorStartButton = new JoystickButton(_operatorGamepad, Gamepad.Buttons.START.getNumber());
         _operatorBackButton = new JoystickButton(_operatorGamepad, Gamepad.Buttons.BACK.getNumber());
 
@@ -110,8 +114,11 @@ public class OI extends OutliersProxy {
 //        _operatorStartButton.whenPressed(new CargoIntakeUp(robot,robot.getWrist()));
 //        _operatorBackButton.whenReleased(new CargoIntakeDown(robot, robot.getWrist()));
 
-        _operatorRightBumper.whenPressed(new ClawWristUp(robot));
-        _operatorLeftBumper.whenPressed(new ClawWristDown(robot));
+        //_operatorRightBumper.whenPressed(new ClawWristUp(robot));
+        //_operatorLeftBumper.whenPressed(new ClawWristDown(robot));
+
+        _operatorLeftBumper.whenPressed(new HatchMode(robot));
+        _operatorRightBumper.whenPressed(new CargoMode(robot));
 
         _driverRightBumper.whenPressed(new Shift(robot.getDriveTrain(), robot.getShifter(), Shifter.Gear.LOW, false));
         _driverLeftBumper.whenPressed(new Shift(robot.getDriveTrain(), robot.getShifter(), Shifter.Gear.HIGH, false));
@@ -122,12 +129,6 @@ public class OI extends OutliersProxy {
 
         _driverRightTrigger.whenPressed(new RunIntake(robot, robot.getCargoIntake()));
         _driverLeftTrigger.whenPressed(new StopRoller(robot.getCargoIntake()));
-
-
-//        _operatorUpButton.whenPressed(new Manual(robot));
-//        _operatorDownButton.whenPressed(new CancelAuto(robot));
-//        _driverUpButton.whenPressed(new Manual(robot));
-//        _driverDownButton.whenPressed(new CancelAuto(robot));
 
         _operatorRightXAxisLeftButton.whenPressed(new CargoIntakeDown(robot.getCargoIntake()));
         _operatorRightXAxisRightButton.whenPressed(new CargoIntakeUp(robot.getCargoIntake()));
@@ -201,9 +202,8 @@ public class OI extends OutliersProxy {
 
     }
 
-    public boolean getAbort() {
-        return false;
+    public boolean isCreepPressed() {
+        return  _driverRightStickButton.get();
     }
-
 }
 

@@ -123,7 +123,7 @@ public class Robot extends TimedRobot implements ILoggingSource {
      */
     @Override
     public void autonomousPeriodic() {
-        Scheduler.getInstance().run();
+        ourPeriodic();
     }
 
     /**
@@ -131,6 +131,10 @@ public class Robot extends TimedRobot implements ILoggingSource {
      */
     @Override
     public void teleopPeriodic() {
+        ourPeriodic();
+    }
+
+    private void ourPeriodic() {
         int operatorPOV = _oi.getOperatorPOV();
         int driverPOV = _oi.getDriverPOV();
 

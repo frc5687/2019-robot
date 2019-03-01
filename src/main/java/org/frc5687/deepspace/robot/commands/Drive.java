@@ -23,7 +23,7 @@ public class Drive extends OutliersCommand {
         // Get the rotation from the tiller
         double wheelRotation = _oi.getDriveRotation();
 
-        _driveTrain.cheesyDrive(stickSpeed, wheelRotation);
+        _driveTrain.cheesyDrive(stickSpeed, wheelRotation, _oi.isCreepPressed());
     }
 
 

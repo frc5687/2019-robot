@@ -13,13 +13,13 @@ public class RobotMap {
                         public static final int LEFT_MASTER_SPARK= 1;
                         */
         public static class SPARKMAX {
-            public static final int DRIVE_LEFT_MASTER = 11;
+            public static final int DRIVE_LEFT_MASTER =  11;
             public static final int DRIVE_RIGHT_MASTER = 6;
             public static final int DRIVE_LEFT_FOLLOWER = 14;
             public static final int DRIVE_RIGHT_FOLLOWER = 8;
             public static final int ELEVATOR_MOTOR = 5;
-            public static final int RIGHT_ARM = 9;
-            public static final int  LEFT_ARM = 16;
+            public static final int RIGHT_ARM = 16;
+            public static final int LEFT_ARM = 9;
             public static final int STILT = 13;
         }
         public static class TALONSRX{
@@ -94,8 +94,8 @@ public class RobotMap {
         public static final int ELEVATOR_TOP_HALL = 2;
         public static final int ELEVATOR_BOTTOM_HALL = 3;
 
-        public static final int STILT_HIGH = 4;
-        public static final int STILT_LOW = 5;
+        public static final int STILT_HIGH = 5;
+        public static final int STILT_LOW = 4;
 
         public static final int ARM_SECURE_HALL = 6;
         //public static final int ARM_STOWED_HALL = 7;

@@ -14,6 +14,7 @@ import org.frc5687.deepspace.robot.RobotMap;
 import org.frc5687.deepspace.robot.commands.Drive;
 import org.frc5687.deepspace.robot.utils.IRDistanceSensor;
 
+import static org.frc5687.deepspace.robot.Constants.DriveTrain.CREEP_FACTOR;
 import static org.frc5687.deepspace.robot.utils.Helpers.applySensitivityFactor;
 import static org.frc5687.deepspace.robot.utils.Helpers.limit;
 
@@ -127,7 +128,7 @@ public class DriveTrain extends OutliersSubsystem {
         setDefaultCommand(new Drive(this, _oi));
     }
 
-    public void cheesyDrive(double speed, double rotation) {
+    public void cheesyDrive(double speed, double rotation, boolean creep) {
         if (!assertMotorControllers()) { return; }
         metric("Speed", speed);
         metric("Rotation", rotation);
@@ -144,7 +145,12 @@ public class DriveTrain extends OutliersSubsystem {
 
         if (speed < Constants.DriveTrain.DEADBAND && speed > -Constants.DriveTrain.DEADBAND) {
             metric("Rot/Raw", rotation);
-            rotation = applySensitivityFactor(rotation, _shifter.getGear()== Shifter.Gear.HIGH  ? Constants.DriveTrain.ROTATION_SENSITIVITY_HIGH_GEAR : Constants.DriveTrain.ROTATION_SENSITIVITY_LOW_GEAR);
+            rotation = applySensitivityFactor(rotation, _shifter.getGear() == Shifter.Gear.HIGH ? Constants.DriveTrain.ROTATION_SENSITIVITY_HIGH_GEAR : Constants.DriveTrain.ROTATION_SENSITIVITY_LOW_GEAR);
+            if (creep) {
+                metric("Rot/Creep", creep);
+                rotation = rotation * CREEP_FACTOR;
+            }
+
             metric("Rot/Transformed", rotation);
             leftMotorOutput = rotation;
             rightMotorOutput = -rotation;

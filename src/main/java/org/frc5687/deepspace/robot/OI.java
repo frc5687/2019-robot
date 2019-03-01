@@ -23,6 +23,8 @@ public class OI extends OutliersProxy {
     private Button _driverRightTrigger;
     private Button _driverLeftTrigger;
 
+    private Button _driverRightStickButton;
+
 
     private Button _operatorAButton;
     private Button _operatorBButton;
@@ -80,6 +82,8 @@ public class OI extends OutliersProxy {
         _driverBButton = new JoystickButton(_driverGamepad, Gamepad.Buttons.B.getNumber());
         _driverXButton = new JoystickButton(_driverGamepad, Gamepad.Buttons.X.getNumber());
         _driverYButton = new JoystickButton(_driverGamepad, Gamepad.Buttons.Y.getNumber());
+
+        _driverRightStickButton = new JoystickButton(_driverGamepad, Gamepad.Buttons.RIGHT_STICK.getNumber());
 
         _operatorStartButton = new JoystickButton(_operatorGamepad, Gamepad.Buttons.START.getNumber());
         _operatorBackButton = new JoystickButton(_operatorGamepad, Gamepad.Buttons.BACK.getNumber());
@@ -198,9 +202,8 @@ public class OI extends OutliersProxy {
 
     }
 
-    public boolean getAbort() {
-        return false;
+    public boolean isCreepPressed() {
+        return  _driverRightStickButton.get();
     }
-
 }
 

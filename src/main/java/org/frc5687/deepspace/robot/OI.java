@@ -56,6 +56,8 @@ public class OI extends OutliersProxy {
     private AxisButton _operatorRightXAxisRightButton;
     private AxisButton _operatorRightXAxisLeftButton;
 
+    private Button _operatorRightStickButton;
+
     private POV _operatorPOV;
 
     public OI(){
@@ -69,6 +71,8 @@ public class OI extends OutliersProxy {
 
         _operatorRightBumper = new JoystickButton(_operatorGamepad, Gamepad.Buttons.RIGHT_BUMPER.getNumber());
         _operatorLeftBumper = new JoystickButton(_operatorGamepad, Gamepad.Buttons.LEFT_BUMPER.getNumber());
+
+        _operatorRightStickButton = new JoystickButton(_operatorGamepad, Gamepad.Buttons.RIGHT_STICK.getNumber());
 
         _driverRightBumper = new JoystickButton(_driverGamepad, Gamepad.Buttons.RIGHT_BUMPER.getNumber());
         _driverLeftBumper = new JoystickButton(_driverGamepad, Gamepad.Buttons.LEFT_BUMPER.getNumber());
@@ -139,6 +143,7 @@ public class OI extends OutliersProxy {
         _operatorXButton.whenPressed(new MoveElevatorToSetPoint(robot.getElevator(), Elevator.Setpoint.HPMode, Elevator.MotionMode.Ramp, this));
 
         _operatorStartButton.whenPressed(new MoveElevatorToSetPoint(robot.getElevator(), Elevator.Setpoint.StartHatch, Elevator.MotionMode.Ramp, this));
+        _operatorRightStickButton.whenPressed(new Safeguard(robot, new StartingConfiguration(robot), -30));
 
         //_driverYButton.whenPressed(new MoveArmToSetPoint(robot.getArm(), Arm.Setpoint.Floor, Arm.HallEffectSensor.LOW, Arm.MotionMode.Simple));
         //_driverBButton.whenPressed(new MoveArmToSetPoint(robot.getArm(), Arm.Setpoint.Intake, Arm.HallEffectSensor.INTAKE, Arm.MotionMode.Simple));

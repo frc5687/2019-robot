@@ -105,8 +105,8 @@ public class OI extends OutliersProxy {
     public void initializeButtons(Robot robot){
 
 
-        _driverStartButton.whenPressed(new AutoClimb(robot.getStilt(), robot.getArm(), robot.getDriveTrain(), robot.getCargoIntake(), robot.getHatchIntake(), robot.getStatusProxy()));
-//        _driverBackButton.whenPressed(new CloseSpear(robot.getSpear()));
+        _driverStartButton.whenPressed(new AutoClimb(robot.getStilt(), robot.getArm(), robot.getDriveTrain(), robot.getCargoIntake(), robot.getHatchIntake(), robot.getStatusProxy(), true));
+        _driverBackButton.whenPressed(new AutoClimb(robot.getStilt(), robot.getArm(), robot.getDriveTrain(), robot.getCargoIntake(), robot.getHatchIntake(), robot.getStatusProxy(), false));
 
         _operatorBackButton.whenPressed(new ScoreStart(robot));
 
@@ -168,6 +168,7 @@ public class OI extends OutliersProxy {
         return applySensitivityFactor(speed, Constants.Intake.SENSITIVITY);
     }
     public double getElevatorSpeed() {
+//        return 0;
         double speed = -getSpeedFromAxis(_operatorGamepad, Gamepad.Axes.RIGHT_Y.getNumber()) * Constants.Elevator.MAX_SPEED;
         speed = applyDeadband(speed, Constants.Elevator.DEADBAND);
         return applySensitivityFactor(speed, Constants.Elevator.SENSITIVITY);

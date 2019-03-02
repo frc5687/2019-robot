@@ -173,6 +173,10 @@ public class Constants {
         public static final double MAX_UP_SPEED= 0.5;
         public static final double MAX_DOWN_SPEED = 0.4;
         public static final double STILT_HOLD_SPEED = 0.07;
+        public static final double TOLERANCE=5.0;
+        public static final double MIDDLE_POSITION=36.0;
+        public static final double BOTTOM_POSITION=0.0;
+        public static final double TOP_POSITION=40.0;
     }
 
 
@@ -203,9 +207,12 @@ public class Constants {
             public static final double ARM_HOLD_SPEED = 0.0;
             public static final double RAISE_ARM_SPEED = -0.2;
 
-            public static final double CONTACT_ANGLE = 95.0;
-            public static final double SLOW_ANGLE = 165.0;
-            public static final double BOTTOM_ANGLE = 180.0;
+            public static final double H3_CONTACT_ANGLE = 95.0;
+            public static final double H2_CONTACT_ANGLE = 145.0;
+            public static final double H3_SLOW_ANGLE = 165.0;
+            public static final double H2_SLOW_ANGLE = 165.0;
+            public static final double H3_BOTTOM_ANGLE = 180.0;
+            public static final double H2_BOTTOM_ANGLE = 190.0;
 
             public static final double ARM_RETRACT_ANGLE = 165.0;
 

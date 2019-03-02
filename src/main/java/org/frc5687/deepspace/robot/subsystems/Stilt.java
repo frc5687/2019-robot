@@ -21,8 +21,11 @@ public class Stilt extends OutliersSubsystem {
 
     private Robot _robot;
 
-    private HallEffect _topHall = new HallEffect(RobotMap.DIO.STILT_HIGH);
-    private HallEffect _bottomHall = new HallEffect(RobotMap.DIO.STILT_LOW);
+    private HallEffect _topHall;
+    private HallEffect _middleHall;
+    private HallEffect _bottomHall;
+
+    private double _offset = 0;
 
     private IRDistanceSensor _downIR = new IRDistanceSensor(RobotMap.Analog.DOWN_IR, IRDistanceSensor.Type.SHORT);
 
@@ -37,6 +40,10 @@ public class Stilt extends OutliersSubsystem {
         }catch (Exception e) {
             error("Unable to allocate stilt controller: " + e.getMessage());
         }
+
+        _topHall = new HallEffect(RobotMap.DIO.STILT_HIGH);
+        _middleHall = new HallEffect(RobotMap.DIO.STILT_MIDDLE);
+        _bottomHall = new HallEffect(RobotMap.DIO.STILT_LOW);
 
         _wheelieVictor = new PWMVictorSPX(RobotMap.PWM.Wheelie);
         _wheelieVictor.setInverted(false);
@@ -71,12 +78,20 @@ public class Stilt extends OutliersSubsystem {
         return _neoStiltEncoder.getPosition();
     }
 
+    public double getPosition() {
+        return getRawNeoEncoder() - _offset;
+    }
+
     public boolean isAtTop() {
-        return _topHall.get();
+        return _topHall.get();// || (Math.abs(getPosition()-TOP_POSITION)<TOLERANCE);
     }
 
     public boolean isAtBottom() {
-        return _bottomHall.get();
+        return _bottomHall.get();// || (Math.abs(getPosition()-BOTTOM_POSITION)<TOLERANCE);
+    }
+
+    public boolean isAtMiddle() {
+        return _middleHall.get() || getPosition()>=MIDDLE_POSITION;
     }
 
     public boolean isOnSurface() {
@@ -90,8 +105,10 @@ public class Stilt extends OutliersSubsystem {
     @Override
     public void updateDashboard() {
         metric("NEOEncoder", getRawNeoEncoder());
+        metric("Position", getPosition());
         metric("AtTop", isAtTop());
         metric("AtBottom", isAtBottom());
+        metric("AtMiddle", isAtMiddle());
         metric("IRValue", _downIR.getAverageValue());
         metric("IRVoltage", _downIR.getAverageVoltage());
         metric("OnSurface", isOnSurface());

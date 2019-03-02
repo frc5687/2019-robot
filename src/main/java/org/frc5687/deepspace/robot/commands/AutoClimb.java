@@ -1,7 +1,6 @@
 package org.frc5687.deepspace.robot.commands;
 
 import edu.wpi.first.wpilibj.DriverStation;
-import org.frc5687.deepspace.robot.Constants;
 import org.frc5687.deepspace.robot.Robot;
 import org.frc5687.deepspace.robot.subsystems.*;
 import org.frc5687.deepspace.robot.utils.StatusProxy;
@@ -24,8 +23,13 @@ public class AutoClimb extends OutliersCommand {
     private double _encoderOffset;
     private boolean isDone = false;
     private long _stiltTimeout = 0;
+    private boolean _highHab = true;
 
-    public AutoClimb(Stilt stilt, Arm arm, DriveTrain driveTrain, CargoIntake cargoIntake, HatchIntake hatchIntake, StatusProxy statusProxy) {
+    private double _contactAngle;
+    private double _slowAngle;
+    private double _bottomAngle;
+
+    public AutoClimb(Stilt stilt, Arm arm, DriveTrain driveTrain, CargoIntake cargoIntake, HatchIntake hatchIntake, StatusProxy statusProxy, boolean highHab) {
         _stilt = stilt;
         _arm = arm;
         _driveTrain = driveTrain;
@@ -34,6 +38,8 @@ public class AutoClimb extends OutliersCommand {
         _hatchIntake = hatchIntake;
 
         _statusProxy = statusProxy;
+
+        _highHab = highHab;
 
         requires(_stilt);
         requires(_arm);
@@ -52,6 +58,17 @@ public class AutoClimb extends OutliersCommand {
        _climbState =  ClimbState.StowArm;
        _driveTrain.enableBrakeMode();
        _statusProxy.setConfiguration(Robot.Configuration.climbing);
+
+       if (_highHab) {
+           _contactAngle = H3_CONTACT_ANGLE;
+           _slowAngle = H3_SLOW_ANGLE;
+           _bottomAngle = H3_BOTTOM_ANGLE;
+       } else {
+           _contactAngle = H2_CONTACT_ANGLE;
+           _slowAngle = H2_SLOW_ANGLE;
+           _bottomAngle = H2_BOTTOM_ANGLE;
+       }
+
         metric("ClimbState", _climbState.name());
 
     }
@@ -73,7 +90,7 @@ public class AutoClimb extends OutliersCommand {
                 break;
             case PositionArm:
                 _arm.setSpeed(INITIAL_ARM_SPEED);
-                if (_arm.getAngle() >= CONTACT_ANGLE) {
+                if (_arm.getAngle() >= _contactAngle) {
                     DriverStation.reportError("Transitioning to " + ClimbState.MoveRollerAndStilt.name(), false);
                     _climbState = ClimbState.MoveRollerAndStilt;
                 }
@@ -81,8 +98,8 @@ public class AutoClimb extends OutliersCommand {
             case MoveRollerAndStilt:
                 _stilt.setLifterSpeed(STILT_SPEED);
                 metric("StiltSpeed", STILT_SPEED);
-                double armSpeed =  _arm.getAngle() >= SLOW_ANGLE ? ARM_SLOW_SPEED : ARM_SPEED; // Math.cos(Math.toRadians(_arm.getAngle())) * ARM_SPEED_SCALAR;
-                if ((_arm.isLow() || _arm.getAngle() >= BOTTOM_ANGLE)) {
+                double armSpeed =  _arm.getAngle() >= _slowAngle ? ARM_SLOW_SPEED : ARM_SPEED; // Math.cos(Math.toRadians(_arm.getAngle())) * ARM_SPEED_SCALAR;
+                if ((_arm.isLow() || _arm.getAngle() >= _bottomAngle)) {
                     DriverStation.reportError("Stopping arm", false);
                     _arm.setSpeed(0);
                 } else {
@@ -91,8 +108,8 @@ public class AutoClimb extends OutliersCommand {
                 }
 
                 metric("ArmSpeed", armSpeed);
-                if ((_arm.isLow() || _arm.getAngle() >= BOTTOM_ANGLE)
-                && _stilt.isAtTop()) {
+                if ((_arm.isLow() || _arm.getAngle() >= _bottomAngle)
+                && (_highHab ?_stilt.isAtTop() : _stilt.isAtMiddle())) {
                     metric("StiltSpeed", 0);
                     metric("ArmSpeed", 0);
                     _arm.setSpeed(0);
@@ -102,7 +119,7 @@ public class AutoClimb extends OutliersCommand {
                 }
                 break;
             case WheelieForward:
-                _stilt.setLifterSpeed(STILT_HOLD_SPEED);
+                _stilt.setLifterSpeed(_highHab ? STILT_HOLD_SPEED : 0);
                 _stilt.setWheelieSpeed(WHEELIE_FORWARD_SPEED);
                 _driveTrain.disableBrakeMode();
                 // _driveTrain.cheesyDrive(DRIVE_FORWARD_SPEED,0);

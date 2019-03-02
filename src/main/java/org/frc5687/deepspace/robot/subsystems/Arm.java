@@ -22,8 +22,8 @@ public class Arm extends OutliersSubsystem implements PIDSource {
 
     private HallEffect _rightStowedhall;
     private HallEffect _leftStowedhall;
-    private HallEffect _rightLowhall;
-    private HallEffect _leftLowhall;
+    // private HallEffect _rightLowhall;
+    // private HallEffect _leftLowhall;
 
 
     private double _leftOffset = 0;
@@ -54,8 +54,8 @@ public class Arm extends OutliersSubsystem implements PIDSource {
 
         _rightStowedhall = new HallEffect(RobotMap.DIO.ARM_RIGHT_STOWED_HALL);
         _leftStowedhall = new HallEffect(RobotMap.DIO.ARM_LEFT_STOWED_HALL);
-        _rightLowhall = new HallEffect(RobotMap.DIO.ARM_RIGHT_LOW_HALL);
-        _leftLowhall = new HallEffect(RobotMap.DIO.ARM_LEFT_LOW_HALL);
+        // _rightLowhall = new HallEffect(RobotMap.DIO.ARM_RIGHT_LOW_HALL);
+        // _leftLowhall = new HallEffect(RobotMap.DIO.ARM_LEFT_LOW_HALL);
 
     }
 
@@ -106,8 +106,8 @@ public class Arm extends OutliersSubsystem implements PIDSource {
 
     @Override
     public void updateDashboard() {
-        metric("LowRightHall", _rightLowhall.get());
-        metric("LowLeftHall", _leftLowhall.get());
+//        metric("LowRightHall", _rightLowhall.get());
+//        metric("LowLeftHall", _leftLowhall.get());
         metric("StowedRightHall", _rightStowedhall.get());
         metric("StowedLeftHall", _leftStowedhall.get());
         metric("LeftEncoder", getLeftPosition());
@@ -132,13 +132,11 @@ public class Arm extends OutliersSubsystem implements PIDSource {
     }
 
     public boolean isRightLow() {
-        return _rightLowhall.get();
-
+        return false;
     }
 
     public boolean isLeftLow() {
-        return _leftLowhall.get();
-
+        return false;
     }
 
 

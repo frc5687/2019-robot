@@ -96,15 +96,12 @@ public class RobotMap {
 
         public static final int STILT_HIGH = 5;
         public static final int STILT_LOW = 4;
+        public static final int STILT_MIDDLE = 8;
 
-        public static final int ARM_SECURE_HALL = 6;
-        //public static final int ARM_STOWED_HALL = 7;
-        public static final int ARM_INTAKE_HALL = 8;
-        //public static final int ARM_LOW_HALL = 9;
         public static final int ARM_RIGHT_STOWED_HALL = 6;
         public static final int ARM_LEFT_STOWED_HALL = 7;
-        public static final int ARM_RIGHT_LOW_HALL = 8;
-        public static final int ARM_LEFT_LOW_HALL = 9;
+//        public static final int ARM_RIGHT_LOW_HALL = 8;
+//        public static final int ARM_LEFT_LOW_HALL = 9;
 
 
         public static final int DRIVE_RIGHT_B = 13;

@@ -4,9 +4,7 @@ import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
-import edu.wpi.first.wpilibj.AnalogInput;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.frc5687.deepspace.robot.Constants;
 import org.frc5687.deepspace.robot.OI;
@@ -19,7 +17,7 @@ import static org.frc5687.deepspace.robot.Constants.DriveTrain.CREEP_FACTOR;
 import static org.frc5687.deepspace.robot.utils.Helpers.applySensitivityFactor;
 import static org.frc5687.deepspace.robot.utils.Helpers.limit;
 
-public class DriveTrain extends OutliersSubsystem {
+public class DriveTrain extends OutliersSubsystem implements PIDSource {
     private CANSparkMax _leftMaster;
     private CANSparkMax _rightMaster;
 
@@ -177,6 +175,10 @@ public class DriveTrain extends OutliersSubsystem {
         setPower(limit(leftMotorOutput), limit(rightMotorOutput), true);
     }
 
+    public float getYaw() {
+        return _imu.getYaw();
+    }
+
 
     public void setPower(double leftSpeed, double rightSpeed, boolean override) {
 //         if (!assertMotorControllers()) { return; }
@@ -243,6 +245,20 @@ public class DriveTrain extends OutliersSubsystem {
     public void resetDriveEncoders() {
         _leftOffset = getLeftTicks();
         _rightOffset = getRightTicks();
+    }
+
+    @Override
+    public double pidGet() {
+        return getDistance();
+    }
+
+    @Override
+    public PIDSourceType getPIDSourceType() {
+        return PIDSourceType.kDisplacement;
+    }
+
+    @Override
+    public void setPIDSourceType(PIDSourceType pidSource) {
     }
 
 

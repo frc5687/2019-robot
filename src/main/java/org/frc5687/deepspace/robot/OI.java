@@ -151,6 +151,7 @@ public class OI extends OutliersProxy {
         //_driverAButton.whenPressed(new MoveArmToSetPoint(robot.getArm(), Arm.Setpoint.Stowed, Arm.HallEffectSensor.STOWED, Arm.MotionMode.Simple));
 
     }
+    public boolean isAutoTargetPressed() { return false; }
     public double getDriveSpeed() {
         double speed = -getSpeedFromAxis(_driverGamepad, Gamepad.Axes.LEFT_Y.getNumber());
         speed = applyDeadband(speed, Constants.DriveTrain.DEADBAND);

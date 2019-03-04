@@ -4,6 +4,10 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 
+import java.util.ArrayList;
+
+import static org.frc5687.deepspace.robot.Constants.Limelight.*;
+
 public class Limelight extends OutliersProxy {
     NetworkTable _table;
     NetworkTableEntry _tx;
@@ -17,19 +21,12 @@ public class Limelight extends OutliersProxy {
     NetworkTableEntry _tvert;
     NetworkTableEntry _thor;
     NetworkTableEntry _getpipe;
+    NetworkTableEntry _camtran;
 
     NetworkTableEntry _ledmode;
     NetworkTableEntry _cammode;
     NetworkTableEntry _pipeline;
     NetworkTableEntry _stream;
-
-
-
-
-
-
-
-
 
     public Limelight() {
         this("limelight");
@@ -49,6 +46,7 @@ public class Limelight extends OutliersProxy {
         _tvert = _table.getEntry("tvert");
         _thor = _table.getEntry("thor");
         _getpipe = _table.getEntry("getpipe");
+        _cammode = _table.getEntry("camtran");
 
         _ledmode = _table.getEntry("ledMode");
         _cammode = _table.getEntry("camMode");
@@ -96,6 +94,23 @@ public class Limelight extends OutliersProxy {
     public double getHorizontalAngle() {
         return _tx.getDouble(0.0);
     }
+
+    public double getVerticalAngle() { return _ty.getDouble(0.0); }
+
+    public double getTargetArea() { return _ta.getDouble(0.0); }
+
+    public double getTargetDistanceFromTA() {
+        double distance = 82.819*(Math.exp(-0.206*getTargetArea()));
+        return distance;
+    }
+
+    public double getTargetDistance() {
+        double limeLightYAngle = Math.abs(getVerticalAngle());
+        double angleY = LIMELIGHT_ANGLE - limeLightYAngle;
+        double tanY = Math.tan(angleY * (Math.PI / 180));
+        return (TARGET_HEIGHT - LIMELIGHT_HEIGHT )/tanY;
+    }
+
 
     @Override
     public void updateDashboard() {

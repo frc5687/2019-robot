@@ -1,5 +1,6 @@
 package org.frc5687.deepspace.robot.subsystems;
 
+import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
@@ -34,6 +35,7 @@ public class DriveTrain extends OutliersSubsystem {
     private IRDistanceSensor _frontDistance;
 
     private OI _oi;
+    private AHRS _imu;
 
     private double _leftOffset;
     private double _rightOffset;
@@ -47,6 +49,8 @@ public class DriveTrain extends OutliersSubsystem {
     public DriveTrain(Robot robot) {
         info("Constructing DriveTrain class.");
         _oi = robot.getOI();
+        _imu = robot.getIMU();
+
         _shifter = robot.getShifter();
 
         _frontDistance = new IRDistanceSensor(RobotMap.Analog.FRONT_IR, IRDistanceSensor.Type.MEDIUM);

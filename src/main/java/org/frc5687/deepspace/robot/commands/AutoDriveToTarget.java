@@ -166,7 +166,7 @@ public class AutoDriveToTarget extends OutliersCommand {
                 _currentTargetDistance = _limelight.getTargetDistanceFromTA();
                 _destination = _currentPos + _currentTargetDistance;
             }
-            _forwardSpeed = _destination * _speed;
+            //_forwardSpeed = _destination * _speed;
             //_delta = DESIRED_TARGET_AREA - _limelight.getTargetArea();
             _forwardSpeed = (DESIRED_TARGET_AREA - targetArea) * _speed;
             metric("targetArea", targetArea);

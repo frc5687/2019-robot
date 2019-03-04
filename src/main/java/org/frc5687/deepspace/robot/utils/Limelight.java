@@ -88,7 +88,7 @@ public class Limelight extends OutliersProxy {
     }
 
     public boolean isTargetSighted() {
-        return (int)_tv.getNumber(0) > 0;
+        return _tv.getDouble(0) > 0;
     }
 
     public double getHorizontalAngle() {

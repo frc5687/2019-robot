@@ -122,7 +122,7 @@ public class Robot extends TimedRobot implements ILoggingSource {
     }
 
     public void teleopInit() {
-        _limelight.disableLEDs();
+        //_limelight.disableLEDs();
     }
 
     /**
@@ -163,7 +163,7 @@ public class Robot extends TimedRobot implements ILoggingSource {
 
     @Override
     public void disabledInit() {
-        _limelight.disableLEDs();
+        //_limelight.disableLEDs();
     }
 
 

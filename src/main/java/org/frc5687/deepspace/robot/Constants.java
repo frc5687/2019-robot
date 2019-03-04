@@ -243,9 +243,9 @@ public class Constants {
         public class AlignToTarget {
             public static final double SPEED = 1.0;
 
-            public static final double kP = 0.01;
-            public static final double kI = 0.000;
-            public static final double kD = 0.05;
+            public static final double PIDkP = 0.03;
+            public static final double PIDkI = 0.000;
+            public static final double PIDkD = 0.02;
             public static final double TOLERANCE = 1; // 0.5
             public static final double MINIMUM_SPEED = 0.2;
             public static final double STEADY_TIME = 60;

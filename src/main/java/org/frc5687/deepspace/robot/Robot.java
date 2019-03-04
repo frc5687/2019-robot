@@ -75,7 +75,7 @@ public class Robot extends TimedRobot implements ILoggingSource {
         _oi.initializeButtons(this);
 
         // Initialize the other stuff
-        // _limelight.disableLEDs();
+        _limelight.disableLEDs();
         _limelight.setStreamingMode(Limelight.StreamMode.PIP_SECONDARY);
         _status.setConfiguration(Configuration.starting);
         _arm.resetEncoders();
@@ -97,6 +97,7 @@ public class Robot extends TimedRobot implements ILoggingSource {
     @Override
     public void robotPeriodic() {
         updateDashboard();
+        _oi.poll();
     }
 
     /**
@@ -113,9 +114,11 @@ public class Robot extends TimedRobot implements ILoggingSource {
     @Override
     public void autonomousInit() {
         teleopInit();
+        // _limelight.enableLEDs();
     }
 
     public void teleopInit() {
+        _limelight.disableLEDs();
     }
 
     /**
@@ -123,7 +126,7 @@ public class Robot extends TimedRobot implements ILoggingSource {
      */
     @Override
     public void autonomousPeriodic() {
-        Scheduler.getInstance().run();
+        ourPeriodic();
     }
 
     /**
@@ -131,6 +134,10 @@ public class Robot extends TimedRobot implements ILoggingSource {
      */
     @Override
     public void teleopPeriodic() {
+        ourPeriodic();
+    }
+
+    private void ourPeriodic() {
         int operatorPOV = _oi.getOperatorPOV();
         int driverPOV = _oi.getDriverPOV();
 
@@ -152,13 +159,7 @@ public class Robot extends TimedRobot implements ILoggingSource {
 
     @Override
     public void disabledInit() {
-/*
-        RioLogger.getInstance().forceSync();
-        RioLogger.getInstance().close();
-        _arm.enableCoastMode();
-        _elevator.enableCoastMode();
-        _stilt.enableCoastMode();
-         */
+        _limelight.disableLEDs();
     }
 
 
@@ -233,11 +234,10 @@ public class Robot extends TimedRobot implements ILoggingSource {
         }
     }
     public void setConfiguration(Configuration configuration) {
-        _configuration = configuration;
         _status.setConfiguration(configuration);
     }
     public Configuration getConfiguration() {
-        return _configuration;
+        return _status.getConfiguration();
     }
     @Override
     public void error(String message) {
@@ -276,7 +276,7 @@ public class Robot extends TimedRobot implements ILoggingSource {
     public Stilt getStilt() { return _stilt; }
     public CargoIntake getCargoIntake() { return _cargoIntake;}
     public HatchIntake getHatchIntake() { return _hatchIntake;}
-
+    public StatusProxy getStatusProxy() { return _status; }
 
 
     public enum IdentityMode {
@@ -301,7 +301,8 @@ public class Robot extends TimedRobot implements ILoggingSource {
         starting(0),
         hatch(1),
         cargo(2),
-        climb(3);
+        climbing(3),
+        parked(4);
 
         private int _value;
 

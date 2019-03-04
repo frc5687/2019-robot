@@ -20,7 +20,8 @@ public class CargoIntakeUp extends OutliersCommand {
     }
     @Override
     protected void initialize() {
-        _stopTime = System.currentTimeMillis() + Constants.Intake.RAISE_WRIST_MILLI_SEC;
+        _stopTime = _cargoIntake.isUp() ?  System.currentTimeMillis() : System.currentTimeMillis() + Constants.Intake.RAISE_WRIST_MILLI_SEC;
+        _cargoIntake.raiseWrist();
     }
     @Override
     protected void execute(){

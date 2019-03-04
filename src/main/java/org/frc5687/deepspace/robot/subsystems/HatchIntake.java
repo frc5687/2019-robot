@@ -53,5 +53,13 @@ public class HatchIntake extends OutliersSubsystem {
     protected void initDefaultCommand() {
         setDefaultCommand(new IdleHatchIntake(this));
     }
+
+    public boolean isDown() {
+        return _wristSolenoid.get() == DoubleSolenoid.Value.kForward;
+    }
+
+    public boolean isUp() {
+        return _wristSolenoid.get() == DoubleSolenoid.Value.kReverse;
+    }
 }
 

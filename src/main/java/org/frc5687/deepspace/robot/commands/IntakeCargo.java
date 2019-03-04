@@ -12,7 +12,7 @@ public class IntakeCargo extends CommandGroup {
 //        addSequential(new MoveElevatorToSetPoint(robot.getElevator(), Elevator.Setpoint.Hatch1, Elevator.MotionMode.Ramp));
         addSequential(new ClawWristDown(robot));
         addSequential(new CargoIntakeDown(robot.getCargoIntake()));
-        addSequential(new MoveElevatorToSetPoint(robot.getElevator(), Elevator.Setpoint.Bottom, Elevator.MotionMode.Ramp));
+        addSequential(new MoveElevatorToSetPoint(robot.getElevator(), Elevator.Setpoint.Bottom, Elevator.MotionMode.Ramp, null));
         addSequential(new StartRoller(robot.getCargoIntake(), true));
         addSequential(new StopRoller(robot.getCargoIntake()));
         // addSequential(new MoveArmToSetPoint(robot.getArm(), Arm.Setpoint.Secure, Arm.HallEffectSensor.SECURE, Arm.MotionMode.Simple));

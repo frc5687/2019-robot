@@ -287,7 +287,7 @@ public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
 
     @Override
     public Pose getPose() {
-        return new BasicPose( 0/*_imu.getYaw()*/, _driveTrain.getLeftDistance(), _driveTrain.getRightDistance(), _driveTrain.getDistance());
+        return new BasicPose(_imu.getYaw(), _driveTrain.getLeftDistance(), _driveTrain.getRightDistance(), _driveTrain.getDistance());
     }
 
 

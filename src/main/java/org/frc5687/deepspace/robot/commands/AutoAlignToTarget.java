@@ -11,7 +11,9 @@ import org.frc5687.deepspace.robot.Constants;
 import org.frc5687.deepspace.robot.OI;
 import org.frc5687.deepspace.robot.Robot;
 import org.frc5687.deepspace.robot.subsystems.DriveTrain;
+import org.frc5687.deepspace.robot.utils.BasicPose;
 import org.frc5687.deepspace.robot.utils.Limelight;
+import org.frc5687.deepspace.robot.utils.PoseTracker;
 import org.frc5687.deepspace.robot.utils.RioLogger;
 
 import static org.frc5687.deepspace.robot.Constants.Auto.AlignToTarget.PIDkD;
@@ -25,6 +27,7 @@ public class AutoAlignToTarget extends OutliersCommand implements PIDOutput {
     private double _angle;
     private double _speed;
     private long _timeout = 2000;
+    private PoseTracker _poseTracker;
 
     private double _pidOut;
 
@@ -47,7 +50,7 @@ public class AutoAlignToTarget extends OutliersCommand implements PIDOutput {
     private double _tolerance;
 
 
-    public AutoAlignToTarget(DriveTrain driveTrain, OI oi, AHRS imu, Limelight limelight, double speed, long timeout, double tolerance, String stage) {
+    public AutoAlignToTarget(DriveTrain driveTrain, OI oi, AHRS imu, Limelight limelight, PoseTracker poseTracker, double speed, long timeout, double tolerance, String stage) {
         requires(driveTrain);
         _limelight = limelight;
         _oi = oi;
@@ -57,6 +60,7 @@ public class AutoAlignToTarget extends OutliersCommand implements PIDOutput {
         _timeout = timeout;
         _tolerance = tolerance;
         _stage = stage;
+        _poseTracker = poseTracker;
     }
 
     @Override
@@ -94,21 +98,34 @@ public class AutoAlignToTarget extends OutliersCommand implements PIDOutput {
 
     @Override
     protected void execute() {
-
+        boolean wasTargetedSighted = _targetSighted;
         if (!_targetSighted) {
-            error("target not sighted!");
+            info("Target not yet sighted!");
             _targetSighted = _limelight.isTargetSighted();
         }
         metric("targetSighted", _targetSighted);
         metric("limelight sighted", _limelight.isTargetSighted());
-        if (_targetSighted) {
-            error("Target sighted!");
+        if (_targetSighted && !wasTargetedSighted) {
+            info("Target sighted!");
+
+            // Get the perceived angle between the robot and the target, according to the limelight...
             double limeLightAngle = _limelight.getHorizontalAngle();
-            double yawAngle = _imu.getYaw();
+
+            // Figure out the time at which the angle was measured using the latency of the limelight proxy...
+            long timeKey = System.currentTimeMillis() - (long)_limelight.getLatency();
+
+            // Find the robot pose at that point in time, if possible...
+            BasicPose pose = (BasicPose)_poseTracker.get(timeKey);
+
+            // If we found a pose, get the robot orientation from it.  Otherwise get the current orientation.
+            double yawAngle = pose==null ? _imu.getYaw() : pose.getAngle();
+
+            // And now determine the "real" target angle based on these two.
             _angle = limeLightAngle + yawAngle;
 
             metric("LimeLightAngle", limeLightAngle);
             metric("YawAngle", yawAngle);
+            metric("Pose", pose==null?0:pose.getMillis());
             metric("angle", _angle);
 
             _controller.setInputRange(Constants.Auto.MIN_IMU_ANGLE, Constants.Auto.MAX_IMU_ANGLE);

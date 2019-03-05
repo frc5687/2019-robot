@@ -182,6 +182,7 @@ public class Constants {
         public static final double TARGET_HEIGHT = 29;
         public static final double LIMELIGHT_HEIGHT = 41.5;
         public static final double LIMELIGHT_ANGLE = 20;
+        public static final double OVERALL_LATENCY_MILLIS = 11;
     }
 
 

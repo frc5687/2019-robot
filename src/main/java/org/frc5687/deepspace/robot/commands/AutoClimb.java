@@ -109,7 +109,7 @@ public class AutoClimb extends OutliersCommand {
 
                 metric("ArmSpeed", armSpeed);
                 if ((_arm.isLow() || _arm.getAngle() >= _bottomAngle)
-                && (_highHab ?_stilt.isAtTop() : _stilt.isAtMiddle())) {
+                && (_highHab ?_stilt.isExtended() : _stilt.isAtMiddle())) {
                     metric("StiltSpeed", 0);
                     metric("ArmSpeed", 0);
                     _arm.setSpeed(0);
@@ -149,7 +149,7 @@ public class AutoClimb extends OutliersCommand {
             case LiftStilt:
                 _stilt.setLifterSpeed(RAISE_STILT_SPEED);
                 metric("StiltSpeed", RAISE_STILT_SPEED);
-                if (_stilt.isAtBottom()) {
+                if (_stilt.isRetracted()) {
                     _stilt.enableCoastMode();
                     _driveTrain.resetDriveEncoders();
                     DriverStation.reportError("Transitioning to " + ClimbState.Park.name(), false);
@@ -165,7 +165,7 @@ public class AutoClimb extends OutliersCommand {
             case WaitStilt:
                 _stilt.setLifterSpeed(0);
                 metric("StiltSpeed", 0);
-                if (_stilt.isAtBottom()) {
+                if (_stilt.isRetracted()) {
                     _stilt.enableCoastMode();
                     _driveTrain.resetDriveEncoders();
                     _climbState = ClimbState.Park;

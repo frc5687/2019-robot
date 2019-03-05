@@ -1,6 +1,5 @@
 package org.frc5687.deepspace.robot.subsystems;
 
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.revrobotics.CANEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
@@ -21,9 +20,9 @@ public class Stilt extends OutliersSubsystem {
 
     private Robot _robot;
 
-    private HallEffect _topHall;
+    private HallEffect _extendedHall;
     private HallEffect _middleHall;
-    private HallEffect _bottomHall;
+    private HallEffect _retractedHall;
 
     private double _offset = 0;
 
@@ -41,16 +40,16 @@ public class Stilt extends OutliersSubsystem {
             error("Unable to allocate stilt controller: " + e.getMessage());
         }
 
-        _topHall = new HallEffect(RobotMap.DIO.STILT_HIGH);
+        _extendedHall = new HallEffect(RobotMap.DIO.STILT_EXTENDED_HALL);
         _middleHall = new HallEffect(RobotMap.DIO.STILT_MIDDLE);
-        _bottomHall = new HallEffect(RobotMap.DIO.STILT_LOW);
+        _retractedHall = new HallEffect(RobotMap.DIO.STILT_RETRACTED_HALL);
 
         _wheelieVictor = new PWMVictorSPX(RobotMap.PWM.Wheelie);
         _wheelieVictor.setInverted(false);
     }
 
     public void setLifterSpeed(double desiredSpeed) {
-        double speed = desiredSpeed; // limit(desiredSpeed, isAtBottom() ? 0 : -MAX_DOWN_SPEED , isAtTop() ? 0 : MAX_UP_SPEED);
+        double speed = desiredSpeed; // limit(desiredSpeed, isRetracted() ? 0 : -MAX_DOWN_SPEED , isExtended() ? 0 : MAX_UP_SPEED);
         metric("Lifter/rawSpeed", desiredSpeed);
         metric("Lifter/speed", speed);
         _lifterSpark.set(speed);
@@ -82,12 +81,12 @@ public class Stilt extends OutliersSubsystem {
         return getRawNeoEncoder() - _offset;
     }
 
-    public boolean isAtTop() {
-        return _topHall.get();// || (Math.abs(getPosition()-TOP_POSITION)<TOLERANCE);
+    public boolean isExtended() {
+        return _extendedHall.get();// || (Math.abs(getPosition()-TOP_POSITION)<TOLERANCE);
     }
 
-    public boolean isAtBottom() {
-        return _bottomHall.get();// || (Math.abs(getPosition()-BOTTOM_POSITION)<TOLERANCE);
+    public boolean isRetracted() {
+        return _retractedHall.get();// || (Math.abs(getPosition()-BOTTOM_POSITION)<TOLERANCE);
     }
 
     public boolean isAtMiddle() {
@@ -106,8 +105,8 @@ public class Stilt extends OutliersSubsystem {
     public void updateDashboard() {
         metric("NEOEncoder", getRawNeoEncoder());
         metric("Position", getPosition());
-        metric("AtTop", isAtTop());
-        metric("AtBottom", isAtBottom());
+        metric("AtTop", isExtended());
+        metric("AtBottom", isRetracted());
         metric("AtMiddle", isAtMiddle());
         metric("IRValue", _downIR.getAverageValue());
         metric("IRVoltage", _downIR.getAverageVoltage());

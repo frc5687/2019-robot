@@ -14,7 +14,7 @@ public abstract class OutliersCommand extends Command implements ILoggingSource 
     public OutliersCommand(double timeout) {
         super.setTimeout(timeout);
     }
-    
+
     @Override
     public void error(String message) {
         RioLogger.error(this, message);

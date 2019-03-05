@@ -79,7 +79,7 @@ public class Robot extends TimedRobot implements ILoggingSource {
         _oi.initializeButtons(this);
 
         // Initialize the other stuff
-        _limelight.disableLEDs();
+        //_limelight.disableLEDs();
         _limelight.setStreamingMode(Limelight.StreamMode.PIP_SECONDARY);
         _status.setConfiguration(Configuration.starting);
         _arm.resetEncoders();
@@ -267,9 +267,7 @@ public class Robot extends TimedRobot implements ILoggingSource {
         return _oi;
     }
     public AHRS getIMU() { return _imu; }
-    public DriveTrain getDriveTrain() {
-        return _driveTrain;
-    }
+    public DriveTrain getDriveTrain() { return _driveTrain; }
     public Limelight getLimelight() {
         return _limelight;
     }

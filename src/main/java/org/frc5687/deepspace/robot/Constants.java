@@ -181,7 +181,7 @@ public class Constants {
     public class Limelight {
         public static final double TARGET_HEIGHT = 29;
         public static final double LIMELIGHT_HEIGHT = 41.5;
-        public static final double LIMELIGHT_ANGLE = 0.0;
+        public static final double LIMELIGHT_ANGLE = 20;
     }
 
 

@@ -7,6 +7,14 @@ import org.frc5687.deepspace.robot.utils.ILoggingSource;
 import org.frc5687.deepspace.robot.utils.RioLogger;
 
 public abstract class OutliersCommand extends Command implements ILoggingSource {
+
+    public OutliersCommand() {
+    }
+
+    public OutliersCommand(double timeout) {
+        super.setTimeout(timeout);
+    }
+
     @Override
     public void error(String message) {
         RioLogger.error(this, message);

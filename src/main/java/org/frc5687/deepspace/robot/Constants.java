@@ -23,6 +23,10 @@ public class Constants {
 
         public static final boolean LEFT_MOTORS_INVERTED = true;
         public static final boolean RIGHT_MOTORS_INVERTED = false;
+        public static final double MAX_SPEED_IPS = 12 * 12;
+        public static final double CAP_SPEED_IPS = .8 * MAX_SPEED_IPS;
+        public static final double MAX_ACCELERATION_IPSS = CAP_SPEED_IPS / 2;
+        public static final double MAX_JERK_IPSSS = CAP_SPEED_IPS;
     }
     public class Intake {
         //Roller
@@ -195,6 +199,9 @@ public class Constants {
 
 
     public static class Auto {
+        public static final double MIN_IMU_ANGLE = -180.0;
+        public static final double MAX_IMU_ANGLE = 180.0;
+
         public static class Climb {
             public static final double ENDGAME_CUTOFF = 30.0;
 
@@ -228,5 +235,17 @@ public class Constants {
             public static final long STILT_TIMEOUT = 2000;
 
         }
+
+        public static class AutoDrivePath {
+            public static final double ANGLE_TOLERANCE = 0.25;
+            public static final double kPangle = .001;
+            public static final double kIangle = .0001;
+            public static final double kDangle = .001;
+
+            public static final double kPdist = .001;
+            public static final double kIdist = .0001;
+            public static final double kDdist = .001;
+        }
+
     }
 }

@@ -1,5 +1,7 @@
 package org.frc5687.deepspace.robot;
 
+import com.kauailabs.navx.frc.AHRS;
+import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -29,6 +31,7 @@ public class Robot extends TimedRobot implements ILoggingSource {
 
     private String _name;
     private OI _oi;
+    private AHRS _imu;
     private Limelight _limelight;
     private DriveTrain _driveTrain;
     private Elevator _elevator;
@@ -55,6 +58,7 @@ public class Robot extends TimedRobot implements ILoggingSource {
 
         // OI must be first...
         _oi = new OI();
+        _imu = new AHRS(SPI.Port.kMXP, (byte) 100);
 
         // then proxies...
         _lights = new Lights(this);
@@ -75,7 +79,7 @@ public class Robot extends TimedRobot implements ILoggingSource {
         _oi.initializeButtons(this);
 
         // Initialize the other stuff
-        _limelight.disableLEDs();
+        //_limelight.disableLEDs();
         _limelight.setStreamingMode(Limelight.StreamMode.PIP_SECONDARY);
         _status.setConfiguration(Configuration.starting);
         _arm.resetEncoders();
@@ -118,7 +122,7 @@ public class Robot extends TimedRobot implements ILoggingSource {
     }
 
     public void teleopInit() {
-        _limelight.disableLEDs();
+        //_limelight.disableLEDs();
     }
 
     /**
@@ -159,7 +163,7 @@ public class Robot extends TimedRobot implements ILoggingSource {
 
     @Override
     public void disabledInit() {
-        _limelight.disableLEDs();
+        //_limelight.disableLEDs();
     }
 
 
@@ -262,9 +266,8 @@ public class Robot extends TimedRobot implements ILoggingSource {
     public OI getOI() {
         return _oi;
     }
-    public DriveTrain getDriveTrain() {
-        return _driveTrain;
-    }
+    public AHRS getIMU() { return _imu; }
+    public DriveTrain getDriveTrain() { return _driveTrain; }
     public Limelight getLimelight() {
         return _limelight;
     }

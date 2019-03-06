@@ -166,7 +166,7 @@ public class AutoAlignToTarget extends OutliersCommand implements PIDOutput {
         error("AutoAlign finished: angle = " + _imu.getYaw() + ", time = " + (System.currentTimeMillis() - _startTimeMillis));
         _controller.disable();
         error("AutoAlign.end() controller disabled");
-        _limelight.disableLEDs();
+//        _limelight.disableLEDs();
     }
 
     @Override

@@ -123,14 +123,15 @@ public class OI extends OutliersProxy {
         _operatorLeftBumper.whenPressed(new HatchMode(robot));
         _operatorRightBumper.whenPressed(new CargoMode(robot));
 
-        _driverRightBumper.whenPressed(new Shift(robot.getDriveTrain(), robot.getShifter(), Shifter.Gear.LOW, false));
-        _driverLeftBumper.whenPressed(new Shift(robot.getDriveTrain(), robot.getShifter(), Shifter.Gear.HIGH, false));
+        _driverLeftBumper.whileHeld(new Shift(robot.getDriveTrain(), robot.getShifter(), Shifter.Gear.LOW, false));
 
 //        _operatorRightTrigger.whenPressed(new Score(robot));
         _operatorRightTrigger.whenPressed(new IntakeCargo(robot));
         _operatorLeftTrigger.whileHeld(new HoldClawOpen(robot));
 
-        _driverRightTrigger.whenPressed(new AutoAlignToTarget(robot.getDriveTrain(), robot.getOI(), robot.getIMU(), robot.getLimelight(), 0.5, 5000, 2.0, ""));
+        _driverRightTrigger.whenPressed(new AutoDriveToTarget(robot, 0,14,1,""));
+        // OutTake not created yet.
+        //_driverLeftTrigger.whenPressed(new OutTake(robot));
 
         _operatorRightXAxisLeftButton.whenPressed(new CargoIntakeDown(robot.getCargoIntake()));
         _operatorRightXAxisRightButton.whenPressed(new CargoIntakeUp(robot.getCargoIntake()));
@@ -252,7 +253,7 @@ public class OI extends OutliersProxy {
     }
 
     public boolean isCreepPressed() {
-        return  _driverRightStickButton.get();
+        return  _driverRightBumper.get();
     }
 }
 

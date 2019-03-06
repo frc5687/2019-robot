@@ -130,7 +130,7 @@ public class OI extends OutliersProxy {
         _operatorRightTrigger.whenPressed(new IntakeCargo(robot));
         _operatorLeftTrigger.whileHeld(new HoldClawOpen(robot));
 
-        _driverRightTrigger.whenPressed(new AutoAlignToTarget(robot.getDriveTrain(), robot.getOI(), robot.getIMU(), robot.getLimelight(), 0.2, 5000, 1, ""));
+        _driverRightTrigger.whenPressed(new AutoAlignToTarget(robot.getDriveTrain(), robot.getOI(), robot.getIMU(), robot.getLimelight(), Constants.Auto.Align.SPEED, 5000, Constants.Auto.Align.TOLERANCE, ""));
 
         _operatorRightXAxisLeftButton.whenPressed(new CargoIntakeDown(robot.getCargoIntake()));
         _operatorRightXAxisRightButton.whenPressed(new CargoIntakeUp(robot.getCargoIntake()));

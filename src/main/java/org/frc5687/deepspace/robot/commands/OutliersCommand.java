@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.frc5687.deepspace.robot.utils.ILoggingSource;
+import org.frc5687.deepspace.robot.utils.MetricTracker;
 import org.frc5687.deepspace.robot.utils.RioLogger;
 
 public abstract class OutliersCommand extends Command implements ILoggingSource {
@@ -47,4 +48,10 @@ public abstract class OutliersCommand extends Command implements ILoggingSource 
         SmartDashboard.putBoolean(getClass().getSimpleName() + "/" + name, value);
     }
 
+    protected void logMetrics(String... metrics) {
+        MetricTracker tracker = MetricTracker.createMetricTracker(getClass().getName());
+        for (String metric : metrics) {
+            tracker.registerReportableMetricName(metric);
+        }
+    }
 }

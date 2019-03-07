@@ -36,6 +36,7 @@ public class AutoAlign extends OutliersCommand implements PIDOutput {
         _timeout = timeout;
         _tolerance = tolerance;
         _state = state;
+        logMetrics("Angle","pidOut","imu","onTarget");
     }
 
     @Override

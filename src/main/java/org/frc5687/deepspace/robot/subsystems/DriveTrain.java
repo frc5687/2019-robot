@@ -1,11 +1,10 @@
 package org.frc5687.deepspace.robot.subsystems;
 
+import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
-import edu.wpi.first.wpilibj.AnalogInput;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.frc5687.deepspace.robot.Constants;
 import org.frc5687.deepspace.robot.OI;
@@ -14,10 +13,11 @@ import org.frc5687.deepspace.robot.RobotMap;
 import org.frc5687.deepspace.robot.commands.Drive;
 import org.frc5687.deepspace.robot.utils.IRDistanceSensor;
 
+import static org.frc5687.deepspace.robot.Constants.DriveTrain.CREEP_FACTOR;
 import static org.frc5687.deepspace.robot.utils.Helpers.applySensitivityFactor;
 import static org.frc5687.deepspace.robot.utils.Helpers.limit;
 
-public class DriveTrain extends OutliersSubsystem {
+public class DriveTrain extends OutliersSubsystem implements PIDSource {
     private CANSparkMax _leftMaster;
     private CANSparkMax _rightMaster;
 
@@ -33,6 +33,7 @@ public class DriveTrain extends OutliersSubsystem {
     private IRDistanceSensor _frontDistance;
 
     private OI _oi;
+    private AHRS _imu;
 
     private double _leftOffset;
     private double _rightOffset;
@@ -46,6 +47,8 @@ public class DriveTrain extends OutliersSubsystem {
     public DriveTrain(Robot robot) {
         info("Constructing DriveTrain class.");
         _oi = robot.getOI();
+        _imu = robot.getIMU();
+
         _shifter = robot.getShifter();
 
         _frontDistance = new IRDistanceSensor(RobotMap.Analog.FRONT_IR, IRDistanceSensor.Type.MEDIUM);
@@ -63,6 +66,8 @@ public class DriveTrain extends OutliersSubsystem {
             _rightMaster.setInverted(Constants.DriveTrain.RIGHT_MOTORS_INVERTED);
             _rightFollower.setInverted(Constants.DriveTrain.RIGHT_MOTORS_INVERTED);
 
+            disableBrakeMode();
+
             debug("Configuring followers");
             _leftFollower.follow(_leftMaster);
             _rightFollower.follow(_rightMaster);
@@ -79,6 +84,20 @@ public class DriveTrain extends OutliersSubsystem {
         _leftMagEncoder = new Encoder(RobotMap.DIO.DRIVE_LEFT_A, RobotMap.DIO.DRIVE_LEFT_B);
         _rightMagEncoder = new Encoder(RobotMap.DIO.DRIVE_RIGHT_A, RobotMap.DIO.DRIVE_RIGHT_B);
 
+    }
+
+    public void enableBrakeMode() {
+        _leftMaster.setIdleMode(CANSparkMax.IdleMode.kCoast);
+        _leftFollower.setIdleMode(CANSparkMax.IdleMode.kBrake);
+        _rightMaster.setIdleMode(CANSparkMax.IdleMode.kCoast);
+        _rightFollower.setIdleMode(CANSparkMax.IdleMode.kBrake);
+    }
+
+    public void disableBrakeMode() {
+        _leftMaster.setIdleMode(CANSparkMax.IdleMode.kCoast);
+        _leftFollower.setIdleMode(CANSparkMax.IdleMode.kCoast);
+        _rightMaster.setIdleMode(CANSparkMax.IdleMode.kCoast);
+        _rightFollower.setIdleMode(CANSparkMax.IdleMode.kCoast);
     }
 
     private boolean assertMotorControllers() {
@@ -111,7 +130,7 @@ public class DriveTrain extends OutliersSubsystem {
         setDefaultCommand(new Drive(this, _oi));
     }
 
-    public void cheesyDrive(double speed, double rotation) {
+    public void cheesyDrive(double speed, double rotation, boolean creep) {
         if (!assertMotorControllers()) { return; }
         metric("Speed", speed);
         metric("Rotation", rotation);
@@ -128,7 +147,12 @@ public class DriveTrain extends OutliersSubsystem {
 
         if (speed < Constants.DriveTrain.DEADBAND && speed > -Constants.DriveTrain.DEADBAND) {
             metric("Rot/Raw", rotation);
-            rotation = applySensitivityFactor(rotation, _shifter.getGear()== Shifter.Gear.HIGH  ? Constants.DriveTrain.ROTATION_SENSITIVITY_HIGH_GEAR : Constants.DriveTrain.ROTATION_SENSITIVITY_LOW_GEAR);
+            rotation = applySensitivityFactor(rotation, _shifter.getGear() == Shifter.Gear.HIGH ? Constants.DriveTrain.ROTATION_SENSITIVITY_HIGH_GEAR : Constants.DriveTrain.ROTATION_SENSITIVITY_LOW_GEAR);
+            if (creep) {
+                metric("Rot/Creep", creep);
+                rotation = rotation * CREEP_FACTOR;
+            }
+
             metric("Rot/Transformed", rotation);
             leftMotorOutput = rotation;
             rightMotorOutput = -rotation;
@@ -149,6 +173,10 @@ public class DriveTrain extends OutliersSubsystem {
         }
 
         setPower(limit(leftMotorOutput), limit(rightMotorOutput), true);
+    }
+
+    public float getYaw() {
+        return _imu.getYaw();
     }
 
 
@@ -217,6 +245,20 @@ public class DriveTrain extends OutliersSubsystem {
     public void resetDriveEncoders() {
         _leftOffset = getLeftTicks();
         _rightOffset = getRightTicks();
+    }
+
+    @Override
+    public double pidGet() {
+        return getDistance();
+    }
+
+    @Override
+    public PIDSourceType getPIDSourceType() {
+        return PIDSourceType.kDisplacement;
+    }
+
+    @Override
+    public void setPIDSourceType(PIDSourceType pidSource) {
     }
 
 

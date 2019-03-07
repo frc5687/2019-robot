@@ -1,6 +1,8 @@
 package org.frc5687.deepspace.robot;
 
 import edu.wpi.first.wpilibj.Notifier;
+import com.kauailabs.navx.frc.AHRS;
+import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -21,7 +23,7 @@ import java.io.FileReader;
  */
 public class Robot extends TimedRobot implements ILoggingSource {
 
-    private IdentityMode _identityMode = IdentityMode.competition;
+    public static IdentityMode identityMode = IdentityMode.competition;
     private Configuration _configuration;
     private RioLogger.LogLevel _dsLogLevel = RioLogger.LogLevel.warn;
     private RioLogger.LogLevel _fileLogLevel = RioLogger.LogLevel.warn;
@@ -30,19 +32,18 @@ public class Robot extends TimedRobot implements ILoggingSource {
 
     private String _name;
     private OI _oi;
+    private AHRS _imu;
     private Limelight _limelight;
     private DriveTrain _driveTrain;
     private Elevator _elevator;
     private PDP _pdp;
-    private Gripper _gripper;
-    private Spear _spear;
     private Arm _arm;
-    private Wrist _wrist;
-    private Roller _roller;
     private Shifter _shifter;
     private Lights _lights;
     private StatusProxy _status;
     private Stilt _stilt;
+    private CargoIntake _cargoIntake;
+    private HatchIntake _hatchIntake;
 
     /**
      * This function is setRollerSpeed when the robot is first started up and should be
@@ -52,31 +53,40 @@ public class Robot extends TimedRobot implements ILoggingSource {
     public void robotInit() {
         loadConfigFromUSB();
         RioLogger.getInstance().init(_fileLogLevel, _dsLogLevel);
+        metric("Branch", Version.BRANCH);
         info("Starting " + this.getClass().getCanonicalName() + " from branch " + Version.BRANCH);
-        info("Robot " + _name + " running in " + _identityMode.toString() + " mode");
+        info("Robot " + _name + " running in " + identityMode.toString() + " mode");
 
         // Periodically flushes metrics (might be good to configure enable/disable via USB config file)
         new Notifier(MetricTracker::flushAll);
 
+        // OI must be first...
         _oi = new OI();
+        _imu = new AHRS(SPI.Port.kMXP, (byte) 100);
+
+        // then proxies...
         _lights = new Lights(this);
         _status = new StatusProxy(this);
         _limelight = new Limelight("limelight");
+        _pdp = new PDP();
+
+        // Then subsystems....
         _shifter = new Shifter(this);
         _driveTrain = new DriveTrain(this);
         _arm = new Arm(this);
-        _roller = new Roller(this);
         _elevator = new Elevator(this);
         _stilt = new Stilt(this);
-        _pdp = new PDP();
-        _gripper= new Gripper(this);
-        _spear = new Spear(this);
-        _wrist = new Wrist(this);
+        _cargoIntake = new CargoIntake(this);
+        _hatchIntake = new HatchIntake(this);
+
+        // Must initialize buttons AFTER subsystems are allocated...
         _oi.initializeButtons(this);
-        // _limelight.disableLEDs();
+
+        // Initialize the other stuff
+        //_limelight.disableLEDs();
         _limelight.setStreamingMode(Limelight.StreamMode.PIP_SECONDARY);
         _status.setConfiguration(Configuration.starting);
-        _arm.resetEncoder();
+        _arm.resetEncoders();
 
         _arm.enableBrakeMode();
         _elevator.enableBrakeMode();
@@ -96,6 +106,7 @@ public class Robot extends TimedRobot implements ILoggingSource {
     public void robotPeriodic() {
         updateDashboard();
         MetricTracker.newMetricRowAll();
+        _oi.poll();
     }
 
     /**
@@ -112,9 +123,11 @@ public class Robot extends TimedRobot implements ILoggingSource {
     @Override
     public void autonomousInit() {
         teleopInit();
+        // _limelight.enableLEDs();
     }
 
     public void teleopInit() {
+        //_limelight.disableLEDs();
     }
 
     /**
@@ -122,7 +135,7 @@ public class Robot extends TimedRobot implements ILoggingSource {
      */
     @Override
     public void autonomousPeriodic() {
-        Scheduler.getInstance().run();
+        ourPeriodic();
     }
 
     /**
@@ -130,6 +143,10 @@ public class Robot extends TimedRobot implements ILoggingSource {
      */
     @Override
     public void teleopPeriodic() {
+        ourPeriodic();
+    }
+
+    private void ourPeriodic() {
         // Example of starting a new row of metrics for all instrumented objects.
         // MetricTracker.newMetricRowAll();
 
@@ -154,6 +171,7 @@ public class Robot extends TimedRobot implements ILoggingSource {
 
     @Override
     public void disabledInit() {
+        //_limelight.disableLEDs();
         RioLogger.getInstance().forceSync();
         RioLogger.getInstance().close();
         _arm.enableCoastMode();
@@ -171,13 +189,14 @@ public class Robot extends TimedRobot implements ILoggingSource {
             _driveTrain.updateDashboard();
             _limelight.updateDashboard();
             _arm.updateDashboard();
-            _roller.updateDashboard();
             _elevator.updateDashboard();
             _pdp.updateDashboard();
             _shifter.updateDashboard();
             _lights.updateDashboard();
             _status.updateDashboard();
             _stilt.updateDashboard();
+            _cargoIntake.updateDashboard();
+            _hatchIntake.updateDashboard();
         }
     }
 
@@ -198,7 +217,7 @@ public class Robot extends TimedRobot implements ILoggingSource {
             bufferedReader.close();
             reader.close();
         } catch (Exception e) {
-            _identityMode = IdentityMode.competition;
+            identityMode = IdentityMode.competition;
         }
     }
 
@@ -215,8 +234,8 @@ public class Robot extends TimedRobot implements ILoggingSource {
                         metric("name", _name);
                         break;
                     case "mode":
-                        _identityMode = IdentityMode.valueOf(value.toLowerCase());
-                        metric("mode", _identityMode.toString());
+                        identityMode = IdentityMode.valueOf(value.toLowerCase());
+                        metric("mode", identityMode.toString());
                         break;
                     case "fileloglevel":
                         _fileLogLevel = RioLogger.LogLevel.valueOf(value.toLowerCase());
@@ -233,11 +252,10 @@ public class Robot extends TimedRobot implements ILoggingSource {
         }
     }
     public void setConfiguration(Configuration configuration) {
-        _configuration = configuration;
         _status.setConfiguration(configuration);
     }
     public Configuration getConfiguration() {
-        return _configuration;
+        return _status.getConfiguration();
     }
     @Override
     public void error(String message) {
@@ -262,23 +280,20 @@ public class Robot extends TimedRobot implements ILoggingSource {
     public OI getOI() {
         return _oi;
     }
-    public DriveTrain getDriveTrain() {
-        return _driveTrain;
-    }
+    public AHRS getIMU() { return _imu; }
+    public DriveTrain getDriveTrain() { return _driveTrain; }
     public Limelight getLimelight() {
         return _limelight;
     }
     public PDP getPDP() { return _pdp; }
-    public Gripper getGripper() { return _gripper; }
-    public Spear getSpear() { return _spear; }
-    public Wrist getWrist() { return _wrist; }
-    public Roller getRoller() { return _roller; }
     public Arm getArm() { return _arm; }
     public Elevator getElevator() { return _elevator; }
     public Shifter getShifter() { return _shifter; }
     public Lights getLights() { return _lights; }
     public Stilt getStilt() { return _stilt; }
-
+    public CargoIntake getCargoIntake() { return _cargoIntake;}
+    public HatchIntake getHatchIntake() { return _hatchIntake;}
+    public StatusProxy getStatusProxy() { return _status; }
 
 
     public enum IdentityMode {
@@ -295,15 +310,14 @@ public class Robot extends TimedRobot implements ILoggingSource {
         public int getValue() {
             return _value;
         }
-
-
     }
 
     public enum Configuration {
         starting(0),
         hatch(1),
         cargo(2),
-        climb(3);
+        climbing(3),
+        parked(4);
 
         private int _value;
 
@@ -316,6 +330,9 @@ public class Robot extends TimedRobot implements ILoggingSource {
         }
     }
 
+    public IdentityMode getIdentityMode() {
+        return identityMode;
+    }
 
     public void metric(String name, boolean value) {
         SmartDashboard.putBoolean(getClass().getSimpleName() + "/" + name, value);

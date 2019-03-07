@@ -65,7 +65,10 @@ public class StatusProxy extends OutliersProxy {
                     _lights.setColor(Constants.Lights.SOLID_ORANGE, 2);
                 }
                 break;
-            case climb:
+            case climbing:
+                _lights.setColor(Constants.Lights.PULSING_PURPLE, 0);
+                break;
+            case parked:
                 _lights.setColor(Constants.Lights.CONFETTI, 0);
                 break;
         }
@@ -79,7 +82,9 @@ public class StatusProxy extends OutliersProxy {
         metric("Configuration", _configuration.name());
     }
 
-
+    public Robot.Configuration getConfiguration() {
+        return _configuration;
+    }
 
 
     public enum TargetDistance {

@@ -10,18 +10,23 @@ import jaci.pathfinder.Waypoint;
 import jaci.pathfinder.followers.DistanceFollower;
 import org.frc5687.deepspace.robot.Constants;
 import org.frc5687.deepspace.robot.subsystems.Elevator;
+import org.frc5687.deepspace.robot.OI;
 
 import static org.frc5687.deepspace.robot.Constants.Elevator.*;
+import static org.frc5687.deepspace.robot.utils.Helpers.limit;
 
 public class MoveElevatorToSetPoint extends OutliersCommand {
 
     private Elevator _elevator;
     private Elevator.Setpoint _setpoint;
     private Elevator.MotionMode _mode;
+    private RampingState _rampingState = RampingState.Done;
     private double _position = 0;
 
     private double _pidOutput;
     private double _pathOutput;
+
+    private OI _oi;
 
     private PIDController _pidController;
 
@@ -29,24 +34,32 @@ public class MoveElevatorToSetPoint extends OutliersCommand {
     private DistanceFollower _pathFollower;
     private Notifier _pathNotifier;
     private long _startTime;
+    private double _step;
+    private int _rampDirection = 0;
+    private double _rampMid = 0;
+    private long _creepEndTime = 0;
 
-    public MoveElevatorToSetPoint(Elevator elevator, Elevator.Setpoint setpoint, Elevator.MotionMode mode) {
+    public MoveElevatorToSetPoint(Elevator elevator, Elevator.Setpoint setpoint, Elevator.MotionMode mode, OI oi) {
         _elevator = elevator;
         requires(_elevator);
         _setpoint = setpoint;
         _mode = mode;
 
+        _oi = oi;
+
         _pidController = new PIDController(PID.kP, PID.kI, PID.kD, _elevator, new PIDListener());
         _pidController.setAbsoluteTolerance(TOLERANCE);
-        _pidController.setOutputRange(-MAX_ELEVATOR_SPEED_DOWN, MAX_ELEVATOR_SPEED_UP);
+        _pidController.setOutputRange(-MAX_SPEED_DOWN, MAX_SPEED_UP);
         _pidController.setInputRange(Elevator.Setpoint.Bottom.getValue(), Elevator.Setpoint.Top.getValue());
         _pidController.disable();
     }
 
     @Override
     protected void initialize() {
+        _step = 0;
         _position = _elevator.getPosition();
         if (withinTolerance()) { return; }
+        DriverStation.reportError("Moving to setpoint " + _setpoint.name() + " (" + _setpoint.getValue() + ") using " + _mode.name() + " mode.", false);
         info("Moving to setpoint " + _setpoint.name() + " (" + _setpoint.getValue() + ") using " + _mode.name() + " mode.");
         switch(_mode) {
             case Simple:
@@ -63,12 +76,38 @@ public class MoveElevatorToSetPoint extends OutliersCommand {
                 _pathNotifier = new Notifier(this::followPath);
                 _pathNotifier.startPeriodic(_trajectory.get(0).dt);
                 break;
+            case Ramp:
+                _rampingState = RampingState.RampUp;
+                double startPosition = _elevator.getPosition();
+                if (_setpoint.getValue() > startPosition) {
+                    _rampDirection = +1;
+                    _rampMid = startPosition + (_setpoint.getValue() - startPosition)/2;
+                } else if (_setpoint.getValue() < _elevator.getPosition()) {
+                    _rampDirection = -1;
+                    _rampMid = startPosition + (_setpoint.getValue() - startPosition)/2;
+                } else if (_setpoint.getHall() == Elevator.HallEffectSensor.BOTTOM && !_elevator.isAtBottom()){
+                    DriverStation.reportError("BottomCreep", false);
+                    _rampingState = RampingState.Creep;
+                    _creepEndTime = System.currentTimeMillis() + CREEP_TIME;
+                    _rampDirection = -1;
+                } else if (_setpoint.getHall() == Elevator.HallEffectSensor.TOP && !_elevator.isAtTop()){
+                    DriverStation.reportError("TopCreep", false);
+                    _rampingState = RampingState.Creep;
+                    _creepEndTime = System.currentTimeMillis() + CREEP_TIME;
+                    _rampDirection = 1;
+                } else {
+                    _rampDirection = 0;
+                }
+                break;
         }
         _startTime = System.currentTimeMillis();
     }
 
     @Override
     protected void execute() {
+        _step++;
+        double speed;
+
         _position = _elevator.getPosition();
         switch(_mode) {
             case Simple:
@@ -81,10 +120,13 @@ public class MoveElevatorToSetPoint extends OutliersCommand {
                 }
                 break;
             case PID:
-                _elevator.setSpeed(_pidOutput);
+                _elevator.setSpeed(_pidOutput, true);
                 break;
             case Path:
                 _elevator.setSpeed(_pathOutput);
+                break;
+            case Ramp:
+                _elevator.setSpeed(getRampedSpeed());
                 break;
             default:
                 _elevator.setSpeed(0);
@@ -92,6 +134,103 @@ public class MoveElevatorToSetPoint extends OutliersCommand {
         }
     }
 
+    private double getRampedSpeed() {
+        double speed = 0;
+        double goalSpeed = 0;
+        double minSpeed = MIN_SPEED;
+        if (_rampDirection > 0) {
+            goalSpeed = SPEED_UP;
+            if (_elevator.isAtTop()) {
+                _rampingState = RampingState.Done;
+                metric("RampUp/RampedSpeed", 0);
+                return 0;
+            } else if (_position >= _setpoint.getValue() - TOLERANCE) {
+                if (_setpoint.getHall()== Elevator.HallEffectSensor.TOP && !_elevator.isAtTop()) {
+                    if (_rampingState!=RampingState.Creep) {
+                        _rampingState = RampingState.Creep;
+                        _creepEndTime = System.currentTimeMillis() + CREEP_TIME;
+                    }
+                    metric("RampUp/RampedSpeed", minSpeed);
+                } else {
+                    _rampingState = RampingState.Done;
+                    metric("RampUp/RampedSpeed", 0);
+                    return 0;
+                }
+            };
+        } else if (_rampDirection < 0) {
+            goalSpeed = SPEED_DOWN;
+            if (_elevator.isAtBottom()) {
+                _rampingState = RampingState.Done;
+                metric("RampUp/RampedSpeed", 0);
+                return 0;
+            } else if (_position <= _setpoint.getValue() + TOLERANCE) {
+                if (_setpoint.getHall()== Elevator.HallEffectSensor.BOTTOM && !_elevator.isAtBottom()) {
+                    if (_rampingState!=RampingState.Creep) {
+                        _rampingState = RampingState.Creep;
+                        _creepEndTime = System.currentTimeMillis() + CREEP_TIME;
+                    }
+                    metric("RampUp/RampedSpeed", minSpeed);
+                } else {
+                    _rampingState = RampingState.Done;
+                    metric("RampUp/RampedSpeed", 0);
+                    return 0;
+                }
+            };
+        }
+        speed = goalSpeed;
+
+        metric("RampUp/RawSpeed", speed);
+        metric("RampUp/Mode", _rampingState.name());
+        metric("RampUp/Step", _step);
+
+        switch(_rampingState) {
+            case RampUp:
+                speed = minSpeed + _step * ((goalSpeed - minSpeed) / STEPS_UP);
+                if (_rampDirection>0 && _position >= _rampMid
+                        || _rampDirection < 0 && _position <= _rampMid) {
+                    // Halfway there . . . switch to ramping down
+                    _step = 0;
+                    _rampingState = RampingState.RampDown;
+                } else if(Math.abs(_setpoint.getValue() - _elevator.getPosition()) <=  TICKS_PER_STEP * STEPS_DOWN) {
+                    // We've reached the slow-down range
+                    _step = 0;
+                    _rampingState = RampingState.RampDown;
+                } else if (_step >= STEPS_UP) {
+                    // Fully ramped up--switch to steady-state
+                    _rampingState = RampingState.Steady;
+                }
+                break;
+            case Steady:
+                speed = goalSpeed;
+                if(Math.abs(_setpoint.getValue() - _elevator.getPosition()) <=  TICKS_PER_STEP * STEPS_DOWN) {
+                    _step = 0;
+                    _rampingState = RampingState.RampDown;
+                }
+                break;
+            case RampDown:
+                //DriverStation.reportError("" + (minSpeed + (STEPS_DOWN - _step) * ((speed - minSpeed) / STEPS_DOWN)) + " = " + minSpeed + " + ( " + STEPS_DOWN + " - " + _step + ") * (( " + speed + " - " + minSpeed + ") / " + STEPS_DOWN+ ")", false );
+                speed = minSpeed + (STEPS_DOWN - _step) * ((goalSpeed - minSpeed) / STEPS_DOWN);
+                //speed = (Constants.Elevator.GOAL_SPEED -(_step/Constants.Elevator.STEPS))* (Constants.Elevator.GOAL_SPEED - Constants.Elevator.MIN_SPEED);
+                //if (_elevator.getRawMAGEncoder() == _setpoint.getValue()) {
+                //}
+                break;
+            case Creep:
+                speed = minSpeed;
+                if (System.currentTimeMillis() >= _creepEndTime) {
+                    _rampingState = RampingState.Done;
+                }
+                break;
+            case Done:
+                speed = 0;
+                break;
+        }
+        speed = limit(speed, minSpeed, goalSpeed);
+        speed = speed * _rampDirection;
+
+        metric("RampUp/RampedSpeed", speed);
+
+        return speed;
+    }
     private boolean withinTolerance() {
         return Math.abs(_position-_setpoint.getValue()) <= TOLERANCE;
     }
@@ -105,6 +244,8 @@ public class MoveElevatorToSetPoint extends OutliersCommand {
                 return _pidController.onTarget();
             case Path:
                 return _pathFollower.isFinished();
+            case Ramp:
+                return _rampingState == RampingState.Done;
         }
         return false;
     }
@@ -112,7 +253,7 @@ public class MoveElevatorToSetPoint extends OutliersCommand {
     @Override
     protected void end() {
         long endTime = System.currentTimeMillis();
-        DriverStation.reportError("MoveElevatorToSetpoint Ran for " + (endTime - _startTime) + " millis", false);
+        DriverStation.reportError("MoveElevatorToSetpoint Ran for " + (endTime - _startTime) + " millis, stopped at " + _position + ", state=" + _rampingState.name(), false);
         if (_pidController!=null) {
             _pidController.disable();
         }
@@ -120,6 +261,27 @@ public class MoveElevatorToSetPoint extends OutliersCommand {
             _pathNotifier.stop();
         }
         _elevator.setSpeed(0);
+
+        if (_oi!=null) {
+            switch (_setpoint) {
+                case Bottom:
+                case Hatch1:
+                case Port1:
+                case StartHatch:
+                    _oi.pulseOperator(1);
+                    break;
+                case Hatch2:
+                case Port2:
+                    _oi.pulseOperator(2);
+                    break;
+                case Top:
+                case Hatch3:
+                case Port3:
+                    _oi.pulseOperator(3);
+                    break;
+            }
+        }
+
         info("Reached setpoint " + _setpoint.name() + " (" + _position + ")");
     }
 
@@ -160,4 +322,20 @@ public class MoveElevatorToSetPoint extends OutliersCommand {
 
         return trajectory;
     }
+
+
+    private enum RampingState {
+        RampUp(0),
+        Steady(1),
+        RampDown(2),
+        Creep(3),
+        Done(4);
+
+        private int _value;
+
+        RampingState(int value) { this._value = value; }
+
+        public int getValue() { return _value; }
+    }
+
 }

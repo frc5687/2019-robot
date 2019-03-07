@@ -3,6 +3,11 @@ package org.frc5687.deepspace.robot.utils;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.DriverStation;
+
+import java.util.ArrayList;
+
+import static org.frc5687.deepspace.robot.Constants.Limelight.*;
 
 public class Limelight extends OutliersProxy {
     NetworkTable _table;
@@ -17,6 +22,7 @@ public class Limelight extends OutliersProxy {
     NetworkTableEntry _tvert;
     NetworkTableEntry _thor;
     NetworkTableEntry _getpipe;
+    NetworkTableEntry _camtran;
 
     NetworkTableEntry _ledmode;
     NetworkTableEntry _cammode;
@@ -24,17 +30,9 @@ public class Limelight extends OutliersProxy {
     NetworkTableEntry _stream;
 
 
-
-
-
-
-
-
-
     public Limelight() {
         this("limelight");
     }
-
 
     public Limelight(String key) {
         _table = NetworkTableInstance.getDefault().getTable(key);
@@ -49,13 +47,13 @@ public class Limelight extends OutliersProxy {
         _tvert = _table.getEntry("tvert");
         _thor = _table.getEntry("thor");
         _getpipe = _table.getEntry("getpipe");
+        _camtran = _table.getEntry("camtran");
 
-        _ledmode = _table.getEntry("ledmode");
-        _cammode = _table.getEntry("cammode");
+        _ledmode = _table.getEntry("ledMode");
+        _cammode = _table.getEntry("camMode");
         _pipeline = _table.getEntry("pipeline");
         _stream = _table.getEntry("stream");
     }
-
     public void enableVision() {
         _cammode.setNumber(0);
     }
@@ -63,7 +61,6 @@ public class Limelight extends OutliersProxy {
     public void disableVision() {
         _cammode.setNumber(1);
     }
-
 
     public void defaultLEDs() {
         _ledmode.setNumber(0);
@@ -78,7 +75,7 @@ public class Limelight extends OutliersProxy {
 
     }
     public void blinkLEDs() {
-        _ledmode.setNumber(3);
+        _ledmode.setNumber(2);
     }
 
     public void setPipeline(int pipeline) {
@@ -90,11 +87,47 @@ public class Limelight extends OutliersProxy {
     }
 
     public boolean isTargetSighted() {
-        return (int)_tv.getNumber(0) > 0;
+        return _tv.getDouble(0) > 0;
     }
 
     public double getHorizontalAngle() {
         return _tx.getDouble(0.0);
+    }
+
+    public double getVerticalAngle() { return _ty.getDouble(0);}
+
+    public double getTargetArea() { return _ta.getDouble(0); }
+
+    public double getCamTran(int variable) {
+        double[] camtranData = _camtran.getDoubleArray(new double[]{});
+        /**
+         *         x = camtranData[0];
+         *         y = camtranData[1];
+         *         z = camtranData[2];
+         *         pitch = camtranData[3];
+         *         yaw = camtranData[4];
+         *         roll = camtranData[5];
+         */
+        if (variable > camtranData.length) {
+            DriverStation.reportError("variable " + variable + " out of range " + camtranData.length, false);
+            return 0; }
+        return camtranData[variable];
+    }
+
+
+
+    public double getTargetDistanceFromTA() {
+        double distance = 82.819*(Math.exp(-0.206*getTargetArea()));
+        return distance;
+
+    }
+    public double getTargetDistance() {
+        double heightOffset = (TARGET_HEIGHT - LIMELIGHT_HEIGHT);
+        double limeLightYAngle = Math.abs(getVerticalAngle());
+        double angleY = (LIMELIGHT_ANGLE - limeLightYAngle);
+        double tanY = Math.tan(angleY * (Math.PI / 180));
+        double distance = (heightOffset)/tanY;
+        return distance;
     }
 
     @Override
@@ -102,6 +135,14 @@ public class Limelight extends OutliersProxy {
         metric("tx",_tx.getDouble(0.0));
         metric("ty",_ty.getDouble(0.0));
         metric("tv", _tv.getDouble(0.0));
+        metric("DistanceFromTarget", getTargetDistanceFromTA());
+        metric("Distance", getTargetDistance());
+//        metric("CamTranX", getCamTran(0));
+//        metric("CamTranY", getCamTran(1));
+//        metric("CamTranZ", getCamTran(2));
+//        metric("Pitch", getCamTran(3));
+//        metric("Yaw", getCamTran(4));
+//        metric("Roll", getCamTran(5));
     }
 
     public enum StreamMode {

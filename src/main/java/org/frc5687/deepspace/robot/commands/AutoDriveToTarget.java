@@ -42,7 +42,7 @@ public class AutoDriveToTarget extends OutliersCommand {
 
     private String _stage = "";
 
-    public AutoDriveToTarget (Robot robot, double speed,double distance, double tolerance, String stage) {
+    public AutoDriveToTarget (Robot robot, double speed, double distance, double tolerance, String stage) {
         _driveTrain = robot.getDriveTrain();
         _imu = robot.getIMU();
         _limelight = robot.getLimelight();
@@ -51,7 +51,6 @@ public class AutoDriveToTarget extends OutliersCommand {
         requires(_driveTrain);
         _distanceTarget = distance;
         _speed = speed;
-//        _distanceTarget = distance;
         _distanceTolerance = tolerance;
         _stage = stage;
     }
@@ -62,33 +61,33 @@ public class AutoDriveToTarget extends OutliersCommand {
         _driveTrain.resetDriveEncoders();
         _startTimeMillis = System.currentTimeMillis();
         _limelight.enableLEDs();
-        //error("Running AutoDriveToTarget to " + _distanceTarget + " inches at " + _speed);
+        error("Running AutoDriveToTarget to " + _distanceTarget + " inches at " + _speed);
 
-//        boolean irMode = true;
-//
+//        boolean irMode = false;
+
 //        _currentTargetDistance = _driveTrain.getFrontDistance();
 //        if (_currentTargetDistance > Constants.Auto.IR_THRESHOLD) {
 //            irMode = false;
-//            if (_limelight.isTargetSighted()) {
-//                _currentTargetDistance = _limelight.getTargetDistance();
-//            } else {
-//                _aborted = true;
-//            }
+            if (_limelight.isTargetSighted()) {
+                _currentTargetDistance = _limelight.getTargetDistance();
+            } else {
+                _aborted = true;
+            }
 //        }
 //        metric("distance/IRMode", irMode);
-//
-//        double distanceSetPoint = _driveTrain.getDistance() + _currentTargetDistance - _distanceTarget;
-//
-//        _distanceController = new PIDController(kPDistance, kIDistance, kDDistance, _driveTrain, new DistanceListener(), 0.1);
-//        _distanceController.setOutputRange(-_speed, _speed);
-//        _distanceController.setAbsoluteTolerance(_distanceTolerance);
-//        _distanceController.setContinuous(false);
-//        _distanceController.setSetpoint(distanceSetPoint);
-//        _distanceController.enable();
-//
-//        metric("distance/setpoint", distanceSetPoint);
-//        metric("distance/currentTargetDistance", _currentTargetDistance);
-        //metric("distance/distanceTarget", _distanceTarget);
+
+        double distanceSetPoint = _driveTrain.getDistance() + _currentTargetDistance - _distanceTarget;
+
+        _distanceController = new PIDController(kPDistance, kIDistance, kDDistance, _driveTrain, new DistanceListener(), 0.1);
+        _distanceController.setOutputRange(-_speed, _speed);
+        _distanceController.setAbsoluteTolerance(_distanceTolerance);
+        _distanceController.setContinuous(false);
+        _distanceController.setSetpoint(distanceSetPoint);
+        _distanceController.enable();
+
+        metric("distance/setpoint", distanceSetPoint);
+        metric("distance/currentTargetDistance", _currentTargetDistance);
+        metric("distance/distanceTarget", _distanceTarget);
 
         // 1: Read current target _angleTarget from limelight
         // 2: Read current yaw from navX
@@ -116,31 +115,31 @@ public class AutoDriveToTarget extends OutliersCommand {
     protected void execute() {
         _driveTrain.enableBrakeMode();
 
-//        boolean irMode = true;
-//
-//        _currentTargetDistance = _driveTrain.getFrontDistance();
+//        boolean irMode = false;
+
+        //_currentTargetDistance = _driveTrain.getFrontDistance();
 //        if (_currentTargetDistance > Constants.Auto.IR_THRESHOLD) {
 //            irMode = false;
-//            if (_limelight.isTargetSighted()) {
-//                _currentTargetDistance = _limelight.getTargetDistance();
-//            }
-//        }
-//
-//        double distanceSetPoint = _driveTrain.getDistance() + _currentTargetDistance - _distanceTarget;
-//        double oldSetpoint = _distanceController.getSetpoint();
-//
-//        if (Math.abs(distanceSetPoint - oldSetpoint) > _distanceTolerance) {
-//            _distanceController.setSetpoint(distanceSetPoint);
-//            metric("distance/setpoint", distanceSetPoint);
-//            oldSetpoint = distanceSetPoint;
-//            _distanceController.enable();
+            if (_limelight.isTargetSighted()) {
+                _currentTargetDistance = _limelight.getTargetDistance();
+            }
 //        }
 
-//        if (_speed > 0.3 && Math.abs(oldSetpoint - _driveTrain.getDistance()) <= 36) {
-//            DriverStation.reportError("CAPPING", false);
-//            _distanceController.setOutputRange(-0.3, 0.3);
-//            _distanceController.enable();
-//        }
+        double distanceSetPoint = _driveTrain.getDistance() + _currentTargetDistance - _distanceTarget;
+        double oldSetpoint = _distanceController.getSetpoint();
+
+        if (Math.abs(distanceSetPoint - oldSetpoint) > _distanceTolerance) {
+            _distanceController.setSetpoint(distanceSetPoint);
+            metric("distance/setpoint", distanceSetPoint);
+            oldSetpoint = distanceSetPoint;
+            _distanceController.enable();
+        }
+
+        if (_speed > 0.3 && Math.abs(oldSetpoint - _driveTrain.getDistance()) <= 36) {
+            DriverStation.reportError("CAPPING", false);
+            _distanceController.setOutputRange(-0.3, 0.3);
+            _distanceController.enable();
+        }
         if (_limelight.isTargetSighted()) {
             _limelight.enableLEDs();
             double limeLightAngle = _limelight.getHorizontalAngle();
@@ -156,60 +155,63 @@ public class AutoDriveToTarget extends OutliersCommand {
                 metric("angle/setpoint", _angleTarget);
             }
 
-            double targetArea = _limelight.getTargetArea();
-            _currentTargetDistance = _limelight.getTargetDistanceFromTA();
-            _currentPos =  _driveTrain.getDistance();
-            double newDestination = _currentPos + _currentTargetDistance - _distanceTarget;
-
-            if (Math.abs(_destination - newDestination) > Math.abs(_distanceTolerance)) {
-                _currentPos =  _driveTrain.getDistance();
-                _currentTargetDistance = _limelight.getTargetDistanceFromTA();
-                _destination = _currentPos + _currentTargetDistance;
-            }
-            //_forwardSpeed = _destination * _speed;
-            //_delta = DESIRED_TARGET_AREA - _limelight.getTargetArea();
-            _forwardSpeed = (DESIRED_TARGET_AREA - targetArea) * _speed;
-            metric("targetArea", targetArea);
-            if (_forwardSpeed < 0.05 & _forwardSpeed > 0) {
-                _forwardSpeed = 0;
-            }
-            if (_forwardSpeed > 0.6) {
-                _forwardSpeed = 0.6;
-            }
+//            double targetArea = _limelight.getTargetArea();
+//            _currentTargetDistance = _limelight.getTargetDistanceFromTA();
+//            _currentPos =  _driveTrain.getDistance();
+//            double newDestination = _currentPos + _currentTargetDistance - _distanceTarget;
+//
+//            if (Math.abs(_destination - newDestination) > Math.abs(_distanceTolerance)) {
+//                _currentPos =  _driveTrain.getDistance();
+//                _currentTargetDistance = _limelight.getTargetDistanceFromTA();
+//                _destination = _currentPos + _currentTargetDistance;
+//            }
+//            //_forwardSpeed = _destination * _speed;
+//            //_delta = DESIRED_TARGET_AREA - _limelight.getTargetArea();
+//            _forwardSpeed = (DESIRED_TARGET_AREA - targetArea) * _speed;
+//            metric("targetArea", targetArea);
+//            if (_forwardSpeed < 0.05 & _forwardSpeed > 0) {
+//                _forwardSpeed = 0;
+//            }
+//            if (_forwardSpeed > 0.6) {
+//                _forwardSpeed = 0.6;
+//            }
         }
 
 
 
         metric("angle/yaw", _imu.getYaw());
         metric("forwardSpeed", _forwardSpeed);
-        //metric("distance/currentTargetDistance", _currentTargetDistance);
+        metric("distance/currentTargetDistance", _currentTargetDistance);
         metric("angle/PIDOut", _anglePIDOut);
-        //metric("distance/PIDOut", _distancePIDOut);
-        //metric("distance/target", distanceSetPoint);
+        metric("distance/PIDOut", _distancePIDOut);
+        metric("distance/target", distanceSetPoint);
         metric("distance/current", _driveTrain.getDistance());
-        //metric("distance/IRMode", irMode);
+//        metric("distance/IRMode", irMode);
         _driveTrain.setPower(_forwardSpeed + _anglePIDOut , _forwardSpeed - _anglePIDOut, true); // positive output is clockwise
 
     }
     @Override
     protected boolean isFinished() {
         if (!_limelight.isTargetSighted()) { return true; }
-        if (_destination <= .5 && _destination >= 0) { return true; }
-        if (_limelight.getTargetArea() > 5.5 && _limelight.getTargetArea() < 6.5) { return true; }
+        if (_currentTargetDistance < 15) {
+            if (_limelight.getTargetArea() > 6 && _limelight.getTargetArea() < 7) {
+                return true;
+            }
+        }
         if (_aborted) { return true; }
 
-//        if (_distanceController.onTarget()) {
-//            return true;
-//        }
-//
-//        if (Math.abs(_currentTargetDistance - _distanceTarget) <= _distanceTolerance) { return true; }
+        if (_distanceController.onTarget()) {
+            return true;
+        }
+
+        if (Math.abs(_currentTargetDistance - _distanceTarget) <= _distanceTolerance) { return true; }
 
         return false;
     }
 
     @Override
     protected void end() {
-        _limelight.disableLEDs();
+//        _limelight.disableLEDs();
         _driveTrain.enableBrakeMode();
         _driveTrain.setPower(0,0, true);
         error("AutoDriveToTarget finished: angle=" + _imu.getYaw() + ", distance=" + _currentTargetDistance + ", time=" + (System.currentTimeMillis() - _startTimeMillis));
@@ -227,15 +229,15 @@ public class AutoDriveToTarget extends OutliersCommand {
         }
 
     }
-//    private class DistanceListener implements PIDOutput {
-//
-//        @Override
-//        public void pidWrite(double output) {
-//            synchronized (this) {
-//                _distancePIDOut = output;
-//            }
-//        }
-//    }
+    private class DistanceListener implements PIDOutput {
+
+        @Override
+        public void pidWrite(double output) {
+            synchronized (this) {
+                _distancePIDOut = output;
+            }
+        }
+    }
 
 }
 

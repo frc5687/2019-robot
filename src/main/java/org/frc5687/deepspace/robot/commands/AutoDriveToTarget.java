@@ -127,12 +127,13 @@ public class AutoDriveToTarget extends OutliersCommand {
 
         double distanceSetPoint = _driveTrain.getDistance() + _currentTargetDistance - _distanceTarget;
         double oldSetpoint = _distanceController.getSetpoint();
-
-        if (Math.abs(distanceSetPoint - oldSetpoint) > _distanceTolerance) {
-            _distanceController.setSetpoint(distanceSetPoint);
-            metric("distance/setpoint", distanceSetPoint);
-            oldSetpoint = distanceSetPoint;
-            _distanceController.enable();
+        if(!(distanceSetPoint < 12)) {
+            if (Math.abs(distanceSetPoint - oldSetpoint) > _distanceTolerance) {
+                _distanceController.setSetpoint(distanceSetPoint);
+                metric("distance/setpoint", distanceSetPoint);
+                oldSetpoint = distanceSetPoint;
+                _distanceController.enable();
+            }
         }
 
         if (_speed > 0.3 && Math.abs(oldSetpoint - _driveTrain.getDistance()) <= 36) {

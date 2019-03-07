@@ -60,6 +60,8 @@ public class Robot extends TimedRobot implements ILoggingSource {
         _oi = new OI();
         _imu = new AHRS(SPI.Port.kMXP, (byte) 100);
 
+        _imu.reset();
+
         // then proxies...
         _lights = new Lights(this);
         _status = new StatusProxy(this);
@@ -79,8 +81,8 @@ public class Robot extends TimedRobot implements ILoggingSource {
         _oi.initializeButtons(this);
 
         // Initialize the other stuff
-//        _limelight.disableLEDs();
-        _limelight.setStreamingMode(Limelight.StreamMode.PIP_SECONDARY);
+        _limelight.disableLEDs();
+        _limelight.setStreamingMode(Limelight.StreamMode.PIP_MAIN);
         _status.setConfiguration(Configuration.starting);
         _arm.resetEncoders();
         _arm.enableBrakeMode();

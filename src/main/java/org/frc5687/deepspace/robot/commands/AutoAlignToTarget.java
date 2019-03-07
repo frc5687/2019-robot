@@ -14,9 +14,7 @@ import org.frc5687.deepspace.robot.subsystems.DriveTrain;
 import org.frc5687.deepspace.robot.utils.Limelight;
 import org.frc5687.deepspace.robot.utils.RioLogger;
 
-import static org.frc5687.deepspace.robot.Constants.Auto.AlignToTarget.PIDkD;
-import static org.frc5687.deepspace.robot.Constants.Auto.AlignToTarget.PIDkI;
-import static org.frc5687.deepspace.robot.Constants.Auto.AlignToTarget.PIDkP;
+import static org.frc5687.deepspace.robot.Constants.Auto.Align.*;
 
 
 public class AutoAlignToTarget extends OutliersCommand implements PIDOutput {
@@ -31,7 +29,7 @@ public class AutoAlignToTarget extends OutliersCommand implements PIDOutput {
     private long _onTargetSince;
     private long _startTimeMillis;
     private long _endTimeMillis;
-    private boolean _targetSighted;
+    private boolean _targetSighted = false;
     private boolean _aborted = false;
 
     private DriveTrain _driveTrain;
@@ -66,7 +64,7 @@ public class AutoAlignToTarget extends OutliersCommand implements PIDOutput {
         _targetSighted = false;
 
 
-        _controller = new PIDController(PIDkP, PIDkI, PIDkD, _imu, this, 0.01);
+        _controller = new PIDController(kP, kI, kD, _imu, this, 0.01);
 
 //        double limeLightAngle = _limelight.getHorizontalAngle();
 //        double yawAngle = _imu.getYaw();
@@ -94,35 +92,45 @@ public class AutoAlignToTarget extends OutliersCommand implements PIDOutput {
 
     @Override
     protected void execute() {
-
+        boolean wasSighted = _targetSighted;
         if (!_targetSighted) {
-            error("target not sighted!");
+            error("Target not sighted!");
             _targetSighted = _limelight.isTargetSighted();
         }
         metric("targetSighted", _targetSighted);
         metric("limelight sighted", _limelight.isTargetSighted());
+
         if (_targetSighted) {
             error("Target sighted!");
             double limeLightAngle = _limelight.getHorizontalAngle();
             double yawAngle = _imu.getYaw();
             _angle = limeLightAngle + yawAngle;
+            error(" At " + limeLightAngle + " when our angle was " + yawAngle);
 
             metric("LimeLightAngle", limeLightAngle);
             metric("YawAngle", yawAngle);
             metric("angle", _angle);
 
-            _controller.setInputRange(Constants.Auto.MIN_IMU_ANGLE, Constants.Auto.MAX_IMU_ANGLE);
-            _controller.setOutputRange(-_speed, _speed);
-            _controller.setAbsoluteTolerance(_tolerance);
-            _controller.setContinuous();
-            _controller.setSetpoint(_angle);
-            _controller.enable();
+            if (!wasSighted || Math.abs(_angle -_controller.getSetpoint()) > TOLERANCE ) {
+                _controller.setInputRange(Constants.Auto.MIN_IMU_ANGLE, Constants.Auto.MAX_IMU_ANGLE);
+                _controller.setOutputRange(-_speed, _speed);
+                _controller.setAbsoluteTolerance(_tolerance);
+                _controller.setContinuous();
+                _controller.setSetpoint(_angle);
+                _controller.enable();
 
-            metric("setpoint", _angle);
-            error("AutoAlign " + _stage + " initialized to " + _angle + " at " + _speed);
-            error("kP="+PIDkP+" , kI="+PIDkI+", kD="+PIDkD + ",T="+ _tolerance);
+                metric("setpoint", _angle);
+                error("AutoAlign " + _stage + " initialized to " + _angle + " at " + _speed);
+            }
         }
         if(_targetSighted) {
+            if (_pidOut < 0 && _pidOut > -MINIMUM_SPEED) {
+                _pidOut = -MINIMUM_SPEED;
+            } else if (_pidOut > 0 && _pidOut < MINIMUM_SPEED) {
+                _pidOut = MINIMUM_SPEED;
+            }
+
+            error("Sending left=" + _pidOut + ", right=" + (-_pidOut));
             _driveTrain.setPower(_pidOut, -_pidOut, true);
         }
 //        double limeLightAngle = _limelight.getHorizontalAngle();
@@ -154,6 +162,7 @@ public class AutoAlignToTarget extends OutliersCommand implements PIDOutput {
         }
         if (_targetSighted) {
             if (_controller.onTarget()) {
+                error("AutoAlignToTarget on target at " + _imu.getYaw());
                 return true;
             }
         }

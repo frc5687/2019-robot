@@ -122,6 +122,7 @@ public class DriveTrain extends OutliersSubsystem implements PIDSource {
         metric("Neo/Distance/Total", getDistance());
         metric("Mag/Ticks/Left", _leftMagEncoder.get());
         metric("Mag/Ticks/Right", _rightMagEncoder.get());
+        metric("Imu/Yaw", getYaw());
 
     }
 

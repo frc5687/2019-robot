@@ -108,6 +108,7 @@ public class RobotMap {
         public static final int DRIVE_RIGHT_A = 19;
         public static final int DRIVE_LEFT_B = 21;
         public static final int DRIVE_LEFT_A = 23;
+        public static final int HATCH_DETECTION_LIMIT = 12;
 
 
 

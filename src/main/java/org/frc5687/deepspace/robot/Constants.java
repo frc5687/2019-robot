@@ -241,17 +241,6 @@ public class Constants {
             public static final long STILT_TIMEOUT = 2000;
 
         }
-        public class AlignToTarget {
-            public static final double SPEED = 1.0;
-
-            public static final double PIDkP = 0.025;
-            public static final double PIDkI = 0.00;
-            public static final double PIDkD = 0.3;
-            public static final double TOLERANCE = 1; // 0.5
-            public static final double MINIMUM_SPEED = 0.2;
-            public static final double STEADY_TIME = 60;
-
-        }
         public class DriveToTarget {
 
             public static final double TURN_SPEED = 0.15;
@@ -272,7 +261,7 @@ public class Constants {
             public static final double STOP_DISTANCE = 18.00;
         }
         public class Align {
-            public static final double SPEED = 0.7;
+            public static final double SPEED = 0.15;
 
             public static final double kP = 0.01;//0.015;
             public static final double kI = 0.001;

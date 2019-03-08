@@ -5,13 +5,13 @@ import com.revrobotics.CANEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
 import edu.wpi.first.wpilibj.*;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.frc5687.deepspace.robot.Constants;
 import org.frc5687.deepspace.robot.OI;
 import org.frc5687.deepspace.robot.Robot;
 import org.frc5687.deepspace.robot.RobotMap;
 import org.frc5687.deepspace.robot.commands.Drive;
 import org.frc5687.deepspace.robot.utils.IRDistanceSensor;
+import org.frc5687.deepspace.robot.utils.Limelight;
 
 import static org.frc5687.deepspace.robot.Constants.DriveTrain.CREEP_FACTOR;
 import static org.frc5687.deepspace.robot.utils.Helpers.applySensitivityFactor;
@@ -34,6 +34,7 @@ public class DriveTrain extends OutliersSubsystem implements PIDSource {
 
     private OI _oi;
     private AHRS _imu;
+    private Limelight _limelight;
 
     private double _leftOffset;
     private double _rightOffset;
@@ -48,6 +49,7 @@ public class DriveTrain extends OutliersSubsystem implements PIDSource {
         info("Constructing DriveTrain class.");
         _oi = robot.getOI();
         _imu = robot.getIMU();
+        _limelight = robot.getLimelight();
 
         _shifter = robot.getShifter();
 
@@ -128,10 +130,10 @@ public class DriveTrain extends OutliersSubsystem implements PIDSource {
 
     @Override
     protected void initDefaultCommand() {
-        setDefaultCommand(new Drive(this, _oi));
+        setDefaultCommand(new Drive(this, _imu, _oi, _limelight));
     }
 
-    public void cheesyDrive(double speed, double rotation, boolean creep) {
+    public void cheesyDrive(double speed, double rotation, boolean creep, boolean override) {
         if (!assertMotorControllers()) { return; }
         metric("Speed", speed);
         metric("Rotation", rotation);
@@ -148,7 +150,9 @@ public class DriveTrain extends OutliersSubsystem implements PIDSource {
 
         if (speed < Constants.DriveTrain.DEADBAND && speed > -Constants.DriveTrain.DEADBAND) {
             metric("Rot/Raw", rotation);
-            rotation = applySensitivityFactor(rotation, _shifter.getGear() == Shifter.Gear.HIGH ? Constants.DriveTrain.ROTATION_SENSITIVITY_HIGH_GEAR : Constants.DriveTrain.ROTATION_SENSITIVITY_LOW_GEAR);
+            if (!override) {
+                rotation = applySensitivityFactor(rotation, _shifter.getGear() == Shifter.Gear.HIGH ? Constants.DriveTrain.ROTATION_SENSITIVITY_HIGH_GEAR : Constants.DriveTrain.ROTATION_SENSITIVITY_LOW_GEAR);
+            }
             if (creep) {
                 metric("Rot/Creep", creep);
                 rotation = rotation * CREEP_FACTOR;
@@ -165,8 +169,10 @@ public class DriveTrain extends OutliersSubsystem implements PIDSource {
             metric("Str/Raw", speed);
             speed = Math.copySign(applySensitivityFactor(speed, Constants.DriveTrain.SPEED_SENSITIVITY), speed);
             metric("Str/Trans", speed);
-            rotation = applySensitivityFactor(rotation, _shifter.getGear()== Shifter.Gear.HIGH  ? Constants.DriveTrain.TURNING_SENSITIVITY_HIGH_GEAR : Constants.DriveTrain.TURNING_SENSITIVITY_LOW_GEAR);
-            double delta = rotation * Math.abs(speed);
+            if (!override) {
+                rotation = applySensitivityFactor(rotation, _shifter.getGear() == Shifter.Gear.HIGH ? Constants.DriveTrain.TURNING_SENSITIVITY_HIGH_GEAR : Constants.DriveTrain.TURNING_SENSITIVITY_LOW_GEAR);
+            }
+            double delta = override ? rotation : rotation * Math.abs(speed);
             leftMotorOutput = speed + delta;
             rightMotorOutput = speed - delta;
             metric("Str/LeftMotor", leftMotorOutput);

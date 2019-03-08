@@ -66,24 +66,6 @@ public class AutoAlignToTarget extends OutliersCommand implements PIDOutput {
 
         _controller = new PIDController(kP, kI, kD, _imu, this, 0.01);
 
-//        double limeLightAngle = _limelight.getHorizontalAngle();
-//        double yawAngle = _imu.getYaw();
-//        _angle = limeLightAngle + yawAngle;
-//
-//        metric("LimeLightAngle", limeLightAngle);
-//        metric("YawAngle", yawAngle);
-//        metric("angle", _angle);
-//
-//        _controller = new PIDController(kP, kI, kD, _imu, this, 0.01);
-//        _controller.setInputRange(Constants.Auto.MIN_IMU_ANGLE, Constants.Auto.MAX_IMU_ANGLE);
-//        _controller.setOutputRange(-_speed, _speed);
-//        _controller.setAbsoluteTolerance(_tolerance);
-//        _controller.setContinuous();
-//        _controller.setSetpoint(_angle);
-//        _controller.enable();
-//        metric("setpoint", _angle);
-//        error("AutoAlign " + _stage + " initialized to " + _angle + " at " + _speed);
-//        error("kP="+kP+" , kI="+kI+", kD="+kD + ",T="+ _tolerance);
         _startTimeMillis = System.currentTimeMillis();
         _endTimeMillis = _startTimeMillis + _timeout;
 
@@ -137,25 +119,6 @@ public class AutoAlignToTarget extends OutliersCommand implements PIDOutput {
             metric("onTarget", _controller.onTarget());
             _driveTrain.setPower(turn, -turn, true);
         }
-//        double limeLightAngle = _limelight.getHorizontalAngle();
-//        double yawAngle = _imu.getYaw();
-//        _angle = limeLightAngle + yawAngle;
-//
-//        metric("startoffset", limeLightAngle);
-//        metric("startyaw", yawAngle);
-//        metric("target", _angle);
-//
-//        if (Math.abs(_angle - _controller.getSetpoint()) > _tolerance) {
-//            _controller.setSetpoint(_angle);
-//            _controller.enable();
-//            metric("setpoint", _angle);
-//        }
-//        metric("onTarget", _controller.onTarget());
-//        metric("yaw", _imu.getYaw());
-//        metric("pidOut", _pidOut);
-
-
-
     }
     @Override
     protected boolean isFinished() {

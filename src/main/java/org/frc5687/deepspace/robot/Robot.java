@@ -60,7 +60,7 @@ public class Robot extends TimedRobot implements ILoggingSource {
         _oi = new OI();
         _imu = new AHRS(SPI.Port.kMXP, (byte) 100);
 
-        _imu.reset();
+        _imu.zeroYaw();
 
         // then proxies...
         _lights = new Lights(this);

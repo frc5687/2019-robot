@@ -3,6 +3,7 @@ package org.frc5687.deepspace.robot.commands;
 import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.PIDOutput;
+import org.frc5687.deepspace.robot.Constants;
 import org.frc5687.deepspace.robot.OI;
 import org.frc5687.deepspace.robot.subsystems.DriveTrain;
 import org.frc5687.deepspace.robot.utils.Limelight;
@@ -39,6 +40,7 @@ public class Drive extends OutliersCommand {
         _autoAlignEnabled = false;
         _targetSighted = false;
         _angleController = new PIDController(kP,kI,kD, _imu, new AngleListener(), 0.1);
+        _angleController.setInputRange(Constants.Auto.MIN_IMU_ANGLE, Constants.Auto.MAX_IMU_ANGLE);
         _angleController.setOutputRange(-SPEED, SPEED);
         _angleController.setAbsoluteTolerance(TOLERANCE);
         _angleController.setContinuous();
@@ -52,10 +54,7 @@ public class Drive extends OutliersCommand {
         // Get the rotation from the tiller
         double wheelRotation = _oi.getDriveRotation();
 
-        if (!_targetSighted) {
-            error("Target not sighted!");
-            _targetSighted = _limelight.isTargetSighted();
-        }
+        _targetSighted = _limelight.isTargetSighted();
 
         // If the auto-align trigger is pressed, and !_autoAlignEnabled:
         //   Enable the LEDs
@@ -72,11 +71,12 @@ public class Drive extends OutliersCommand {
         } else if (_autoAlignEnabled &&!_oi.isAutoTargetPressed()) {
             _limelight.disableLEDs();
             _angleController.disable();
+            _autoAlignEnabled = false;
         } else if (_autoAlignEnabled && _targetSighted) {
             double limeLightAngle = _limelight.getHorizontalAngle();
             double yawAngle = _imu.getYaw();
             _angle = limeLightAngle + yawAngle;
-            if (_targetSighted && !_angleController.isEnabled()) {
+            if (!_angleController.isEnabled() || Math.abs(_angle - _angleController.getSetpoint()) > TOLERANCE) {
                 _angleController.setSetpoint(_angle);
                 _angleController.enable();
                 metric("limelightOffset", limeLightAngle);
@@ -84,9 +84,7 @@ public class Drive extends OutliersCommand {
             }
         }
 
-
-
-        // If autoAlignEnabled and pidControllerEnabled, send pidOut in place of wheelRotation (you may need a scale override flag as discussed earlier)
+//         If autoAlignEnabled and pidControllerEnabled, send pidOut in place of wheelRotation (you may need a scale override flag as discussed earlier)
         if (_autoAlignEnabled && _angleController.isEnabled()) {
             _driveTrain.cheesyDrive(stickSpeed, _anglePIDOut, false, true);
         }

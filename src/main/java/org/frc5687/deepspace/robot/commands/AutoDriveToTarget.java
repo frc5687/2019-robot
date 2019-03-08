@@ -107,8 +107,7 @@ public class AutoDriveToTarget extends OutliersCommand {
                 _ignoreDistance = true;
             }
 
-            if (!_ignoreDistance
-                    && (!_distanceController.isEnabled() || Math.abs(oldDestination - _driveTrain.getDistance()) > _distanceTolerance)) {
+            if (!_ignoreDistance && (!_distanceController.isEnabled() || Math.abs(oldDestination - _driveTrain.getDistance()) > _distanceTolerance)) {
                 _distanceController.setSetpoint(destination);
                 metric("distance/setpoint", destination);
                 _distanceController.enable();
@@ -175,11 +174,11 @@ public class AutoDriveToTarget extends OutliersCommand {
 
     @Override
     protected void end() {
-        //        _limelight.disableLEDs();
+        //   _limelight.disableLEDs();
         _driveTrain.enableBrakeMode();
         _driveTrain.setPower(0,0, true);
         error("AutoDriveToTarget finished: angle=" + _imu.getYaw() + ", distance=" + _distanceToTarget + ", time=" + (System.currentTimeMillis() - _startTimeMillis));
-        //_distanceController.disable();
+        _distanceController.disable();
         _angleController.disable();
     }
     private class AngleListener implements PIDOutput {

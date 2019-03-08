@@ -111,7 +111,7 @@ public class AutoAlignToTarget extends OutliersCommand implements PIDOutput {
             metric("YawAngle", yawAngle);
             metric("angle", _angle);
 
-            if (!wasSighted || Math.abs(_angle -_controller.getSetpoint()) > TOLERANCE ) {
+            if (!wasSighted) {
                 _controller.setInputRange(Constants.Auto.MIN_IMU_ANGLE, Constants.Auto.MAX_IMU_ANGLE);
                 _controller.setOutputRange(-_speed, _speed);
                 _controller.setAbsoluteTolerance(_tolerance);
@@ -123,15 +123,19 @@ public class AutoAlignToTarget extends OutliersCommand implements PIDOutput {
                 error("AutoAlign " + _stage + " initialized to " + _angle + " at " + _speed);
             }
         }
+        double turn = _pidOut;
         if(_targetSighted) {
-            if (_pidOut < 0 && _pidOut > -MINIMUM_SPEED) {
-                _pidOut = -MINIMUM_SPEED;
-            } else if (_pidOut > 0 && _pidOut < MINIMUM_SPEED) {
-                _pidOut = MINIMUM_SPEED;
+            if (turn < 0 && turn > -MINIMUM_SPEED) {
+                turn = -MINIMUM_SPEED;
+            } else if (turn > 0 && turn < MINIMUM_SPEED) {
+                turn = MINIMUM_SPEED;
             }
 
             error("Sending left=" + _pidOut + ", right=" + (-_pidOut));
-            _driveTrain.setPower(_pidOut, -_pidOut, true);
+            metric("pidOut", _pidOut);
+            metric("turn", turn);
+            metric("onTarget", _controller.onTarget());
+            _driveTrain.setPower(turn, -turn, true);
         }
 //        double limeLightAngle = _limelight.getHorizontalAngle();
 //        double yawAngle = _imu.getYaw();
@@ -170,8 +174,8 @@ public class AutoAlignToTarget extends OutliersCommand implements PIDOutput {
     }
     @Override
     protected void end() {
-        _driveTrain.disableBrakeMode();
         _driveTrain.setPower(0, 0, true);
+        _driveTrain.disableBrakeMode();
         error("AutoAlign finished: angle = " + _imu.getYaw() + ", time = " + (System.currentTimeMillis() - _startTimeMillis));
         _controller.disable();
         error("AutoAlign.end() controller disabled");

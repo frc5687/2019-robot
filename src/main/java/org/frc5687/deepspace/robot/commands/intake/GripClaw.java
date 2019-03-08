@@ -22,7 +22,7 @@ public class GripClaw extends OutliersCommand {
 
     @Override
     protected void initialize() {
-        _hatchIntake.pointClaw();
+        _hatchIntake.gripClaw();
         _endTime = System.currentTimeMillis() + _delay;
     }
 

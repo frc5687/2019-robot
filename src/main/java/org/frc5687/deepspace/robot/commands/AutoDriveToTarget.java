@@ -15,7 +15,6 @@ import static org.frc5687.deepspace.robot.Constants.Auto.DriveToTarget.*;
 public class AutoDriveToTarget extends OutliersCommand {
     private DriveTrain _driveTrain;
     private AHRS _imu;
-    private HatchIntake _intake;
     private Limelight _limelight;
     private OI _oi;
 
@@ -44,7 +43,6 @@ public class AutoDriveToTarget extends OutliersCommand {
         _imu = robot.getIMU();
         _limelight = robot.getLimelight();
         _oi = robot.getOI();
-        _intake = robot.getHatchIntake();
 
         requires(_driveTrain);
         _desiredOffset = distance;
@@ -55,7 +53,6 @@ public class AutoDriveToTarget extends OutliersCommand {
 
     @Override
     protected void initialize() {
-        _intake.pointClaw();
         _aborted = false;
         _ignoreDistance = false;
         _driveTrain.resetDriveEncoders();
@@ -184,7 +181,6 @@ public class AutoDriveToTarget extends OutliersCommand {
         error("AutoDriveToTarget finished: angle=" + _imu.getYaw() + ", distance=" + _distanceToTarget + ", time=" + (System.currentTimeMillis() - _startTimeMillis));
         //_distanceController.disable();
         _angleController.disable();
-        _intake.gripClaw();
     }
     private class AngleListener implements PIDOutput {
 

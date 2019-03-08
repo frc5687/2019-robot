@@ -1,17 +1,17 @@
 package org.frc5687.deepspace.robot;
 
+import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.buttons.Button;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import org.frc5687.deepspace.robot.commands.*;
+import org.frc5687.deepspace.robot.commands.drive.ScoreHatch;
 import org.frc5687.deepspace.robot.commands.intake.*;
+import org.frc5687.deepspace.robot.subsystems.DriveTrain;
 import org.frc5687.deepspace.robot.subsystems.Elevator;
 import org.frc5687.deepspace.robot.subsystems.Shifter;
-import org.frc5687.deepspace.robot.utils.AxisButton;
-import org.frc5687.deepspace.robot.utils.Gamepad;
-import org.frc5687.deepspace.robot.utils.OutliersProxy;
-import org.frc5687.deepspace.robot.utils.POV;
+import org.frc5687.deepspace.robot.utils.*;
 
 import static org.frc5687.deepspace.robot.utils.Helpers.applyDeadband;
 import static org.frc5687.deepspace.robot.utils.Helpers.applySensitivityFactor;
@@ -130,7 +130,10 @@ public class OI extends OutliersProxy {
         _operatorRightTrigger.whenPressed(new IntakeCargo(robot));
         _operatorLeftTrigger.whileHeld(new HoldClawOpen(robot));
 
-        _driverRightTrigger.whenPressed(new AutoDriveToTarget(robot,  0.7, 18, 1, ""));
+        _driverRightTrigger.whenPressed(new ScoreHatch(robot));
+
+        // _driverRightTrigger.whenPressed(new AutoDriveToTarget(robot,  0.7, 18, 1, ""));
+        //_driverRightTrigger.whenPressed(new AutoAlignToTarget(robot.getDriveTrain(), this, robot.getIMU(), robot.getLimelight(), Constants.Auto.Align.SPEED, 2000, Constants.Auto.Align.TOLERANCE, "align"));
 
         _operatorRightXAxisLeftButton.whenPressed(new CargoIntakeDown(robot.getCargoIntake()));
         _operatorRightXAxisRightButton.whenPressed(new CargoIntakeUp(robot.getCargoIntake()));

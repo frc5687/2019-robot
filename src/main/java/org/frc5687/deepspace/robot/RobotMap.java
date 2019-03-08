@@ -100,15 +100,13 @@ public class RobotMap {
 
         public static final int ARM_RIGHT_STOWED_HALL = 6;
         public static final int ARM_LEFT_STOWED_HALL = 7;
-//        public static final int ARM_RIGHT_LOW_HALL = 8;
-//        public static final int ARM_LEFT_LOW_HALL = 9;
 
+        public static final int HATCH_DETECTION_LIMIT = 9;
 
         public static final int DRIVE_RIGHT_B = 13;
         public static final int DRIVE_RIGHT_A = 19;
         public static final int DRIVE_LEFT_B = 21;
         public static final int DRIVE_LEFT_A = 23;
-        public static final int HATCH_DETECTION_LIMIT = 12;
 
 
 

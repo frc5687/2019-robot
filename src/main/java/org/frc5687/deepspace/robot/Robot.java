@@ -58,7 +58,7 @@ public class Robot extends TimedRobot implements ILoggingSource {
         info("Robot " + _name + " running in " + identityMode.toString() + " mode");
 
         // Periodically flushes metrics (might be good to configure enable/disable via USB config file)
-        new Notifier(MetricTracker::flushAll);
+        new Notifier(MetricTracker::flushAll).startPeriodic(Constants.METRIC_FLUSH_PERIOD);
 
         // OI must be first...
         _oi = new OI();

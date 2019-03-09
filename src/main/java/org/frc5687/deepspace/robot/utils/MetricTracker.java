@@ -18,14 +18,23 @@ public class MetricTracker {
      * Private ctor. Call createMetricsTracker.
      * @param instrumentedClassName The name of the instrumented class. This is used to name the output file.
      */
-    private MetricTracker(String instrumentedClassName) {
+    private MetricTracker(String instrumentedClassName, String... metrics) {
+        StringBuilder header = new StringBuilder();
+
+        for (String metric : metrics) {
+            _reportableMetricNames.add(metric);
+            header.append(metric).append(",");
+        }
+
         // Don't use the c'tor. Use createMetricTracker.
         String outputDir = "/U/"; // USB drive is symlinked to /U on roboRIO
-        String filename = outputDir + "metrics_" + instrumentedClassName + "_" + getDateTimeString() + ".csv";
+        String filename = outputDir + instrumentedClassName + "_" + getDateTimeString() + ".csv";
 
         try {
             _bufferedWriter = new BufferedWriter(new FileWriter(filename, true));
+            _bufferedWriter.append(header.toString().substring(0, Math.max(header.length()-1,0)));
             _streamOpen = true;
+
         } catch (IOException e) {
             System.out.println("Error initializing metrics file: " + e.getMessage());
         }
@@ -37,8 +46,8 @@ public class MetricTracker {
      * @param instrumentedClassName name of the class being measured - used to generate the metric file name.
      * @return a fresh new MetricTracker.
      */
-    public static MetricTracker createMetricTracker(String instrumentedClassName) {
-        MetricTracker newMetricTracker = new MetricTracker(instrumentedClassName);
+    public static MetricTracker createMetricTracker(String instrumentedClassName, String... metrics) {
+        MetricTracker newMetricTracker = new MetricTracker(instrumentedClassName, metrics);
         MetricTracker._allMetricsTrackers.add(newMetricTracker);
         return newMetricTracker;
     }
@@ -48,8 +57,8 @@ public class MetricTracker {
      * @param instrumentedObject name of the class being measured - used to generate the metric file name.
      * @return
      */
-    public static MetricTracker createMetricTracker(Object instrumentedObject) {
-        return createMetricTracker(instrumentedObject.getClass().getSimpleName());
+    public static MetricTracker createMetricTracker(Object instrumentedObject, String... metrics) {
+        return createMetricTracker(instrumentedObject.getClass().getSimpleName(), metrics);
     }
 
     /**
@@ -61,14 +70,6 @@ public class MetricTracker {
         _rowMetrics.put(name, value);
     }
 
-    /**
-     * Only metrics whose name is registered will be written to disk when flushed. Register
-     * your metric name in the constructor of whatever class you're instrumenting.
-     * @param name
-     */
-    public void registerReportableMetricName(String name) {
-        _reportableMetricNames.add(name);
-    }
 
     /**
      * Starts a new row of metrics. You'd call this, e.g., once per tick.
@@ -78,9 +79,14 @@ public class MetricTracker {
             return;
         }
         try {
-            _bufferedWriter.write(buildMetricRow());
+            Map<String, Object> hold;
+
+            synchronized (_rowMetrics) {
+                hold = _rowMetrics;
+                _rowMetrics = new HashMap<>();
+            }
+            _bufferedWriter.write(buildMetricRow(hold));
             _bufferedWriter.newLine();
-            _rowMetrics = new HashMap<>();
         } catch (IOException e) {
             System.out.println("Error writing metrics file: " + e.getMessage());
         }
@@ -117,14 +123,14 @@ public class MetricTracker {
     }
 
     // Formats a row of metrics as a comma-delimited quoted string.
-    private String buildMetricRow() {
+    private String buildMetricRow(Map<String, Object> metrics) {
         StringBuilder sb = new StringBuilder();
         for (String name : _reportableMetricNames) {
             sb.append("\"");
-            if (_rowMetrics.get(name) == null) {
+            if (metrics.get(name) == null) {
                 sb.append("(null)");
             } else {
-                sb.append(_rowMetrics.get(name).toString());
+                sb.append(metrics.get(name).toString());
             }
             sb.append("\"");
             int i = 0;

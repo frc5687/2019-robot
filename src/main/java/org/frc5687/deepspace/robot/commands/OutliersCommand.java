@@ -8,6 +8,7 @@ import org.frc5687.deepspace.robot.utils.MetricTracker;
 import org.frc5687.deepspace.robot.utils.RioLogger;
 
 public abstract class OutliersCommand extends Command implements ILoggingSource {
+    private MetricTracker _metricTracker;
 
     public OutliersCommand() {
     }
@@ -38,20 +39,26 @@ public abstract class OutliersCommand extends Command implements ILoggingSource 
 
     public void metric(String name, String value) {
         SmartDashboard.putString(getClass().getSimpleName() + "/" + name, value);
+        if (_metricTracker!=null) {
+            _metricTracker.put(name, value);
+        }
     }
 
     public void metric(String name, double value) {
         SmartDashboard.putNumber(getClass().getSimpleName() + "/" + name, value);
+        if (_metricTracker!=null) {
+            _metricTracker.put(name, value);
+        }
     }
 
     public void metric(String name, boolean value) {
         SmartDashboard.putBoolean(getClass().getSimpleName() + "/" + name, value);
+        if (_metricTracker!=null) {
+            _metricTracker.put(name, value);
+        }
     }
 
     protected void logMetrics(String... metrics) {
-        MetricTracker tracker = MetricTracker.createMetricTracker(getClass().getName());
-        for (String metric : metrics) {
-            tracker.registerReportableMetricName(metric);
-        }
+        _metricTracker = MetricTracker.createMetricTracker(getClass().getSimpleName(), metrics);
     }
 }

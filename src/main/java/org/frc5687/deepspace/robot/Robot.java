@@ -105,7 +105,6 @@ public class Robot extends TimedRobot implements ILoggingSource {
     @Override
     public void robotPeriodic() {
         updateDashboard();
-        MetricTracker.newMetricRowAll();
         _oi.poll();
     }
 
@@ -149,6 +148,7 @@ public class Robot extends TimedRobot implements ILoggingSource {
     private void ourPeriodic() {
         // Example of starting a new row of metrics for all instrumented objects.
         // MetricTracker.newMetricRowAll();
+        MetricTracker.newMetricRowAll();
 
         int operatorPOV = _oi.getOperatorPOV();
         int driverPOV = _oi.getDriverPOV();

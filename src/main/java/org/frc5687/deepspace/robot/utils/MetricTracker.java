@@ -9,7 +9,6 @@ import java.util.*;
 
 public class MetricTracker {
     private static List<MetricTracker> _allMetricsTrackers = new ArrayList<>();
-
     private static final int BUFFER_LENGTH = 500;
 
     private Map<String, Integer> _metrics;

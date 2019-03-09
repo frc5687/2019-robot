@@ -60,5 +60,24 @@ public abstract class OutliersCommand extends Command implements ILoggingSource 
 
     protected void logMetrics(String... metrics) {
         _metricTracker = MetricTracker.createMetricTracker(getClass().getSimpleName(), metrics);
+        _metricTracker.pause();
+    }
+
+    @Override
+    protected void initialize() {
+        super.initialize();
+        _metricTracker.resume();
+    }
+
+    @Override
+    protected void end() {
+        super.end();
+        _metricTracker.pause();
+    }
+
+    @Override
+    protected void interrupted() {
+        super.interrupted();
+        _metricTracker.pause();
     }
 }

@@ -21,6 +21,8 @@ public class MetricTracker {
     private int _out = 0;
     private int _metricCount = 0;
 
+    private boolean _paused = false;
+
     /**
      * MetricsTracker factory method - Creates a new Metrics Tracker and registers the associated object with a list
      * of metrics so they can all be flushed to SD by calling the static flushAll method.
@@ -114,12 +116,20 @@ public class MetricTracker {
         _metricBuffer[_in][index+1] = value;
     }
 
+    public void pause() {
+        _paused = true;
+    }
+
+    public void resume() {
+        _paused = false;
+    }
+
 
     /**
      * Starts a new row of metrics. You'd call this, e.g., once per tick.
      */
-    public void newMetricRow() {
-        if (!_streamOpen) {
+    protected void newMetricRow() {
+        if (!_streamOpen || _paused) {
             return;
         }
         _in++;
@@ -134,7 +144,7 @@ public class MetricTracker {
     /**
      * Flushes the buffer of stats for an instance of a metrics tracker to perm storage.
      */
-    public void flushMetricsTracker() {
+    protected void flushMetricsTracker() {
         while(_out != _in) {
             writeMetricRow(_out);
             _out++;

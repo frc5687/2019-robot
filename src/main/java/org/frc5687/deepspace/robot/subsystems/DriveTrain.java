@@ -40,7 +40,9 @@ public class DriveTrain extends OutliersSubsystem implements PIDSource {
     private double _rightOffset;
 
     private double _oldLeftSpeed;
+    private double _oldLeftSpeedF;
     private double _oldRightSpeed;
+    private double _oldRightSpeedF;
     private boolean _isPaused = false;
 
     private Shifter _shifter;
@@ -71,8 +73,8 @@ public class DriveTrain extends OutliersSubsystem implements PIDSource {
             disableBrakeMode();
 
             debug("Configuring followers");
-            _leftFollower.follow(_leftMaster);
-            _rightFollower.follow(_rightMaster);
+//            _leftFollower.follow(_leftMaster);
+//            _rightFollower.follow(_rightMaster);
 
             debug("Configuring encoders");
             _leftEncoder = _leftMaster.getEncoder();
@@ -195,7 +197,9 @@ public class DriveTrain extends OutliersSubsystem implements PIDSource {
         }
         try {
             _leftMaster.set(leftSpeed);
+            _leftFollower.set(leftSpeed);
             _rightMaster.set(rightSpeed);
+            _rightFollower.set(rightSpeed);
         } catch (Exception e) {
             error("DriveTrain.setPower exception: " + e.toString());
         }
@@ -204,15 +208,21 @@ public class DriveTrain extends OutliersSubsystem implements PIDSource {
     }
     public void pauseMotors() {
         _oldLeftSpeed = _leftMaster.get();
+        _oldLeftSpeedF = _leftFollower.get();
         _oldRightSpeed = _rightMaster.get();
+        _oldRightSpeedF = _rightFollower.get();
         _leftMaster.set(0);
+        _leftFollower.set(0);
         _rightMaster.set(0);
+        _rightFollower.set(0);
         _isPaused = true;
     }
 
     public void resumeMotors() {
         _leftMaster.set(_oldLeftSpeed);
+        _leftFollower.set(_oldLeftSpeedF);
         _rightMaster.set(_oldRightSpeed);
+        _rightFollower.set(_oldRightSpeedF);
         _isPaused = false;
     }
 

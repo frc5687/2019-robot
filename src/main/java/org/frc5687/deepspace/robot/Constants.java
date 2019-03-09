@@ -245,7 +245,7 @@ public class Constants {
 
             public static final double TURN_SPEED = 0.15;
 
-            public static final double kPAngle = 0.1;
+            public static final double kPAngle = 0.015;
             public static final double kIAngle = 0.00;
             public static final double kDAngle = 0.5;
 
@@ -272,6 +272,7 @@ public class Constants {
              *time the angle must be on target for to be considered steady
              */
             public static final double STEADY_TIME = 60;
+            public static final double STEER_K = .2 ;
         }
         public class Drive {
             public static final double SPEED = 1.0;

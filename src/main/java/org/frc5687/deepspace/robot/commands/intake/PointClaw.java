@@ -15,7 +15,7 @@ public class PointClaw extends OutliersCommand {
     }
     @Override
     protected void initialize() {
-        _hatchIntake.gripClaw();
+        _hatchIntake.pointClaw();
         _startTime = System.currentTimeMillis();
     }
 

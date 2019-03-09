@@ -16,9 +16,7 @@ import org.frc5687.deepspace.robot.utils.Limelight;
 import org.frc5687.deepspace.robot.utils.PoseTracker;
 import org.frc5687.deepspace.robot.utils.RioLogger;
 
-import static org.frc5687.deepspace.robot.Constants.Auto.AlignToTarget.PIDkD;
-import static org.frc5687.deepspace.robot.Constants.Auto.AlignToTarget.PIDkI;
-import static org.frc5687.deepspace.robot.Constants.Auto.AlignToTarget.PIDkP;
+import static org.frc5687.deepspace.robot.Constants.Auto.Align.*;
 
 
 public class AutoAlignToTarget extends OutliersCommand implements PIDOutput {
@@ -34,7 +32,7 @@ public class AutoAlignToTarget extends OutliersCommand implements PIDOutput {
     private long _onTargetSince;
     private long _startTimeMillis;
     private long _endTimeMillis;
-    private boolean _targetSighted;
+    private boolean _targetSighted = false;
     private boolean _aborted = false;
 
     private DriveTrain _driveTrain;
@@ -70,26 +68,8 @@ public class AutoAlignToTarget extends OutliersCommand implements PIDOutput {
         _targetSighted = false;
 
 
-        _controller = new PIDController(PIDkP, PIDkI, PIDkD, _imu, this, 0.01);
+        _controller = new PIDController(kP, kI, kD, _imu, this, 0.01);
 
-//        double limeLightAngle = _limelight.getHorizontalAngle();
-//        double yawAngle = _imu.getYaw();
-//        _angle = limeLightAngle + yawAngle;
-//
-//        metric("LimeLightAngle", limeLightAngle);
-//        metric("YawAngle", yawAngle);
-//        metric("angle", _angle);
-//
-//        _controller = new PIDController(kP, kI, kD, _imu, this, 0.01);
-//        _controller.setInputRange(Constants.Auto.MIN_IMU_ANGLE, Constants.Auto.MAX_IMU_ANGLE);
-//        _controller.setOutputRange(-_speed, _speed);
-//        _controller.setAbsoluteTolerance(_tolerance);
-//        _controller.setContinuous();
-//        _controller.setSetpoint(_angle);
-//        _controller.enable();
-//        metric("setpoint", _angle);
-//        error("AutoAlign " + _stage + " initialized to " + _angle + " at " + _speed);
-//        error("kP="+kP+" , kI="+kI+", kD="+kD + ",T="+ _tolerance);
         _startTimeMillis = System.currentTimeMillis();
         _endTimeMillis = _startTimeMillis + _timeout;
 
@@ -98,14 +78,14 @@ public class AutoAlignToTarget extends OutliersCommand implements PIDOutput {
 
     @Override
     protected void execute() {
-        boolean wasTargetedSighted = _targetSighted;
+        boolean wasTargetSighted = _targetSighted;
         if (!_targetSighted) {
-            info("Target not yet sighted!");
+            error("Target not sighted!");
             _targetSighted = _limelight.isTargetSighted();
         }
         metric("targetSighted", _targetSighted);
         metric("limelight sighted", _limelight.isTargetSighted());
-        if (_targetSighted && !wasTargetedSighted) {
+        if (_targetSighted && !wasTargetSighted) {
             info("Target sighted!");
 
             // Get the perceived angle between the robot and the target, according to the limelight...
@@ -122,45 +102,39 @@ public class AutoAlignToTarget extends OutliersCommand implements PIDOutput {
 
             // And now determine the "real" target angle based on these two.
             _angle = limeLightAngle + yawAngle;
+            error(" At " + limeLightAngle + " when our angle was " + yawAngle);
 
             metric("LimeLightAngle", limeLightAngle);
             metric("YawAngle", yawAngle);
             metric("Pose", pose==null?0:pose.getMillis());
             metric("angle", _angle);
 
-            _controller.setInputRange(Constants.Auto.MIN_IMU_ANGLE, Constants.Auto.MAX_IMU_ANGLE);
-            _controller.setOutputRange(-_speed, _speed);
-            _controller.setAbsoluteTolerance(_tolerance);
-            _controller.setContinuous();
-            _controller.setSetpoint(_angle);
-            _controller.enable();
+            if (!wasTargetSighted) {
+                _controller.setInputRange(Constants.Auto.MIN_IMU_ANGLE, Constants.Auto.MAX_IMU_ANGLE);
+                _controller.setOutputRange(-_speed, _speed);
+                _controller.setAbsoluteTolerance(_tolerance);
+                _controller.setContinuous();
+                _controller.setSetpoint(_angle);
+                _controller.enable();
 
-            metric("setpoint", _angle);
-            error("AutoAlign " + _stage + " initialized to " + _angle + " at " + _speed);
-            error("kP="+PIDkP+" , kI="+PIDkI+", kD="+PIDkD + ",T="+ _tolerance);
+                metric("setpoint", _angle);
+                error("AutoAlign " + _stage + " initialized to " + _angle + " at " + _speed);
+            }
         }
+        double turn = _pidOut;
         if(_targetSighted) {
-            _driveTrain.setPower(_pidOut, -_pidOut, true);
+            if (turn < 0 && turn > -MINIMUM_SPEED) {
+                turn = -MINIMUM_SPEED;
+            } else if (turn > 0 && turn < MINIMUM_SPEED) {
+                turn = MINIMUM_SPEED;
+            }
+
+            error("Sending left=" + _pidOut + ", right=" + (-_pidOut));
+            metric("pidOut", _pidOut);
+            metric("turn", turn);
+            metric("onTarget", _controller.onTarget());
+            _driveTrain.setPower(turn, -turn, true);
         }
-//        double limeLightAngle = _limelight.getHorizontalAngle();
-//        double yawAngle = _imu.getYaw();
-//        _angle = limeLightAngle + yawAngle;
-//
-//        metric("startoffset", limeLightAngle);
-//        metric("startyaw", yawAngle);
-//        metric("target", _angle);
-//
-//        if (Math.abs(_angle - _controller.getSetpoint()) > _tolerance) {
-//            _controller.setSetpoint(_angle);
-//            _controller.enable();
-//            metric("setpoint", _angle);
-//        }
-//        metric("onTarget", _controller.onTarget());
-//        metric("yaw", _imu.getYaw());
-//        metric("pidOut", _pidOut);
-
-
-
     }
     @Override
     protected boolean isFinished() {
@@ -171,6 +145,7 @@ public class AutoAlignToTarget extends OutliersCommand implements PIDOutput {
         }
         if (_targetSighted) {
             if (_controller.onTarget()) {
+                error("AutoAlignToTarget on target at " + _imu.getYaw());
                 return true;
             }
         }
@@ -178,8 +153,8 @@ public class AutoAlignToTarget extends OutliersCommand implements PIDOutput {
     }
     @Override
     protected void end() {
-        _driveTrain.disableBrakeMode();
         _driveTrain.setPower(0, 0, true);
+        _driveTrain.disableBrakeMode();
         error("AutoAlign finished: angle = " + _imu.getYaw() + ", time = " + (System.currentTimeMillis() - _startTimeMillis));
         _controller.disable();
         error("AutoAlign.end() controller disabled");

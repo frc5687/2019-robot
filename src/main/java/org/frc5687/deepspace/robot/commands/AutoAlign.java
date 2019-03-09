@@ -36,10 +36,12 @@ public class AutoAlign extends OutliersCommand implements PIDOutput {
         _timeout = timeout;
         _tolerance = tolerance;
         _state = state;
+        logMetrics("Angle","pidOut","imu","onTarget");
     }
 
     @Override
     protected void initialize() {
+        super.initialize();
         double kP = Constants.Auto.Align.kP; // Double.parseDouble(SmartDashboard.getString("DB/String 0", ".04"));
         double kI = Constants.Auto.Align.kI; // Double.parseDouble(SmartDashboard.getString("DB/String 1", ".006"));
         double kD = Constants.Auto.Align.kD; //Double.parseDouble(SmartDashboard.getString("DB/String 2", ".09"));
@@ -118,6 +120,7 @@ public class AutoAlign extends OutliersCommand implements PIDOutput {
 
     @Override
     protected void end() {
+        super.end();
         _driveTrain.setPower(0,0, true);
         info("AutoAlign finished: angle = " + _imu.getYaw() + ", time = " + (System.currentTimeMillis() - _startTimeMillis));
         _controller.disable();

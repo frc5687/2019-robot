@@ -56,7 +56,6 @@ public class Arm extends OutliersSubsystem implements PIDSource {
         _leftStowedhall = new HallEffect(RobotMap.DIO.ARM_LEFT_STOWED_HALL);
         // _rightLowhall = new HallEffect(RobotMap.DIO.ARM_RIGHT_LOW_HALL);
         // _leftLowhall = new HallEffect(RobotMap.DIO.ARM_LEFT_LOW_HALL);
-
     }
 
     public void enableBrakeMode() {

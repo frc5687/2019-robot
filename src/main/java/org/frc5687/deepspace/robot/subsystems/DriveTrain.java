@@ -1,24 +1,24 @@
 package org.frc5687.deepspace.robot.subsystems;
 
+import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
-import edu.wpi.first.wpilibj.AnalogInput;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Encoder;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.*;
 import org.frc5687.deepspace.robot.Constants;
 import org.frc5687.deepspace.robot.OI;
 import org.frc5687.deepspace.robot.Robot;
 import org.frc5687.deepspace.robot.RobotMap;
 import org.frc5687.deepspace.robot.commands.Drive;
 import org.frc5687.deepspace.robot.utils.IRDistanceSensor;
+import org.frc5687.deepspace.robot.utils.Limelight;
+import org.frc5687.deepspace.robot.utils.PDP;
 
 import static org.frc5687.deepspace.robot.Constants.DriveTrain.CREEP_FACTOR;
 import static org.frc5687.deepspace.robot.utils.Helpers.applySensitivityFactor;
 import static org.frc5687.deepspace.robot.utils.Helpers.limit;
 
-public class DriveTrain extends OutliersSubsystem {
+public class DriveTrain extends OutliersSubsystem implements PIDSource {
     private CANSparkMax _leftMaster;
     private CANSparkMax _rightMaster;
 
@@ -34,19 +34,30 @@ public class DriveTrain extends OutliersSubsystem {
     private IRDistanceSensor _frontDistance;
 
     private OI _oi;
+    private AHRS _imu;
+    private Limelight _limelight;
+    private Robot _robot;
 
     private double _leftOffset;
     private double _rightOffset;
 
     private double _oldLeftSpeed;
+    private double _oldLeftSpeedF;
     private double _oldRightSpeed;
+    private double _oldRightSpeedF;
     private boolean _isPaused = false;
 
     private Shifter _shifter;
+    private PDP _pdp;
 
     public DriveTrain(Robot robot) {
         info("Constructing DriveTrain class.");
         _oi = robot.getOI();
+        _imu = robot.getIMU();
+        _limelight = robot.getLimelight();
+        _pdp = robot.getPDP();
+        _robot = robot;
+
         _shifter = robot.getShifter();
 
         _frontDistance = new IRDistanceSensor(RobotMap.Analog.FRONT_IR, IRDistanceSensor.Type.MEDIUM);
@@ -67,8 +78,8 @@ public class DriveTrain extends OutliersSubsystem {
             disableBrakeMode();
 
             debug("Configuring followers");
-            _leftFollower.follow(_leftMaster);
-            _rightFollower.follow(_rightMaster);
+//            _leftFollower.follow(_leftMaster);
+//            _rightFollower.follow(_rightMaster);
 
             debug("Configuring encoders");
             _leftEncoder = _leftMaster.getEncoder();
@@ -120,15 +131,16 @@ public class DriveTrain extends OutliersSubsystem {
         metric("Neo/Distance/Total", getDistance());
         metric("Mag/Ticks/Left", _leftMagEncoder.get());
         metric("Mag/Ticks/Right", _rightMagEncoder.get());
+        metric("Imu/Yaw", getYaw());
 
     }
 
     @Override
     protected void initDefaultCommand() {
-        setDefaultCommand(new Drive(this, _oi));
+        setDefaultCommand(new Drive(this, _imu, _oi, _limelight, _robot.getElevator()));
     }
 
-    public void cheesyDrive(double speed, double rotation, boolean creep) {
+    public void cheesyDrive(double speed, double rotation, boolean creep, boolean override) {
         if (!assertMotorControllers()) { return; }
         metric("Speed", speed);
         metric("Rotation", rotation);
@@ -145,7 +157,9 @@ public class DriveTrain extends OutliersSubsystem {
 
         if (speed < Constants.DriveTrain.DEADBAND && speed > -Constants.DriveTrain.DEADBAND) {
             metric("Rot/Raw", rotation);
-            rotation = applySensitivityFactor(rotation, _shifter.getGear() == Shifter.Gear.HIGH ? Constants.DriveTrain.ROTATION_SENSITIVITY_HIGH_GEAR : Constants.DriveTrain.ROTATION_SENSITIVITY_LOW_GEAR);
+            if (!override) {
+                rotation = applySensitivityFactor(rotation, _shifter.getGear() == Shifter.Gear.HIGH ? Constants.DriveTrain.ROTATION_SENSITIVITY_HIGH_GEAR : Constants.DriveTrain.ROTATION_SENSITIVITY_LOW_GEAR);
+            }
             if (creep) {
                 metric("Rot/Creep", creep);
                 rotation = rotation * CREEP_FACTOR;
@@ -162,8 +176,10 @@ public class DriveTrain extends OutliersSubsystem {
             metric("Str/Raw", speed);
             speed = Math.copySign(applySensitivityFactor(speed, Constants.DriveTrain.SPEED_SENSITIVITY), speed);
             metric("Str/Trans", speed);
-            rotation = applySensitivityFactor(rotation, _shifter.getGear()== Shifter.Gear.HIGH  ? Constants.DriveTrain.TURNING_SENSITIVITY_HIGH_GEAR : Constants.DriveTrain.TURNING_SENSITIVITY_LOW_GEAR);
-            double delta = rotation * Math.abs(speed);
+            if (!override) {
+                rotation = applySensitivityFactor(rotation, _shifter.getGear() == Shifter.Gear.HIGH ? Constants.DriveTrain.TURNING_SENSITIVITY_HIGH_GEAR : Constants.DriveTrain.TURNING_SENSITIVITY_LOW_GEAR);
+            }
+            double delta = override ? rotation : rotation * Math.abs(speed);
             leftMotorOutput = speed + delta;
             rightMotorOutput = speed - delta;
             metric("Str/LeftMotor", leftMotorOutput);
@@ -171,6 +187,10 @@ public class DriveTrain extends OutliersSubsystem {
         }
 
         setPower(limit(leftMotorOutput), limit(rightMotorOutput), true);
+    }
+
+    public float getYaw() {
+        return _imu.getYaw();
     }
 
 
@@ -182,7 +202,9 @@ public class DriveTrain extends OutliersSubsystem {
         }
         try {
             _leftMaster.set(leftSpeed);
+            _leftFollower.set(leftSpeed);
             _rightMaster.set(rightSpeed);
+            _rightFollower.set(rightSpeed);
         } catch (Exception e) {
             error("DriveTrain.setPower exception: " + e.toString());
         }
@@ -191,15 +213,21 @@ public class DriveTrain extends OutliersSubsystem {
     }
     public void pauseMotors() {
         _oldLeftSpeed = _leftMaster.get();
+        _oldLeftSpeedF = _leftFollower.get();
         _oldRightSpeed = _rightMaster.get();
+        _oldRightSpeedF = _rightFollower.get();
         _leftMaster.set(0);
+        _leftFollower.set(0);
         _rightMaster.set(0);
+        _rightFollower.set(0);
         _isPaused = true;
     }
 
     public void resumeMotors() {
         _leftMaster.set(_oldLeftSpeed);
+        _leftFollower.set(_oldLeftSpeedF);
         _rightMaster.set(_oldRightSpeed);
+        _rightFollower.set(_oldRightSpeedF);
         _isPaused = false;
     }
 
@@ -241,5 +269,42 @@ public class DriveTrain extends OutliersSubsystem {
         _rightOffset = getRightTicks();
     }
 
+    @Override
+    public double pidGet() {
+        return getDistance();
+    }
+
+    @Override
+    public PIDSourceType getPIDSourceType() {
+        return PIDSourceType.kDisplacement;
+    }
+
+    @Override
+    public void setPIDSourceType(PIDSourceType pidSource) {
+    }
+
+
+    public double getLeftPower() {
+        return _leftMaster.get();
+    }
+
+    public double getRightPower() {
+        return _rightMaster.get();
+    }
+
+
+    public double getLeftMasterCurrent() {
+        return _pdp.getCurrent(11);
+    }
+
+    public double getLeftFollowerCurrent() {
+        return _pdp.getCurrent(14);
+    }
+    public double getRightMasterCurrent() {
+        return _pdp.getCurrent(6);
+    }
+    public double getRightFollowerCurrent() {
+        return _pdp.getCurrent(8);
+    }
 
 }

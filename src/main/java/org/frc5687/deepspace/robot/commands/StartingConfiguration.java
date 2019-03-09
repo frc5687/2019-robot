@@ -10,6 +10,7 @@ import org.frc5687.deepspace.robot.subsystems.Elevator;
 
 public class StartingConfiguration extends CommandGroup {
     public StartingConfiguration(Robot robot) {
+        addSequential(new MoveElevatorToSetPoint(robot.getElevator(), Elevator.Setpoint.ClearRoller, Elevator.MotionMode.Ramp, null));
         addSequential(new ClawWristDown(robot));
         addSequential(new PointClaw(robot.getHatchIntake()));
         addSequential(new CargoIntakeUp(robot.getCargoIntake()));

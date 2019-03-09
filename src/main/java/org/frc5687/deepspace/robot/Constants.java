@@ -6,6 +6,7 @@ public class Constants {
      */
     public static final int CYCLES_PER_SECOND = 50;
     public static final int TICKS_PER_UPDATE = 10;
+    public static final double METRIC_FLUSH_PERIOD = 1.0;
 
     public class DriveTrain {
 
@@ -38,13 +39,14 @@ public class Constants {
         public static final double DEADBAND = 0.1;
         public static final double SENSITIVITY = 0.5;
         public static final long ROLLER_TIME_MILLI_SEC = 500;
-        public static final int CARGO_DETECTED_THRESHOLD = 800;
+        public static final int CARGO_DETECTED_THRESHOLD = 1300;
         //Wrist
         public static final long RAISE_WRIST_MILLI_SEC = 500;
         public static final long LOWER_WRIST_MILLI_SEC = 500;
         //Claw
         public static final long OPEN_CLAW_MILLI_SEC = 40;
         public static final long CLOSE_CLAW_MILLI_SEC = 40;
+        public static final long CLOSE_CLAW_MILLI_SS = 160; // Delay in sandstorm
         public static final long CLAW_RAISE_WRIST_MILLI_SEC = 300;
         public static final long CLAW_LOWER_WRIST_MILLI_SEC = 300;
 
@@ -93,6 +95,7 @@ public class Constants {
         public static final double TICKS_PER_STEP = 50;
         public static final double MIN_SPEED = 0.2;
         public static final double GOAL_SPEED = 0.5;
+        public static final int BOTTOM_CAM_ZONE = 100;
 
         public static class PID {
             public static final double kP = 0.1;
@@ -178,9 +181,14 @@ public class Constants {
         public static final double MAX_DOWN_SPEED = 0.4;
         public static final double STILT_HOLD_SPEED = 0.07;
         public static final double TOLERANCE=5.0;
-        public static final double MIDDLE_POSITION=36.0;
+        public static final double MIDDLE_POSITION=30.0;
         public static final double BOTTOM_POSITION=0.0;
         public static final double TOP_POSITION=40.0;
+    }
+    public class Limelight {
+        public static final double TARGET_HEIGHT = 29;
+        public static final double LIMELIGHT_HEIGHT = 41.5;
+        public static final double LIMELIGHT_ANGLE = 20;
     }
 
 
@@ -201,6 +209,10 @@ public class Constants {
     public static class Auto {
         public static final double MIN_IMU_ANGLE = -180.0;
         public static final double MAX_IMU_ANGLE = 180.0;
+
+        public static final double MAX_PITCH = 20.0;
+        public static final double MAX_ROLL = 20.0;
+        public static final double IR_THRESHOLD = 24.0;
 
         public static class Climb {
             public static final double ENDGAME_CUTOFF = 30.0;
@@ -229,8 +241,8 @@ public class Constants {
 
             public static final double DRIVE_FORWARD_SPEED = 0.3;
 
-            public static final double PARK_SPEED = 0.01;
-            public static final double PARK_DISTANCE = 18;
+            public static final double PARK_SPEED = 0.15;
+            public static final double PARK_DISTANCE = 12;
 
             public static final long STILT_TIMEOUT = 2000;
 
@@ -247,5 +259,75 @@ public class Constants {
             public static final double kDdist = .001;
         }
 
+        public class DriveToTarget {
+
+            public static final double TURN_SPEED = 0.15;
+
+            public static final double kPAngle = 0.015;
+            public static final double kIAngle = 0.00;
+            public static final double kDAngle = 0.5;
+
+            public static final double kPDistance = 0.2;
+            public static final double kIDistance = 0.000;
+            public static final double kDDistance = 0.3;
+
+            public static final double ANGLE_TOLERANCE = 1;
+            public static final double DISTANCE_TOLERANCE = 1;
+
+            public static final double MAX_SPEED = .7;
+            public static final double DESIRED_TARGET_AREA = 5;
+            public static final double STOP_DISTANCE = 18.00;
+        }
+        public class Align {
+            public static final double SPEED = 0.15;
+
+            public static final double kP = 0.01;//0.015;
+            public static final double kI = 0.001;
+            public static final double kD = 0.5;//0.1;
+            public static final double TOLERANCE = 1; // 0.5
+            public static final double MINIMUM_SPEED = 0;//0.15;
+            /*
+             *time the angle must be on target for to be considered steady
+             */
+            public static final double STEADY_TIME = 60;
+            public static final double STEER_K = .02 ;
+        }
+        public class Drive {
+            public static final double SPEED = 1.0;
+
+            public static final double MIN_SPEED = 0.25;
+
+            public class MaxVel {
+                public static final double MPS = 2.33; // Meters Per Second
+                public static final double IPS = 130; // Inches Per Second
+            }
+
+            public class MaxAcceleration {
+                public static final double METERS = 2; // Meters Per Second Squared
+                public static final double INCHES = 80.0;
+            }
+
+            public class MaxJerk {
+                public static final double METERS = 6.0; // Meters Per Second Cubed
+                public static final double INCHES = 200.0;
+            }
+
+            public static final long STEADY_TIME = 100;
+            public static final long ALIGN_STEADY_TIME = 100;
+
+
+            public class AnglePID {
+                public static final double kP = 0.4;
+                public static final double kI = 0.006;
+                public static final double kD = 0.09;
+                public class kV {
+                    public static final double MPS = 1.0 / MaxVel.MPS;
+                    public static final double IPS = 1.0 / MaxVel.IPS;
+                }
+                public static final double PATH_TURN = 0.4; // 1.0
+                public static final double MAX_DIFFERENCE = 0.4;
+                public static final double TOLERANCE = .5;
+            }
+        }
     }
 }

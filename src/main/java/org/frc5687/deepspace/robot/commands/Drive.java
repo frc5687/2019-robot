@@ -9,6 +9,7 @@ import org.frc5687.deepspace.robot.subsystems.DriveTrain;
 import org.frc5687.deepspace.robot.utils.Limelight;
 
 import static org.frc5687.deepspace.robot.Constants.Auto.Align.*;
+import org.frc5687.deepspace.robot.utils.PDP;
 
 public class Drive extends OutliersCommand {
 
@@ -31,6 +32,8 @@ public class Drive extends OutliersCommand {
         _imu = imu;
         _limelight = limelight;
         requires(_driveTrain);
+
+        logMetrics("StickSpeed", "StickRotation", "LeftPower", "RightPower", "LeftMasterAmps", "LeftFollowerAmps", "RightMasterAmps", "RightFollowerAmps", "TurnSpeed");
     }
 
 
@@ -92,6 +95,15 @@ public class Drive extends OutliersCommand {
             _driveTrain.cheesyDrive(stickSpeed, _turnSpeed, false, true);
         }
         _driveTrain.cheesyDrive(stickSpeed, wheelRotation, _oi.isCreepPressed(), false);
+        metric("StickSpeed", stickSpeed);
+        metric("StickRotation", wheelRotation);
+        metric("LeftPower", _driveTrain.getLeftPower());
+        metric("RightPower", _driveTrain.getRightPower());
+        metric("LeftMasterAmps", _driveTrain.getLeftMasterCurrent());
+        metric("LeftFollowerAmps",_driveTrain.getLeftFollowerCurrent());
+        metric("RightMasterAmps",_driveTrain.getRightMasterCurrent());
+        metric("RightFollowerAmps",_driveTrain.getRightFollowerCurrent());
+        metric("TurnSpeed", _turnSpeed);
     }
 
 

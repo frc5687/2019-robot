@@ -162,33 +162,39 @@ public class Elevator extends OutliersSubsystem implements PIDSource {
         Hatch1(2, HallEffectSensor.BOTTOM),
         Secure(10),
         ClearRoller(400),
-        StartHatch(710),
+        StartHatch(800, 710),
         HPMode(1230),
-//        Port2(2419),
-//        Hatch2(2420),
-//        Port3(5028, HallEffectSensor.TOP),
-//        Hatch3(5029, HallEffectSensor.TOP),
-//        Top(5030, HallEffectSensor.TOP);
-        Port2(2168),
-        Hatch2(1954),
-        Port3(4098, HallEffectSensor.TOP),
-        Hatch3(4099, HallEffectSensor.TOP),
-        Top(4100, HallEffectSensor.TOP);
+        Port2(2419, 2168),
+        Hatch2(2420, 1954),
+        Port3(5028, 4098, HallEffectSensor.TOP),
+        Hatch3(5029, 4099, HallEffectSensor.TOP),
+        Top(5030, 4100, HallEffectSensor.TOP);
 
-        private int _value;
+        private int _competitionValue;
+        private int _practiceValue;
         private HallEffectSensor _hall;
 
         Setpoint(int value) {
-            this._value = value;
+            this(value, value, null);
+        }
+
+        Setpoint(int competitionValue, int practiceValue) {
+            this(competitionValue, practiceValue, null);
+
         }
 
         Setpoint(int value, HallEffectSensor hall) {
-            this(value);
-            this._hall = hall;
+            this(value, value, hall);
+        }
+
+        Setpoint(int competitionValue, int practiceValue, HallEffectSensor hall) {
+            _competitionValue = competitionValue;
+            _practiceValue = practiceValue;
+            _hall = hall;
         }
 
         public int getValue() {
-            return _value;
+            return Robot.identityMode ==Robot.IdentityMode.practice ? _practiceValue : _competitionValue;
         }
 
         public HallEffectSensor getHall() { return _hall; }

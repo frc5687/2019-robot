@@ -12,6 +12,7 @@ import org.frc5687.deepspace.robot.RobotMap;
 import org.frc5687.deepspace.robot.commands.Drive;
 import org.frc5687.deepspace.robot.utils.IRDistanceSensor;
 import org.frc5687.deepspace.robot.utils.Limelight;
+import org.frc5687.deepspace.robot.utils.PDP;
 
 import static org.frc5687.deepspace.robot.Constants.DriveTrain.CREEP_FACTOR;
 import static org.frc5687.deepspace.robot.utils.Helpers.applySensitivityFactor;
@@ -46,12 +47,14 @@ public class DriveTrain extends OutliersSubsystem implements PIDSource {
     private boolean _isPaused = false;
 
     private Shifter _shifter;
+    private PDP _pdp;
 
     public DriveTrain(Robot robot) {
         info("Constructing DriveTrain class.");
         _oi = robot.getOI();
         _imu = robot.getIMU();
         _limelight = robot.getLimelight();
+        _pdp = robot.getPDP();
 
         _shifter = robot.getShifter();
 
@@ -278,5 +281,28 @@ public class DriveTrain extends OutliersSubsystem implements PIDSource {
     public void setPIDSourceType(PIDSourceType pidSource) {
     }
 
+
+    public double getLeftPower() {
+        return _leftMaster.get();
+    }
+
+    public double getRightPower() {
+        return _rightMaster.get();
+    }
+
+
+    public double getLeftMasterCurrent() {
+        return _pdp.getCurrent(11);
+    }
+
+    public double getLeftFollowerCurrent() {
+        return _pdp.getCurrent(14);
+    }
+    public double getRightMasterCurrent() {
+        return _pdp.getCurrent(6);
+    }
+    public double getRightFollowerCurrent() {
+        return _pdp.getCurrent(8);
+    }
 
 }

@@ -91,6 +91,7 @@ public class Constants {
         public static final double TICKS_PER_STEP = 50;
         public static final double MIN_SPEED = 0.2;
         public static final double GOAL_SPEED = 0.5;
+        public static final int BOTTOM_CAM_ZONE = 100;
 
         public static class PID {
             public static final double kP = 0.1;
@@ -176,7 +177,7 @@ public class Constants {
         public static final double MAX_DOWN_SPEED = 0.4;
         public static final double STILT_HOLD_SPEED = 0.07;
         public static final double TOLERANCE=5.0;
-        public static final double MIDDLE_POSITION=36.0;
+        public static final double MIDDLE_POSITION=30.0;
         public static final double BOTTOM_POSITION=0.0;
         public static final double TOP_POSITION=40.0;
     }
@@ -236,28 +237,17 @@ public class Constants {
 
             public static final double DRIVE_FORWARD_SPEED = 0.3;
 
-            public static final double PARK_SPEED = 0.01;
-            public static final double PARK_DISTANCE = 18;
+            public static final double PARK_SPEED = 0.15;
+            public static final double PARK_DISTANCE = 12;
 
             public static final long STILT_TIMEOUT = 2000;
-
-        }
-        public class AlignToTarget {
-            public static final double SPEED = 1.0;
-
-            public static final double PIDkP = 0.025;
-            public static final double PIDkI = 0.00;
-            public static final double PIDkD = 0.3;
-            public static final double TOLERANCE = 1; // 0.5
-            public static final double MINIMUM_SPEED = 0.2;
-            public static final double STEADY_TIME = 60;
 
         }
         public class DriveToTarget {
 
             public static final double TURN_SPEED = 0.15;
 
-            public static final double kPAngle = 0.1;
+            public static final double kPAngle = 0.015;
             public static final double kIAngle = 0.00;
             public static final double kDAngle = 0.5;
 
@@ -273,7 +263,7 @@ public class Constants {
             public static final double STOP_DISTANCE = 18.00;
         }
         public class Align {
-            public static final double SPEED = 0.7;
+            public static final double SPEED = 0.15;
 
             public static final double kP = 0.01;//0.015;
             public static final double kI = 0.001;
@@ -284,6 +274,7 @@ public class Constants {
              *time the angle must be on target for to be considered steady
              */
             public static final double STEADY_TIME = 60;
+            public static final double STEER_K = .02 ;
         }
         public class Drive {
             public static final double SPEED = 1.0;

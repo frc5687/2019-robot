@@ -36,6 +36,7 @@ public class DriveTrain extends OutliersSubsystem implements PIDSource {
     private OI _oi;
     private AHRS _imu;
     private Limelight _limelight;
+    private Robot _robot;
 
     private double _leftOffset;
     private double _rightOffset;
@@ -55,6 +56,7 @@ public class DriveTrain extends OutliersSubsystem implements PIDSource {
         _imu = robot.getIMU();
         _limelight = robot.getLimelight();
         _pdp = robot.getPDP();
+        _robot = robot;
 
         _shifter = robot.getShifter();
 
@@ -135,7 +137,7 @@ public class DriveTrain extends OutliersSubsystem implements PIDSource {
 
     @Override
     protected void initDefaultCommand() {
-        setDefaultCommand(new Drive(this, _imu, _oi, _limelight));
+        setDefaultCommand(new Drive(this, _imu, _oi, _limelight, _robot.getElevator()));
     }
 
     public void cheesyDrive(double speed, double rotation, boolean creep, boolean override) {

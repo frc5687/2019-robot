@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj.PIDOutput;
 import org.frc5687.deepspace.robot.Constants;
 import org.frc5687.deepspace.robot.OI;
 import org.frc5687.deepspace.robot.subsystems.DriveTrain;
+import org.frc5687.deepspace.robot.subsystems.Elevator;
 import org.frc5687.deepspace.robot.utils.Limelight;
 
 import static org.frc5687.deepspace.robot.Constants.Auto.Align.*;
@@ -17,6 +18,7 @@ public class Drive extends OutliersCommand {
     private DriveTrain _driveTrain;
     private AHRS _imu;
     private Limelight _limelight;
+    private Elevator _elevator;
 
     private PIDController _angleController;
 
@@ -26,11 +28,12 @@ public class Drive extends OutliersCommand {
     private boolean _autoAlignEnabled = false;
     private boolean _targetSighted;
 
-    public Drive(DriveTrain driveTrain, AHRS imu, OI oi, Limelight limelight) {
+    public Drive(DriveTrain driveTrain, AHRS imu, OI oi, Limelight limelight, Elevator elevator) {
         _driveTrain = driveTrain;
         _oi = oi;
         _imu = imu;
         _limelight = limelight;
+        _elevator = elevator;
         requires(_driveTrain);
 
         logMetrics("StickSpeed", "StickRotation", "LeftPower", "RightPower", "LeftMasterAmps", "LeftFollowerAmps", "RightMasterAmps", "RightFollowerAmps", "TurnSpeed");
@@ -57,7 +60,6 @@ public class Drive extends OutliersCommand {
 
         // Get the rotation from the tiller
         double wheelRotation = _oi.getDriveRotation();
-
         _targetSighted = _limelight.isTargetSighted();
 
         // If the auto-align trigger is pressed, and !_autoAlignEnabled:
@@ -69,10 +71,10 @@ public class Drive extends OutliersCommand {
         //   If target sighted and ither controller not enabled or new setpoint different enough from old setpoint
         //      set setPoint
         //      enable controller
-        if (!_autoAlignEnabled && _oi.isAutoTargetPressed()) {
+        if (!_autoAlignEnabled && _oi.isAutoTargetPressed() && _elevator.isBottomCamClear()) {
             _limelight.enableLEDs();
             _autoAlignEnabled = true;
-        } else if (_autoAlignEnabled &&!_oi.isAutoTargetPressed()) {
+        } else if (_autoAlignEnabled &&(!_oi.isAutoTargetPressed() || !_elevator.isBottomCamClear())) {
             _limelight.disableLEDs();
             _angleController.disable();
             _autoAlignEnabled = false;
@@ -91,10 +93,11 @@ public class Drive extends OutliersCommand {
 
 //         If autoAlignEnabled and pidControllerEnabled, send pidOut in place of wheelRotation (you may need a scale override flag as discussed earlier)
         if (_autoAlignEnabled && _angleController.isEnabled()) {
-//            _driveTrain.cheesyDrive(stickSpeed, _anglePIDOut, false, true);
+            //_driveTrain.cheesyDrive(stickSpeed, _anglePIDOut, false, true);
             _driveTrain.cheesyDrive(stickSpeed, _turnSpeed, false, true);
+        } else {
+            _driveTrain.cheesyDrive(stickSpeed, wheelRotation, _oi.isCreepPressed(), false);
         }
-        _driveTrain.cheesyDrive(stickSpeed, wheelRotation, _oi.isCreepPressed(), false);
         metric("StickSpeed", stickSpeed);
         metric("StickRotation", wheelRotation);
         metric("LeftPower", _driveTrain.getLeftPower());

@@ -11,7 +11,7 @@ public class MetricTracker {
     private static List<MetricTracker> _allMetricsTrackers = new ArrayList<>();
     private static final int BUFFER_LENGTH = 500;
 
-    private Map<String, Integer> _metrics;
+    private Map<String, Integer> _metrics = new HashMap<String, Integer>();
     private Object[][] _metricBuffer;
     private boolean _streamOpen = false;
     private BufferedWriter _bufferedWriter;
@@ -162,7 +162,9 @@ public class MetricTracker {
         try {
             for (int i=0; i<=_metricCount;i++) {
                 if (i>0) {_bufferedWriter.write(","); }
-                _bufferedWriter.write(_metricBuffer[row][i].toString());
+                if (_metricBuffer[row][i]!=null) {
+                    _bufferedWriter.write(_metricBuffer[row][i].toString());
+                }
             }
             _bufferedWriter.newLine();
         } catch (IOException e) {

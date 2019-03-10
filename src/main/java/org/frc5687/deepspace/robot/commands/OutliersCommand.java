@@ -66,18 +66,24 @@ public abstract class OutliersCommand extends Command implements ILoggingSource 
     @Override
     protected void initialize() {
         super.initialize();
-        _metricTracker.resume();
+        if (_metricTracker!=null) {
+            _metricTracker.resume();
+        }
     }
 
     @Override
     protected void end() {
         super.end();
-        _metricTracker.pause();
+        if (_metricTracker!=null) {
+            _metricTracker.pause();
+        }
     }
 
     @Override
     protected void interrupted() {
         super.interrupted();
-        _metricTracker.pause();
+        if (_metricTracker!=null) {
+            _metricTracker.pause();
+        }
     }
 }

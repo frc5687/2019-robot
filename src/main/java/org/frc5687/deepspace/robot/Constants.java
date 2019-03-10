@@ -42,6 +42,7 @@ public class Constants {
         //Claw
         public static final long OPEN_CLAW_MILLI_SEC = 40;
         public static final long CLOSE_CLAW_MILLI_SEC = 40;
+        public static final long CLOSE_CLAW_MILLI_SS = 160; // Delay in sandstorm
         public static final long CLAW_RAISE_WRIST_MILLI_SEC = 300;
         public static final long CLAW_LOWER_WRIST_MILLI_SEC = 300;
 
@@ -90,6 +91,7 @@ public class Constants {
         public static final double TICKS_PER_STEP = 50;
         public static final double MIN_SPEED = 0.2;
         public static final double GOAL_SPEED = 0.5;
+        public static final int BOTTOM_CAM_ZONE = 100;
 
         public static class PID {
             public static final double kP = 0.1;
@@ -175,7 +177,7 @@ public class Constants {
         public static final double MAX_DOWN_SPEED = 0.4;
         public static final double STILT_HOLD_SPEED = 0.07;
         public static final double TOLERANCE=5.0;
-        public static final double MIDDLE_POSITION=36.0;
+        public static final double MIDDLE_POSITION=30.0;
         public static final double BOTTOM_POSITION=0.0;
         public static final double TOP_POSITION=40.0;
     }
@@ -235,54 +237,44 @@ public class Constants {
 
             public static final double DRIVE_FORWARD_SPEED = 0.3;
 
-            public static final double PARK_SPEED = 0.01;
-            public static final double PARK_DISTANCE = 18;
+            public static final double PARK_SPEED = 0.15;
+            public static final double PARK_DISTANCE = 12;
 
             public static final long STILT_TIMEOUT = 2000;
 
         }
-        public class AlignToTarget {
-            public static final double SPEED = 1.0;
-
-            public static final double PIDkP = 0.03;
-            public static final double PIDkI = 0.000;
-            public static final double PIDkD = 0.02;
-            public static final double TOLERANCE = 1; // 0.5
-            public static final double MINIMUM_SPEED = 0.2;
-            public static final double STEADY_TIME = 60;
-
-        }
         public class DriveToTarget {
 
-            public static final double TURN_SPEED = 0.1;
+            public static final double TURN_SPEED = 0.15;
 
-            public static final double kPAngle = 0.07;
+            public static final double kPAngle = 0.015;
             public static final double kIAngle = 0.00;
-            public static final double kDAngle = 0.1;
+            public static final double kDAngle = 0.5;
 
-            public static final double kPDistance = 0.01;
+            public static final double kPDistance = 0.2;
             public static final double kIDistance = 0.000;
-            public static final double kDDistance = 0.0;
+            public static final double kDDistance = 0.3;
 
-            public static final double ANGLE_TOLERANCE = 2;
-            public static final double DISTANCE_TOLERANCE = .5;
+            public static final double ANGLE_TOLERANCE = 1;
+            public static final double DISTANCE_TOLERANCE = 1;
 
             public static final double MAX_SPEED = .7;
             public static final double DESIRED_TARGET_AREA = 5;
+            public static final double STOP_DISTANCE = 18.00;
         }
         public class Align {
-            public static final double SPEED = 1.0;
+            public static final double SPEED = 0.15;
 
-            public static final double kP = 0.05;
-            public static final double kI = 0;
-            public static final double kD = 0.418;
-            public static final double TOLERANCE = .05; // 0.5
-            public static final double MINIMUM_SPEED = 0;
-            public static final double MAX_OUTPUT = 0;
+            public static final double kP = 0.01;//0.015;
+            public static final double kI = 0.001;
+            public static final double kD = 0.5;//0.1;
+            public static final double TOLERANCE = 1; // 0.5
+            public static final double MINIMUM_SPEED = 0;//0.15;
             /*
              *time the angle must be on target for to be considered steady
              */
             public static final double STEADY_TIME = 60;
+            public static final double STEER_K = .02 ;
         }
         public class Drive {
             public static final double SPEED = 1.0;

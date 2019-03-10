@@ -5,6 +5,7 @@ import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.command.Scheduler;
+import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.frc5687.deepspace.robot.commands.KillAll;
 import org.frc5687.deepspace.robot.subsystems.*;
@@ -51,6 +52,7 @@ public class Robot extends TimedRobot implements ILoggingSource {
      */
     @Override
     public void robotInit() {
+        LiveWindow.disableAllTelemetry();
         loadConfigFromUSB();
         RioLogger.getInstance().init(_fileLogLevel, _dsLogLevel);
         metric("Branch", Version.BRANCH);
@@ -63,6 +65,8 @@ public class Robot extends TimedRobot implements ILoggingSource {
         // OI must be first...
         _oi = new OI();
         _imu = new AHRS(SPI.Port.kMXP, (byte) 100);
+
+        _imu.zeroYaw();
 
         // then proxies...
         _lights = new Lights(this);
@@ -83,11 +87,10 @@ public class Robot extends TimedRobot implements ILoggingSource {
         _oi.initializeButtons(this);
 
         // Initialize the other stuff
-        //_limelight.disableLEDs();
+//        _limelight.disableLEDs();
         _limelight.setStreamingMode(Limelight.StreamMode.PIP_SECONDARY);
         _status.setConfiguration(Configuration.starting);
         _arm.resetEncoders();
-
         _arm.enableBrakeMode();
         _elevator.enableBrakeMode();
         _stilt.enableBrakeMode();
@@ -197,6 +200,10 @@ public class Robot extends TimedRobot implements ILoggingSource {
             _stilt.updateDashboard();
             _cargoIntake.updateDashboard();
             _hatchIntake.updateDashboard();
+            metric("imu/yaw", _imu.getYaw());
+            metric("imu/pitch", _imu.getPitch());
+            metric("imu/roll", _imu.getRoll());
+            metric("imu/version", _imu.getFirmwareVersion());
         }
     }
 

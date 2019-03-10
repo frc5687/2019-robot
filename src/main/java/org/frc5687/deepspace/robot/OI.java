@@ -118,27 +118,17 @@ public class OI extends OutliersProxy {
 
         _operatorBackButton.whenPressed(new SandstormPickup(robot));
 
-//        _operatorStartButton.whenPressed(new CargoIntakeUp(robot,robot.getWrist()));
-//        _operatorBackButton.whenReleased(new CargoIntakeDown(robot, robot.getWrist()));
-
-        //_operatorRightBumper.whenPressed(new ClawWristUp(robot));
-        //_operatorLeftBumper.whenPressed(new ClawWristDown(robot));
-
         _operatorLeftBumper.whenPressed(new HatchMode(robot));
         _operatorRightBumper.whenPressed(new CargoMode(robot));
 
         _driverRightBumper.whenPressed(new Shift(robot.getDriveTrain(), robot.getShifter(), Shifter.Gear.LOW, false));
         _driverLeftBumper.whenPressed(new Shift(robot.getDriveTrain(), robot.getShifter(), Shifter.Gear.HIGH, false));
 
-//        _operatorRightTrigger.whenPressed(new Score(robot));
-        _operatorRightTrigger.whenPressed(new Intake(robot));
-//        _operatorLeftTrigger.whenPressed(new IntakeHatch(robot));
+        _operatorRightTrigger.whenPressed(new IntakeCargo(robot));
+        _operatorLeftTrigger.whileHeld(new HoldClawOpen(robot));
 
         _driverLeftTrigger.whenPressed(new Eject(robot));
-//        _driverRightTrigger.whenPressed(new AutoIntake(robot));
-
-         _driverRightTrigger.whenPressed(new Intake(robot));
-//        _driverRightTrigger.whenPressed(new AutoAlignToTarget(robot.getDriveTrain(), this, robot.getIMU(), robot.getLimelight(), Constants.Auto.Align.SPEED, 2000, Constants.Auto.Align.TOLERANCE, "align"));
+        _driverRightTrigger.whenPressed(new Intake(robot));
 
         _operatorRightXAxisLeftButton.whenPressed(new CargoIntakeDown(robot.getCargoIntake()));
         _operatorRightXAxisRightButton.whenPressed(new CargoIntakeUp(robot.getCargoIntake()));
@@ -151,12 +141,6 @@ public class OI extends OutliersProxy {
 
         _operatorStartButton.whenPressed(new MoveElevatorToSetPoint(robot.getElevator(), Elevator.Setpoint.StartHatch, Elevator.MotionMode.Ramp, this));
         _operatorRightStickButton.whenPressed(new Safeguard(robot, new StartingConfiguration(robot), -30));
-//        _driverLeftTrigger.whenPressed(new StopRoller(robot.getCargoIntake()));
-        //_driverYButton.whenPressed(new MoveArmToSetPoint(robot.getArm(), Arm.Setpoint.Floor, Arm.HallEffectSensor.LOW, Arm.MotionMode.Simple));
-        //_driverBButton.whenPressed(new MoveArmToSetPoint(robot.getArm(), Arm.Setpoint.Intake, Arm.HallEffectSensor.INTAKE, Arm.MotionMode.Simple));
-        //_driverXButton.whenPressed(new MoveArmToSetPoint(robot.getArm(), Arm.Setpoint.Secure, Arm.HallEffectSensor.SECURE, Arm.MotionMode.Simple));
-        //_driverAButton.whenPressed(new MoveArmToSetPoint(robot.getArm(), Arm.Setpoint.Stowed, Arm.HallEffectSensor.STOWED, Arm.MotionMode.Simple));
-
     }
 
     public boolean isAutoTargetPressed() {

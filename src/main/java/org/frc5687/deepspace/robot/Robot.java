@@ -1,5 +1,6 @@
 package org.frc5687.deepspace.robot;
 
+import edu.wpi.first.wpilibj.Notifier;
 import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -23,7 +24,7 @@ import java.io.FileReader;
  */
 public class Robot extends TimedRobot implements ILoggingSource {
 
-    private IdentityMode _identityMode = IdentityMode.competition;
+    public static IdentityMode identityMode = IdentityMode.competition;
     private Configuration _configuration;
     private RioLogger.LogLevel _dsLogLevel = RioLogger.LogLevel.warn;
     private RioLogger.LogLevel _fileLogLevel = RioLogger.LogLevel.warn;
@@ -56,7 +57,10 @@ public class Robot extends TimedRobot implements ILoggingSource {
         RioLogger.getInstance().init(_fileLogLevel, _dsLogLevel);
         metric("Branch", Version.BRANCH);
         info("Starting " + this.getClass().getCanonicalName() + " from branch " + Version.BRANCH);
-        info("Robot " + _name + " running in " + _identityMode.toString() + " mode");
+        info("Robot " + _name + " running in " + identityMode.toString() + " mode");
+
+        // Periodically flushes metrics (might be good to configure enable/disable via USB config file)
+        new Notifier(MetricTracker::flushAll).startPeriodic(Constants.METRIC_FLUSH_PERIOD);
 
         // OI must be first...
         _oi = new OI();
@@ -145,6 +149,10 @@ public class Robot extends TimedRobot implements ILoggingSource {
     }
 
     private void ourPeriodic() {
+        // Example of starting a new row of metrics for all instrumented objects.
+        // MetricTracker.newMetricRowAll();
+        MetricTracker.newMetricRowAll();
+
         int operatorPOV = _oi.getOperatorPOV();
         int driverPOV = _oi.getDriverPOV();
 
@@ -167,6 +175,12 @@ public class Robot extends TimedRobot implements ILoggingSource {
     @Override
     public void disabledInit() {
         //_limelight.disableLEDs();
+        RioLogger.getInstance().forceSync();
+        RioLogger.getInstance().close();
+        _arm.enableCoastMode();
+        _elevator.enableCoastMode();
+        _stilt.enableCoastMode();
+        MetricTracker.flushAll();
     }
 
 
@@ -210,7 +224,7 @@ public class Robot extends TimedRobot implements ILoggingSource {
             bufferedReader.close();
             reader.close();
         } catch (Exception e) {
-            _identityMode = IdentityMode.competition;
+            identityMode = IdentityMode.competition;
         }
     }
 
@@ -227,8 +241,8 @@ public class Robot extends TimedRobot implements ILoggingSource {
                         metric("name", _name);
                         break;
                     case "mode":
-                        _identityMode = IdentityMode.valueOf(value.toLowerCase());
-                        metric("mode", _identityMode.toString());
+                        identityMode = IdentityMode.valueOf(value.toLowerCase());
+                        metric("mode", identityMode.toString());
                         break;
                     case "fileloglevel":
                         _fileLogLevel = RioLogger.LogLevel.valueOf(value.toLowerCase());
@@ -303,8 +317,6 @@ public class Robot extends TimedRobot implements ILoggingSource {
         public int getValue() {
             return _value;
         }
-
-
     }
 
     public enum Configuration {
@@ -325,6 +337,9 @@ public class Robot extends TimedRobot implements ILoggingSource {
         }
     }
 
+    public IdentityMode getIdentityMode() {
+        return identityMode;
+    }
 
     public void metric(String name, boolean value) {
         SmartDashboard.putBoolean(getClass().getSimpleName() + "/" + name, value);

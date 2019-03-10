@@ -7,7 +7,7 @@ import org.frc5687.deepspace.robot.subsystems.Elevator;
 
 public class IntakeHatch extends CommandGroup {
      public IntakeHatch(Robot robot) {
-         addSequential(new MoveElevatorToSetPoint(robot.getElevator(), Elevator.Setpoint.Bottom, Elevator.MotionMode.Ramp, null));
+         addSequential(new MoveElevatorToSetPoint(robot.getElevator(), Elevator.Setpoint.Bottom, Elevator.MotionMode.Ramp, null, 0.0));
          addSequential(new PointClaw(robot.getHatchIntake()));
          addSequential(new CargoIntakeUp(robot.getCargoIntake()));
          addSequential(new ClawWristUp(robot));

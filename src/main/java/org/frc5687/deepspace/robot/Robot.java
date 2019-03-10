@@ -1,5 +1,6 @@
 package org.frc5687.deepspace.robot;
 
+import edu.wpi.first.wpilibj.Notifier;
 import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -55,6 +56,9 @@ public class Robot extends TimedRobot implements ILoggingSource {
         metric("Branch", Version.BRANCH);
         info("Starting " + this.getClass().getCanonicalName() + " from branch " + Version.BRANCH);
         info("Robot " + _name + " running in " + identityMode.toString() + " mode");
+
+        // Periodically flushes metrics (might be good to configure enable/disable via USB config file)
+        new Notifier(MetricTracker::flushAll).startPeriodic(Constants.METRIC_FLUSH_PERIOD);
 
         // OI must be first...
         _oi = new OI();
@@ -142,6 +146,10 @@ public class Robot extends TimedRobot implements ILoggingSource {
     }
 
     private void ourPeriodic() {
+        // Example of starting a new row of metrics for all instrumented objects.
+        // MetricTracker.newMetricRowAll();
+        MetricTracker.newMetricRowAll();
+
         int operatorPOV = _oi.getOperatorPOV();
         int driverPOV = _oi.getDriverPOV();
 
@@ -164,6 +172,12 @@ public class Robot extends TimedRobot implements ILoggingSource {
     @Override
     public void disabledInit() {
         //_limelight.disableLEDs();
+        RioLogger.getInstance().forceSync();
+        RioLogger.getInstance().close();
+        _arm.enableCoastMode();
+        _elevator.enableCoastMode();
+        _stilt.enableCoastMode();
+        MetricTracker.flushAll();
     }
 
 

@@ -25,6 +25,7 @@ public class OI extends OutliersProxy {
     private Button _driverLeftTrigger;
 
     private Button _driverRightStickButton;
+    private AxisButton _driverRightYAxisUpButton;
 
 
     private Button _operatorAButton;
@@ -87,7 +88,10 @@ public class OI extends OutliersProxy {
         _driverXButton = new JoystickButton(_driverGamepad, Gamepad.Buttons.X.getNumber());
         _driverYButton = new JoystickButton(_driverGamepad, Gamepad.Buttons.Y.getNumber());
 
+
         _driverRightStickButton = new JoystickButton(_driverGamepad, Gamepad.Buttons.RIGHT_STICK.getNumber());
+
+        _driverRightYAxisUpButton = new AxisButton(_driverGamepad,Gamepad.Axes.RIGHT_Y.getNumber(), -.75);
 
         _operatorStartButton = new JoystickButton(_operatorGamepad, Gamepad.Buttons.START.getNumber());
         _operatorBackButton = new JoystickButton(_operatorGamepad, Gamepad.Buttons.BACK.getNumber());
@@ -130,7 +134,7 @@ public class OI extends OutliersProxy {
         _operatorRightTrigger.whenPressed(new IntakeCargo(robot));
         _operatorLeftTrigger.whileHeld(new HoldClawOpen(robot));
 
-        _driverRightTrigger.whenPressed(new ScoreHatch(robot));
+        _driverLeftTrigger.whenPressed(new Eject(robot));
 
         // _driverRightTrigger.whenPressed(new AutoDriveToTarget(robot,  0.7, 18, 1, ""));
         //_driverRightTrigger.whenPressed(new AutoAlignToTarget(robot.getDriveTrain(), this, robot.getIMU(), robot.getLimelight(), Constants.Auto.Align.SPEED, 2000, Constants.Auto.Align.TOLERANCE, "align"));
@@ -154,7 +158,9 @@ public class OI extends OutliersProxy {
 
     }
 
-    public boolean isAutoTargetPressed() { return _driverRightTrigger.get(); }
+    public boolean isAutoTargetPressed() {
+        return _driverRightYAxisUpButton.get();
+    }
     public double getDriveSpeed() {
         double speed = -getSpeedFromAxis(_driverGamepad, Gamepad.Axes.LEFT_Y.getNumber());
         speed = applyDeadband(speed, Constants.DriveTrain.DEADBAND);

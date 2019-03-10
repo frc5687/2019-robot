@@ -1,6 +1,7 @@
 package org.frc5687.deepspace.robot.subsystems;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.DriverStation;
 import org.frc5687.deepspace.robot.Robot;
 import org.frc5687.deepspace.robot.RobotMap;
 import org.frc5687.deepspace.robot.commands.intake.IdleHatchIntake;
@@ -30,7 +31,7 @@ public class HatchIntake extends OutliersSubsystem {
 
 
     public void gripClaw(){
-         _clawSolenoid.set(DoubleSolenoid.Value.kForward);
+        _clawSolenoid.set(DoubleSolenoid.Value.kForward);
     }
 
     public void pointClaw() {
@@ -57,5 +58,11 @@ public class HatchIntake extends OutliersSubsystem {
     }
 
     public boolean isHatchDetected() { return _hatchDetectionLimit.get(); }
+    public boolean isPointed() {
+            if(_clawSolenoid.get() == DoubleSolenoid.Value.kReverse){
+            return true;
+        }
+            return false;
+    }
 }
 

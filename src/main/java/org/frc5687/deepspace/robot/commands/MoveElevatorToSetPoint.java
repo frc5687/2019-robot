@@ -38,12 +38,14 @@ public class MoveElevatorToSetPoint extends OutliersCommand {
     private int _rampDirection = 0;
     private double _rampMid = 0;
     private long _creepEndTime = 0;
+    private double _speed;
 
-    public MoveElevatorToSetPoint(Elevator elevator, Elevator.Setpoint setpoint, Elevator.MotionMode mode, OI oi) {
+    public MoveElevatorToSetPoint(Elevator elevator, Elevator.Setpoint setpoint, Elevator.MotionMode mode, OI oi, double speed) {
         _elevator = elevator;
         requires(_elevator);
         _setpoint = setpoint;
         _mode = mode;
+        _speed = speed;
 
         _oi = oi;
 
@@ -112,9 +114,9 @@ public class MoveElevatorToSetPoint extends OutliersCommand {
         switch(_mode) {
             case Simple:
                 if (_position  < _setpoint.getValue() - TOLERANCE) {
-                    _elevator.setSpeed(SPEED_UP);
+                    _elevator.setSpeed(_speed == 0 ? SPEED_UP : _speed);
                 } else if (_position > _setpoint.getValue() + TOLERANCE) {
-                    _elevator.setSpeed(-SPEED_DOWN);
+                    _elevator.setSpeed(_speed == 0 ? -SPEED_DOWN : -_speed);
                 } else {
                     _elevator.setSpeed(0);
                 }

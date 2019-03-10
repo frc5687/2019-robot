@@ -10,7 +10,6 @@ import org.frc5687.deepspace.robot.subsystems.Elevator;
 import org.frc5687.deepspace.robot.utils.Limelight;
 
 import static org.frc5687.deepspace.robot.Constants.Auto.Align.*;
-import org.frc5687.deepspace.robot.utils.PDP;
 
 public class Drive extends OutliersCommand {
 
@@ -71,10 +70,10 @@ public class Drive extends OutliersCommand {
         //   If target sighted and ither controller not enabled or new setpoint different enough from old setpoint
         //      set setPoint
         //      enable controller
-        if (!_autoAlignEnabled && _oi.isAutoTargetPressed() && _elevator.isBottomCamClear()) {
+        if (!_autoAlignEnabled && _oi.isAutoTargetPressed() && _elevator.isLimelightClear()) {
             _limelight.enableLEDs();
             _autoAlignEnabled = true;
-        } else if (_autoAlignEnabled &&(!_oi.isAutoTargetPressed() || !_elevator.isBottomCamClear())) {
+        } else if (_autoAlignEnabled &&(!_oi.isAutoTargetPressed() || !_elevator.isLimelightClear())) {
             _limelight.disableLEDs();
             _angleController.disable();
             _autoAlignEnabled = false;

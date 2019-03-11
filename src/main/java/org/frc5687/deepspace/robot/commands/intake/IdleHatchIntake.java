@@ -22,5 +22,8 @@ public class IdleHatchIntake extends OutliersCommand {
 
     @Override
     protected void execute(){
+        if (_hatchIntake.isPointed() &&  _hatchIntake.isHatchDetected()) {
+            _hatchIntake.gripClaw();
+        }
     }
 }

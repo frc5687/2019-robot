@@ -13,7 +13,7 @@ public class Intake extends OutliersCommand{
     @Override
     protected void initialize() {
         if (_robot.getConfiguration() == Robot.Configuration.hatch) {
-            (new GripClaw(_robot.getHatchIntake())).start();
+            (new IntakeHatch(_robot)).start();
         } else if (_robot.getConfiguration() == Robot.Configuration.cargo) {
             (new IntakeCargo(_robot)).start();
         }

@@ -7,10 +7,12 @@ import org.frc5687.deepspace.robot.Constants;
 import org.frc5687.deepspace.robot.OI;
 import org.frc5687.deepspace.robot.subsystems.DriveTrain;
 import org.frc5687.deepspace.robot.subsystems.Elevator;
+import org.frc5687.deepspace.robot.utils.BasicPose;
 import org.frc5687.deepspace.robot.utils.Limelight;
 
 import static org.frc5687.deepspace.robot.Constants.Auto.Align.*;
 import org.frc5687.deepspace.robot.utils.PDP;
+import org.frc5687.deepspace.robot.utils.PoseTracker;
 
 public class Drive extends OutliersCommand {
 
@@ -18,6 +20,7 @@ public class Drive extends OutliersCommand {
     private DriveTrain _driveTrain;
     private AHRS _imu;
     private Limelight _limelight;
+    private PoseTracker _poseTracker;
     private Elevator _elevator;
 
     private PIDController _angleController;
@@ -28,12 +31,13 @@ public class Drive extends OutliersCommand {
     private boolean _autoAlignEnabled = false;
     private boolean _targetSighted;
 
-    public Drive(DriveTrain driveTrain, AHRS imu, OI oi, Limelight limelight, Elevator elevator) {
+    public Drive(DriveTrain driveTrain, AHRS imu, OI oi, Limelight limelight, Elevator elevator, PoseTracker poseTracker) {
         _driveTrain = driveTrain;
         _oi = oi;
         _imu = imu;
         _limelight = limelight;
         _elevator = elevator;
+        _poseTracker = poseTracker;
         requires(_driveTrain);
 
         logMetrics("StickSpeed", "StickRotation", "LeftPower", "RightPower", "LeftMasterAmps", "LeftFollowerAmps", "RightMasterAmps", "RightFollowerAmps", "TurnSpeed");
@@ -82,13 +86,18 @@ public class Drive extends OutliersCommand {
             double limeLightAngle = _limelight.getHorizontalAngle();
             double yawAngle = _imu.getYaw();
             _angle = limeLightAngle + yawAngle;
-            _turnSpeed = limeLightAngle * STEER_K;
             if (!_angleController.isEnabled() || Math.abs(_angle - _angleController.getSetpoint()) > TOLERANCE) {
                 _angleController.setSetpoint(_angle);
                 _angleController.enable();
                 metric("limelightOffset", limeLightAngle);
                 metric("target", _angle);
             }
+
+            long timeKey = System.currentTimeMillis() - (long)_limelight.getLatency();
+            BasicPose pose = (BasicPose)_poseTracker.get(timeKey);
+            double poseAngle = pose == null ? _limelight.getHorizontalAngle() : pose.getAngle();
+            _turnSpeed = poseAngle * STEER_K;
+            metric("Pose", pose==null?0:pose.getMillis());
         }
 
 //         If autoAlignEnabled and pidControllerEnabled, send pidOut in place of wheelRotation (you may need a scale override flag as discussed earlier)

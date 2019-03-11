@@ -305,6 +305,7 @@ public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
     public CargoIntake getCargoIntake() { return _cargoIntake;}
     public HatchIntake getHatchIntake() { return _hatchIntake;}
     public StatusProxy getStatusProxy() { return _status; }
+    public PoseTracker getPoseTracker() { return _poseTracker; }
 
     @Override
     public Pose getPose() {

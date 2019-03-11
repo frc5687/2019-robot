@@ -95,8 +95,10 @@ public class Drive extends OutliersCommand {
 
             long timeKey = System.currentTimeMillis() - (long)_limelight.getLatency();
             BasicPose pose = (BasicPose)_poseTracker.get(timeKey);
-            double poseAngle = pose == null ? _limelight.getHorizontalAngle() : pose.getAngle();
-            _turnSpeed = poseAngle * STEER_K;
+            double poseAngle = pose == null ? _imu.getYaw() : pose.getAngle();
+            double offsetCompensation = _imu.getYaw() - poseAngle;
+            double targetAngle = _limelight.getHorizontalAngle() - offsetCompensation;
+            _turnSpeed = targetAngle * STEER_K;
             metric("Pose", pose==null?0:pose.getMillis());
         }
 

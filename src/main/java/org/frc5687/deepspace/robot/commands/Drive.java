@@ -24,6 +24,7 @@ public class Drive extends OutliersCommand {
     private double _anglePIDOut;
     private double _angle;
     private double _turnSpeed;
+    private double _forwardSpeed;
     private boolean _autoAlignEnabled = false;
     private boolean _targetSighted;
 
@@ -93,9 +94,20 @@ public class Drive extends OutliersCommand {
 //         If autoAlignEnabled and pidControllerEnabled, send pidOut in place of wheelRotation (you may need a scale override flag as discussed earlier)
         if (_autoAlignEnabled && _angleController.isEnabled()) {
             //_driveTrain.cheesyDrive(stickSpeed, _anglePIDOut, false, true);
-            _driveTrain.cheesyDrive(stickSpeed, _turnSpeed, false, true);
-        } else {
-            _driveTrain.cheesyDrive(stickSpeed, wheelRotation, _oi.isCreepPressed(), false);
+            double targetDistance = _limelight.getTargetDistance();
+//            if (targetDistance < 30 && _limelight.isTargetSighted()) {
+//                stickSpeed = stickSpeed * .25;
+//            } else if (targetDistance > 30 && _limelight.isTargetSighted()) {
+//                stickSpeed = stickSpeed * .5;
+//            }
+            if(targetDistance < 100 && _limelight.isTargetSighted()){
+                double pow = Math.pow(targetDistance, 2);
+                double speedConst = 0.02 * targetDistance;
+                _forwardSpeed = -0.0001 * pow + speedConst;
+                _driveTrain.cheesyDrive(_forwardSpeed, _turnSpeed, false, true);
+            } else {
+                _driveTrain.cheesyDrive(stickSpeed, wheelRotation, _oi.isCreepPressed(), false);
+            }
         }
         metric("StickSpeed", stickSpeed);
         metric("StickRotation", wheelRotation);

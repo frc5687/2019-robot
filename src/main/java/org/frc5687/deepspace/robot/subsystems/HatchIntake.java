@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import org.frc5687.deepspace.robot.Robot;
 import org.frc5687.deepspace.robot.RobotMap;
 import org.frc5687.deepspace.robot.commands.intake.IdleHatchIntake;
+import org.frc5687.deepspace.robot.utils.HallEffect;
 import org.frc5687.deepspace.robot.utils.LimitSwitch;
 
 public class HatchIntake extends OutliersSubsystem {
@@ -14,12 +15,14 @@ public class HatchIntake extends OutliersSubsystem {
     private DoubleSolenoid _clawSolenoid;
     private DoubleSolenoid _wristSolenoid;
     private LimitSwitch _hatchDetectionLimit;
+    private HallEffect _shockLimit;
 
     public HatchIntake(Robot robot) {
         _robot = robot;
         _clawSolenoid = new DoubleSolenoid(RobotMap.PCM.CLAW_OPEN, RobotMap.PCM.CLAW_CLOSE);
         _wristSolenoid = new DoubleSolenoid(RobotMap.PCM.CLAW_WRIST_UP, RobotMap.PCM.CLAW_WRIST_DOWN);
         _hatchDetectionLimit = new LimitSwitch(RobotMap.DIO.HATCH_DETECTION_LIMIT);
+        _shockLimit = new HallEffect(RobotMap.DIO.SHOCK_LIMIT);
     }
 
     @Override
@@ -27,6 +30,7 @@ public class HatchIntake extends OutliersSubsystem {
         metric("Wrist", _wristSolenoid.get().name());
         metric("Claw", _clawSolenoid.get().name());
         metric("HatchDetected", isHatchDetected());
+        metric("ShockAbosberLimit", isShockDetected());
     }
 
 
@@ -64,5 +68,7 @@ public class HatchIntake extends OutliersSubsystem {
         }
             return false;
     }
+
+    public boolean isShockDetected() { return _shockLimit.get(); }
 }
 

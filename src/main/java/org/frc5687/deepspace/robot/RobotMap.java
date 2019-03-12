@@ -102,7 +102,7 @@ public class RobotMap {
         public static final int ARM_LEFT_STOWED_HALL = 7;
 
         public static final int HATCH_DETECTION_LIMIT = 9;
-        public static final int SHOCK_LIMIT = 14;
+        public static final int SHOCK_HALL = 14;
 
         public static final int DRIVE_RIGHT_B = 13;
         public static final int DRIVE_RIGHT_A = 19;

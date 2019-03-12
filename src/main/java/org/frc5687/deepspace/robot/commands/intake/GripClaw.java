@@ -1,5 +1,6 @@
 package org.frc5687.deepspace.robot.commands.intake;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import org.frc5687.deepspace.robot.Constants;
 import org.frc5687.deepspace.robot.commands.OutliersCommand;
 import org.frc5687.deepspace.robot.subsystems.CargoIntake;
@@ -18,6 +19,7 @@ public class GripClaw extends OutliersCommand {
 
     public GripClaw(HatchIntake hatchIntake) {
         this(hatchIntake, Constants.Intake.CLOSE_CLAW_MILLI_SEC);
+        DriverStation.reportError("GripingCaw", true);
     }
 
     @Override

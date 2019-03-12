@@ -1,14 +1,11 @@
 package org.frc5687.deepspace.robot;
 
-import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.buttons.Button;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import org.frc5687.deepspace.robot.commands.*;
-import org.frc5687.deepspace.robot.commands.drive.ScoreHatch;
 import org.frc5687.deepspace.robot.commands.intake.*;
-import org.frc5687.deepspace.robot.subsystems.DriveTrain;
 import org.frc5687.deepspace.robot.subsystems.Elevator;
 import org.frc5687.deepspace.robot.subsystems.Shifter;
 import org.frc5687.deepspace.robot.utils.*;
@@ -113,16 +110,10 @@ public class OI extends OutliersProxy {
     public void initializeButtons(Robot robot){
 
 
-        _driverStartButton.whenPressed(new AutoClimb(robot.getStilt(), robot.getArm(), robot.getDriveTrain(), robot.getCargoIntake(), robot.getHatchIntake(), robot.getStatusProxy(), true));
-        _driverBackButton.whenPressed(new AutoClimb(robot.getStilt(), robot.getArm(), robot.getDriveTrain(), robot.getCargoIntake(), robot.getHatchIntake(), robot.getStatusProxy(), false));
+        _driverStartButton.whenPressed(new AutoClimb(robot.getStilt(), robot.getArm(), robot.getDriveTrain(), robot.getCargoIntake(), robot.getHatchIntake(), robot, true));
+        _driverBackButton.whenPressed(new AutoClimb(robot.getStilt(), robot.getArm(), robot.getDriveTrain(), robot.getCargoIntake(), robot.getHatchIntake(), robot, false));
 
         _operatorBackButton.whenPressed(new SandstormPickup(robot));
-
-//        _operatorStartButton.whenPressed(new CargoIntakeUp(robot,robot.getWrist()));
-//        _operatorBackButton.whenReleased(new CargoIntakeDown(robot, robot.getWrist()));
-
-        //_operatorRightBumper.whenPressed(new ClawWristUp(robot));
-        //_operatorLeftBumper.whenPressed(new ClawWristDown(robot));
 
         _operatorLeftBumper.whenPressed(new HatchMode(robot));
         _operatorRightBumper.whenPressed(new CargoMode(robot));
@@ -130,33 +121,23 @@ public class OI extends OutliersProxy {
         _driverRightBumper.whenPressed(new Shift(robot.getDriveTrain(), robot.getShifter(), Shifter.Gear.LOW, false));
         _driverLeftBumper.whenPressed(new Shift(robot.getDriveTrain(), robot.getShifter(), Shifter.Gear.HIGH, false));
 
-//        _operatorRightTrigger.whenPressed(new Score(robot));
         _operatorRightTrigger.whenPressed(new IntakeCargo(robot));
         _operatorLeftTrigger.whileHeld(new HoldClawOpen(robot));
 
         _driverLeftTrigger.whenPressed(new Eject(robot));
-//        _driverRightTrigger.whenPressed(new AutoIntake(robot));
-
-//         _driverRightTrigger.whenPressed(new AutoDriveToTarget(robot,  0.2, 18, 1, ""));
-//        _driverRightTrigger.whenPressed(new AutoAlignToTarget(robot.getDriveTrain(), this, robot.getIMU(), robot.getLimelight(), Constants.Auto.Align.SPEED, 2000, Constants.Auto.Align.TOLERANCE, "align"));
+        _driverRightTrigger.whenPressed(new Intake(robot));
 
         _operatorRightXAxisLeftButton.whenPressed(new CargoIntakeDown(robot.getCargoIntake()));
         _operatorRightXAxisRightButton.whenPressed(new CargoIntakeUp(robot.getCargoIntake()));
 
 
-        _operatorAButton.whenPressed(new MoveElevatorToSetPoint(robot.getElevator(), Elevator.Setpoint.Hatch1, Elevator.MotionMode.Ramp, this));
-        _operatorBButton.whenPressed(new MoveElevatorToSetPoint(robot.getElevator(), Elevator.Setpoint.Hatch2, Elevator.MotionMode.Ramp, this));
-        _operatorYButton.whenPressed(new MoveElevatorToSetPoint(robot.getElevator(), Elevator.Setpoint.Hatch3, Elevator.MotionMode.Ramp, this));
-        _operatorXButton.whenPressed(new MoveElevatorToSetPoint(robot.getElevator(), Elevator.Setpoint.HPMode, Elevator.MotionMode.Ramp, this));
+        _operatorAButton.whenPressed(new MoveElevatorToSetPoint(robot.getElevator(), Elevator.Setpoint.Hatch1, Elevator.MotionMode.Ramp, this, 0.0));
+        _operatorBButton.whenPressed(new MoveElevatorToSetPoint(robot.getElevator(), Elevator.Setpoint.Hatch2, Elevator.MotionMode.Ramp, this, 0.0));
+        _operatorYButton.whenPressed(new MoveElevatorToSetPoint(robot.getElevator(), Elevator.Setpoint.Hatch3, Elevator.MotionMode.Ramp, this, 0.0));
+        _operatorXButton.whenPressed(new MoveElevatorToSetPoint(robot.getElevator(), Elevator.Setpoint.HPMode, Elevator.MotionMode.Ramp, this, 0.0));
 
-        _operatorStartButton.whenPressed(new MoveElevatorToSetPoint(robot.getElevator(), Elevator.Setpoint.StartHatch, Elevator.MotionMode.Ramp, this));
+        _operatorStartButton.whenPressed(new MoveElevatorToSetPoint(robot.getElevator(), Elevator.Setpoint.StartHatch, Elevator.MotionMode.Ramp, this, 0.0));
         _operatorRightStickButton.whenPressed(new Safeguard(robot, new StartingConfiguration(robot), -30));
-//        _driverLeftTrigger.whenPressed(new StopRoller(robot.getCargoIntake()));
-        //_driverYButton.whenPressed(new MoveArmToSetPoint(robot.getArm(), Arm.Setpoint.Floor, Arm.HallEffectSensor.LOW, Arm.MotionMode.Simple));
-        //_driverBButton.whenPressed(new MoveArmToSetPoint(robot.getArm(), Arm.Setpoint.Intake, Arm.HallEffectSensor.INTAKE, Arm.MotionMode.Simple));
-        //_driverXButton.whenPressed(new MoveArmToSetPoint(robot.getArm(), Arm.Setpoint.Secure, Arm.HallEffectSensor.SECURE, Arm.MotionMode.Simple));
-        //_driverAButton.whenPressed(new MoveArmToSetPoint(robot.getArm(), Arm.Setpoint.Stowed, Arm.HallEffectSensor.STOWED, Arm.MotionMode.Simple));
-
     }
 
     public boolean isAutoTargetPressed() {

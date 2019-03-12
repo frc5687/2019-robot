@@ -1,5 +1,6 @@
 package org.frc5687.deepspace.robot;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Notifier;
 import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.SPI;
@@ -41,7 +42,6 @@ public class Robot extends TimedRobot implements ILoggingSource {
     private Arm _arm;
     private Shifter _shifter;
     private Lights _lights;
-    private StatusProxy _status;
     private Stilt _stilt;
     private CargoIntake _cargoIntake;
     private HatchIntake _hatchIntake;
@@ -70,7 +70,6 @@ public class Robot extends TimedRobot implements ILoggingSource {
 
         // then proxies...
         _lights = new Lights(this);
-        _status = new StatusProxy(this);
         _limelight = new Limelight("limelight");
         _pdp = new PDP();
 
@@ -89,7 +88,7 @@ public class Robot extends TimedRobot implements ILoggingSource {
         // Initialize the other stuff
 //        _limelight.disableLEDs();
         _limelight.setStreamingMode(Limelight.StreamMode.PIP_SECONDARY);
-        _status.setConfiguration(Configuration.starting);
+        setConfiguration(Configuration.starting);
         _arm.resetEncoders();
         _arm.enableBrakeMode();
         _elevator.enableBrakeMode();
@@ -109,6 +108,7 @@ public class Robot extends TimedRobot implements ILoggingSource {
     public void robotPeriodic() {
         updateDashboard();
         _oi.poll();
+        update();
     }
 
     /**
@@ -125,11 +125,9 @@ public class Robot extends TimedRobot implements ILoggingSource {
     @Override
     public void autonomousInit() {
         teleopInit();
-        // _limelight.enableLEDs();
     }
 
     public void teleopInit() {
-        //_limelight.disableLEDs();
     }
 
     /**
@@ -196,7 +194,6 @@ public class Robot extends TimedRobot implements ILoggingSource {
             _pdp.updateDashboard();
             _shifter.updateDashboard();
             _lights.updateDashboard();
-            _status.updateDashboard();
             _stilt.updateDashboard();
             _cargoIntake.updateDashboard();
             _hatchIntake.updateDashboard();
@@ -259,11 +256,129 @@ public class Robot extends TimedRobot implements ILoggingSource {
         }
     }
     public void setConfiguration(Configuration configuration) {
-        _status.setConfiguration(configuration);
+        _configuration = configuration;
     }
     public Configuration getConfiguration() {
-        return _status.getConfiguration();
+        return _configuration;
     }
+
+    private boolean _wereLEDsOn = false;
+    private boolean _trackingRetrieveHatch = false;
+    private boolean _trackingScoreHatch = false;
+
+    private void update() {
+        switch (_configuration) {
+            case starting:
+                if (DriverStation.getInstance().getAlliance()== DriverStation.Alliance.Red) {
+                    _lights.setColor(Constants.Lights.PULSING_RED, 0);
+                } else if (DriverStation.getInstance().getAlliance()== DriverStation.Alliance.Blue) {
+                    _lights.setColor(Constants.Lights.PULSING_BLUE, 0);
+                } else {
+                    _lights.setColor(Constants.Lights.SOLID_YELLOW, 0);
+                }
+                break;
+            case hatch:
+                // In hatch mode,
+                //  - intake pointed
+                //    - limelight on - started while no hatch
+                //    - target sighted, started while no hatch
+                //    - target centered, started while no hatch
+                //    - no hatch - pulsing purple
+                //    - hatch detected - solid purple
+                //  - intake gripped -
+                //    - limelight on - started while had hatch
+                //    - target sighted, started while had hatch
+                //    - target centered, started while had hatch
+                //    - has hatch - solid purple
+                //    - no hatch - pale puple
+                if (_hatchIntake.isPointed()) {
+                    if (_limelight.areLEDsOn()) {
+                        if (!_wereLEDsOn) {
+                            _trackingRetrieveHatch = true;
+                        }
+                    }
+                    if (_hatchIntake.isHatchDetected()) {
+                        _lights.setColor(Constants.Lights.SHOT_1, 0);
+                    } else if (_trackingRetrieveHatch) {
+                        if (_limelight.isTargetCentered()) {
+                            _lights.setColor(Constants.Lights.FAST_BEAT_1, 0);
+                        } else if (_limelight.isTargetSighted()) {
+                            _lights.setColor(Constants.Lights.CHASING_1, 0);
+                        } else {
+                            _lights.setColor(Constants.Lights.SCANNING_1, 0);
+                        }
+                    } else {
+                        _lights.setColor(Constants.Lights.BREATH_SLOW_1, 0);
+                    }
+                } else {
+                    if (_limelight.areLEDsOn()) {
+                        if (!_wereLEDsOn) {
+                            _trackingScoreHatch = true;
+                        }
+                    }
+                    if (_trackingScoreHatch) {
+                        if (_limelight.isTargetCentered()) {
+                            _lights.setColor(Constants.Lights.FAST_BEAT_1, 0);
+                        } else if (_limelight.isTargetSighted()) {
+                            _lights.setColor(Constants.Lights.CHASING_1, 0);
+                        } else {
+                            _lights.setColor(Constants.Lights.SCANNING_1, 0);
+                        }
+                    } else if (_hatchIntake.isHatchDetected()) {
+                        _lights.setColor(Constants.Lights.SHOT_1, 0);
+                    } else {
+                        _lights.setColor(Constants.Lights.BLEND_1, 0);
+                    }
+                }
+
+                break;
+            case cargo:
+                // Intake running?
+                //   Has cargo? SOLID ORANGE
+                //   Targeting?
+                //   Detected?
+                //   Centered?
+                //   No?  PULSING ORANGE
+                // Intake not running
+                //   Has cargo? SOLID ORANGE
+                //   No cargo? PALE
+                if (_cargoIntake.isIntaking()) {
+                    if (_cargoIntake.isBallDetected()) {
+                        _lights.setColor(Constants.Lights.SOLID_ORANGE, 0);
+                    } else if (_limelight.isTargetCentered()) {
+                        _lights.setColor(Constants.Lights.FAST_BEAT_2, 0);
+                    } else if (_limelight.isTargetSighted()) {
+                        _lights.setColor(Constants.Lights.CHASING_2, 0);
+                    } else if (_limelight.areLEDsOn()){
+                        _lights.setColor(Constants.Lights.SCANNING_2, 0);
+                    } else {
+                        _lights.setColor(Constants.Lights.STROBE_2, 0);
+                    }
+                } else if (_cargoIntake.isEjecting()) {
+                    _lights.setColor(Constants.Lights.SHOT_2, 0);
+                } else {
+                    if (_cargoIntake.isBallDetected()) {
+                        _lights.setColor(Constants.Lights.SOLID_ORANGE, 0);
+                    } else {
+                        _lights.setColor(Constants.Lights.BREATH_SLOW_2, 0);
+                    }
+                }
+                break;
+            case climbing:
+                _lights.setColor(Constants.Lights.WHITE_SHOT, 0);
+                break;
+            case parked:
+                _lights.setColor(Constants.Lights.CONFETTI, 0);
+                break;
+        }
+        _wereLEDsOn = _limelight.areLEDsOn();
+        if (!_wereLEDsOn) {
+            _trackingScoreHatch = false;
+            _trackingRetrieveHatch = false;
+        }
+    }
+
+
     @Override
     public void error(String message) {
         RioLogger.error(this, message);
@@ -300,8 +415,6 @@ public class Robot extends TimedRobot implements ILoggingSource {
     public Stilt getStilt() { return _stilt; }
     public CargoIntake getCargoIntake() { return _cargoIntake;}
     public HatchIntake getHatchIntake() { return _hatchIntake;}
-    public StatusProxy getStatusProxy() { return _status; }
-
 
     public enum IdentityMode {
         competition(0),

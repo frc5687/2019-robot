@@ -24,11 +24,9 @@ public class ClawWristUp extends OutliersCommand {
     protected void initialize() {
         _endTime = _intake.isUp() ? System.currentTimeMillis() : System.currentTimeMillis() + Constants.Intake.CLAW_RAISE_WRIST_MILLI_SEC;
         _intake.raiseWrist();
-        _intake.gripClaw();
     }
     @Override
     protected void execute(){
         _intake.raiseWrist();
-        _intake.gripClaw();
     }
 }

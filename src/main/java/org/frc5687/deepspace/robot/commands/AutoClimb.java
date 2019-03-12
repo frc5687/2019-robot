@@ -3,12 +3,13 @@ package org.frc5687.deepspace.robot.commands;
 import edu.wpi.first.wpilibj.DriverStation;
 import org.frc5687.deepspace.robot.Robot;
 import org.frc5687.deepspace.robot.subsystems.*;
-import org.frc5687.deepspace.robot.utils.StatusProxy;
 
 import static org.frc5687.deepspace.robot.Constants.Auto.Climb.*;
 import static org.frc5687.deepspace.robot.Constants.Arm.*;
 
 public class AutoClimb extends OutliersCommand {
+    private Robot _robot;
+
     private Stilt _stilt;
     private Arm _arm;
     private DriveTrain _driveTrain;
@@ -16,12 +17,7 @@ public class AutoClimb extends OutliersCommand {
     private CargoIntake _cargoIntake;
     private HatchIntake _hatchIntake;
 
-    private StatusProxy _statusProxy;
-
     private ClimbState _climbState;
-    private double _angleCos;
-    private double _encoderOffset;
-    private boolean isDone = false;
     private long _stiltTimeout = 0;
     private boolean _highHab = true;
 
@@ -29,7 +25,7 @@ public class AutoClimb extends OutliersCommand {
     private double _slowAngle;
     private double _bottomAngle;
 
-    public AutoClimb(Stilt stilt, Arm arm, DriveTrain driveTrain, CargoIntake cargoIntake, HatchIntake hatchIntake, StatusProxy statusProxy, boolean highHab) {
+    public AutoClimb(Stilt stilt, Arm arm, DriveTrain driveTrain, CargoIntake cargoIntake, HatchIntake hatchIntake, Robot robot, boolean highHab) {
         _stilt = stilt;
         _arm = arm;
         _driveTrain = driveTrain;
@@ -37,7 +33,7 @@ public class AutoClimb extends OutliersCommand {
         _cargoIntake = cargoIntake;
         _hatchIntake = hatchIntake;
 
-        _statusProxy = statusProxy;
+        _robot = robot;
 
         _highHab = highHab;
 
@@ -57,7 +53,7 @@ public class AutoClimb extends OutliersCommand {
 
        _climbState =  ClimbState.StowArm;
        _driveTrain.enableBrakeMode();
-       _statusProxy.setConfiguration(Robot.Configuration.climbing);
+       _robot.setConfiguration(Robot.Configuration.climbing);
 
        if (_highHab) {
            _contactAngle = H3_CONTACT_ANGLE;
@@ -184,7 +180,7 @@ public class AutoClimb extends OutliersCommand {
                 }
                 break;
             case Done:
-                _statusProxy.setConfiguration(Robot.Configuration.parked);
+                _robot.setConfiguration(Robot.Configuration.parked);
                 _driveTrain.enableBrakeMode();
                 _stilt.setLifterSpeed(0);
                 _arm.setSpeed(0);

@@ -96,6 +96,7 @@ public class Constants {
         public static final double MIN_SPEED = 0.2;
         public static final double GOAL_SPEED = 0.5;
         public static final int BOTTOM_CAM_ZONE = 100;
+        public static final double SANDSTORM_PICKUP_SPEED = 0.2;
 
         public static class PID {
             public static final double kP = 0.1;
@@ -172,6 +173,31 @@ public class Constants {
         public static final double SOLID_HOT_PINK = 0.57;
 
         public static final double CONFETTI = -0.87;
+
+        public static final double BLEND_1 = -0.03;
+        public static final double SCANNING_1 = -0.01;
+        public static final double CHASING_1 = 0.01;
+        public static final double SLOW_BEAT_1 = 0.03;
+        public static final double MEDIUM_BEAT_1 = 0.05;
+        public static final double FAST_BEAT_1 = 0.07;
+        public static final double BREATH_SLOW_1 = 0.09;
+        public static final double BREATH_FAST_1 = 0.11;
+        public static final double SHOT_1 = 0.13;
+        public static final double STROBE_1 = 0.15;
+
+        public static final double BLEND_2 = 0.17;
+        public static final double SCANNING_2 = 0.19;
+        public static final double CHASING_2 = 0.21;
+        public static final double SLOW_BEAT_2 = 0.23;
+        public static final double MEDIUM_BEAT_2 = 0.25;
+        public static final double FAST_BEAT_2 = 0.27;
+        public static final double BREATH_SLOW_2 = 0.29;
+        public static final double BREATH_FAST_2 = 0.31;
+        public static final double SHOT_2 = 0.33;
+        public static final double STROBE_2 = 0.35;
+
+
+        public static final double WHITE_SHOT = -0.81;
     }
     public class Stilt {
         public static final boolean MOTOR_INVERTED = false;

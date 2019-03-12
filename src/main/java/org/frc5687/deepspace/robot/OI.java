@@ -110,8 +110,8 @@ public class OI extends OutliersProxy {
     public void initializeButtons(Robot robot){
 
 
-        _driverStartButton.whenPressed(new AutoClimb(robot.getStilt(), robot.getArm(), robot.getDriveTrain(), robot.getCargoIntake(), robot.getHatchIntake(), robot.getStatusProxy(), true));
-        _driverBackButton.whenPressed(new AutoClimb(robot.getStilt(), robot.getArm(), robot.getDriveTrain(), robot.getCargoIntake(), robot.getHatchIntake(), robot.getStatusProxy(), false));
+        _driverStartButton.whenPressed(new AutoClimb(robot.getStilt(), robot.getArm(), robot.getDriveTrain(), robot.getCargoIntake(), robot.getHatchIntake(), robot, true));
+        _driverBackButton.whenPressed(new AutoClimb(robot.getStilt(), robot.getArm(), robot.getDriveTrain(), robot.getCargoIntake(), robot.getHatchIntake(), robot, false));
 
         _operatorBackButton.whenPressed(new SandstormPickup(robot));
 

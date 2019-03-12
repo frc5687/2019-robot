@@ -4,6 +4,7 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
+import org.frc5687.deepspace.robot.Constants;
 
 import java.util.ArrayList;
 
@@ -28,7 +29,6 @@ public class Limelight extends OutliersProxy {
     NetworkTableEntry _cammode;
     NetworkTableEntry _pipeline;
     NetworkTableEntry _stream;
-
 
     public Limelight() {
         this("limelight");
@@ -144,6 +144,14 @@ public class Limelight extends OutliersProxy {
 //        metric("Pitch", getCamTran(3));
 //        metric("Yaw", getCamTran(4));
 //        metric("Roll", getCamTran(5));
+    }
+
+    public boolean isTargetCentered() {
+        return (isTargetSighted() && Math.abs(getHorizontalAngle()) < Constants.Auto.Align.TOLERANCE);
+    }
+
+    public boolean areLEDsOn() {
+        return _ledmode.getNumber(0).doubleValue() == 3.0;
     }
 
     public enum StreamMode {

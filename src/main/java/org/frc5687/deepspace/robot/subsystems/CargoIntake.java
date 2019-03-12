@@ -23,6 +23,8 @@ public class CargoIntake extends OutliersSubsystem {
     private boolean _forceOn;
     private AnalogInput _ballIR;
 
+    private double _rollerSpeed;
+
     public CargoIntake(Robot robot) {
         _robot = robot;
         _wristSolenoid = new DoubleSolenoid(RobotMap.PCM.WRIST_UP, RobotMap.PCM.WRIST_DOWN);
@@ -80,10 +82,12 @@ public class CargoIntake extends OutliersSubsystem {
     public void run(double speed) {
         if (_forceOn) { speed = ROLLER_SPEED; }
         metric("RollerSpeed", speed);
+        _rollerSpeed = speed;
         _roller.set(ControlMode.PercentOutput, speed);
     }
 
-    public boolean isBallDetected() { return _ballIR.getValue() > Constants.Intake.CARGO_DETECTED_THRESHOLD;
+    public boolean isBallDetected() {
+        return _ballIR.getValue() > Constants.Intake.CARGO_DETECTED_THRESHOLD;
     }
 
     @Override
@@ -104,6 +108,14 @@ public class CargoIntake extends OutliersSubsystem {
 
     public boolean isUp() {
         return _wristSolenoid.get() == DoubleSolenoid.Value.kReverse;
+    }
+
+    public boolean isIntaking() {
+        return _rollerSpeed > 0;
+    }
+
+    public boolean isEjecting() {
+        return _rollerSpeed < 0;
     }
 
 

@@ -92,6 +92,8 @@ public class Drive extends OutliersCommand {
                     break;
                 case locking:
                     if (System.currentTimeMillis() > _lockEnd) {
+                        // TODO: Switch pipelines here...from 0 to 1 or 8 to 9
+                        // Note that we could also wait until the target is centered to lock...which might make more sense.
                         _driveState = DriveState.tracking;
                     }
                     _turnSpeed = getTurnSpeed();

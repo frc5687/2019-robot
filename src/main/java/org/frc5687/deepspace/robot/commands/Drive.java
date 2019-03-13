@@ -29,8 +29,10 @@ public class Drive extends OutliersCommand {
     private double _anglePIDOut;
     private double _angle;
     private double _turnSpeed;
-    private boolean _autoAlignEnabled = false;
     private boolean _targetSighted;
+    private long _lockEnd;
+    private DriveState _driveState = DriveState.normal;
+
 
     public Drive(DriveTrain driveTrain, AHRS imu, OI oi, Limelight limelight, Elevator elevator, CargoIntake cargoIntake, PoseTracker poseTracker) {
         _driveTrain = driveTrain;
@@ -50,7 +52,7 @@ public class Drive extends OutliersCommand {
     @Override
     protected void initialize() {
         // create the _angleController here, just like in AutoDriveToTarget
-        _autoAlignEnabled = false;
+        _driveState = DriveState.normal;
         _targetSighted = false;
         _angleController = new PIDController(kP,kI,kD, _imu, new AngleListener(), 0.1);
         _angleController.setInputRange(Constants.Auto.MIN_IMU_ANGLE, Constants.Auto.MAX_IMU_ANGLE);
@@ -67,7 +69,38 @@ public class Drive extends OutliersCommand {
         // Get the rotation from the tiller
         double wheelRotation = _oi.getDriveRotation();
         _targetSighted = _limelight.isTargetSighted();
-
+        if (!_oi.isAutoTargetPressed() || !_elevator.isLimelightClear()) {
+            if (_driveState!=DriveState.normal) {
+                // Stop tracking
+                _limelight.disableLEDs();
+                _angleController.disable();
+                _driveState = DriveState.normal;
+            }
+        } else {
+            switch (_driveState) {
+                case normal:
+                    // Start seeking
+                    _limelight.setPipeline(_cargoIntake.isIntaking() ? 8 : 0);
+                    _limelight.enableLEDs();
+                    _driveState = DriveState.seeking;
+                    break;
+                case seeking:
+                    if (_targetSighted) {
+                        _lockEnd = System.currentTimeMillis() + Constants.DriveTrain.LOCK_TIME;
+                        _driveState = DriveState.locking;
+                    }
+                    break;
+                case locking:
+                    if (System.currentTimeMillis() > _lockEnd) {
+                        _driveState = DriveState.tracking;
+                    }
+                    _turnSpeed = getTurnSpeed();
+                    break;
+                case tracking:
+                    _turnSpeed = getTurnSpeed();
+                    break;
+            }
+        }
         // If the auto-align trigger is pressed, and !_autoAlignEnabled:
         //   Enable the LEDs
         // else if auto_align trigger is not pressed, and _autoAlignEnabled
@@ -77,40 +110,12 @@ public class Drive extends OutliersCommand {
         //   If target sighted and ither controller not enabled or new setpoint different enough from old setpoint
         //      set setPoint
         //      enable controller
-        if (!_autoAlignEnabled && _oi.isAutoTargetPressed() && _elevator.isLimelightClear()) {
-            _limelight.setPipeline(_cargoIntake.isIntaking() ? 8 : 0);
-            _limelight.enableLEDs();
-            _autoAlignEnabled = true;
-        } else if (_autoAlignEnabled &&(!_oi.isAutoTargetPressed() || !_elevator.isLimelightClear())) {
-            _limelight.disableLEDs();
-            _angleController.disable();
-            _autoAlignEnabled = false;
-        } else if (_autoAlignEnabled && _targetSighted) {
-            double limeLightAngle = _limelight.getHorizontalAngle();
-            double yawAngle = _imu.getYaw();
-            _angle = limeLightAngle + yawAngle;
-            if (!_angleController.isEnabled() || Math.abs(_angle - _angleController.getSetpoint()) > TOLERANCE) {
-                _angleController.setSetpoint(_angle);
-                _angleController.enable();
-                metric("limelightOffset", limeLightAngle);
-                metric("target", _angle);
-            }
-
-            long timeKey = System.currentTimeMillis() - (long)_limelight.getLatency();
-            BasicPose pose = (BasicPose)_poseTracker.get(timeKey);
-            double poseAngle = pose == null ? _imu.getYaw() : pose.getAngle();
-            double offsetCompensation = _imu.getYaw() - poseAngle;
-            double targetAngle = _limelight.getHorizontalAngle() - offsetCompensation;
-            _turnSpeed = targetAngle * STEER_K;
-            metric("Pose", pose==null?0:pose.getMillis());
-        }
 
 //         If autoAlignEnabled and pidControllerEnabled, send pidOut in place of wheelRotation (you may need a scale override flag as discussed earlier)
-        if (_autoAlignEnabled && _angleController.isEnabled()) {
-            //_driveTrain.cheesyDrive(stickSpeed, _anglePIDOut, false, true);
-            _driveTrain.cheesyDrive(stickSpeed, _turnSpeed, false, true);
-        } else {
+        if (_driveState == DriveState.normal) {
             _driveTrain.cheesyDrive(stickSpeed, wheelRotation, _oi.isCreepPressed(), false);
+        } else {
+            _driveTrain.cheesyDrive(stickSpeed, _turnSpeed, false, true);
         }
         metric("StickSpeed", stickSpeed);
         metric("StickRotation", wheelRotation);
@@ -123,7 +128,25 @@ public class Drive extends OutliersCommand {
         metric("TurnSpeed", _turnSpeed);
     }
 
+    protected double getTurnSpeed() {
+        double limeLightAngle = _limelight.getHorizontalAngle();
+        double yawAngle = _imu.getYaw();
+        _angle = limeLightAngle + yawAngle;
+        if (!_angleController.isEnabled() || Math.abs(_angle - _angleController.getSetpoint()) > TOLERANCE) {
+            _angleController.setSetpoint(_angle);
+            _angleController.enable();
+            metric("limelightOffset", limeLightAngle);
+            metric("target", _angle);
+        }
 
+        long timeKey = System.currentTimeMillis() - (long)_limelight.getLatency();
+        BasicPose pose = (BasicPose)_poseTracker.get(timeKey);
+        double poseAngle = pose == null ? _imu.getYaw() : pose.getAngle();
+        double offsetCompensation = _imu.getYaw() - poseAngle;
+        double targetAngle = _limelight.getHorizontalAngle() - offsetCompensation;
+        metric("Pose", pose==null?0:pose.getMillis());
+        return targetAngle * STEER_K;
+    }
 
     @Override
     protected boolean isFinished() {
@@ -139,5 +162,23 @@ public class Drive extends OutliersCommand {
             }
         }
 
+    }
+
+    public enum DriveState {
+        normal(0),
+        seeking(1),
+        locking(2),
+        tracking(3),
+        lost(4);
+
+        private int _value;
+
+        DriveState(int value) {
+            this._value = value;
+        }
+
+        public int getValue() {
+            return _value;
+        }
     }
 }

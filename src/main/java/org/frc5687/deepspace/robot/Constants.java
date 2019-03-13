@@ -24,6 +24,7 @@ public class Constants {
 
         public static final boolean LEFT_MOTORS_INVERTED = true;
         public static final boolean RIGHT_MOTORS_INVERTED = false;
+        public static final long LOCK_TIME = 80;
     }
     public class Intake {
         //Roller

@@ -114,7 +114,7 @@ public class Constants {
 
     public static class Arm {
         public static final double SENSITIVITY = 0.5;
-        public static final double DEADBAND = 0.4;
+        public static final double DEADBAND = 0.8;
 
         public static final double MAX_DRIVE_SPEED = 1;
         public static final double HOLD_SPEED = 0.01;

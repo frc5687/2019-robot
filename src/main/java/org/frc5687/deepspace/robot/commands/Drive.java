@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.PIDOutput;
 import org.frc5687.deepspace.robot.Constants;
 import org.frc5687.deepspace.robot.OI;
+import org.frc5687.deepspace.robot.subsystems.CargoIntake;
 import org.frc5687.deepspace.robot.subsystems.DriveTrain;
 import org.frc5687.deepspace.robot.subsystems.Elevator;
 import org.frc5687.deepspace.robot.utils.BasicPose;
@@ -21,6 +22,7 @@ public class Drive extends OutliersCommand {
     private Limelight _limelight;
     private PoseTracker _poseTracker;
     private Elevator _elevator;
+    private CargoIntake _cargoIntake;
 
     private PIDController _angleController;
 
@@ -30,13 +32,14 @@ public class Drive extends OutliersCommand {
     private boolean _autoAlignEnabled = false;
     private boolean _targetSighted;
 
-    public Drive(DriveTrain driveTrain, AHRS imu, OI oi, Limelight limelight, Elevator elevator, PoseTracker poseTracker) {
+    public Drive(DriveTrain driveTrain, AHRS imu, OI oi, Limelight limelight, Elevator elevator, CargoIntake cargoIntake, PoseTracker poseTracker) {
         _driveTrain = driveTrain;
         _oi = oi;
         _imu = imu;
         _limelight = limelight;
         _elevator = elevator;
         _poseTracker = poseTracker;
+        _cargoIntake = cargoIntake;
         requires(_driveTrain);
 
         logMetrics("StickSpeed", "StickRotation", "LeftPower", "RightPower", "LeftMasterAmps", "LeftFollowerAmps", "RightMasterAmps", "RightFollowerAmps", "TurnSpeed");
@@ -75,6 +78,7 @@ public class Drive extends OutliersCommand {
         //      set setPoint
         //      enable controller
         if (!_autoAlignEnabled && _oi.isAutoTargetPressed() && _elevator.isLimelightClear()) {
+            _limelight.setPipeline(_cargoIntake.isIntaking() ? 8 : 0);
             _limelight.enableLEDs();
             _autoAlignEnabled = true;
         } else if (_autoAlignEnabled &&(!_oi.isAutoTargetPressed() || !_elevator.isLimelightClear())) {

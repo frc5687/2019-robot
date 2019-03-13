@@ -138,7 +138,7 @@ public class DriveTrain extends OutliersSubsystem implements PIDSource {
 
     @Override
     protected void initDefaultCommand() {
-        setDefaultCommand(new Drive(this, _imu, _oi, _limelight, _robot.getElevator(), _robot.getPoseTracker()));
+        setDefaultCommand(new Drive(this, _imu, _oi, _limelight, _robot.getElevator(), _robot.getCargoIntake(),_robot.getPoseTracker()));
     }
 
     public void cheesyDrive(double speed, double rotation, boolean creep, boolean override) {

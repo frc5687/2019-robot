@@ -269,8 +269,18 @@ public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
     private boolean _wereLEDsOn = false;
     private boolean _trackingRetrieveHatch = false;
     private boolean _trackingScoreHatch = false;
+    private boolean _wasShocked = false;
 
     private void update() {
+        if (_hatchIntake.isShockTriggered()) {
+            if (!_wasShocked) {
+                _oi.pulseDriver(4);
+                _oi.pulseOperator(4);
+            }
+            _wasShocked = true;
+        } else {
+            _wasShocked = false;
+        }
         switch (_configuration) {
             case starting:
                 if (DriverStation.getInstance().getAlliance()== DriverStation.Alliance.Red) {

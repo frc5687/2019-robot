@@ -13,6 +13,7 @@ import org.frc5687.deepspace.robot.commands.Drive;
 import org.frc5687.deepspace.robot.utils.IRDistanceSensor;
 import org.frc5687.deepspace.robot.utils.Limelight;
 import org.frc5687.deepspace.robot.utils.PDP;
+import org.frc5687.deepspace.robot.utils.PoseTracker;
 
 import static org.frc5687.deepspace.robot.Constants.DriveTrain.CREEP_FACTOR;
 import static org.frc5687.deepspace.robot.utils.Helpers.applySensitivityFactor;
@@ -75,7 +76,7 @@ public class DriveTrain extends OutliersSubsystem implements PIDSource {
             _rightMaster.setInverted(Constants.DriveTrain.RIGHT_MOTORS_INVERTED);
             _rightFollower.setInverted(Constants.DriveTrain.RIGHT_MOTORS_INVERTED);
 
-            disableBrakeMode();
+            enableBrakeMode();
 
             debug("Configuring followers");
 //            _leftFollower.follow(_leftMaster);
@@ -137,7 +138,7 @@ public class DriveTrain extends OutliersSubsystem implements PIDSource {
 
     @Override
     protected void initDefaultCommand() {
-        setDefaultCommand(new Drive(this, _imu, _oi, _limelight, _robot.getElevator()));
+        setDefaultCommand(new Drive(this, _imu, _oi, _limelight, _robot.getElevator(), _robot.getCargoIntake(),_robot.getPoseTracker()));
     }
 
     public void cheesyDrive(double speed, double rotation, boolean creep, boolean override) {
@@ -180,8 +181,13 @@ public class DriveTrain extends OutliersSubsystem implements PIDSource {
                 rotation = applySensitivityFactor(rotation, _shifter.getGear() == Shifter.Gear.HIGH ? Constants.DriveTrain.TURNING_SENSITIVITY_HIGH_GEAR : Constants.DriveTrain.TURNING_SENSITIVITY_LOW_GEAR);
             }
             double delta = override ? rotation : rotation * Math.abs(speed);
-            leftMotorOutput = speed + delta;
-            rightMotorOutput = speed - delta;
+            if(_limelight.isTargetSighted()) {
+                leftMotorOutput = (speed + delta)/3;
+                rightMotorOutput = (speed - delta)/3;
+            } else {
+                leftMotorOutput = speed + delta;
+                rightMotorOutput = speed - delta;
+            }
             metric("Str/LeftMotor", leftMotorOutput);
             metric("Str/RightMotor", rightMotorOutput);
         }

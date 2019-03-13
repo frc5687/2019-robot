@@ -5,11 +5,14 @@ import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.PIDOutput;
 import org.frc5687.deepspace.robot.Constants;
 import org.frc5687.deepspace.robot.OI;
+import org.frc5687.deepspace.robot.subsystems.CargoIntake;
 import org.frc5687.deepspace.robot.subsystems.DriveTrain;
 import org.frc5687.deepspace.robot.subsystems.Elevator;
+import org.frc5687.deepspace.robot.utils.BasicPose;
 import org.frc5687.deepspace.robot.utils.Limelight;
 
 import static org.frc5687.deepspace.robot.Constants.Auto.Align.*;
+import org.frc5687.deepspace.robot.utils.PoseTracker;
 
 public class Drive extends OutliersCommand {
 
@@ -17,7 +20,9 @@ public class Drive extends OutliersCommand {
     private DriveTrain _driveTrain;
     private AHRS _imu;
     private Limelight _limelight;
+    private PoseTracker _poseTracker;
     private Elevator _elevator;
+    private CargoIntake _cargoIntake;
 
     private PIDController _angleController;
 
@@ -27,12 +32,14 @@ public class Drive extends OutliersCommand {
     private boolean _autoAlignEnabled = false;
     private boolean _targetSighted;
 
-    public Drive(DriveTrain driveTrain, AHRS imu, OI oi, Limelight limelight, Elevator elevator) {
+    public Drive(DriveTrain driveTrain, AHRS imu, OI oi, Limelight limelight, Elevator elevator, CargoIntake cargoIntake, PoseTracker poseTracker) {
         _driveTrain = driveTrain;
         _oi = oi;
         _imu = imu;
         _limelight = limelight;
         _elevator = elevator;
+        _poseTracker = poseTracker;
+        _cargoIntake = cargoIntake;
         requires(_driveTrain);
 
         logMetrics("StickSpeed", "StickRotation", "LeftPower", "RightPower", "LeftMasterAmps", "LeftFollowerAmps", "RightMasterAmps", "RightFollowerAmps", "TurnSpeed");
@@ -71,6 +78,7 @@ public class Drive extends OutliersCommand {
         //      set setPoint
         //      enable controller
         if (!_autoAlignEnabled && _oi.isAutoTargetPressed() && _elevator.isLimelightClear()) {
+            _limelight.setPipeline(_cargoIntake.isIntaking() ? 8 : 0);
             _limelight.enableLEDs();
             _autoAlignEnabled = true;
         } else if (_autoAlignEnabled &&(!_oi.isAutoTargetPressed() || !_elevator.isLimelightClear())) {
@@ -81,13 +89,20 @@ public class Drive extends OutliersCommand {
             double limeLightAngle = _limelight.getHorizontalAngle();
             double yawAngle = _imu.getYaw();
             _angle = limeLightAngle + yawAngle;
-            _turnSpeed = limeLightAngle * STEER_K;
             if (!_angleController.isEnabled() || Math.abs(_angle - _angleController.getSetpoint()) > TOLERANCE) {
                 _angleController.setSetpoint(_angle);
                 _angleController.enable();
                 metric("limelightOffset", limeLightAngle);
                 metric("target", _angle);
             }
+
+            long timeKey = System.currentTimeMillis() - (long)_limelight.getLatency();
+            BasicPose pose = (BasicPose)_poseTracker.get(timeKey);
+            double poseAngle = pose == null ? _imu.getYaw() : pose.getAngle();
+            double offsetCompensation = _imu.getYaw() - poseAngle;
+            double targetAngle = _limelight.getHorizontalAngle() - offsetCompensation;
+            _turnSpeed = targetAngle * STEER_K;
+            metric("Pose", pose==null?0:pose.getMillis());
         }
 
 //         If autoAlignEnabled and pidControllerEnabled, send pidOut in place of wheelRotation (you may need a scale override flag as discussed earlier)

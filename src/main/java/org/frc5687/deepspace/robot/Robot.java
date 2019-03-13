@@ -23,7 +23,7 @@ import java.io.FileReader;
  * creating this project, you must also update the build.gradle file in the
  * project.
  */
-public class Robot extends TimedRobot implements ILoggingSource {
+public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
 
     public static IdentityMode identityMode = IdentityMode.competition;
     private Configuration _configuration;
@@ -45,6 +45,7 @@ public class Robot extends TimedRobot implements ILoggingSource {
     private Stilt _stilt;
     private CargoIntake _cargoIntake;
     private HatchIntake _hatchIntake;
+    private PoseTracker _poseTracker;
 
     /**
      * This function is setRollerSpeed when the robot is first started up and should be
@@ -81,6 +82,9 @@ public class Robot extends TimedRobot implements ILoggingSource {
         _stilt = new Stilt(this);
         _cargoIntake = new CargoIntake(this);
         _hatchIntake = new HatchIntake(this);
+
+        // Must be before OI
+        _poseTracker = new PoseTracker(this);
 
         // Must initialize buttons AFTER subsystems are allocated...
         _oi.initializeButtons(this);
@@ -265,8 +269,18 @@ public class Robot extends TimedRobot implements ILoggingSource {
     private boolean _wereLEDsOn = false;
     private boolean _trackingRetrieveHatch = false;
     private boolean _trackingScoreHatch = false;
+    private boolean _wasShocked = false;
 
     private void update() {
+        if (_hatchIntake.isShockTriggered()) {
+            if (!_wasShocked) {
+                _oi.pulseDriver(4);
+                _oi.pulseOperator(4);
+            }
+            _wasShocked = true;
+        } else {
+            _wasShocked = false;
+        }
         switch (_configuration) {
             case starting:
                 if (DriverStation.getInstance().getAlliance()== DriverStation.Alliance.Red) {
@@ -415,6 +429,13 @@ public class Robot extends TimedRobot implements ILoggingSource {
     public Stilt getStilt() { return _stilt; }
     public CargoIntake getCargoIntake() { return _cargoIntake;}
     public HatchIntake getHatchIntake() { return _hatchIntake;}
+    public PoseTracker getPoseTracker() { return _poseTracker; }
+
+    @Override
+    public Pose getPose() {
+        return new BasicPose(_imu.getYaw(), _driveTrain.getLeftDistance(), _driveTrain.getRightDistance(), _driveTrain.getDistance());
+    }
+
 
     public enum IdentityMode {
         competition(0),

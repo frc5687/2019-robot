@@ -13,10 +13,10 @@ public class Constants {
         public static final double DEADBAND = 0.1;
         public static final double SPEED_SENSITIVITY = 0.80;
         public static final double ROTATION_SENSITIVITY = 0.75;
-        public static final double ROTATION_SENSITIVITY_HIGH_GEAR = 0.9;
-        public static final double ROTATION_SENSITIVITY_LOW_GEAR = 0.9;
-        public static final double TURNING_SENSITIVITY_HIGH_GEAR = 0.9;
-        public static final double TURNING_SENSITIVITY_LOW_GEAR = 0.9;
+        public static final double ROTATION_SENSITIVITY_HIGH_GEAR = 1;
+        public static final double ROTATION_SENSITIVITY_LOW_GEAR = 1;
+        public static final double TURNING_SENSITIVITY_HIGH_GEAR = 1;
+        public static final double TURNING_SENSITIVITY_LOW_GEAR = 1;
 
         public static final double CREEP_FACTOR = 0.25;
         public static final double LEFT_RATIO = 1.090909090909;
@@ -118,7 +118,7 @@ public class Constants {
 
     public static class Arm {
         public static final double SENSITIVITY = 0.5;
-        public static final double DEADBAND = 0.4;
+        public static final double DEADBAND = 0.8;
 
         public static final double MAX_DRIVE_SPEED = 1;
         public static final double HOLD_SPEED = 0.01;
@@ -215,6 +215,7 @@ public class Constants {
         public static final double TARGET_HEIGHT = 29;
         public static final double LIMELIGHT_HEIGHT = 41.5;
         public static final double LIMELIGHT_ANGLE = 20;
+        public static final double OVERALL_LATENCY_MILLIS = 11;
     }
 
 
@@ -316,7 +317,7 @@ public class Constants {
              *time the angle must be on target for to be considered steady
              */
             public static final double STEADY_TIME = 60;
-            public static final double STEER_K = .02 ;
+            public static final double STEER_K = .03 ;
         }
         public class Drive {
             public static final double SPEED = 1.0;

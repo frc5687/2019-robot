@@ -138,7 +138,7 @@ public class DriveTrain extends OutliersSubsystem implements PIDSource {
 
     @Override
     protected void initDefaultCommand() {
-        setDefaultCommand(new Drive(this, _imu, _oi, _limelight, _robot.getElevator(), _robot.getCargoIntake(),_robot.getPoseTracker()));
+        setDefaultCommand(new Drive(this, _imu, _oi, _limelight, _robot.getElevator(), _robot.getCargoIntake(),_robot.getHatchIntake(), _robot.getPoseTracker()));
     }
 
     public void cheesyDrive(double speed, double rotation, boolean creep, boolean override) {
@@ -181,9 +181,15 @@ public class DriveTrain extends OutliersSubsystem implements PIDSource {
                 rotation = applySensitivityFactor(rotation, _shifter.getGear() == Shifter.Gear.HIGH ? Constants.DriveTrain.TURNING_SENSITIVITY_HIGH_GEAR : Constants.DriveTrain.TURNING_SENSITIVITY_LOW_GEAR);
             }
             double delta = override ? rotation : rotation * Math.abs(speed);
-            if(_limelight.isTargetSighted()) {
-                leftMotorOutput = (speed + delta)/3;
-                rightMotorOutput = (speed - delta)/3;
+            if(_limelight.isTargetSighted() && _limelight.getTargetDistance() < 150) {
+                double distance = _limelight.getTargetDistance();
+                double factor = 1.5;
+                if(_limelight.getTargetDistance() < 120) factor=2;
+                if(_limelight.getTargetDistance() < 80) factor=3;
+                if(_limelight.getTargetDistance() < 50) factor=6;
+
+                leftMotorOutput = (speed + delta)/factor;
+                rightMotorOutput = (speed - delta)/factor;
             } else {
                 leftMotorOutput = speed + delta;
                 rightMotorOutput = speed - delta;

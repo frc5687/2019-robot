@@ -24,6 +24,7 @@ public class Constants {
 
         public static final boolean LEFT_MOTORS_INVERTED = true;
         public static final boolean RIGHT_MOTORS_INVERTED = false;
+        public static final long LOCK_TIME = 80;
         public static final double MAX_SPEED_IPS = 12 * 12;
         public static final double CAP_SPEED_IPS = .8 * MAX_SPEED_IPS;
         public static final double MAX_ACCELERATION_IPSS = CAP_SPEED_IPS / 2;
@@ -39,7 +40,7 @@ public class Constants {
         public static final double DEADBAND = 0.1;
         public static final double SENSITIVITY = 0.5;
         public static final long ROLLER_TIME_MILLI_SEC = 500;
-        public static final int CARGO_DETECTED_THRESHOLD = 1300;
+        public static final int CARGO_DETECTED_THRESHOLD = 800;
         //Wrist
         public static final long RAISE_WRIST_MILLI_SEC = 500;
         public static final long LOWER_WRIST_MILLI_SEC = 500;

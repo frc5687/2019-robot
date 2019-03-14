@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.buttons.Button;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import org.frc5687.deepspace.robot.commands.*;
+import org.frc5687.deepspace.robot.commands.drive.AutoDrivePath;
 import org.frc5687.deepspace.robot.commands.intake.*;
 import org.frc5687.deepspace.robot.subsystems.Elevator;
 import org.frc5687.deepspace.robot.subsystems.Shifter;
@@ -23,6 +24,7 @@ public class OI extends OutliersProxy {
 
     private Button _driverRightStickButton;
     private AxisButton _driverRightYAxisUpButton;
+    private AxisButton _driverRightYAxisDownButton;
 
 
     private Button _operatorAButton;
@@ -89,6 +91,7 @@ public class OI extends OutliersProxy {
         _driverRightStickButton = new JoystickButton(_driverGamepad, Gamepad.Buttons.RIGHT_STICK.getNumber());
 
         _driverRightYAxisUpButton = new AxisButton(_driverGamepad,Gamepad.Axes.RIGHT_Y.getNumber(), -.75);
+        _driverRightYAxisDownButton = new AxisButton(_driverGamepad,Gamepad.Axes.RIGHT_Y.getNumber(), 0.75);
 
         _operatorStartButton = new JoystickButton(_operatorGamepad, Gamepad.Buttons.START.getNumber());
         _operatorBackButton = new JoystickButton(_operatorGamepad, Gamepad.Buttons.BACK.getNumber());
@@ -127,6 +130,8 @@ public class OI extends OutliersProxy {
         _driverLeftTrigger.whenPressed(new Eject(robot));
         _driverRightTrigger.whenPressed(new Intake(robot));
 
+        _driverRightYAxisDownButton.whenPressed(new AutoAlign(robot.getDriveTrain(), robot.getIMU(), 180.0, 0.5, 1000, 1.0, "Align Home"));
+
         _operatorRightXAxisLeftButton.whenPressed(new CargoIntakeDown(robot.getCargoIntake()));
         _operatorRightXAxisRightButton.whenPressed(new CargoIntakeUp(robot.getCargoIntake()));
 
@@ -135,6 +140,8 @@ public class OI extends OutliersProxy {
         _operatorBButton.whenPressed(new MoveElevatorToSetPoint(robot.getElevator(), Elevator.Setpoint.Hatch2, Elevator.MotionMode.Ramp, this, 0.0));
         _operatorYButton.whenPressed(new MoveElevatorToSetPoint(robot.getElevator(), Elevator.Setpoint.Hatch3, Elevator.MotionMode.Ramp, this, 0.0));
         _operatorXButton.whenPressed(new MoveElevatorToSetPoint(robot.getElevator(), Elevator.Setpoint.HPMode, Elevator.MotionMode.Ramp, this, 0.0));
+
+        _driverAButton.whenPressed(new AutoDrivePath(robot.getDriveTrain(), robot.getIMU()));
 
         _operatorStartButton.whenPressed(new MoveElevatorToSetPoint(robot.getElevator(), Elevator.Setpoint.StartHatch, Elevator.MotionMode.Ramp, this, 0.0));
         _operatorRightStickButton.whenPressed(new Safeguard(robot, new StartingConfiguration(robot), -30));

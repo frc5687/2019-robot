@@ -4,6 +4,7 @@ import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.PIDOutput;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import jaci.pathfinder.Pathfinder;
 import jaci.pathfinder.PathfinderFRC;
 import jaci.pathfinder.Trajectory;
@@ -52,6 +53,9 @@ public class AutoDrivePath extends OutliersCommand {
             DriverStation.reportError("Seg " + i + " x=" + s.x + ", pos=" + s.position + ", vel=" + s.velocity + ", acc="+s.acceleration,false);
         }
 */
+    }
+    public AutoDrivePath(DriveTrain driveTrain, AHRS imu) {
+        this(driveTrain, imu, SmartDashboard.getString("AutoDrivePathTest", ""));
     }
 
     public AutoDrivePath(DriveTrain driveTrain, AHRS imu, String pathName) {

@@ -8,6 +8,7 @@ import org.frc5687.deepspace.robot.OI;
 import org.frc5687.deepspace.robot.subsystems.CargoIntake;
 import org.frc5687.deepspace.robot.subsystems.DriveTrain;
 import org.frc5687.deepspace.robot.subsystems.Elevator;
+import org.frc5687.deepspace.robot.subsystems.HatchIntake;
 import org.frc5687.deepspace.robot.utils.BasicPose;
 import org.frc5687.deepspace.robot.utils.Limelight;
 
@@ -22,6 +23,7 @@ public class Drive extends OutliersCommand {
     private Limelight _limelight;
     private PoseTracker _poseTracker;
     private Elevator _elevator;
+    private HatchIntake _hatchIntake;
     private CargoIntake _cargoIntake;
 
     private PIDController _angleController;
@@ -34,7 +36,7 @@ public class Drive extends OutliersCommand {
     private DriveState _driveState = DriveState.normal;
 
 
-    public Drive(DriveTrain driveTrain, AHRS imu, OI oi, Limelight limelight, Elevator elevator, CargoIntake cargoIntake, PoseTracker poseTracker) {
+    public Drive(DriveTrain driveTrain, AHRS imu, OI oi, Limelight limelight, Elevator elevator, CargoIntake cargoIntake,HatchIntake hatchIntake, PoseTracker poseTracker) {
         _driveTrain = driveTrain;
         _oi = oi;
         _imu = imu;
@@ -42,6 +44,7 @@ public class Drive extends OutliersCommand {
         _elevator = elevator;
         _poseTracker = poseTracker;
         _cargoIntake = cargoIntake;
+        _hatchIntake = hatchIntake;
         requires(_driveTrain);
 
         logMetrics("StickSpeed", "StickRotation", "LeftPower", "RightPower", "LeftMasterAmps", "LeftFollowerAmps", "RightMasterAmps", "RightFollowerAmps", "TurnSpeed");
@@ -94,6 +97,7 @@ public class Drive extends OutliersCommand {
                     if (System.currentTimeMillis() > _lockEnd) {
                         // TODO: Switch pipelines here...from 0 to 1 or 8 to 9
                         // Note that we could also wait until the target is centered to lock...which might make more sense.
+                        _limelight.setPipeline(_cargoIntake.isIntaking() ? 9 : 1);
                         _driveState = DriveState.tracking;
                     }
                     _turnSpeed = getTurnSpeed();
@@ -116,6 +120,8 @@ public class Drive extends OutliersCommand {
 //         If autoAlignEnabled and pidControllerEnabled, send pidOut in place of wheelRotation (you may need a scale override flag as discussed earlier)
         if (_driveState == DriveState.normal) {
             _driveTrain.cheesyDrive(stickSpeed, wheelRotation, _oi.isCreepPressed(), false);
+        } else if(_hatchIntake.isShockTriggered()) {
+            _driveTrain.cheesyDrive(0, _turnSpeed, false, true);
         } else {
             _driveTrain.cheesyDrive(stickSpeed, _turnSpeed, false, true);
         }

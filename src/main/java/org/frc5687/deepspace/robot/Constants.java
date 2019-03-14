@@ -36,7 +36,7 @@ public class Constants {
         public static final double DEADBAND = 0.1;
         public static final double SENSITIVITY = 0.5;
         public static final long ROLLER_TIME_MILLI_SEC = 500;
-        public static final int CARGO_DETECTED_THRESHOLD = 1300;
+        public static final int CARGO_DETECTED_THRESHOLD = 800;
         //Wrist
         public static final long RAISE_WRIST_MILLI_SEC = 500;
         public static final long LOWER_WRIST_MILLI_SEC = 500;

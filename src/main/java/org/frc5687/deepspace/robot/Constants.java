@@ -337,8 +337,8 @@ public class Constants {
                     public static final double IPS = 1.0 / MaxVel.IPS;
                 }
                 public static final double PATH_TURN = 0.4; // 1.0
-                public static final double MAX_DIFFERENCE = 0.4;
-                public static final double TOLERANCE = .5;
+                public static final double MAX_DIFFERENCE = 0.2;
+                public static final double TOLERANCE = .25;
             }
         }
     }

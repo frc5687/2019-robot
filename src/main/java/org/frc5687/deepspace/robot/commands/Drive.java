@@ -95,8 +95,8 @@ public class Drive extends OutliersCommand {
                     break;
                 case locking:
                     if (System.currentTimeMillis() > _lockEnd) {
-                        // TODO: Switch pipelines here...from 0 to 1 or 8 to 9
                         // Note that we could also wait until the target is centered to lock...which might make more sense.
+                        // Just add  && _limelight.isTargetCentered() to the condition above
                         _limelight.setPipeline(_cargoIntake.isIntaking() ? 9 : 1);
                         _driveState = DriveState.tracking;
                     }
@@ -121,7 +121,7 @@ public class Drive extends OutliersCommand {
         if (_driveState == DriveState.normal) {
             _driveTrain.cheesyDrive(stickSpeed, wheelRotation, _oi.isCreepPressed(), false);
         } else if(_hatchIntake.isShockTriggered()) {
-            _driveTrain.cheesyDrive(0, _turnSpeed, false, true);
+            _driveTrain.cheesyDrive(Math.max(stickSpeed, 0), _turnSpeed, false, false);
         } else {
             _driveTrain.cheesyDrive(stickSpeed, _turnSpeed, false, true);
         }

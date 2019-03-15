@@ -79,17 +79,21 @@ public class Drive extends OutliersCommand {
                 _limelight.disableLEDs();
                 _driveState = DriveState.normal;
             }
-            if (wheelRotation==0) {
+            if (wheelRotation==0 && stickSpeed != 0) {
                 // Driving straight...lock in the yaw
                 if (!_angleController.isEnabled()) {
                     _anglePIDOut = 0;
-                    _angleController.setSetpoint(_imu.getYaw());
+                    double yaw = _imu.getYaw();
+                    metric("PID/SetPoint", yaw);
+                    _angleController.setSetpoint(yaw);
                     _angleController.setPID(Constants.Auto.Drive.AnglePID.kP, Constants.Auto.Drive.AnglePID.kI, Constants.Auto.Drive.AnglePID.kD);
                     _angleController.enable();
+                    metric("PID/Enabled", true);
                 }
             } else if (_angleController.isEnabled()) {
                 _angleController.disable();
                 _anglePIDOut = 0;
+                metric("PID/Enabled", false);
             }
         } else {
             switch (_driveState) {
@@ -132,7 +136,9 @@ public class Drive extends OutliersCommand {
 //         If autoAlignEnabled and pidControllerEnabled, send pidOut in place of wheelRotation (you may need a scale override flag as discussed earlier)
         if (_driveState == DriveState.normal) {
             if (wheelRotation==0 && _angleController.isEnabled()) {
-                _driveTrain.cheesyDrive(stickSpeed, _anglePIDOut, false, true);
+                metric("PID/AngleOut", _anglePIDOut);
+                metric("PID/Yaw", _imu.getYaw());
+                _driveTrain.cheesyDrive(stickSpeed, stickSpeed==0 ?  0 :_anglePIDOut, false, true);
             } else {
                 _driveTrain.cheesyDrive(stickSpeed, wheelRotation, _oi.isCreepPressed(), false);
             }

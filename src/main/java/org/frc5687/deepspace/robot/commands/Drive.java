@@ -48,7 +48,7 @@ public class Drive extends OutliersCommand {
         _hatchIntake = hatchIntake;
         requires(_driveTrain);
 
-        logMetrics("StickSpeed", "StickRotation", "LeftPower", "RightPower", "LeftMasterAmps", "LeftFollowerAmps", "RightMasterAmps", "RightFollowerAmps", "TurnSpeed");
+        // logMetrics("StickSpeed", "StickRotation", "LeftPower", "RightPower", "LeftMasterAmps", "LeftFollowerAmps", "RightMasterAmps", "RightFollowerAmps", "TurnSpeed");
     }
 
 
@@ -134,7 +134,9 @@ public class Drive extends OutliersCommand {
         //      enable controller
 
 //         If autoAlignEnabled and pidControllerEnabled, send pidOut in place of wheelRotation (you may need a scale override flag as discussed earlier)
-        if (_driveState == DriveState.normal) {
+        if(_hatchIntake.isShockTriggered()) {
+            _driveTrain.cheesyDrive(Math.min(stickSpeed, 0), 0, false, false);
+        } else if (_driveState == DriveState.normal) {
             if (wheelRotation==0 && _angleController.isEnabled()) {
                 metric("PID/AngleOut", _anglePIDOut);
                 metric("PID/Yaw", _imu.getYaw());
@@ -142,8 +144,6 @@ public class Drive extends OutliersCommand {
             } else {
                 _driveTrain.cheesyDrive(stickSpeed, wheelRotation, _oi.isCreepPressed(), false);
             }
-        } else if(_hatchIntake.isShockTriggered()) {
-            _driveTrain.cheesyDrive(Math.max(stickSpeed, 0), _turnSpeed, false, false);
         } else {
             _driveTrain.cheesyDrive(stickSpeed, _turnSpeed, false, true);
         }

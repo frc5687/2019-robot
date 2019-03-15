@@ -25,6 +25,10 @@ public class Constants {
         public static final boolean LEFT_MOTORS_INVERTED = true;
         public static final boolean RIGHT_MOTORS_INVERTED = false;
         public static final long LOCK_TIME = 80;
+        public static final double MAX_SPEED_IPS = 12 * 12;
+        public static final double CAP_SPEED_IPS = .8 * MAX_SPEED_IPS;
+        public static final double MAX_ACCELERATION_IPSS = CAP_SPEED_IPS / 2;
+        public static final double MAX_JERK_IPSSS = CAP_SPEED_IPS;
     }
     public class Intake {
         //Roller
@@ -69,17 +73,17 @@ public class Constants {
     public static class Elevator {
         public static final double MAX_SPEED = 1.0;
         public static final double MAX_SPEED_UP = 1.0;
-        public static final double MAX_SPEED_DOWN = 0.8;
+        public static final double MAX_SPEED_DOWN = 1.0;
         public static final double SPEED_UP = 1.0;
-        public static final double SPEED_DOWN = 0.8;
+        public static final double SPEED_DOWN = 1.0;
 
         public static final long CREEP_TIME = 200;
 
         public static final double JELLO_SPEED_UP = 0.2;
         public static final double JELLO_SPEED_DOWN = 0.2;
 
-        public static final double TOP_JELLO_ZONE = 500;
-        public static final double BOTTOM_JELLO_ZONE = 1000;
+        public static final double TOP_JELLO_ZONE = 800;
+        public static final double BOTTOM_JELLO_ZONE = 1500;
 
         public static final double DEADBAND = 0.1;
         public static final double SENSITIVITY = 0.5;
@@ -231,8 +235,8 @@ public class Constants {
 
 
     public static class Auto {
-        public static final double MIN_IMU_ANGLE = -180;
-        public static final double MAX_IMU_ANGLE = 180;
+        public static final double MIN_IMU_ANGLE = -180.0;
+        public static final double MAX_IMU_ANGLE = 180.0;
 
         public static final double MAX_PITCH = 20.0;
         public static final double MAX_ROLL = 20.0;
@@ -241,11 +245,11 @@ public class Constants {
         public static class Climb {
             public static final double ENDGAME_CUTOFF = 30.0;
 
-            public static final double STILT_SPEED = 0.55;
+            public static final double STILT_SPEED = 0.90; // .55
             public static final double STILT_HOLD_SPEED = 0.4;
             public static final double RAISE_STILT_SPEED = -0.2;
 
-            public static final double ARM_SPEED = 0.4;
+            public static final double ARM_SPEED = 0.6;
             public static final double ARM_SLOW_SPEED = 0.2;
             public static final double ARM_HOLD_SPEED = 0.0;
             public static final double RAISE_ARM_SPEED = -0.2;
@@ -271,6 +275,18 @@ public class Constants {
             public static final long STILT_TIMEOUT = 2000;
 
         }
+
+        public static class AutoDrivePath {
+            public static final double ANGLE_TOLERANCE = 0.25;
+            public static final double kPangle = .001;
+            public static final double kIangle = .0001;
+            public static final double kDangle = .001;
+
+            public static final double kPdist = .001;
+            public static final double kIdist = .0001;
+            public static final double kDdist = .001;
+        }
+
         public class DriveToTarget {
 
             public static final double TURN_SPEED = 0.15;

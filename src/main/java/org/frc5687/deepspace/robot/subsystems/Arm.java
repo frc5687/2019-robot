@@ -9,6 +9,8 @@ import org.frc5687.deepspace.robot.Robot;
 import org.frc5687.deepspace.robot.RobotMap;
 import org.frc5687.deepspace.robot.commands.DriveArm;
 import org.frc5687.deepspace.robot.utils.HallEffect;
+import org.frc5687.deepspace.robot.utils.PDP;
+
 import static org.frc5687.deepspace.robot.Constants.Arm.*;
 import static org.frc5687.deepspace.robot.utils.Helpers.*;
 
@@ -24,11 +26,12 @@ public class Arm extends OutliersSubsystem implements PIDSource {
     private HallEffect _leftStowedhall;
     // private HallEffect _rightLowhall;
     // private HallEffect _leftLowhall;
-
+    private PDP _pdp;
 
     private double _leftOffset = 0;
     private double _rightOffset = 0;
 
+    private double _lastSpeed;
     // Need private double _pidOut
     private double _pidOut;
     private Robot _robot;
@@ -51,7 +54,7 @@ public class Arm extends OutliersSubsystem implements PIDSource {
         } catch (Exception e) {
             error("Unable to allocate arm controller: " + e.getMessage());
         }
-
+        _pdp = robot.getPDP();
         _rightStowedhall = new HallEffect(RobotMap.DIO.ARM_RIGHT_STOWED_HALL);
         _leftStowedhall = new HallEffect(RobotMap.DIO.ARM_LEFT_STOWED_HALL);
         // _rightLowhall = new HallEffect(RobotMap.DIO.ARM_RIGHT_LOW_HALL);
@@ -72,8 +75,18 @@ public class Arm extends OutliersSubsystem implements PIDSource {
 
     public void setSpeed(double speed) {
         if (_leftSpark == null || _rightSpark==null) { return; }
-        setLeftSpeed(speed);
-        setRightSpeed(speed);
+        if(_lastSpeed >= 0 && speed < 0){
+            _leftSpark.setSmartCurrentLimit(Constants.Arm.STOW_STALL_LIMIT);
+            _rightSpark.setSmartCurrentLimit(Constants.Arm.STOW_STALL_LIMIT);
+
+        } else if (_lastSpeed < 0 && speed >= 0){
+            _leftSpark.setSmartCurrentLimit(Constants.Arm.SHOULDER_STALL_LIMIT);
+            _rightSpark.setSmartCurrentLimit(Constants.Arm.SHOULDER_STALL_LIMIT);
+        } else {
+            _lastSpeed = speed;
+            setLeftSpeed(speed);
+            setRightSpeed(speed);
+        }
     }
 
 
@@ -121,13 +134,20 @@ public class Arm extends OutliersSubsystem implements PIDSource {
     }
 
     public boolean isRightStowed() {
-        return _rightStowedhall.get();
+        if(_rightSpark.get() < 0 && _pdp.getCurrent(RobotMap.PDP.RIGHT_ARM) > Constants.Arm.ARM_STALL_THRESHOLD){
+            return true;
+        }else {
+            return _rightStowedhall.get();
 
+        }
     }
 
     public boolean isLeftStowed() {
-        return _leftStowedhall.get();
-
+        if(_leftSpark.get() < 0 && _pdp.getCurrent(RobotMap.PDP.LEFT_ARM) > Constants.Arm.ARM_STALL_THRESHOLD){
+            return true;
+        }else {
+            return _leftStowedhall.get();
+        }
     }
 
     public boolean isRightLow() {

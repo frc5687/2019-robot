@@ -69,6 +69,8 @@ public class RobotMap {
         public static final int ARM_VICTORSP = 0;
         */
         public static final int GRIPPER_VACCUUM = 8;
+        public static final int RIGHT_ARM = 13;
+        public static final int LEFT_ARM = 1;
     }
 
     /**

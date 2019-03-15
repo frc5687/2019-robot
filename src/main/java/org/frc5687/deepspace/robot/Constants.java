@@ -130,6 +130,8 @@ public class Constants {
 
         public static final int SHOULDER_STALL_LIMIT = 30;
         public static final int SHOULDER_FREE_LIMIT = 80;
+        public static final int STOW_STALL_LIMIT = 15;
+        public static final int ARM_STALL_THRESHOLD = 8;
 
         public static final double kI = 0;
         public static final double kP = 0.1;

@@ -16,12 +16,14 @@ public class HoldClawOpen extends OutliersCommand {
     }
     @Override
     protected void initialize() {
-        _hatchIntake.pointClaw();
+        if (!_hatchIntake.isHatchDetected() && !_hatchIntake.isShockTriggered()) {
+            _hatchIntake.pointClaw();
+        }
     }
 
     @Override
     protected boolean isFinished() {
-        return false;
+        return _hatchIntake.isHatchDetected() || _hatchIntake.isShockTriggered();
     }
 
     @Override

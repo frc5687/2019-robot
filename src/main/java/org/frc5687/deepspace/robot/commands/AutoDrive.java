@@ -90,7 +90,7 @@ public class AutoDrive extends OutliersCommand {
 
     @Override
     protected void execute() {
-        double baseSpeed = _usePID ? _anglePIDOut : _speed;
+        double baseSpeed = _usePID ? _distancePIDOut : (_distance < 0 ? -_speed : _speed);
         _driveTrain.setPower(baseSpeed + _anglePIDOut , baseSpeed - _anglePIDOut, true); // positive output is clockwise
         metric("onTarget", _distanceController == null ? false : _distanceController.onTarget());
         metric("imu", _driveTrain.getYaw());

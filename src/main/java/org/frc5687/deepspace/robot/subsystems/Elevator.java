@@ -86,7 +86,7 @@ public class Elevator extends OutliersSubsystem implements PIDSource {
 
     private double getRawNeoEncoder() {
         if (_elevator==null) { return 0; }
-        return 0;
+        return _neoElevatorEncoder.getPosition();
     }
 
     private double getRawMAGEncoder() {
@@ -101,6 +101,7 @@ public class Elevator extends OutliersSubsystem implements PIDSource {
     @Override
     public void updateDashboard() {
         metric("MAGEncoder", getRawMAGEncoder());
+        metric("NEOEncoder", getRawNeoEncoder());
         metric("Position", getPosition());
         metric("Bottom", isAtBottom());
         metric("Top", isAtTop());
@@ -112,6 +113,12 @@ public class Elevator extends OutliersSubsystem implements PIDSource {
     public boolean isAtBottom() { return _bottomHall.get(); }
 
     public boolean isNearBottom() { return isAtBottom() || (getPosition() < Setpoint.Bottom.getValue() + BOTTOM_JELLO_ZONE); }
+
+    public boolean isLimelightClear() {
+        return isAtBottom()
+                || (getPosition() < Setpoint.Bottom.getValue() + BOTTOM_CAM_ZONE)
+                || isNearTop();
+    }
 
     public void resetEncoder() {
         resetEncoder(0);
@@ -159,29 +166,41 @@ public class Elevator extends OutliersSubsystem implements PIDSource {
         Bottom(0, HallEffectSensor.BOTTOM),
         Port1(1, HallEffectSensor.BOTTOM),
         Hatch1(2, HallEffectSensor.BOTTOM),
-        Secure(450),
-        ClearRoller(935),
-        HPMode(1450),
-        Port2(2168),
-        Hatch2(2169),
-        Port3(4098, HallEffectSensor.TOP),
-        Hatch3(4099, HallEffectSensor.TOP),
-        Top(4100, HallEffectSensor.TOP);
+        Secure(10),
+        ClearRoller(400),
+        StartHatch(800, 710),
+        HPMode(1230),
+        Port2(2419, 2168),
+        Hatch2(2420, 1954),
+        Port3(5028, 4098, HallEffectSensor.TOP),
+        Hatch3(5029, 4099, HallEffectSensor.TOP),
+        Top(5030, 4100, HallEffectSensor.TOP);
 
-        private int _value;
+        private int _competitionValue;
+        private int _practiceValue;
         private HallEffectSensor _hall;
 
         Setpoint(int value) {
-            this._value = value;
+            this(value, value, null);
+        }
+
+        Setpoint(int competitionValue, int practiceValue) {
+            this(competitionValue, practiceValue, null);
+
         }
 
         Setpoint(int value, HallEffectSensor hall) {
-            this(value);
-            this._hall = hall;
+            this(value, value, hall);
+        }
+
+        Setpoint(int competitionValue, int practiceValue, HallEffectSensor hall) {
+            _competitionValue = competitionValue;
+            _practiceValue = practiceValue;
+            _hall = hall;
         }
 
         public int getValue() {
-            return _value;
+            return Robot.identityMode ==Robot.IdentityMode.practice ? _practiceValue : _competitionValue;
         }
 
         public HallEffectSensor getHall() { return _hall; }

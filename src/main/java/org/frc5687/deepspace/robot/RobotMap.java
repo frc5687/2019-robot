@@ -13,13 +13,13 @@ public class RobotMap {
                         public static final int LEFT_MASTER_SPARK= 1;
                         */
         public static class SPARKMAX {
-            public static final int DRIVE_LEFT_MASTER = 11;
+            public static final int DRIVE_LEFT_MASTER =  11;
             public static final int DRIVE_RIGHT_MASTER = 6;
             public static final int DRIVE_LEFT_FOLLOWER = 14;
             public static final int DRIVE_RIGHT_FOLLOWER = 8;
             public static final int ELEVATOR_MOTOR = 5;
-            public static final int RIGHT_ARM = 9;
-            public static final int LEFT_ARM = 16;
+            public static final int RIGHT_ARM = 16;
+            public static final int LEFT_ARM = 9;
             public static final int STILT = 13;
         }
         public static class TALONSRX{
@@ -51,13 +51,13 @@ public class RobotMap {
 
         //PCM ports are not in the robot yet, using 0 and 1.
         public static final int WRIST_DOWN = 1;
-        public static final int WRIST_UP = 0;
-        public static final int SHIFTER_HIGH = 6;
-        public static final int SHIFTER_LOW = 7;
-        public static final int CLAW_OPEN = 2;
-        public static final int CLAW_CLOSE = 3;
-        public static final int CLAW_WRIST_UP = 4;
-        public static final int CLAW_WRIST_DOWN = 5;
+        public static final int WRIST_UP = 2;
+        public static final int SHIFTER_HIGH = 7;
+        public static final int SHIFTER_LOW = 6;
+        public static final int CLAW_OPEN = 4;
+        public static final int CLAW_CLOSE = 5;
+        public static final int CLAW_WRIST_UP = 0;
+        public static final int CLAW_WRIST_DOWN = 3;
     }
 
     /**
@@ -94,18 +94,15 @@ public class RobotMap {
         public static final int ELEVATOR_TOP_HALL = 2;
         public static final int ELEVATOR_BOTTOM_HALL = 3;
 
-        public static final int STILT_HIGH = 4;
-        public static final int STILT_LOW = 5;
+        public static final int STILT_EXTENDED_HALL = 5;
+        public static final int STILT_RETRACTED_HALL = 4;
+        public static final int STILT_MIDDLE = 10;
 
-        public static final int ARM_SECURE_HALL = 6;
-        //public static final int ARM_STOWED_HALL = 7;
-        public static final int ARM_INTAKE_HALL = 8;
-        //public static final int ARM_LOW_HALL = 9;
         public static final int ARM_RIGHT_STOWED_HALL = 6;
         public static final int ARM_LEFT_STOWED_HALL = 7;
-        public static final int ARM_RIGHT_LOW_HALL = 8;
-        public static final int ARM_LEFT_LOW_HALL = 9;
 
+        public static final int HATCH_DETECTION_LIMIT = 9;
+        public static final int SHOCK_HALL = 8;
 
         public static final int DRIVE_RIGHT_B = 13;
         public static final int DRIVE_RIGHT_A = 19;

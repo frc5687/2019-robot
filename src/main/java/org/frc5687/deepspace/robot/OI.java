@@ -1,9 +1,13 @@
 package org.frc5687.deepspace.robot;
 
+import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.buttons.Button;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
+import edu.wpi.first.wpilibj.command.ConditionalCommand;
 import org.frc5687.deepspace.robot.commands.*;
+import org.frc5687.deepspace.robot.commands.drive.AutoDrivePath;
+import org.frc5687.deepspace.robot.commands.drive.SeekHome;
 import org.frc5687.deepspace.robot.commands.intake.*;
 import org.frc5687.deepspace.robot.subsystems.Elevator;
 import org.frc5687.deepspace.robot.utils.*;
@@ -11,6 +15,8 @@ import org.frc5687.deepspace.robot.utils.AxisButton;
 import org.frc5687.deepspace.robot.utils.Gamepad;
 import org.frc5687.deepspace.robot.utils.OutliersProxy;
 import org.frc5687.deepspace.robot.utils.POV;
+import org.frc5687.deepspace.robot.subsystems.Shifter;
+import org.frc5687.deepspace.robot.utils.*;
 
 import static org.frc5687.deepspace.robot.utils.Helpers.applyDeadband;
 import static org.frc5687.deepspace.robot.utils.Helpers.applySensitivityFactor;
@@ -23,6 +29,10 @@ public class OI extends OutliersProxy {
     private Button _operatorLeftTrigger;
     private Button _driverRightTrigger;
     private Button _driverLeftTrigger;
+
+    private Button _driverRightStickButton;
+    private AxisButton _driverRightYAxisUpButton;
+    private AxisButton _driverRightYAxisDownButton;
 
 
     private Button _operatorAButton;
@@ -63,10 +73,13 @@ public class OI extends OutliersProxy {
     private AxisButton _operatorRightXAxisRightButton;
     private AxisButton _operatorRightXAxisLeftButton;
 
+    private Button _operatorRightStickButton;
+
     private POV _operatorPOV;
 
     private boolean _cargoBlinking = false;
     private boolean _hatchBlinking = false;
+    private boolean _targetBlinking = false;
     private int _tickNum;
 
     public OI(){
@@ -82,6 +95,8 @@ public class OI extends OutliersProxy {
         _operatorRightBumper = new JoystickButton(_operatorGamepad, Gamepad.Buttons.RIGHT_BUMPER.getNumber());
         _operatorLeftBumper = new JoystickButton(_operatorGamepad, Gamepad.Buttons.LEFT_BUMPER.getNumber());
 
+        _operatorRightStickButton = new JoystickButton(_operatorGamepad, Gamepad.Buttons.RIGHT_STICK.getNumber());
+
         _driverRightBumper = new JoystickButton(_driverGamepad, Gamepad.Buttons.RIGHT_BUMPER.getNumber());
         _driverLeftBumper = new JoystickButton(_driverGamepad, Gamepad.Buttons.LEFT_BUMPER.getNumber());
 
@@ -89,12 +104,17 @@ public class OI extends OutliersProxy {
         _operatorBButton = new JoystickButton(_operatorGamepad, Gamepad.Buttons.B.getNumber());
         _operatorYButton = new JoystickButton(_operatorGamepad, Gamepad.Buttons.Y.getNumber());
         _operatorXButton = new JoystickButton(_operatorGamepad, Gamepad.Buttons.X.getNumber());
-        
 
         _driverAButton = new JoystickButton(_driverGamepad, Gamepad.Buttons.A.getNumber());
         _driverBButton = new JoystickButton(_driverGamepad, Gamepad.Buttons.B.getNumber());
         _driverXButton = new JoystickButton(_driverGamepad, Gamepad.Buttons.X.getNumber());
         _driverYButton = new JoystickButton(_driverGamepad, Gamepad.Buttons.Y.getNumber());
+
+
+        _driverRightStickButton = new JoystickButton(_driverGamepad, Gamepad.Buttons.RIGHT_STICK.getNumber());
+
+        _driverRightYAxisUpButton = new AxisButton(_driverGamepad,Gamepad.Axes.RIGHT_Y.getNumber(), -.75);
+        _driverRightYAxisDownButton = new AxisButton(_driverGamepad,Gamepad.Axes.RIGHT_Y.getNumber(), 0.75);
 
         _operatorStartButton = new JoystickButton(_operatorGamepad, Gamepad.Buttons.START.getNumber());
         _operatorBackButton = new JoystickButton(_operatorGamepad, Gamepad.Buttons.BACK.getNumber());
@@ -123,50 +143,47 @@ public class OI extends OutliersProxy {
     }
     public void initializeButtons(Robot robot){
 
+        _driverStartButton.whenPressed(new SafeguardCommand(robot, new AutoClimb(robot.getStilt(), robot.getArm(), robot.getDriveTrain(), robot.getCargoIntake(), robot.getHatchIntake(), robot, true), -30));
+        _driverBackButton.whenPressed(new SafeguardCommand(robot, new AutoClimb(robot.getStilt(), robot.getArm(), robot.getDriveTrain(), robot.getCargoIntake(), robot.getHatchIntake(), robot, false), -30));
 
-        _driverStartButton.whenPressed(new AutoClimb(robot.getStilt(), robot.getArm(), robot.getDriveTrain(), robot.getCargoIntake(), robot.getHatchIntake()));
-//        _driverBackButton.whenPressed(new CloseSpear(robot.getSpear()));
 
-        //_operatorStartButton.whenPressed(new StartGripper(robot.getGripper()));
-        //_operatorBackButton.whenPressed(new StopGripper(robot.getGripper()));
+        _operatorLeftBumper.whenPressed(new ConditionalCommand(new HatchMode(robot), new SandstormPickup(robot)) {
+            @Override
+            protected boolean condition() {
+                return robot.getConfiguration() != Robot.Configuration.starting;
+            }
+        });
 
-//        _operatorStartButton.whenPressed(new CargoIntakeUp(robot,robot.getWrist()));
-//        _operatorBackButton.whenReleased(new CargoIntakeDown(robot, robot.getWrist()));
+        _operatorRightBumper.whenPressed(new CargoMode(robot));
 
-        _operatorRightBumper.whenPressed(new ClawWristUp(robot));
-        _operatorLeftBumper.whenPressed(new ClawWristDown(robot));
+        _driverRightBumper.whenPressed(new Shift(robot.getDriveTrain(), robot.getShifter(), Shifter.Gear.LOW, false));
+        _driverLeftBumper.whenPressed(new Shift(robot.getDriveTrain(), robot.getShifter(), Shifter.Gear.HIGH, false));
 
-       // _driverRightBumper.whenPressed(new Shift(robot.getDriveTrain(), robot.getShifter(), Shifter.Gear.LOW, false));
-        //
-        // _driverLeftBumper.whenPressed(new Shift(robot.getDriveTrain(), robot.getShifter(), Shifter.Gear.HIGH, false));
-
-//        _operatorRightTrigger.whenPressed(new Score(robot));
         _operatorRightTrigger.whenPressed(new IntakeCargo(robot));
         _operatorLeftTrigger.whileHeld(new HoldClawOpen(robot));
 
-        _driverRightTrigger.whenPressed(new RunIntake(robot, robot.getCargoIntake()));
-        _driverLeftTrigger.whenPressed(new StopRoller(robot.getCargoIntake()));
+        _driverLeftTrigger.whenPressed(new Eject(robot));
+        _driverRightTrigger.whenPressed(new Intake(robot));
 
-
-//        _operatorUpButton.whenPressed(new Manual(robot));
-//        _operatorDownButton.whenPressed(new CancelAuto(robot));
-//        _driverUpButton.whenPressed(new Manual(robot));
-//        _driverDownButton.whenPressed(new CancelAuto(robot));
+        _driverRightYAxisDownButton.whenPressed(new SeekHome(robot));
 
         _operatorRightXAxisLeftButton.whenPressed(new CargoIntakeDown(robot.getCargoIntake()));
         _operatorRightXAxisRightButton.whenPressed(new CargoIntakeUp(robot.getCargoIntake()));
 
 
-        _operatorAButton.whenPressed(new MoveElevatorToSetPoint(robot.getElevator(), Elevator.Setpoint.Hatch1, Elevator.MotionMode.Ramp));
-        _operatorBButton.whenPressed(new MoveElevatorToSetPoint(robot.getElevator(), Elevator.Setpoint.Hatch2, Elevator.MotionMode.Ramp));
-        _operatorYButton.whenPressed(new MoveElevatorToSetPoint(robot.getElevator(), Elevator.Setpoint.Hatch3, Elevator.MotionMode.Ramp));
-        _operatorXButton.whenPressed(new MoveElevatorToSetPoint(robot.getElevator(), Elevator.Setpoint.HPMode, Elevator.MotionMode.Ramp));
+        _operatorAButton.whenPressed(new MoveElevatorToSetPoint(robot.getElevator(), Elevator.Setpoint.Hatch1, Elevator.MotionMode.Ramp, this, 0.0));
+        _operatorBButton.whenPressed(new MoveElevatorToSetPoint(robot.getElevator(), Elevator.Setpoint.Hatch2, Elevator.MotionMode.Ramp, this, 0.0));
+        _operatorYButton.whenPressed(new MoveElevatorToSetPoint(robot.getElevator(), Elevator.Setpoint.Hatch3, Elevator.MotionMode.Ramp, this, 0.0));
+        _operatorXButton.whenPressed(new MoveElevatorToSetPoint(robot.getElevator(), Elevator.Setpoint.HPMode, Elevator.MotionMode.Ramp, this, 0.0));
 
-        //_driverYButton.whenPressed(new MoveArmToSetPoint(robot.getArm(), Arm.Setpoint.Floor, Arm.HallEffectSensor.LOW, Arm.MotionMode.Simple));
-        //_driverBButton.whenPressed(new MoveArmToSetPoint(robot.getArm(), Arm.Setpoint.Intake, Arm.HallEffectSensor.INTAKE, Arm.MotionMode.Simple));
-        //_driverXButton.whenPressed(new MoveArmToSetPoint(robot.getArm(), Arm.Setpoint.Secure, Arm.HallEffectSensor.SECURE, Arm.MotionMode.Simple));
-        //_driverAButton.whenPressed(new MoveArmToSetPoint(robot.getArm(), Arm.Setpoint.Stowed, Arm.HallEffectSensor.STOWED, Arm.MotionMode.Simple));
+        // _driverAButton.whenPressed(new AutoDrivePath(robot.getDriveTrain(), robot.getIMU()));
 
+        // _operatorBackButton.whenPressed(new MoveElevatorToSetPoint(robot.getElevator(), Elevator.Setpoint.StartHatch, Elevator.MotionMode.Ramp, this, 0.0));
+        _operatorStartButton.whenPressed(new StartingConfiguration(robot));
+    }
+
+    public boolean isAutoTargetPressed() {
+        return _driverRightYAxisUpButton.get();
     }
     public double getDriveSpeed() {
         double speed = -getSpeedFromAxis(_driverGamepad, Gamepad.Axes.LEFT_Y.getNumber());
@@ -190,6 +207,7 @@ public class OI extends OutliersProxy {
         return applySensitivityFactor(speed, Constants.Intake.SENSITIVITY);
     }
     public double getElevatorSpeed() {
+//        return 0;
         double speed = -getSpeedFromAxis(_operatorGamepad, Gamepad.Axes.RIGHT_Y.getNumber()) * Constants.Elevator.MAX_SPEED;
         speed = applyDeadband(speed, Constants.Elevator.DEADBAND);
         return applySensitivityFactor(speed, Constants.Elevator.SENSITIVITY);
@@ -257,6 +275,35 @@ public class OI extends OutliersProxy {
     }
 
 
+    public void setTargetLED(int flag){
+        switch (flag){
+            case 0:
+                _targetBlinking = false;
+                _targetCenterLED.set(false);
+                break;
+            case 1:
+                _targetBlinking = false;
+                _targetCenterLED.set(true);
+                break;
+            case 2:
+                _targetBlinking = true;
+                break;
+        }
+    }
+    public void setSideLED(int flag){
+        switch (flag){
+            case 0:
+                _targetRightLED.set(false);
+                _targetLeftLED.set(true);
+            case 1:
+                _targetRightLED.set(true);
+                _targetLeftLED.set(false);
+            case 2:
+                _targetRightLED.set(false);
+                _targetLeftLED.set(false);
+        }
+    }
+
 
 
 
@@ -273,12 +320,59 @@ public class OI extends OutliersProxy {
                 _hatchModeLEDLeft.set(!_hatchModeLEDLeft.get());
                 _hatchModeLEDRight.set(!_hatchModeLEDRight.get());
             }
+            if(_targetBlinking){
+                _targetCenterLED.set(!_targetCenterLED.get());
+            }
         }
     }
 
-    public boolean getAbort() {
-        return false;
+    private int _driverRumbleCount = 0;
+    private int _operatorRumbleCount = 0;
+    private long _driverRumbleTime = System.currentTimeMillis();
+    private long _operatorRumbleTime = System.currentTimeMillis();
+
+    public void pulseDriver(int count) {
+        _driverRumbleTime = System.currentTimeMillis() + Constants.OI.RUMBLE_PULSE_TIME;
+        _driverRumbleCount = count * 2;
     }
 
+    public void pulseOperator(int count) {
+        _operatorRumbleTime = System.currentTimeMillis() + Constants.OI.RUMBLE_PULSE_TIME;
+        _operatorRumbleCount = count * 2;
+    }
+
+    public void poll() {
+        if (_driverRumbleCount > 0) {
+            _driverGamepad.setRumble(GenericHID.RumbleType.kLeftRumble, _driverRumbleCount % 2 == 0 ? 0 : 1);
+            _driverGamepad.setRumble(GenericHID.RumbleType.kRightRumble, _driverRumbleCount % 2 == 0 ? 0 : 1);
+            if (System.currentTimeMillis() > _driverRumbleTime) {
+                _driverRumbleTime = System.currentTimeMillis() + Constants.OI.RUMBLE_PULSE_TIME;
+                _driverRumbleCount--;
+            }
+        } else {
+            _driverGamepad.setRumble(GenericHID.RumbleType.kLeftRumble, 0);
+            _driverGamepad.setRumble(GenericHID.RumbleType.kRightRumble, 0);
+        }
+
+        if (_operatorRumbleCount > 0) {
+            _operatorGamepad.setRumble(GenericHID.RumbleType.kLeftRumble, _operatorRumbleCount % 2 == 0 ? 0 : 1);
+            _operatorGamepad.setRumble(GenericHID.RumbleType.kRightRumble, _operatorRumbleCount % 2 == 0 ? 0 : 1);
+            if (System.currentTimeMillis() > _operatorRumbleTime) {
+                _operatorRumbleTime = System.currentTimeMillis() + Constants.OI.RUMBLE_PULSE_TIME;
+                _operatorRumbleCount--;
+            }
+        } else {
+            _operatorGamepad.setRumble(GenericHID.RumbleType.kLeftRumble, 0);
+            _operatorGamepad.setRumble(GenericHID.RumbleType.kRightRumble, 0);
+        }
+    }
+
+    public boolean isCreepPressed() {
+        return  _driverRightStickButton.get();
+    }
+
+    public boolean isWheelieForwardPressed() {
+        return  _driverXButton.get();
+    }
 }
 

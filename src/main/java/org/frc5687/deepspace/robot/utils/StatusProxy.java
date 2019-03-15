@@ -5,13 +5,13 @@ import org.frc5687.deepspace.robot.Constants;
 import org.frc5687.deepspace.robot.OI;
 import org.frc5687.deepspace.robot.Robot;
 import org.frc5687.deepspace.robot.subsystems.Lights;
+import org.frc5687.deepspace.robot.utils.Limelight;
 
 public class StatusProxy extends OutliersProxy {
 
     OI _oi;
     Lights _lights;
-
-
+    Limelight _limelight;
     boolean _hatchSecured;
     boolean _cargoDetcted;
     boolean _cargoSecured;
@@ -23,6 +23,8 @@ public class StatusProxy extends OutliersProxy {
     public StatusProxy(Robot robot) {
         _lights = robot.getLights();
         _oi = robot.getOI();
+        _limelight = robot.getLimelight();
+
     }
 
     public void setConfiguration(Robot.Configuration configuration) {
@@ -41,9 +43,9 @@ public class StatusProxy extends OutliersProxy {
     public void update() {
         switch (_configuration) {
             case starting:
-                if (DriverStation.getInstance().getAlliance()== DriverStation.Alliance.Red) {
+                if (DriverStation.getInstance().getAlliance() == DriverStation.Alliance.Red) {
                     _lights.setColor(Constants.Lights.PULSING_RED, 0);
-                } else if (DriverStation.getInstance().getAlliance()== DriverStation.Alliance.Blue) {
+                } else if (DriverStation.getInstance().getAlliance() == DriverStation.Alliance.Blue) {
                     _lights.setColor(Constants.Lights.PULSING_BLUE, 0);
                 } else {
                     _lights.setColor(Constants.Lights.SOLID_YELLOW, 0);
@@ -70,12 +72,24 @@ public class StatusProxy extends OutliersProxy {
                 } else {
                     _lights.setColor(Constants.Lights.SOLID_ORANGE, 2);
                     _oi.setCargoLED(2);
-
                 }
                 break;
-            case climb:
-                _lights.setColor(Constants.Lights.CONFETTI, 0);
-                break;
+        }
+        if(_limelight.isTargetSighted()){
+            _oi.setTargetLED(2);
+        }
+        else if (_limelight.isTargetCentered()) {
+            _oi.setTargetLED(1);
+        } else {
+            _oi.setTargetLED(0);
+        }
+
+        if(_limelight.getHorizontalAngle() < 0){
+            _oi.setSideLED(0);
+        } else if(_limelight.getHorizontalAngle() > 0){
+            _oi.setSideLED(1);
+        }else {
+            _oi.setSideLED(2);
         }
     }
 

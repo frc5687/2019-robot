@@ -258,5 +258,9 @@ public class OI extends OutliersProxy {
     public boolean isCreepPressed() {
         return  _driverRightStickButton.get();
     }
+
+    public boolean isWheelieForwardPressed() {
+        return  _driverXButton.get();
+    }
 }
 

@@ -73,17 +73,17 @@ public class Constants {
     public static class Elevator {
         public static final double MAX_SPEED = 1.0;
         public static final double MAX_SPEED_UP = 1.0;
-        public static final double MAX_SPEED_DOWN = 0.8;
+        public static final double MAX_SPEED_DOWN = 1.0;
         public static final double SPEED_UP = 1.0;
-        public static final double SPEED_DOWN = 0.8;
+        public static final double SPEED_DOWN = 1.0;
 
         public static final long CREEP_TIME = 200;
 
         public static final double JELLO_SPEED_UP = 0.2;
         public static final double JELLO_SPEED_DOWN = 0.2;
 
-        public static final double TOP_JELLO_ZONE = 500;
-        public static final double BOTTOM_JELLO_ZONE = 1000;
+        public static final double TOP_JELLO_ZONE = 800;
+        public static final double BOTTOM_JELLO_ZONE = 1500;
 
         public static final double DEADBAND = 0.1;
         public static final double SENSITIVITY = 0.5;
@@ -245,11 +245,11 @@ public class Constants {
         public static class Climb {
             public static final double ENDGAME_CUTOFF = 30.0;
 
-            public static final double STILT_SPEED = 0.55;
+            public static final double STILT_SPEED = 0.90; // .55
             public static final double STILT_HOLD_SPEED = 0.4;
             public static final double RAISE_STILT_SPEED = -0.2;
 
-            public static final double ARM_SPEED = 0.4;
+            public static final double ARM_SPEED = 0.6;
             public static final double ARM_SLOW_SPEED = 0.2;
             public static final double ARM_HOLD_SPEED = 0.0;
             public static final double RAISE_ARM_SPEED = -0.2;

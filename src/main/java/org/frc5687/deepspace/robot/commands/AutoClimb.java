@@ -1,6 +1,7 @@
 package org.frc5687.deepspace.robot.commands;
 
 import edu.wpi.first.wpilibj.DriverStation;
+import org.frc5687.deepspace.robot.OI;
 import org.frc5687.deepspace.robot.Robot;
 import org.frc5687.deepspace.robot.subsystems.*;
 
@@ -25,6 +26,8 @@ public class AutoClimb extends OutliersCommand {
     private double _slowAngle;
     private double _bottomAngle;
 
+    private OI _oi;
+
     public AutoClimb(Stilt stilt, Arm arm, DriveTrain driveTrain, CargoIntake cargoIntake, HatchIntake hatchIntake, Robot robot, boolean highHab) {
         _stilt = stilt;
         _arm = arm;
@@ -34,7 +37,7 @@ public class AutoClimb extends OutliersCommand {
         _hatchIntake = hatchIntake;
 
         _robot = robot;
-
+        _oi = _robot.getOI();
         _highHab = highHab;
 
         requires(_stilt);
@@ -104,8 +107,9 @@ public class AutoClimb extends OutliersCommand {
                 }
 
                 metric("ArmSpeed", armSpeed);
-                if ((_arm.isLow() || _arm.getAngle() >= _bottomAngle)
-                && (_highHab ?_stilt.isExtended() : _stilt.isAtMiddle())) {
+                if (_oi.isWheelieForwardPressed() ||
+                        ((_arm.isLow() || _arm.getAngle() >= _bottomAngle)
+                        && (_highHab ?_stilt.isExtended() : _stilt.isAtMiddle()))) {
                     metric("StiltSpeed", 0);
                     metric("ArmSpeed", 0);
                     _arm.setSpeed(0);

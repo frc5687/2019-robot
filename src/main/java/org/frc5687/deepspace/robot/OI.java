@@ -4,7 +4,10 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.buttons.Button;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
+import edu.wpi.first.wpilibj.command.ConditionalCommand;
 import org.frc5687.deepspace.robot.commands.*;
+import org.frc5687.deepspace.robot.commands.drive.AutoDrivePath;
+import org.frc5687.deepspace.robot.commands.drive.SeekHome;
 import org.frc5687.deepspace.robot.commands.intake.*;
 import org.frc5687.deepspace.robot.subsystems.Elevator;
 import org.frc5687.deepspace.robot.subsystems.Shifter;
@@ -23,6 +26,7 @@ public class OI extends OutliersProxy {
 
     private Button _driverRightStickButton;
     private AxisButton _driverRightYAxisUpButton;
+    private AxisButton _driverRightYAxisDownButton;
 
 
     private Button _operatorAButton;
@@ -89,6 +93,7 @@ public class OI extends OutliersProxy {
         _driverRightStickButton = new JoystickButton(_driverGamepad, Gamepad.Buttons.RIGHT_STICK.getNumber());
 
         _driverRightYAxisUpButton = new AxisButton(_driverGamepad,Gamepad.Axes.RIGHT_Y.getNumber(), -.75);
+        _driverRightYAxisDownButton = new AxisButton(_driverGamepad,Gamepad.Axes.RIGHT_Y.getNumber(), 0.75);
 
         _operatorStartButton = new JoystickButton(_operatorGamepad, Gamepad.Buttons.START.getNumber());
         _operatorBackButton = new JoystickButton(_operatorGamepad, Gamepad.Buttons.BACK.getNumber());
@@ -109,13 +114,17 @@ public class OI extends OutliersProxy {
     }
     public void initializeButtons(Robot robot){
 
+        _driverStartButton.whenPressed(new SafeguardCommand(robot, new AutoClimb(robot.getStilt(), robot.getArm(), robot.getDriveTrain(), robot.getCargoIntake(), robot.getHatchIntake(), robot, true), -30));
+        _driverBackButton.whenPressed(new SafeguardCommand(robot, new AutoClimb(robot.getStilt(), robot.getArm(), robot.getDriveTrain(), robot.getCargoIntake(), robot.getHatchIntake(), robot, false), -30));
 
-        _driverStartButton.whenPressed(new AutoClimb(robot.getStilt(), robot.getArm(), robot.getDriveTrain(), robot.getCargoIntake(), robot.getHatchIntake(), robot, true));
-        _driverBackButton.whenPressed(new AutoClimb(robot.getStilt(), robot.getArm(), robot.getDriveTrain(), robot.getCargoIntake(), robot.getHatchIntake(), robot, false));
 
-        _operatorBackButton.whenPressed(new SandstormPickup(robot));
+        _operatorLeftBumper.whenPressed(new ConditionalCommand(new HatchMode(robot), new SandstormPickup(robot)) {
+            @Override
+            protected boolean condition() {
+                return robot.getConfiguration() != Robot.Configuration.starting;
+            }
+        });
 
-        _operatorLeftBumper.whenPressed(new HatchMode(robot));
         _operatorRightBumper.whenPressed(new CargoMode(robot));
 
         _driverRightBumper.whenPressed(new Shift(robot.getDriveTrain(), robot.getShifter(), Shifter.Gear.LOW, false));
@@ -127,6 +136,8 @@ public class OI extends OutliersProxy {
         _driverLeftTrigger.whenPressed(new Eject(robot));
         _driverRightTrigger.whenPressed(new Intake(robot));
 
+        _driverRightYAxisDownButton.whenPressed(new SeekHome(robot));
+
         _operatorRightXAxisLeftButton.whenPressed(new CargoIntakeDown(robot.getCargoIntake()));
         _operatorRightXAxisRightButton.whenPressed(new CargoIntakeUp(robot.getCargoIntake()));
 
@@ -136,8 +147,10 @@ public class OI extends OutliersProxy {
         _operatorYButton.whenPressed(new MoveElevatorToSetPoint(robot.getElevator(), Elevator.Setpoint.Hatch3, Elevator.MotionMode.Ramp, this, 0.0));
         _operatorXButton.whenPressed(new MoveElevatorToSetPoint(robot.getElevator(), Elevator.Setpoint.HPMode, Elevator.MotionMode.Ramp, this, 0.0));
 
-        _operatorStartButton.whenPressed(new MoveElevatorToSetPoint(robot.getElevator(), Elevator.Setpoint.StartHatch, Elevator.MotionMode.Ramp, this, 0.0));
-        _operatorRightStickButton.whenPressed(new Safeguard(robot, new StartingConfiguration(robot), -30));
+        // _driverAButton.whenPressed(new AutoDrivePath(robot.getDriveTrain(), robot.getIMU()));
+
+        // _operatorBackButton.whenPressed(new MoveElevatorToSetPoint(robot.getElevator(), Elevator.Setpoint.StartHatch, Elevator.MotionMode.Ramp, this, 0.0));
+        _operatorStartButton.whenPressed(new StartingConfiguration(robot));
     }
 
     public boolean isAutoTargetPressed() {
@@ -244,6 +257,10 @@ public class OI extends OutliersProxy {
 
     public boolean isCreepPressed() {
         return  _driverRightStickButton.get();
+    }
+
+    public boolean isWheelieForwardPressed() {
+        return  _driverXButton.get();
     }
 }
 

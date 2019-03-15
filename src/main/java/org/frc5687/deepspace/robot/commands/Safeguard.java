@@ -10,12 +10,14 @@ public class Safeguard extends OutliersCommand{
     private Robot _robot;
     private Command _command;
     private long _timeLimit;
+    private Command _effectiveCommand;
     // private CommandGroup _commandGroup;
 
     public Safeguard(Robot robot, Command command, long timeLimit) {
         _robot = robot;
         _command = command;
         _timeLimit = timeLimit;
+        _effectiveCommand = null;
     }
 
 //    public Safeguard(Robot robot, CommandGroup commandGroup) {
@@ -31,12 +33,15 @@ public class Safeguard extends OutliersCommand{
             if (DriverStation.getInstance().isOperatorControl() && _timeLimit < 0) {
                 // Only trigger in last _timeLimit seconds...
                 if (timeLeft <= -_timeLimit) {
-                    _command.start();
+                    _effectiveCommand = _command;
                 } else {
                     DriverStation.reportError("Skipping command with " + timeLeft + " left when " + _timeLimit + " passed", false);
                 }
             } else {
                 DriverStation.reportError("Skipping command because not in teleop when " + _timeLimit + " passed", false);
+            }
+            if (_effectiveCommand!=null) {
+                _effectiveCommand.start();
             }
 //        }
     }
@@ -47,6 +52,7 @@ public class Safeguard extends OutliersCommand{
 
     @Override
     protected boolean isFinished() {
+
         return true;
     }
 }

@@ -1,6 +1,5 @@
 package org.frc5687.deepspace.robot.subsystems;
 
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.revrobotics.CANEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
@@ -41,9 +40,9 @@ public class Stilt extends OutliersSubsystem {
             error("Unable to allocate stilt controller: " + e.getMessage());
         }
 
-        _retractedHall = new HallEffect(RobotMap.DIO.STILT_HIGH);
+        _retractedHall = new HallEffect(RobotMap.DIO.STILT_RETRACTED_HALL);
         _middleHall = new HallEffect(RobotMap.DIO.STILT_MIDDLE);
-        _extendedHall = new HallEffect(RobotMap.DIO.STILT_LOW);
+        _extendedHall = new HallEffect(RobotMap.DIO.STILT_EXTENDED_HALL);
 
         _wheelieVictor = new PWMVictorSPX(RobotMap.PWM.Wheelie);
         _wheelieVictor.setInverted(false);

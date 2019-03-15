@@ -12,8 +12,9 @@ import org.frc5687.deepspace.robot.subsystems.HatchIntake;
 import org.frc5687.deepspace.robot.utils.BasicPose;
 import org.frc5687.deepspace.robot.utils.Limelight;
 
-import static org.frc5687.deepspace.robot.Constants.Auto.Align.*;
 import org.frc5687.deepspace.robot.utils.PoseTracker;
+
+import static org.frc5687.deepspace.robot.Constants.Auto.Align.STEER_K;
 
 public class Drive extends OutliersCommand {
 
@@ -57,10 +58,10 @@ public class Drive extends OutliersCommand {
         // create the _angleController here, just like in AutoDriveToTarget
         _driveState = DriveState.normal;
         _targetSighted = false;
-        _angleController = new PIDController(kP,kI,kD, _imu, new AngleListener(), 0.1);
+        _angleController = new PIDController(Constants.Auto.Drive.AnglePID.kP,Constants.Auto.Drive.AnglePID.kI,Constants.Auto.Drive.AnglePID.kD, _imu, new AngleListener(), 0.1);
         _angleController.setInputRange(Constants.Auto.MIN_IMU_ANGLE, Constants.Auto.MAX_IMU_ANGLE);
-        _angleController.setOutputRange(-SPEED, SPEED);
-        _angleController.setAbsoluteTolerance(TOLERANCE);
+        _angleController.setOutputRange(-Constants.Auto.Drive.AnglePID.MAX_DIFFERENCE, Constants.Auto.Drive.AnglePID.MAX_DIFFERENCE);
+        _angleController.setAbsoluteTolerance(Constants.Auto.Drive.AnglePID.TOLERANCE);
         _angleController.setContinuous();
     }
 
@@ -76,8 +77,23 @@ public class Drive extends OutliersCommand {
             if (_driveState!=DriveState.normal) {
                 // Stop tracking
                 _limelight.disableLEDs();
-                _angleController.disable();
                 _driveState = DriveState.normal;
+            }
+            if (wheelRotation==0 && stickSpeed != 0) {
+                // Driving straight...lock in the yaw
+                if (!_angleController.isEnabled()) {
+                    _anglePIDOut = 0;
+                    double yaw = _imu.getYaw();
+                    metric("PID/SetPoint", yaw);
+                    _angleController.setSetpoint(yaw);
+                    _angleController.setPID(Constants.Auto.Drive.AnglePID.kP, Constants.Auto.Drive.AnglePID.kI, Constants.Auto.Drive.AnglePID.kD);
+                    _angleController.enable();
+                    metric("PID/Enabled", true);
+                }
+            } else if (_angleController.isEnabled()) {
+                _angleController.disable();
+                _anglePIDOut = 0;
+                metric("PID/Enabled", false);
             }
         } else {
             switch (_driveState) {
@@ -121,7 +137,13 @@ public class Drive extends OutliersCommand {
         if(_hatchIntake.isShockTriggered()) {
             _driveTrain.cheesyDrive(Math.min(stickSpeed, 0), 0, false, false);
         } else if (_driveState == DriveState.normal) {
-            _driveTrain.cheesyDrive(stickSpeed, wheelRotation, _oi.isCreepPressed(), false);
+            if (wheelRotation==0 && _angleController.isEnabled()) {
+                metric("PID/AngleOut", _anglePIDOut);
+                metric("PID/Yaw", _imu.getYaw());
+                _driveTrain.cheesyDrive(stickSpeed, stickSpeed==0 ?  0 :_anglePIDOut, false, true);
+            } else {
+                _driveTrain.cheesyDrive(stickSpeed, wheelRotation, _oi.isCreepPressed(), false);
+            }
         } else {
             _driveTrain.cheesyDrive(stickSpeed, _turnSpeed, false, true);
         }
@@ -138,21 +160,25 @@ public class Drive extends OutliersCommand {
 
     protected double getTurnSpeed() {
         double limeLightAngle = _limelight.getHorizontalAngle();
-        double yawAngle = _imu.getYaw();
-        _angle = limeLightAngle + yawAngle;
-        if (!_angleController.isEnabled() || Math.abs(_angle - _angleController.getSetpoint()) > TOLERANCE) {
-            _angleController.setSetpoint(_angle);
-            _angleController.enable();
-            metric("limelightOffset", limeLightAngle);
-            metric("target", _angle);
-        }
+        double yaw = _imu.getYaw();
 
+        // Find the pose of the robot _when the picture was taken_
         long timeKey = System.currentTimeMillis() - (long)_limelight.getLatency();
         BasicPose pose = (BasicPose)_poseTracker.get(timeKey);
-        double poseAngle = pose == null ? _imu.getYaw() : pose.getAngle();
-        double offsetCompensation = _imu.getYaw() - poseAngle;
-        double targetAngle = _limelight.getHorizontalAngle() - offsetCompensation;
+
+        // Get the angle from the pose if one was found--otherwise use yaw
+        double poseAngle = pose == null ? yaw : pose.getAngle();
+
+        // Now adjust the limelight angle based on the change in yaw from when the picture was taken to now
+        double offsetCompensation = yaw - poseAngle;
+        double targetAngle = limeLightAngle - offsetCompensation;
+
         metric("Pose", pose==null?0:pose.getMillis());
+        metric("Yaw", yaw);
+        metric("PoseAngle", poseAngle);
+        metric("LimelightAngle", limeLightAngle);
+        metric("TargetAngle", targetAngle);
+
         return targetAngle * STEER_K;
     }
 

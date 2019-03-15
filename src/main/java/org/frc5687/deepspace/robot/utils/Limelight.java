@@ -113,7 +113,7 @@ public class Limelight extends OutliersProxy {
          *         roll = camtranData[5];
          */
         if (variable > camtranData.length) {
-            DriverStation.reportError("variable " + variable + " out of range " + camtranData.length, false);
+            error("variable " + variable + " out of range " + camtranData.length);
             return 0; }
         return camtranData[variable];
     }

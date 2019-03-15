@@ -27,12 +27,12 @@ public class KillAll extends OutliersCommand {
 
         _robot.getLimelight().disableLEDs();
         _finished = true;
-        DriverStation.reportError("Initialize KillAll Command", false);
+        error("Initialize KillAll Command");
     }
 
     @Override
     protected void end() {
-        DriverStation.reportError("Ending KillAll Command", false);
+        error("Ending KillAll Command");
     }
 
     @Override

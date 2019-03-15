@@ -35,10 +35,10 @@ public class Safeguard extends OutliersCommand{
                 if (timeLeft <= -_timeLimit) {
                     _effectiveCommand = _command;
                 } else {
-                    DriverStation.reportError("Skipping command with " + timeLeft + " left when " + _timeLimit + " passed", false);
+                    error("Skipping command with " + timeLeft + " left when " + _timeLimit + " passed");
                 }
             } else {
-                DriverStation.reportError("Skipping command because not in teleop when " + _timeLimit + " passed", false);
+                error("Skipping command because not in teleop when " + _timeLimit + " passed");
             }
             if (_effectiveCommand!=null) {
                 _effectiveCommand.start();

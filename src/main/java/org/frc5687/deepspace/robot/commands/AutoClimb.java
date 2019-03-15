@@ -83,14 +83,14 @@ public class AutoClimb extends OutliersCommand {
                 _stilt.enableBrakeMode();
                 _arm.setSpeed(STOW_SPEED);
                 if (_arm.isLeftStowed() && _arm.isRightStowed()) {
-                    DriverStation.reportError("Transitioning to " + ClimbState.PositionArm.name(), false);
+                    error("Transitioning to " + ClimbState.PositionArm.name());
                     _climbState = ClimbState.PositionArm;
                 }
                 break;
             case PositionArm:
                 _arm.setSpeed(INITIAL_ARM_SPEED);
                 if (_arm.getAngle() >= _contactAngle) {
-                    DriverStation.reportError("Transitioning to " + ClimbState.MoveRollerAndStilt.name(), false);
+                    error("Transitioning to " + ClimbState.MoveRollerAndStilt.name());
                     _climbState = ClimbState.MoveRollerAndStilt;
                 }
                 break;
@@ -99,10 +99,10 @@ public class AutoClimb extends OutliersCommand {
                 metric("StiltSpeed", STILT_SPEED);
                 double armSpeed =  _arm.getAngle() >= _slowAngle ? ARM_SLOW_SPEED : ARM_SPEED; // Math.cos(Math.toRadians(_arm.getAngle())) * ARM_SPEED_SCALAR;
                 if ((_arm.isLow() || _arm.getAngle() >= _bottomAngle)) {
-                    DriverStation.reportError("Stopping arm", false);
+                    error("Stopping arm");
                     _arm.setSpeed(0);
                 } else {
-                    DriverStation.reportError("Running arm", false);
+                    error("Running arm");
                     _arm.setSpeed(armSpeed);
                 }
 
@@ -114,7 +114,7 @@ public class AutoClimb extends OutliersCommand {
                     metric("ArmSpeed", 0);
                     _arm.setSpeed(0);
                     _driveTrain.disableBrakeMode();
-                    DriverStation.reportError("Transitioning to " + ClimbState.WheelieForward.name(), false);
+                    error("Transitioning to " + ClimbState.WheelieForward.name());
                     _climbState = ClimbState.WheelieForward;
                 }
                 break;
@@ -132,7 +132,7 @@ public class AutoClimb extends OutliersCommand {
                     metric("StiltSpeed", 0);
                     _arm.enableCoastMode();
                     _stilt.setWheelieSpeed(0);
-                    DriverStation.reportError("Transitioning to " + ClimbState.LiftStilt.name(), false);
+                    error("Transitioning to " + ClimbState.LiftStilt.name());
                     _climbState = ClimbState.LiftArm;
                 }
                 break;
@@ -141,7 +141,7 @@ public class AutoClimb extends OutliersCommand {
                 if (_arm.getAngle() <= ARM_RETRACT_ANGLE) {
                     _arm.setSpeed(0);
                     _climbState = ClimbState.LiftStilt;
-                    DriverStation.reportError("Transitioning to " + ClimbState.LiftStilt.name(), false);
+                    error("Transitioning to " + ClimbState.LiftStilt.name());
                     _stiltTimeout = System.currentTimeMillis() + STILT_TIMEOUT;
                 }
                 break;
@@ -152,13 +152,13 @@ public class AutoClimb extends OutliersCommand {
                 if (_stilt.isRetracted()) {
                     _stilt.enableCoastMode();
                     _driveTrain.resetDriveEncoders();
-                    DriverStation.reportError("Transitioning to " + ClimbState.Park.name(), false);
+                    error("Transitioning to " + ClimbState.Park.name());
                     _climbState = ClimbState.Park;
                 }
                 if (System.currentTimeMillis() >= _stiltTimeout) {
                     _stilt.setLifterSpeed(0);
                     _stilt.enableCoastMode();
-                    DriverStation.reportError("Transitioning to " + ClimbState.WaitStilt.name(), false);
+                    error("Transitioning to " + ClimbState.WaitStilt.name());
                     _climbState = ClimbState.WaitStilt;
                 }
                 break;
@@ -169,7 +169,7 @@ public class AutoClimb extends OutliersCommand {
                     _stilt.enableCoastMode();
                     _driveTrain.resetDriveEncoders();
                     _climbState = ClimbState.Park;
-                    DriverStation.reportError("Transitioning to " + ClimbState.Park.name(), false);
+                    error("Transitioning to " + ClimbState.Park.name());
                 }
                 break;
 
@@ -179,7 +179,7 @@ public class AutoClimb extends OutliersCommand {
                 if (_driveTrain.getDistance() > PARK_DISTANCE) {
                     metric("DriveSpeed", 0);
                     _driveTrain.cheesyDrive(0.0,0, false, false);
-                    DriverStation.reportError("Transitioning to " + ClimbState.Done.name(), false);
+                    error("Transitioning to " + ClimbState.Done.name());
                     _climbState = ClimbState.Done;
                 }
                 break;

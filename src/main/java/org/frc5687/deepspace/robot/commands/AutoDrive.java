@@ -103,7 +103,7 @@ public class AutoDrive extends OutliersCommand {
     protected boolean isFinished() {
         if (_usePID) {
             if (_distanceController.onTarget()) {
-               DriverStation.reportError("AutoDrive stoped at " + _driveTrain.getDistance(),false);
+               error("AutoDrive stoped at " + _driveTrain.getDistance());
             }
         } else {
             info("AutoDrive nopid complete at " + _driveTrain.getDistance() + " inches");
@@ -121,7 +121,7 @@ public class AutoDrive extends OutliersCommand {
         } else {
             info("AutoDrive Finished (" + _driveTrain.getDistance() + ", " + (_driveTrain.getYaw() - _angleController.getSetpoint()) + ") " + (_stage == null ? "" : _stage));
         }
-        DriverStation.reportError("AutoDrive Finished (" + _driveTrain.getDistance() + ", " + (_driveTrain.getYaw() - _angleController.getSetpoint()) + ") " + (_stage ==null?"": _stage), false);
+        error("AutoDrive Finished (" + _driveTrain.getDistance() + ", " + (_driveTrain.getYaw() - _angleController.getSetpoint()) + ") " + (_stage ==null?"": _stage));
         _driveTrain.disableBrakeMode();
         _angleController.disable();
         if (_distanceController !=null) {

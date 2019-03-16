@@ -3,7 +3,6 @@ package org.frc5687.deepspace.robot.subsystems;
 import com.revrobotics.CANEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
-import edu.wpi.first.wpilibj.*;
 import org.frc5687.deepspace.robot.Constants;
 import org.frc5687.deepspace.robot.Robot;
 import org.frc5687.deepspace.robot.RobotMap;
@@ -14,7 +13,7 @@ import org.frc5687.deepspace.robot.utils.PDP;
 import static org.frc5687.deepspace.robot.Constants.Arm.*;
 import static org.frc5687.deepspace.robot.utils.Helpers.*;
 
-public class Arm extends OutliersSubsystem implements PIDSource {
+public class Arm extends OutliersSubsystem  {
 
     private CANSparkMax _leftSpark;
     private CANSparkMax _rightSpark;
@@ -31,10 +30,13 @@ public class Arm extends OutliersSubsystem implements PIDSource {
     private double _leftOffset = 0;
     private double _rightOffset = 0;
 
-    private double _lastSpeed;
-    // Need private double _pidOut
-    private double _pidOut;
+    private double _lastLeftSpeed;
+    private double _lastRightSpeed;
     private Robot _robot;
+
+    private int _pdpLeft;
+    private int _pdpRight;
+
     public Arm(Robot robot) {
         _robot = robot;
 
@@ -46,11 +48,15 @@ public class Arm extends OutliersSubsystem implements PIDSource {
             _leftSpark.setInverted(Constants.Arm.LEFT_MOTOR_INVERTED);
             _rightSpark.setInverted(Constants.Arm.RIGHT_MOTOR_INVERTED);
 
-            _leftSpark.setSmartCurrentLimit(Constants.Arm.SHOULDER_STALL_LIMIT, Constants.Arm.SHOULDER_FREE_LIMIT);
-            _rightSpark.setSmartCurrentLimit(Constants.Arm.SHOULDER_STALL_LIMIT, Constants.Arm.SHOULDER_FREE_LIMIT);
+            _leftSpark.setSmartCurrentLimit(Constants.Arm.CLIMB_STALL_LIMIT, Constants.Arm.CLIMB_FREE_LIMIT);
+            _rightSpark.setSmartCurrentLimit(Constants.Arm.CLIMB_STALL_LIMIT, Constants.Arm.CLIMB_FREE_LIMIT);
 
             _leftEncoder = _leftSpark.getEncoder();
             _rightEncoder  = _rightSpark.getEncoder();
+
+            _pdpLeft = _robot.getIdentityMode() == Robot.IdentityMode.practice ? RobotMap.PDP.LEFT_ARM_PRACTICE : RobotMap.PDP.LEFT_ARM_COMPO;
+            _pdpRight = _robot.getIdentityMode() == Robot.IdentityMode.practice ? RobotMap.PDP.RIGHT_ARM_PRACTICE : RobotMap.PDP.RIGHT_ARM_COMP;
+
         } catch (Exception e) {
             error("Unable to allocate arm controller: " + e.getMessage());
         }
@@ -75,23 +81,21 @@ public class Arm extends OutliersSubsystem implements PIDSource {
 
     public void setSpeed(double speed) {
         if (_leftSpark == null || _rightSpark==null) { return; }
-        if(_lastSpeed >= 0 && speed < 0){
-            _leftSpark.setSmartCurrentLimit(Constants.Arm.STOW_STALL_LIMIT);
-            _rightSpark.setSmartCurrentLimit(Constants.Arm.STOW_STALL_LIMIT);
-
-        } else if (_lastSpeed < 0 && speed >= 0){
-            _leftSpark.setSmartCurrentLimit(Constants.Arm.SHOULDER_STALL_LIMIT);
-            _rightSpark.setSmartCurrentLimit(Constants.Arm.SHOULDER_STALL_LIMIT);
-        } else {
-            _lastSpeed = speed;
-            setLeftSpeed(speed);
-            setRightSpeed(speed);
-        }
+        setLeftSpeed(speed);
+        setRightSpeed(speed);
     }
 
 
     public void setLeftSpeed(double speed) {
         if (_leftSpark == null) { return; }
+
+        if(_lastLeftSpeed >= 0 && speed < 0){
+            _leftSpark.setSmartCurrentLimit(Constants.Arm.STOW_STALL_LIMIT);
+        } else if (_lastLeftSpeed < 0 && speed >= 0){
+            _leftSpark.setSmartCurrentLimit(Constants.Arm.CLIMB_STALL_LIMIT);
+        }
+        _lastLeftSpeed = speed;
+
         speed = limit(speed,
                 isLeftStowed() ? 0 : -MAX_DRIVE_SPEED ,
                 isLeftLow() ? HOLD_SPEED : MAX_DRIVE_SPEED);
@@ -102,6 +106,15 @@ public class Arm extends OutliersSubsystem implements PIDSource {
 
     public void setRightSpeed(double speed) {
         if (_rightSpark == null) { return; }
+
+        if(_lastRightSpeed >= 0 && speed < 0){
+            _rightSpark.setSmartCurrentLimit(Constants.Arm.STOW_STALL_LIMIT);
+        } else if (_lastRightSpeed < 0 && speed >= 0){
+            _rightSpark.setSmartCurrentLimit(Constants.Arm.CLIMB_STALL_LIMIT);
+        }
+        _lastRightSpeed = speed;
+
+
         speed = limit(speed,
                 isRightStowed() ? 0 : -MAX_DRIVE_SPEED ,
                 isRightLow() ? HOLD_SPEED : MAX_DRIVE_SPEED);
@@ -134,20 +147,13 @@ public class Arm extends OutliersSubsystem implements PIDSource {
     }
 
     public boolean isRightStowed() {
-        if(_rightSpark.get() < 0 && _pdp.getCurrent(RobotMap.PDP.RIGHT_ARM) > Constants.Arm.ARM_STALL_THRESHOLD){
-            return true;
-        }else {
-            return _rightStowedhall.get();
-
-        }
+        return _rightStowedhall.get()
+                ||_lastRightSpeed < 0 && _pdp.getCurrent(_pdpRight) > Constants.Arm.STOW_STALL_THRESHOLD;
     }
 
     public boolean isLeftStowed() {
-        if(_leftSpark.get() < 0 && _pdp.getCurrent(RobotMap.PDP.LEFT_ARM) > Constants.Arm.ARM_STALL_THRESHOLD){
-            return true;
-        }else {
-            return _leftStowedhall.get();
-        }
+        return _leftStowedhall.get()
+                || _lastLeftSpeed < 0 && _pdp.getCurrent(_pdpLeft) > Constants.Arm.STOW_STALL_THRESHOLD;
     }
 
     public boolean isRightLow() {
@@ -163,19 +169,8 @@ public class Arm extends OutliersSubsystem implements PIDSource {
         return isLeftLow() || isRightLow();
     }
 
-    @Override
-    public void setPIDSourceType(PIDSourceType pidSource) {
-    }
 
-    @Override
-    public PIDSourceType getPIDSourceType() {
-        return PIDSourceType.kDisplacement;
-    }
 
-    @Override
-    public double pidGet() {
-        return getPosition();
-    }
 
     public double getPosition() {
         return (getLeftPosition() + getRightPosition())/2;
@@ -240,7 +235,6 @@ public class Arm extends OutliersSubsystem implements PIDSource {
     public enum MotionMode {
         HallOnly(0),
         Simple(1),
-        PID(2),
         Path(3);
 
         private int _value;

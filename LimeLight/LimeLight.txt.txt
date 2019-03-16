@@ -1,4 +1,6 @@
 # Store limelight pipelines here.
 # Filenames should follow PipeLine# - Name pattern
 # eg: 0 - TapeTracking-Largest
+#     1 - TapeTracking-Closest
 #     8 - CargoTracking-Largest
+#     9 - Cargo Tracking

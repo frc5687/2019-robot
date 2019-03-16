@@ -63,8 +63,6 @@ public class OI extends OutliersProxy {
 
     private POV _operatorPOV;
 
-    private Launchpad _launchpad;
-
     private JoystickLight _hatchModeLEDLeft;
     private JoystickLight _hatchModeLEDRight;
     private JoystickLight _cargoModeLEDLeft;

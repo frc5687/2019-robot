@@ -247,7 +247,7 @@ public class Constants {
         public static class Climb {
             public static final double ENDGAME_CUTOFF = 30.0;
 
-            public static final double STILT_SPEED = 0.90; // .55
+            public static final double STILT_SPEED = 1.0; // .55
             public static final double STILT_HOLD_SPEED = 0.4;
             public static final double RAISE_STILT_SPEED = -0.2;
 

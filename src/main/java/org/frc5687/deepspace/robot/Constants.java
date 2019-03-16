@@ -19,8 +19,8 @@ public class Constants {
         public static final double TURNING_SENSITIVITY_LOW_GEAR = 1;
 
         public static final double CREEP_FACTOR = 0.25;
-        public static final double LEFT_RATIO = 1.090909090909;
-        public static final double RIGHT_RATIO = 1.090909090909;
+        public static final double LEFT_RATIO = 1.5901938;
+        public static final double RIGHT_RATIO = 1.5901938;
 
         public static final boolean LEFT_MOTORS_INVERTED = true;
         public static final boolean RIGHT_MOTORS_INVERTED = false;
@@ -311,9 +311,9 @@ public class Constants {
         public class Align {
             public static final double SPEED = 0.15;
 
-            public static final double kP = 0.01;//0.015;
-            public static final double kI = 0.001;
-            public static final double kD = 0.5;//0.1;
+            public static final double kP = 0.03; //0.03;
+            public static final double kI = 0.000; // 0;.000.1
+            public static final double kD = 0.2;  //0.1;
             public static final double TOLERANCE = 1; // 0.5
             public static final double MINIMUM_SPEED = 0;//0.15;
             /*

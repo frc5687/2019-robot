@@ -19,6 +19,7 @@ import static org.frc5687.deepspace.robot.utils.Helpers.applySensitivityFactor;
 public class OI extends OutliersProxy {
     protected Gamepad _driverGamepad;
     protected Gamepad _operatorGamepad;
+    protected Launchpad _launchpad;
     private Button _operatorRightTrigger;
     private Button _operatorLeftTrigger;
     private Button _driverRightTrigger;

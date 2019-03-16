@@ -62,9 +62,23 @@ public class OI extends OutliersProxy {
 
     private POV _operatorPOV;
 
+    private Launchpad _launchpad;
+
+    private JoystickLight _hatchModeLEDLeft;
+    private JoystickLight _hatchModeLEDRight;
+    private JoystickLight _cargoModeLEDLeft;
+    private JoystickLight _cargoModeLEDRight;
+    private JoystickLight _targetLeftLED;
+    private JoystickLight _targetCenteredLED;
+    private JoystickLight _targetRightLED;
+
+
+
+
     public OI(){
         _driverGamepad = new Gamepad(0);
         _operatorGamepad = new Gamepad(1);
+        _launchpad = new Launchpad(2);
 
         _operatorRightTrigger = new AxisButton(_operatorGamepad, Gamepad.Axes.RIGHT_TRIGGER.getNumber(), Constants.OI.AXIS_BUTTON_THRESHHOLD);
         _operatorLeftTrigger = new AxisButton(_operatorGamepad, Gamepad.Axes.LEFT_TRIGGER.getNumber(), Constants.OI.AXIS_BUTTON_THRESHHOLD);
@@ -111,6 +125,15 @@ public class OI extends OutliersProxy {
         _operatorRightXAxisRightButton = new AxisButton(_operatorGamepad, Gamepad.Axes.RIGHT_X.getNumber(), .5);
 
         // _operatorPOV = new POV();
+
+        _hatchModeLEDLeft = new JoystickLight(_launchpad, Launchpad.LEDs.A.getNumber());
+        _hatchModeLEDRight= new JoystickLight(_launchpad, Launchpad.LEDs.F.getNumber());
+        _cargoModeLEDLeft= new JoystickLight(_launchpad, Launchpad.LEDs.B.getNumber());
+        _cargoModeLEDRight= new JoystickLight(_launchpad, Launchpad.LEDs.G.getNumber());
+        _targetLeftLED= new JoystickLight(_launchpad, Launchpad.LEDs.D.getNumber());
+        _targetCenteredLED= new JoystickLight(_launchpad, Launchpad.LEDs.D.getNumber());
+        _targetRightLED= new JoystickLight(_launchpad, Launchpad.LEDs.E.getNumber());
+
     }
     public void initializeButtons(Robot robot){
 
@@ -263,5 +286,28 @@ public class OI extends OutliersProxy {
     public boolean isWheelieForwardPressed() {
         return  _driverAButton.get();
     }
+
+    public void setHatchLED(boolean status) {
+        _hatchModeLEDLeft.set(status);
+        _hatchModeLEDRight.set(status);
+    }
+
+    public void setCargoLED(boolean status) {
+        _cargoModeLEDLeft.set(status);
+        _cargoModeLEDRight.set(status);
+    }
+
+    public void setCenteredLED(boolean status) {
+        _targetCenteredLED.set(status);
+    }
+
+    public void setLeftgLED(boolean status) {
+        _targetLeftLED.set(status);
+    }
+    public void setRightLED(boolean status) {
+        _targetRightLED.set(status);
+    }
+
+
 }
 

@@ -61,7 +61,7 @@ public class MoveElevatorToSetPoint extends OutliersCommand {
         _step = 0;
         _position = _elevator.getPosition();
         if (withinTolerance()) { return; }
-        DriverStation.reportError("Moving to setpoint " + _setpoint.name() + " (" + _setpoint.getValue() + ") using " + _mode.name() + " mode.", false);
+        error("Moving to setpoint " + _setpoint.name() + " (" + _setpoint.getValue() + ") using " + _mode.name() + " mode.");
         info("Moving to setpoint " + _setpoint.name() + " (" + _setpoint.getValue() + ") using " + _mode.name() + " mode.");
         switch(_mode) {
             case Simple:
@@ -88,12 +88,12 @@ public class MoveElevatorToSetPoint extends OutliersCommand {
                     _rampDirection = -1;
                     _rampMid = startPosition + (_setpoint.getValue() - startPosition)/2;
                 } else if (_setpoint.getHall() == Elevator.HallEffectSensor.BOTTOM && !_elevator.isAtBottom()){
-                    DriverStation.reportError("BottomCreep", false);
+                    error("BottomCreep");
                     _rampingState = RampingState.Creep;
                     _creepEndTime = System.currentTimeMillis() + CREEP_TIME;
                     _rampDirection = -1;
                 } else if (_setpoint.getHall() == Elevator.HallEffectSensor.TOP && !_elevator.isAtTop()){
-                    DriverStation.reportError("TopCreep", false);
+                    error("TopCreep");
                     _rampingState = RampingState.Creep;
                     _creepEndTime = System.currentTimeMillis() + CREEP_TIME;
                     _rampDirection = 1;

@@ -134,6 +134,7 @@ public class Drive extends OutliersCommand {
         //      enable controller
 
 //         If autoAlignEnabled and pidControllerEnabled, send pidOut in place of wheelRotation (you may need a scale override flag as discussed earlier)
+        stickSpeed = limitSpeed(stickSpeed);
         if(_hatchIntake.isShockTriggered()) {
             _driveTrain.cheesyDrive(Math.min(stickSpeed, 0), 0, false, false);
         } else if (_driveState == DriveState.normal) {
@@ -180,6 +181,25 @@ public class Drive extends OutliersCommand {
         metric("TargetAngle", targetAngle);
 
         return targetAngle * STEER_K;
+    }
+
+    private double limitSpeed(double speed) {
+        double factor = 1;
+        if (_driveState!=DriveState.normal) {
+            factor = 1.5;
+            if(_limelight.isTargetSighted() && _limelight.getTargetDistance() < 150) {
+                double distance = _limelight.getTargetDistance();
+                if (distance < 120) factor = 2;
+                else if (distance  < 80) factor = 3;
+                else if (distance  < 50) factor = 6;
+            }
+        }
+        if (_elevator.isAboveMiddle()) {
+            factor = Math.max(2, factor);
+        }
+        metric("factor", factor);
+        metric("scaled", speed/factor);
+        return speed / factor;
     }
 
     @Override

@@ -19,7 +19,7 @@ public class GripClaw extends OutliersCommand {
 
     public GripClaw(HatchIntake hatchIntake) {
         this(hatchIntake, Constants.Intake.CLOSE_CLAW_MILLI_SEC);
-        DriverStation.reportError("GripingCaw", true);
+//        DriverStation.reportError("GripingCaw", true);
     }
 
     @Override

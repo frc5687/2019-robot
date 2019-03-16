@@ -156,6 +156,10 @@ public class Elevator extends OutliersSubsystem implements PIDSource {
         return getPosition();
     }
 
+    public boolean isAboveMiddle() {
+        return getPosition() >= Setpoint.SlowPoint.getValue();
+    }
+
     public enum HallEffectSensor {
         BOTTOM,
         TOP
@@ -170,6 +174,7 @@ public class Elevator extends OutliersSubsystem implements PIDSource {
         ClearRoller(400),
         StartHatch(800, 710),
         HPMode(1230),
+        SlowPoint(2000, 1800),
         Port2(2419, 2168),
         Hatch2(2420, 1954),
         Port3(5028, 4098, HallEffectSensor.TOP),

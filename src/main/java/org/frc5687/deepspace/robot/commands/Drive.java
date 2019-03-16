@@ -189,9 +189,9 @@ public class Drive extends OutliersCommand {
             factor = 1.5;
             if(_limelight.isTargetSighted() && _limelight.getTargetDistance() < 150) {
                 double distance = _limelight.getTargetDistance();
-                if (distance < 120) factor = 2;
-                else if (distance  < 80) factor = 3;
-                else if (distance  < 50) factor = 6;
+                if (distance < 120) factor = 1.5;
+                else if (distance  < 80) factor = 2;
+                else if (distance  < 50) factor = 4;
             }
         }
         if (_elevator.isAboveMiddle()) {

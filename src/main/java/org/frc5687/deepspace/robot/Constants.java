@@ -19,8 +19,8 @@ public class Constants {
         public static final double TURNING_SENSITIVITY_LOW_GEAR = 1;
 
         public static final double CREEP_FACTOR = 0.25;
-        public static final double LEFT_RATIO = 1.5901938;
-        public static final double RIGHT_RATIO = 1.5901938;
+        public static final double LEFT_RATIO = 1.590193804869969;
+        public static final double RIGHT_RATIO = 1.590193804869969;
 
         public static final boolean LEFT_MOTORS_INVERTED = true;
         public static final boolean RIGHT_MOTORS_INVERTED = false;

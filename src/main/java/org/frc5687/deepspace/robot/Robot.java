@@ -203,7 +203,7 @@ public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
             metric("imu/yaw", _imu.getYaw());
             metric("imu/pitch", _imu.getPitch());
             metric("imu/roll", _imu.getRoll());
-            metric("imu/version", _imu.getFirmwareVersion());
+            metric("Memory", Runtime.getRuntime().freeMemory());
         }
     }
 

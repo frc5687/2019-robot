@@ -94,10 +94,10 @@ public class Constants {
         public static final double STEPS_UP = 10;
         public static final double STEPS_DOWN = 30;
         public static final double TICKS_PER_STEP = 50;
-        public static final double MIN_SPEED = 0.2;
+        public static final double MIN_SPEED = 0.3;
         public static final double GOAL_SPEED = 0.5;
         public static final int BOTTOM_CAM_ZONE = 100;
-        public static final double SANDSTORM_PICKUP_SPEED = 0.2;
+        public static final double SANDSTORM_PICKUP_SPEED = 0.3;
 
         public static class PID {
             public static final double kP = 0.1;

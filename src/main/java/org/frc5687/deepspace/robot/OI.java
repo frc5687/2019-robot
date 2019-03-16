@@ -149,7 +149,7 @@ public class OI extends OutliersProxy {
 
         // _driverAButton.whenPressed(new AutoDrivePath(robot.getDriveTrain(), robot.getIMU()));
 
-        // _operatorBackButton.whenPressed(new MoveElevatorToSetPoint(robot.getElevator(), Elevator.Setpoint.StartHatch, Elevator.MotionMode.Ramp, this, 0.0));
+        _operatorBackButton.whenPressed(new AutoLaunch(robot));
         _operatorStartButton.whenPressed(new StartingConfiguration(robot));
     }
 

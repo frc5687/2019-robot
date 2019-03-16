@@ -76,8 +76,8 @@ public class DriveTrain extends OutliersSubsystem implements PIDSource {
             _rightMaster.setInverted(Constants.DriveTrain.RIGHT_MOTORS_INVERTED);
             _rightFollower.setInverted(Constants.DriveTrain.RIGHT_MOTORS_INVERTED);
 
-            enableBrakeMode();
-
+//            enableBrakeMode();
+            disableBrakeMode();
             debug("Configuring followers");
 //            _leftFollower.follow(_leftMaster);
 //            _rightFollower.follow(_rightMaster);
@@ -133,6 +133,8 @@ public class DriveTrain extends OutliersSubsystem implements PIDSource {
         metric("Mag/Ticks/Left", _leftMagEncoder.get());
         metric("Mag/Ticks/Right", _rightMagEncoder.get());
         metric("Imu/Yaw", getYaw());
+        metric("left", getLeftTicks()- _leftOffset);
+        metric("right", getRightTicks() - _rightOffset);
 
     }
 

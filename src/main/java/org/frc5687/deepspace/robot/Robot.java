@@ -1,7 +1,6 @@
 package org.frc5687.deepspace.robot;
 
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Notifier;
 import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -154,11 +153,7 @@ public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
         // Example of starting a new row of metrics for all instrumented objects.
         // MetricTracker.newMetricRowAll();
 
-        int operatorPOV = _oi.getOperatorPOV();
-        int driverPOV = _oi.getDriverPOV();
-
-
-        if (driverPOV != 0 || operatorPOV != 0) {
+        if (_oi.isKillAllPressed()) {
             new KillAll(this).start();
         }
 

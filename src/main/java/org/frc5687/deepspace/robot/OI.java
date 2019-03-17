@@ -377,5 +377,19 @@ public class OI extends OutliersProxy {
         _cargoIntakeLED.set(JoystickLight.State.off);
     }
 
+    public boolean isKillAllPressed() {
+        int operatorPOV = getOperatorPOV();
+        int driverPOV = getDriverPOV();
+
+        return driverPOV == Constants.OI.KILL_ALL || operatorPOV == Constants.OI.KILL_ALL;
+    }
+
+    public boolean isOverridePressed() {
+        int operatorPOV = getOperatorPOV();
+        int driverPOV = getDriverPOV();
+
+        return driverPOV == Constants.OI.OVERRIDE || operatorPOV == Constants.OI.OVERRIDE;
+    }
+
 }
 

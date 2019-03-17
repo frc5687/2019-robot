@@ -115,6 +115,8 @@ public class Constants {
         public static final long RUMBLE_MILLIS = 250;
         public static final double RUMBLE_INTENSITY = 1.0;
         public static final long RUMBLE_PULSE_TIME = 100;
+        public static final int KILL_ALL = 4;
+        public static final int OVERRIDE = 8;
     }
 
     public static class Arm {

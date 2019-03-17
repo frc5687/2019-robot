@@ -135,7 +135,7 @@ public class Drive extends OutliersCommand {
 
 //         If autoAlignEnabled and pidControllerEnabled, send pidOut in place of wheelRotation (you may need a scale override flag as discussed earlier)
         stickSpeed = limitSpeed(stickSpeed);
-        if(_hatchIntake.isShockTriggered()) {
+        if(!_oi.isOverridePressed() && _hatchIntake.isShockTriggered()) {
             _driveTrain.cheesyDrive(Math.min(stickSpeed, 0), 0, false, false);
         } else if (_driveState == DriveState.normal) {
             if (wheelRotation==0 && _angleController.isEnabled()) {

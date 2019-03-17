@@ -10,6 +10,7 @@ import org.frc5687.deepspace.robot.subsystems.DriveTrain;
 import org.frc5687.deepspace.robot.subsystems.Elevator;
 import org.frc5687.deepspace.robot.subsystems.HatchIntake;
 import org.frc5687.deepspace.robot.utils.BasicPose;
+import org.frc5687.deepspace.robot.utils.Helpers;
 import org.frc5687.deepspace.robot.utils.Limelight;
 
 import org.frc5687.deepspace.robot.utils.PoseTracker;
@@ -184,22 +185,25 @@ public class Drive extends OutliersCommand {
     }
 
     private double limitSpeed(double speed) {
-        double factor = 1;
+        double limit = 1;
         if (_driveState!=DriveState.normal) {
-            factor = 1.5;
-            if(_limelight.isTargetSighted() && _limelight.getTargetDistance() < 150) {
+            if(_limelight.isTargetSighted()) {
                 double distance = _limelight.getTargetDistance();
-                if (distance < 120) factor = 1.5;
-                else if (distance  < 80) factor = 2;
-                else if (distance  < 50) factor = 4;
+                metric("distance", distance);
+                //if (distance < 120) factor = 1.5;
+                 if (distance  < 100) limit = 0.60;
+                 if (distance  < 20) limit = 0.30;
+            } else {
+                limit = 0.75;
             }
         }
         if (_elevator.isAboveMiddle()) {
-            factor = Math.max(2, factor);
+            limit = Math.min(0.5, limit);
         }
-        metric("factor", factor);
-        metric("scaled", speed/factor);
-        return speed / factor;
+        double limited = Helpers.limit(speed, -limit, limit);
+        metric("limit", limit);
+        metric("scaled", limited);
+        return limited;
     }
 
     @Override

@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj.buttons.Button;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import edu.wpi.first.wpilibj.command.ConditionalCommand;
 import org.frc5687.deepspace.robot.commands.*;
+import org.frc5687.deepspace.robot.commands.drive.AutoScoreRocket;
 import org.frc5687.deepspace.robot.commands.drive.SeekHome;
 import org.frc5687.deepspace.robot.commands.intake.*;
 import org.frc5687.deepspace.robot.subsystems.Elevator;
@@ -171,6 +172,8 @@ public class OI extends OutliersProxy {
         // _driverAButton.whenPressed(new AutoDrivePath(robot.getDriveTrain(), robot.getIMU()));
        // _driverXButton.whenPressed(new AutoAlign(robot.getDriveTrain(), robot.getIMU(), -151.0, 1.0, 2000, 1.0, "Aligning to back of left rocket." ));
        // _driverBButton.whenPressed(new AutoAlign(robot.getDriveTrain(), robot.getIMU(), 151.0, 1.0, 2000, 1.0, "Aligning to back of right rocket." ));
+        _driverXButton.whenPressed(new AutoScoreRocket(robot, true));
+
         _operatorBackButton.whenPressed(new AutoLaunch(robot));
         _operatorStartButton.whenPressed(new StartingConfiguration(robot));
 

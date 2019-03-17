@@ -6,7 +6,6 @@ import edu.wpi.first.wpilibj.buttons.Button;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import edu.wpi.first.wpilibj.command.ConditionalCommand;
 import org.frc5687.deepspace.robot.commands.*;
-import org.frc5687.deepspace.robot.commands.drive.AutoDrivePath;
 import org.frc5687.deepspace.robot.commands.drive.SeekHome;
 import org.frc5687.deepspace.robot.commands.intake.*;
 import org.frc5687.deepspace.robot.subsystems.Elevator;
@@ -63,10 +62,10 @@ public class OI extends OutliersProxy {
 
     private POV _operatorPOV;
 
-    private JoystickLight _hatchModeLEDLeft;
-    private JoystickLight _hatchModeLEDRight;
-    private JoystickLight _cargoModeLEDLeft;
-    private JoystickLight _cargoModeLEDRight;
+    private JoystickLight _hatchModeLED;
+    private JoystickLight _cargoModeLED;
+    private JoystickLight _hatchIntakeLED;
+    private JoystickLight _cargoIntakeLED;
     private JoystickLight _targetLeftLED;
     private JoystickLight _targetCenteredLED;
     private JoystickLight _targetRightLED;
@@ -125,10 +124,10 @@ public class OI extends OutliersProxy {
 
         // _operatorPOV = new POV();
 
-        _hatchModeLEDLeft = new JoystickLight(_launchpad, Launchpad.LEDs.A.getNumber());
-        _hatchModeLEDRight= new JoystickLight(_launchpad, Launchpad.LEDs.F.getNumber());
-        _cargoModeLEDLeft= new JoystickLight(_launchpad, Launchpad.LEDs.B.getNumber());
-        _cargoModeLEDRight= new JoystickLight(_launchpad, Launchpad.LEDs.G.getNumber());
+        _hatchModeLED = new JoystickLight(_launchpad, Launchpad.LEDs.A.getNumber());
+        _cargoModeLED = new JoystickLight(_launchpad, Launchpad.LEDs.F.getNumber());
+        _hatchIntakeLED = new JoystickLight(_launchpad, Launchpad.LEDs.B.getNumber());
+        _cargoIntakeLED = new JoystickLight(_launchpad, Launchpad.LEDs.G.getNumber());
         _targetLeftLED= new JoystickLight(_launchpad, Launchpad.LEDs.D.getNumber());
         _targetCenteredLED= new JoystickLight(_launchpad, Launchpad.LEDs.D.getNumber());
         _targetRightLED= new JoystickLight(_launchpad, Launchpad.LEDs.E.getNumber());
@@ -253,6 +252,7 @@ public class OI extends OutliersProxy {
     }
 
     public void poll() {
+        JoystickLight.poll();
         if (_driverRumbleCount > 0) {
             _driverGamepad.setRumble(GenericHID.RumbleType.kLeftRumble, _driverRumbleCount % 2 == 0 ? 0 : 1);
             _driverGamepad.setRumble(GenericHID.RumbleType.kRightRumble, _driverRumbleCount % 2 == 0 ? 0 : 1);
@@ -286,27 +286,96 @@ public class OI extends OutliersProxy {
         return  _driverAButton.get();
     }
 
-    public void setHatchLED(boolean status) {
-        _hatchModeLEDLeft.set(status);
-        _hatchModeLEDRight.set(status);
+    public void setConfigurationLEDs(Robot.Configuration configuration) {
+        switch (configuration) {
+            case starting:
+                _hatchModeLED.set(JoystickLight.State.slow_blink);
+                _cargoModeLED.set(JoystickLight.State.slow_blink);
+                _hatchIntakeLED.set(JoystickLight.State.slow_blink);
+                _cargoIntakeLED.set(JoystickLight.State.slow_blink);
+                break;
+            case cargo:
+                _hatchModeLED.set(JoystickLight.State.off);
+                _cargoModeLED.set(JoystickLight.State.on);
+                _hatchIntakeLED.set(JoystickLight.State.off);
+                _cargoIntakeLED.set(JoystickLight.State.off);
+                break;
+            case hatch:
+                _hatchModeLED.set(JoystickLight.State.on);
+                _cargoModeLED.set(JoystickLight.State.off);
+                _hatchIntakeLED.set(JoystickLight.State.off);
+                _cargoIntakeLED.set(JoystickLight.State.off);
+                break;
+            case climbing:
+                _hatchModeLED.set(JoystickLight.State.fast_blink);
+                _cargoModeLED.set(JoystickLight.State.fast_blink);
+                _hatchIntakeLED.set(JoystickLight.State.fast_blink);
+                _cargoIntakeLED.set(JoystickLight.State.fast_blink);
+                break;
+        }
     }
 
-    public void setCargoLED(boolean status) {
-        _cargoModeLEDLeft.set(status);
-        _cargoModeLEDRight.set(status);
+    public void setTargetSeeking() {
+        _targetLeftLED.set(JoystickLight.State.slow_blink);
+        _targetCenteredLED.set(JoystickLight.State.slow_blink);
+        _targetRightLED.set(JoystickLight.State.slow_blink);
     }
 
-    public void setCenteredLED(boolean status) {
-        _targetCenteredLED.set(status);
+    public void setTargetLeft() {
+        _targetLeftLED.set(JoystickLight.State.fast_blink);
+        _targetCenteredLED.set(JoystickLight.State.off);
+        _targetRightLED.set(JoystickLight.State.off);
     }
 
-    public void setLeftgLED(boolean status) {
-        _targetLeftLED.set(status);
-    }
-    public void setRightLED(boolean status) {
-        _targetRightLED.set(status);
+    public void setTargetRight() {
+        _targetLeftLED.set(JoystickLight.State.off);
+        _targetCenteredLED.set(JoystickLight.State.off);
+        _targetRightLED.set(JoystickLight.State.fast_blink);
     }
 
+    public void setTargetCentered() {
+        _targetLeftLED.set(JoystickLight.State.off);
+        _targetCenteredLED.set(JoystickLight.State.fast_blink);
+        _targetRightLED.set(JoystickLight.State.off);
+    }
+
+    public void setTargetHit() {
+        _targetLeftLED.set(JoystickLight.State.on);
+        _targetCenteredLED.set(JoystickLight.State.on);
+        _targetRightLED.set(JoystickLight.State.on);
+    }
+
+
+    public void setTargetOff() {
+        _targetLeftLED.set(JoystickLight.State.off);
+        _targetCenteredLED.set(JoystickLight.State.off);
+        _targetRightLED.set(JoystickLight.State.off);
+    }
+
+    public void setHatchDetected() {
+        _hatchIntakeLED.set(JoystickLight.State.on);
+    }
+
+    public void setHatchPointed() {
+        _hatchIntakeLED.set(JoystickLight.State.fast_blink);
+    }
+
+    public void setHatchOff() {
+        _hatchIntakeLED.set(JoystickLight.State.off);
+    }
+
+
+    public void setCargoDetected() {
+        _cargoIntakeLED.set(JoystickLight.State.on);
+    }
+
+    public void setCargoIntaking() {
+        _cargoIntakeLED.set(JoystickLight.State.fast_blink);
+    }
+
+    public void setCargoOff() {
+        _cargoIntakeLED.set(JoystickLight.State.off);
+    }
 
 }
 

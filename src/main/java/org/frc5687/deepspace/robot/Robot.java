@@ -260,7 +260,9 @@ public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
     }
     public void setConfiguration(Configuration configuration) {
         _configuration = configuration;
+        _oi.setConfigurationLEDs(configuration);
     }
+
     public Configuration getConfiguration() {
         return _configuration;
     }
@@ -283,9 +285,9 @@ public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
         switch (_configuration) {
             case starting:
                 if (DriverStation.getInstance().getAlliance()== DriverStation.Alliance.Red) {
-                    _lights.setColor(Constants.Lights.PULSING_RED, 0);
+                    _lights.setColor(Constants.Lights.BEATING_RED, 0);
                 } else if (DriverStation.getInstance().getAlliance()== DriverStation.Alliance.Blue) {
-                    _lights.setColor(Constants.Lights.PULSING_BLUE, 0);
+                    _lights.setColor(Constants.Lights.BEATING_BLUE, 0);
                 } else {
                     _lights.setColor(Constants.Lights.SOLID_YELLOW, 0);
                 }
@@ -304,8 +306,6 @@ public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
                 //    - target centered, started while had hatch
                 //    - has hatch - solid purple
                 //    - no hatch - pale puple
-                _oi.setHatchLED(true);
-                _oi.setCargoLED(false);
                 if (_hatchIntake.isPointed()) {
                     if (_limelight.areLEDsOn()) {
                         if (!_wereLEDsOn) {
@@ -348,8 +348,6 @@ public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
 
                 break;
             case cargo:
-                _oi.setHatchLED(false);
-                _oi.setCargoLED(true);
                 // Intake running?
                 //   Has cargo? SOLID ORANGE
                 //   Targeting?
@@ -382,8 +380,6 @@ public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
                 }
                 break;
             case climbing:
-                _oi.setHatchLED(true);
-                _oi.setCargoLED(true);
                 _lights.setColor(Constants.Lights.WHITE_SHOT, 0);
                 break;
             case parked:
@@ -394,6 +390,43 @@ public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
         if (!_wereLEDsOn) {
             _trackingScoreHatch = false;
             _trackingRetrieveHatch = false;
+        }
+
+        if (_hatchIntake.isHatchDetected() || _hatchIntake.isShockTriggered()) {
+            _oi.setHatchDetected();
+        } else if (_hatchIntake.isPointed()) {
+            _oi.setHatchPointed();
+        } else {
+            _oi.setHatchOff();
+        }
+
+        if (_cargoIntake.isBallDetected()) {
+            _oi.setCargoDetected();
+        } else if (_cargoIntake.isIntaking()) {
+            _oi.setCargoIntaking();
+        } else {
+            _oi.setCargoOff();
+        }
+
+
+        if (_limelight.areLEDsOn()) {
+            if (_limelight.isTargetCentered()) {
+                if (_limelight.getTargetDistance()<18) {
+                    _oi.setTargetHit();
+                } else {
+                    _oi.setTargetCentered();
+                }
+            } else if (_limelight.isTargetSighted()) {
+                if (_limelight.getHorizontalAngle() < 0) {
+                    _oi.setTargetLeft();
+                } else {
+                    _oi.setTargetRight();
+                }
+            } else {
+                _oi.setTargetSeeking();
+            }
+        } else {
+            _oi.setTargetOff();
         }
     }
 

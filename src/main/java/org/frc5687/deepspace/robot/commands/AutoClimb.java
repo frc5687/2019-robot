@@ -122,7 +122,7 @@ public class AutoClimb extends OutliersCommand {
                 _stilt.setLifterSpeed(_highHab ? STILT_HOLD_SPEED : 0);
                 _stilt.setWheelieSpeed(WHEELIE_FORWARD_SPEED);
                 _driveTrain.disableBrakeMode();
-                // _driveTrain.cheesyDrive(DRIVE_FORWARD_SPEED,0);
+                _driveTrain.cheesyDrive(DRIVE_FORWARD_SPEED,0, false, false);
                 metric("WheelieSpeed", WHEELIE_FORWARD_SPEED);
                 metric("DriveSpeed", DRIVE_FORWARD_SPEED);
                 metric("StiltSpeed", STILT_HOLD_SPEED);

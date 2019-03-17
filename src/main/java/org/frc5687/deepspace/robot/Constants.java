@@ -115,6 +115,8 @@ public class Constants {
         public static final long RUMBLE_MILLIS = 250;
         public static final double RUMBLE_INTENSITY = 1.0;
         public static final long RUMBLE_PULSE_TIME = 100;
+        public static final int KILL_ALL = 4;
+        public static final int OVERRIDE = 8;
     }
 
     public static class Arm {
@@ -247,7 +249,7 @@ public class Constants {
         public static class Climb {
             public static final double ENDGAME_CUTOFF = 30.0;
 
-            public static final double STILT_SPEED = 0.90; // .55
+            public static final double STILT_SPEED = 1.0; // .55
             public static final double STILT_HOLD_SPEED = 0.4;
             public static final double RAISE_STILT_SPEED = -0.2;
 
@@ -320,7 +322,7 @@ public class Constants {
              *time the angle must be on target for to be considered steady
              */
             public static final double STEADY_TIME = 60;
-            public static final double STEER_K = .03 ;
+            public static final double STEER_K = .02;
         }
         public class Drive {
             public static final double SPEED = 1.0;

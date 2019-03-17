@@ -1,7 +1,6 @@
 package org.frc5687.deepspace.robot;
 
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Notifier;
 import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -154,11 +153,7 @@ public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
         // Example of starting a new row of metrics for all instrumented objects.
         // MetricTracker.newMetricRowAll();
 
-        int operatorPOV = _oi.getOperatorPOV();
-        int driverPOV = _oi.getDriverPOV();
-
-
-        if (driverPOV != 0 || operatorPOV != 0) {
+        if (_oi.isKillAllPressed()) {
             new KillAll(this).start();
         }
 
@@ -260,7 +255,9 @@ public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
     }
     public void setConfiguration(Configuration configuration) {
         _configuration = configuration;
+        _oi.setConfigurationLEDs(configuration);
     }
+
     public Configuration getConfiguration() {
         return _configuration;
     }
@@ -283,9 +280,9 @@ public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
         switch (_configuration) {
             case starting:
                 if (DriverStation.getInstance().getAlliance()== DriverStation.Alliance.Red) {
-                    _lights.setColor(Constants.Lights.PULSING_RED, 0);
+                    _lights.setColor(Constants.Lights.BEATING_RED, 0);
                 } else if (DriverStation.getInstance().getAlliance()== DriverStation.Alliance.Blue) {
-                    _lights.setColor(Constants.Lights.PULSING_BLUE, 0);
+                    _lights.setColor(Constants.Lights.BEATING_BLUE, 0);
                 } else {
                     _lights.setColor(Constants.Lights.SOLID_YELLOW, 0);
                 }
@@ -388,6 +385,43 @@ public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
         if (!_wereLEDsOn) {
             _trackingScoreHatch = false;
             _trackingRetrieveHatch = false;
+        }
+
+        if (_hatchIntake.isHatchDetected() || _hatchIntake.isShockTriggered()) {
+            _oi.setHatchDetected();
+        } else if (_hatchIntake.isPointed()) {
+            _oi.setHatchPointed();
+        } else {
+            _oi.setHatchOff();
+        }
+
+        if (_cargoIntake.isBallDetected()) {
+            _oi.setCargoDetected();
+        } else if (_cargoIntake.isIntaking()) {
+            _oi.setCargoIntaking();
+        } else {
+            _oi.setCargoOff();
+        }
+
+
+        if (_limelight.areLEDsOn()) {
+            if (_limelight.isTargetCentered()) {
+                if (_limelight.getTargetDistance()<18) {
+                    _oi.setTargetHit();
+                } else {
+                    _oi.setTargetCentered();
+                }
+            } else if (_limelight.isTargetSighted()) {
+                if (_limelight.getHorizontalAngle() < 0) {
+                    _oi.setTargetLeft();
+                } else {
+                    _oi.setTargetRight();
+                }
+            } else {
+                _oi.setTargetSeeking();
+            }
+        } else {
+            _oi.setTargetOff();
         }
     }
 

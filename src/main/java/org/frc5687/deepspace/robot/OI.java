@@ -6,7 +6,7 @@ import edu.wpi.first.wpilibj.buttons.Button;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import edu.wpi.first.wpilibj.command.ConditionalCommand;
 import org.frc5687.deepspace.robot.commands.*;
-import org.frc5687.deepspace.robot.commands.drive.AutoDrivePath;
+import org.frc5687.deepspace.robot.commands.drive.AutoScoreRocket;
 import org.frc5687.deepspace.robot.commands.drive.SeekHome;
 import org.frc5687.deepspace.robot.commands.intake.*;
 import org.frc5687.deepspace.robot.subsystems.Elevator;
@@ -19,6 +19,7 @@ import static org.frc5687.deepspace.robot.utils.Helpers.applySensitivityFactor;
 public class OI extends OutliersProxy {
     protected Gamepad _driverGamepad;
     protected Gamepad _operatorGamepad;
+    protected Launchpad _launchpad;
     private Button _operatorRightTrigger;
     private Button _operatorLeftTrigger;
     private Button _driverRightTrigger;
@@ -62,9 +63,21 @@ public class OI extends OutliersProxy {
 
     private POV _operatorPOV;
 
+    private JoystickLight _hatchModeLED;
+    private JoystickLight _cargoModeLED;
+    private JoystickLight _hatchIntakeLED;
+    private JoystickLight _cargoIntakeLED;
+    private JoystickLight _targetLeftLED;
+    private JoystickLight _targetCenteredLED;
+    private JoystickLight _targetRightLED;
+
+
+
+
     public OI(){
         _driverGamepad = new Gamepad(0);
         _operatorGamepad = new Gamepad(1);
+        _launchpad = new Launchpad(2);
 
         _operatorRightTrigger = new AxisButton(_operatorGamepad, Gamepad.Axes.RIGHT_TRIGGER.getNumber(), Constants.OI.AXIS_BUTTON_THRESHHOLD);
         _operatorLeftTrigger = new AxisButton(_operatorGamepad, Gamepad.Axes.LEFT_TRIGGER.getNumber(), Constants.OI.AXIS_BUTTON_THRESHHOLD);
@@ -111,6 +124,15 @@ public class OI extends OutliersProxy {
         _operatorRightXAxisRightButton = new AxisButton(_operatorGamepad, Gamepad.Axes.RIGHT_X.getNumber(), .5);
 
         // _operatorPOV = new POV();
+
+        _hatchModeLED = new JoystickLight(_launchpad, Launchpad.LEDs.A.getNumber());
+        _cargoModeLED = new JoystickLight(_launchpad, Launchpad.LEDs.F.getNumber());
+        _hatchIntakeLED = new JoystickLight(_launchpad, Launchpad.LEDs.B.getNumber());
+        _cargoIntakeLED = new JoystickLight(_launchpad, Launchpad.LEDs.G.getNumber());
+        _targetLeftLED= new JoystickLight(_launchpad, Launchpad.LEDs.D.getNumber());
+        _targetCenteredLED= new JoystickLight(_launchpad, Launchpad.LEDs.D.getNumber());
+        _targetRightLED= new JoystickLight(_launchpad, Launchpad.LEDs.E.getNumber());
+
     }
     public void initializeButtons(Robot robot){
 
@@ -136,7 +158,7 @@ public class OI extends OutliersProxy {
         _driverLeftTrigger.whenPressed(new Eject(robot));
         _driverRightTrigger.whenPressed(new Intake(robot));
 
-        _driverRightYAxisDownButton.whenPressed(new SeekHome(robot));
+        //_driverRightYAxisDownButton.whenPressed(new SeekHome(robot));
 
         _operatorRightXAxisLeftButton.whenPressed(new CargoIntakeDown(robot.getCargoIntake()));
         _operatorRightXAxisRightButton.whenPressed(new CargoIntakeUp(robot.getCargoIntake()));
@@ -148,10 +170,13 @@ public class OI extends OutliersProxy {
         _operatorXButton.whenPressed(new MoveElevatorToSetPoint(robot.getElevator(), Elevator.Setpoint.HPMode, Elevator.MotionMode.Ramp, this, 0.0));
 
         // _driverAButton.whenPressed(new AutoDrivePath(robot.getDriveTrain(), robot.getIMU()));
-        _driverXButton.whenPressed(new AutoAlign(robot.getDriveTrain(), robot.getIMU(), -151.0, 1.0, 2000, 1.0, "Aligning to back of left rocket." ));
-        _driverBButton.whenPressed(new AutoAlign(robot.getDriveTrain(), robot.getIMU(), 151.0, 1.0, 2000, 1.0, "Aligning to back of right rocket." ));
+        // _driverXButton.whenPressed(new AutoAlign(robot.getDriveTrain(), robot.getIMU(), -151.0, 1.0, 2000, 1.0, "Aligning to back of left rocket." ));
+        // _driverBButton.whenPressed(new AutoAlign(robot.getDriveTrain(), robot.getIMU(), 151.0, 1.0, 2000, 1.0, "Aligning to back of right rocket." ));
+        // _driverXButton.whenPressed(new AutoScoreRocket(robot, true));
+
         _operatorBackButton.whenPressed(new AutoLaunch(robot));
         _operatorStartButton.whenPressed(new StartingConfiguration(robot));
+
     }
 
     public boolean isAutoTargetPressed() {
@@ -231,6 +256,7 @@ public class OI extends OutliersProxy {
     }
 
     public void poll() {
+        JoystickLight.poll();
         if (_driverRumbleCount > 0) {
             _driverGamepad.setRumble(GenericHID.RumbleType.kLeftRumble, _driverRumbleCount % 2 == 0 ? 0 : 1);
             _driverGamepad.setRumble(GenericHID.RumbleType.kRightRumble, _driverRumbleCount % 2 == 0 ? 0 : 1);
@@ -261,7 +287,113 @@ public class OI extends OutliersProxy {
     }
 
     public boolean isWheelieForwardPressed() {
-        return  _driverAButton.get();
+        return  _driverYButton.get();
     }
+
+    public void setConfigurationLEDs(Robot.Configuration configuration) {
+        switch (configuration) {
+            case starting:
+                _hatchModeLED.set(JoystickLight.State.slow_blink);
+                _cargoModeLED.set(JoystickLight.State.slow_blink);
+                _hatchIntakeLED.set(JoystickLight.State.slow_blink);
+                _cargoIntakeLED.set(JoystickLight.State.slow_blink);
+                break;
+            case cargo:
+                _hatchModeLED.set(JoystickLight.State.off);
+                _cargoModeLED.set(JoystickLight.State.on);
+                _hatchIntakeLED.set(JoystickLight.State.off);
+                _cargoIntakeLED.set(JoystickLight.State.off);
+                break;
+            case hatch:
+                _hatchModeLED.set(JoystickLight.State.on);
+                _cargoModeLED.set(JoystickLight.State.off);
+                _hatchIntakeLED.set(JoystickLight.State.off);
+                _cargoIntakeLED.set(JoystickLight.State.off);
+                break;
+            case climbing:
+                _hatchModeLED.set(JoystickLight.State.fast_blink);
+                _cargoModeLED.set(JoystickLight.State.fast_blink);
+                _hatchIntakeLED.set(JoystickLight.State.fast_blink);
+                _cargoIntakeLED.set(JoystickLight.State.fast_blink);
+                break;
+        }
+    }
+
+    public void setTargetSeeking() {
+        _targetLeftLED.set(JoystickLight.State.slow_blink);
+        _targetCenteredLED.set(JoystickLight.State.slow_blink);
+        _targetRightLED.set(JoystickLight.State.slow_blink);
+    }
+
+    public void setTargetLeft() {
+        _targetLeftLED.set(JoystickLight.State.fast_blink);
+        _targetCenteredLED.set(JoystickLight.State.off);
+        _targetRightLED.set(JoystickLight.State.off);
+    }
+
+    public void setTargetRight() {
+        _targetLeftLED.set(JoystickLight.State.off);
+        _targetCenteredLED.set(JoystickLight.State.off);
+        _targetRightLED.set(JoystickLight.State.fast_blink);
+    }
+
+    public void setTargetCentered() {
+        _targetLeftLED.set(JoystickLight.State.off);
+        _targetCenteredLED.set(JoystickLight.State.fast_blink);
+        _targetRightLED.set(JoystickLight.State.off);
+    }
+
+    public void setTargetHit() {
+        _targetLeftLED.set(JoystickLight.State.on);
+        _targetCenteredLED.set(JoystickLight.State.on);
+        _targetRightLED.set(JoystickLight.State.on);
+    }
+
+
+    public void setTargetOff() {
+        _targetLeftLED.set(JoystickLight.State.off);
+        _targetCenteredLED.set(JoystickLight.State.off);
+        _targetRightLED.set(JoystickLight.State.off);
+    }
+
+    public void setHatchDetected() {
+        _hatchIntakeLED.set(JoystickLight.State.on);
+    }
+
+    public void setHatchPointed() {
+        _hatchIntakeLED.set(JoystickLight.State.fast_blink);
+    }
+
+    public void setHatchOff() {
+        _hatchIntakeLED.set(JoystickLight.State.off);
+    }
+
+
+    public void setCargoDetected() {
+        _cargoIntakeLED.set(JoystickLight.State.on);
+    }
+
+    public void setCargoIntaking() {
+        _cargoIntakeLED.set(JoystickLight.State.fast_blink);
+    }
+
+    public void setCargoOff() {
+        _cargoIntakeLED.set(JoystickLight.State.off);
+    }
+
+    public boolean isKillAllPressed() {
+        int operatorPOV = getOperatorPOV();
+        int driverPOV = getDriverPOV();
+
+        return driverPOV == Constants.OI.KILL_ALL || operatorPOV == Constants.OI.KILL_ALL;
+    }
+
+    public boolean isOverridePressed() {
+        int operatorPOV = getOperatorPOV();
+        int driverPOV = getDriverPOV();
+
+        return driverPOV == Constants.OI.OVERRIDE || operatorPOV == Constants.OI.OVERRIDE;
+    }
+
 }
 

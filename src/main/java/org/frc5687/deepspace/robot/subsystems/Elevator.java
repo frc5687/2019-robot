@@ -101,7 +101,7 @@ public class Elevator extends OutliersSubsystem implements PIDSource {
     @Override
     public void updateDashboard() {
         metric("MAGEncoder", getRawMAGEncoder());
-        metric("NEOEncoder", getRawNeoEncoder());
+//        metric("NEOEncoder", getRawNeoEncoder());
         metric("Position", getPosition());
         metric("Bottom", isAtBottom());
         metric("Top", isAtTop());

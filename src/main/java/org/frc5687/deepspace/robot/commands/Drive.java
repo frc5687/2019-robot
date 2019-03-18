@@ -153,10 +153,10 @@ public class Drive extends OutliersCommand {
         metric("StickRotation", wheelRotation);
         metric("LeftPower", _driveTrain.getLeftPower());
         metric("RightPower", _driveTrain.getRightPower());
-        metric("LeftMasterAmps", _driveTrain.getLeftMasterCurrent());
-        metric("LeftFollowerAmps",_driveTrain.getLeftFollowerCurrent());
-        metric("RightMasterAmps",_driveTrain.getRightMasterCurrent());
-        metric("RightFollowerAmps",_driveTrain.getRightFollowerCurrent());
+        // metric("LeftMasterAmps", _driveTrain.getLeftMasterCurrent());
+        // metric("LeftFollowerAmps",_driveTrain.getLeftFollowerCurrent());
+        // metric("RightMasterAmps",_driveTrain.getRightMasterCurrent());
+       //  metric("RightFollowerAmps",_driveTrain.getRightFollowerCurrent());
         metric("TurnSpeed", _turnSpeed);
     }
 

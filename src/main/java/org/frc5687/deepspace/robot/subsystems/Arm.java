@@ -23,8 +23,6 @@ public class Arm extends OutliersSubsystem  {
 
     private HallEffect _rightStowedhall;
     private HallEffect _leftStowedhall;
-    // private HallEffect _rightLowhall;
-    // private HallEffect _leftLowhall;
     private PDP _pdp;
 
     private double _leftOffset = 0;
@@ -63,8 +61,6 @@ public class Arm extends OutliersSubsystem  {
         _pdp = robot.getPDP();
         _rightStowedhall = new HallEffect(RobotMap.DIO.ARM_RIGHT_STOWED_HALL);
         _leftStowedhall = new HallEffect(RobotMap.DIO.ARM_LEFT_STOWED_HALL);
-        // _rightLowhall = new HallEffect(RobotMap.DIO.ARM_RIGHT_LOW_HALL);
-        // _leftLowhall = new HallEffect(RobotMap.DIO.ARM_LEFT_LOW_HALL);
     }
 
     public void enableBrakeMode() {
@@ -131,8 +127,6 @@ public class Arm extends OutliersSubsystem  {
 
     @Override
     public void updateDashboard() {
-//        metric("LowRightHall", _rightLowhall.get());
-//        metric("LowLeftHall", _leftLowhall.get());
         metric("StowedRightHall", _rightStowedhall.get());
         metric("StowedLeftHall", _leftStowedhall.get());
         metric("LeftEncoder", getLeftPosition());
@@ -199,54 +193,6 @@ public class Arm extends OutliersSubsystem  {
 
     public double getAngle() {
         return Constants.Arm.STOWED_ANGLE + (getPosition() * Constants.Arm.DEGREES_PER_TICK);
-    }
-
-    public enum HallEffectSensor {
-        LOW,
-        INTAKE,
-        SECURE,
-        STOWED
-    }
-
-    public enum Setpoint {
-        Stowed(0),
-        Secure(45),
-        Intake(80),
-        Handoff(100),
-        Floor(110),
-        Climb(120);
-
-        private int _value;
-
-        Setpoint(int value) {
-            this._value = value;
-        }
-
-        public int getValue() {
-            return _value;
-        }
-
-        public int getPosition() {
-            return _value;
-        }
-
-    }
-
-    public enum MotionMode {
-        HallOnly(0),
-        Simple(1),
-        Path(3);
-
-        private int _value;
-
-        MotionMode(int value) {
-            this._value = value;
-        }
-
-        public int getValue() {
-            return _value;
-        }
-
     }
 
 }

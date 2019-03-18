@@ -32,8 +32,6 @@ public class DriveTrain extends OutliersSubsystem implements PIDSource {
     private Encoder _leftMagEncoder;
     private Encoder _rightMagEncoder;
 
-    private IRDistanceSensor _frontDistance;
-
     private OI _oi;
     private AHRS _imu;
     private Limelight _limelight;
@@ -61,8 +59,6 @@ public class DriveTrain extends OutliersSubsystem implements PIDSource {
 
         _shifter = robot.getShifter();
 
-        _frontDistance = new IRDistanceSensor(RobotMap.Analog.FRONT_IR, IRDistanceSensor.Type.MEDIUM);
-
         try {
             debug("Allocating motor controllers");
             _leftMaster = new CANSparkMax(RobotMap.CAN.SPARKMAX.DRIVE_LEFT_MASTER, CANSparkMaxLowLevel.MotorType.kBrushless);
@@ -77,10 +73,7 @@ public class DriveTrain extends OutliersSubsystem implements PIDSource {
             _rightFollower.setInverted(Constants.DriveTrain.RIGHT_MOTORS_INVERTED);
 
             enableBrakeMode();
-//            disableBrakeMode();
             debug("Configuring followers");
-//            _leftFollower.follow(_leftMaster);
-//            _rightFollower.follow(_rightMaster);
 
             debug("Configuring encoders");
             _leftEncoder = _leftMaster.getEncoder();
@@ -118,23 +111,15 @@ public class DriveTrain extends OutliersSubsystem implements PIDSource {
 
     @Override
     public void updateDashboard() {
-        metric("Front/Value", _frontDistance.getValue());
-        metric("Front/Voltage", _frontDistance.getVoltage());
-        metric("Front/PID", _frontDistance.pidGet());
-        metric("Front/AverageValue", _frontDistance.getAverageValue());
-        metric("Front/AverageVoltage", _frontDistance.getAverageVoltage());
-        metric("Front/Value", _frontDistance.getValue());
-        metric("Front/Inches", _frontDistance.getDistance());
-        metric("Neo/Ticks/Left", getLeftTicks());
-        metric("Neo/Ticks/Right", getRightTicks());
-        metric("Neo/Distance/Left", getLeftDistance());
-        metric("Neo/Distance/Right", getRightDistance());
-        metric("Neo/Distance/Total", getDistance());
-        metric("Mag/Ticks/Left", _leftMagEncoder.get());
-        metric("Mag/Ticks/Right", _rightMagEncoder.get());
-        metric("Imu/Yaw", getYaw());
-        metric("left", getLeftTicks()- _leftOffset);
-        metric("right", getRightTicks() - _rightOffset);
+//        metric("Neo/Ticks/Left", getLeftTicks());
+//        metric("Neo/Ticks/Right", getRightTicks());
+//        metric("Neo/Distance/Left", getLeftDistance());
+//        metric("Neo/Distance/Right", getRightDistance());
+//        metric("Neo/Distance/Total", getDistance());
+        metric("Mag/Raw/Left", _leftMagEncoder.get());
+        metric("Mag/Raw/Right", _rightMagEncoder.get());
+        metric("Mag/Ticks/Left", getLeftTicks()- _leftOffset);
+        metric("Mag/Ticks/Right", getRightTicks() - _rightOffset);
 
     }
 
@@ -159,36 +144,31 @@ public class DriveTrain extends OutliersSubsystem implements PIDSource {
         double maxInput = Math.copySign(Math.max(Math.abs(speed), Math.abs(rotation)), speed);
 
         if (speed < Constants.DriveTrain.DEADBAND && speed > -Constants.DriveTrain.DEADBAND) {
-            metric("Rot/Raw", rotation);
+            //metric("Rot/Raw", rotation);
             if (!override) {
                 rotation = applySensitivityFactor(rotation, _shifter.getGear() == Shifter.Gear.HIGH ? Constants.DriveTrain.ROTATION_SENSITIVITY_HIGH_GEAR : Constants.DriveTrain.ROTATION_SENSITIVITY_LOW_GEAR);
             }
             if (creep) {
-                metric("Rot/Creep", creep);
+                //metric("Rot/Creep", creep);
                 rotation = rotation * CREEP_FACTOR;
             }
 
-            metric("Rot/Transformed", rotation);
+            //metric("Rot/Transformed", rotation);
             leftMotorOutput = rotation;
             rightMotorOutput = -rotation;
-            metric("Rot/LeftMotor", leftMotorOutput);
-            metric("Rot/RightMotor", rightMotorOutput);
         } else {
             // Square the inputs (while preserving the sign) to increase fine control
             // while permitting full power.
-            metric("Str/Raw", speed);
+            //metric("Str/Raw", speed);
             speed = Math.copySign(applySensitivityFactor(speed, Constants.DriveTrain.SPEED_SENSITIVITY), speed);
-            metric("Str/Trans", speed);
+            //metric("Str/Trans", speed);
             if (!override) {
                 rotation = applySensitivityFactor(rotation, _shifter.getGear() == Shifter.Gear.HIGH ? Constants.DriveTrain.TURNING_SENSITIVITY_HIGH_GEAR : Constants.DriveTrain.TURNING_SENSITIVITY_LOW_GEAR);
             }
             double delta = override ? rotation : rotation * Math.abs(speed);
             leftMotorOutput = speed + delta;
             rightMotorOutput = speed - delta;
-            metric("Str/LeftMotor", leftMotorOutput);
-            metric("Str/RightMotor", rightMotorOutput);
         }
-
         setPower(limit(leftMotorOutput), limit(rightMotorOutput), true);
     }
 
@@ -299,7 +279,6 @@ public class DriveTrain extends OutliersSubsystem implements PIDSource {
     public double getLeftMasterCurrent() {
         return _pdp.getCurrent(11);
     }
-
     public double getLeftFollowerCurrent() {
         return _pdp.getCurrent(14);
     }

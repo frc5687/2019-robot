@@ -46,18 +46,17 @@ public class CargoIntake extends OutliersSubsystem {
     public void updateDashboard() {
         metric("IRValue", _ballIR.getValue());
         metric ("BallDetected", isBallDetected());
+        metric("ForceOn", _forceOn);
     }
 
     public void startRoller() {
         setRollerSpeed(ROLLER_SPEED);
         _forceOn = true;
-        metric("ForceOn", _forceOn);
     }
 
     public void stopRoller() {
         setRollerSpeed(0);
         _forceOn = false;
-        metric("ForceOn", _forceOn);
     }
 
     public void raiseWrist() {
@@ -72,7 +71,6 @@ public class CargoIntake extends OutliersSubsystem {
 
     public void setRollerSpeed(double speed) {
         speed = Helpers.limit(speed, Constants.Intake.MAX_ROLLER_SPEED);
-        metric("Speed", speed);
         if (_roller == null) {
             return;
         }

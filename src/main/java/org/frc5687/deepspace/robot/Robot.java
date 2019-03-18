@@ -255,7 +255,7 @@ public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
     }
     public void setConfiguration(Configuration configuration) {
         _configuration = configuration;
-        _oi.setConfigurationLEDs(configuration);
+        //_oi.setConfigurationLEDs(configuration);
     }
 
     public Configuration getConfiguration() {
@@ -386,45 +386,7 @@ public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
             _trackingScoreHatch = false;
             _trackingRetrieveHatch = false;
         }
-
-        if (_hatchIntake.isHatchDetected() || _hatchIntake.isShockTriggered()) {
-            _oi.setHatchDetected();
-        } else if (_hatchIntake.isPointed()) {
-            _oi.setHatchPointed();
-        } else {
-            _oi.setHatchOff();
-        }
-
-        if (_cargoIntake.isBallDetected()) {
-            _oi.setCargoDetected();
-        } else if (_cargoIntake.isIntaking()) {
-            _oi.setCargoIntaking();
-        } else {
-            _oi.setCargoOff();
-        }
-
-
-        if (_limelight.areLEDsOn()) {
-            if (_limelight.isTargetCentered()) {
-                if (_limelight.getTargetDistance()<18) {
-                    _oi.setTargetHit();
-                } else {
-                    _oi.setTargetCentered();
-                }
-            } else if (_limelight.isTargetSighted()) {
-                if (_limelight.getHorizontalAngle() < 0) {
-                    _oi.setTargetLeft();
-                } else {
-                    _oi.setTargetRight();
-                }
-            } else {
-                _oi.setTargetSeeking();
-            }
-        } else {
-            _oi.setTargetOff();
-        }
     }
-
 
     @Override
     public void error(String message) {

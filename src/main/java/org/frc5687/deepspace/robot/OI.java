@@ -253,11 +253,15 @@ public class OI extends OutliersProxy {
     private long _operatorRumbleTime = System.currentTimeMillis();
 
     public void pulseDriver(int count) {
+        // Check to see if we are already rumbling!
+        if (_driverRumbleCount > 0) { return; }
         _driverRumbleTime = System.currentTimeMillis() + Constants.OI.RUMBLE_PULSE_TIME;
         _driverRumbleCount = count * 2;
     }
 
     public void pulseOperator(int count) {
+        // Check to see if we are already rumbling!
+        if (_operatorRumbleCount > 0) { return; }
         _operatorRumbleTime = System.currentTimeMillis() + Constants.OI.RUMBLE_PULSE_TIME;
         _operatorRumbleCount = count * 2;
     }

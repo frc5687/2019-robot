@@ -1,6 +1,5 @@
 package org.frc5687.deepspace.robot.commands;
 
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.frc5687.deepspace.robot.utils.ILoggingSource;
@@ -39,21 +38,21 @@ public abstract class OutliersCommand extends Command implements ILoggingSource 
 
     public void metric(String name, String value) {
         SmartDashboard.putString(getClass().getSimpleName() + "/" + name, value);
-        if (_metricTracker!=null) {
+        if (_metricTracker != null) {
             _metricTracker.put(name, value);
         }
     }
 
     public void metric(String name, double value) {
         SmartDashboard.putNumber(getClass().getSimpleName() + "/" + name, value);
-        if (_metricTracker!=null) {
+        if (_metricTracker != null) {
             _metricTracker.put(name, value);
         }
     }
 
     public void metric(String name, boolean value) {
         SmartDashboard.putBoolean(getClass().getSimpleName() + "/" + name, value);
-        if (_metricTracker!=null) {
+        if (_metricTracker != null) {
             _metricTracker.put(name, value);
         }
     }
@@ -66,7 +65,7 @@ public abstract class OutliersCommand extends Command implements ILoggingSource 
     @Override
     protected void initialize() {
         super.initialize();
-        if (_metricTracker!=null) {
+        if (_metricTracker != null) {
             _metricTracker.resume();
         }
     }
@@ -74,7 +73,7 @@ public abstract class OutliersCommand extends Command implements ILoggingSource 
     @Override
     protected void end() {
         super.end();
-        if (_metricTracker!=null) {
+        if (_metricTracker != null) {
             _metricTracker.pause();
         }
     }
@@ -82,8 +81,21 @@ public abstract class OutliersCommand extends Command implements ILoggingSource 
     @Override
     protected void interrupted() {
         super.interrupted();
-        if (_metricTracker!=null) {
+        if (_metricTracker != null) {
             _metricTracker.pause();
         }
+    }
+
+    private long _start;
+
+    @Override
+    protected void execute() {
+        _start = System.currentTimeMillis();
+        innerExecute();
+        metric("execute", System.currentTimeMillis() - _start);
+    }
+
+    protected void innerExecute() {
+
     }
 }

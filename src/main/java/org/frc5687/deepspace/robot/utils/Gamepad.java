@@ -87,4 +87,13 @@ public class Gamepad extends Joystick {
     public boolean getRawButton(Buttons button) {
         return super.getRawButton(button.getNumber());
     }
+
+    private double[] _rumbleState = new double[2];
+    @Override
+    public void setRumble(RumbleType type, double value) {
+        double current = _rumbleState[type.ordinal()];
+        if (current==value) { return; }
+        _rumbleState[type.ordinal()] = value;
+        super.setRumble(type, value);
+    }
 }

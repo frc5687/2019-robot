@@ -46,6 +46,7 @@ public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
     private HatchIntake _hatchIntake;
     private PoseTracker _poseTracker;
 
+    private boolean _fmsConnected;
     /**
      * This function is setRollerSpeed when the robot is first started up and should be
      * used for any initialization code.
@@ -89,14 +90,13 @@ public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
         _oi.initializeButtons(this);
 
         // Initialize the other stuff
-//        _limelight.disableLEDs();
+        _limelight.disableLEDs();
         _limelight.setStreamingMode(Limelight.StreamMode.PIP_SECONDARY);
         setConfiguration(Configuration.starting);
         _arm.resetEncoders();
         _arm.enableBrakeMode();
         _elevator.enableBrakeMode();
         _stilt.enableBrakeMode();
-
     }
 
     /**
@@ -127,10 +127,13 @@ public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
      */
     @Override
     public void autonomousInit() {
+        _limelight.disableLEDs();
+        _limelight.setStreamingMode(Limelight.StreamMode.PIP_SECONDARY);
         teleopInit();
     }
 
     public void teleopInit() {
+        _fmsConnected =  DriverStation.getInstance().isFMSAttached();
     }
 
     /**
@@ -156,7 +159,6 @@ public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
         if (_oi.isKillAllPressed()) {
             new KillAll(this).start();
         }
-
         Scheduler.getInstance().run();
     }
 
@@ -182,7 +184,7 @@ public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
 
     public void updateDashboard() {
         _updateTick++;
-        if (_updateTick >= Constants.TICKS_PER_UPDATE) {
+        if (_updateTick >= (_fmsConnected ? Constants.TICKS_PER_UPDATE_COMP : Constants.TICKS_PER_UPDATE)) {
             _updateTick = 0;
             _oi.updateDashboard();
             _driveTrain.updateDashboard();

@@ -7,6 +7,7 @@ public class Constants {
     public static final int CYCLES_PER_SECOND = 50;
     public static final int TICKS_PER_UPDATE = 10;
     public static final double METRIC_FLUSH_PERIOD = 1.0;
+    public static final int TICKS_PER_UPDATE_COMP = 100;
 
     public class DriveTrain {
 
@@ -24,7 +25,10 @@ public class Constants {
 
         public static final boolean LEFT_MOTORS_INVERTED = true;
         public static final boolean RIGHT_MOTORS_INVERTED = false;
+
         public static final long LOCK_TIME = 80;
+        public static final long SEEK_TIME = 250;
+
         public static final double MAX_SPEED_IPS = 12 * 12;
         public static final double CAP_SPEED_IPS = .8 * MAX_SPEED_IPS;
         public static final double MAX_ACCELERATION_IPSS = CAP_SPEED_IPS / 2;
@@ -80,10 +84,10 @@ public class Constants {
         public static final long CREEP_TIME = 200;
 
         public static final double JELLO_SPEED_UP = 0.3;
-        public static final double JELLO_SPEED_DOWN = 0.2;
+        public static final double JELLO_SPEED_DOWN = 0.4;
 
         public static final double TOP_JELLO_ZONE = 500;
-        public static final double BOTTOM_JELLO_ZONE = 1500;
+        public static final double BOTTOM_JELLO_ZONE = 1000;
 
         public static final double DEADBAND = 0.1;
         public static final double SENSITIVITY = 0.5;
@@ -98,6 +102,7 @@ public class Constants {
         public static final double GOAL_SPEED = 0.5;
         public static final int BOTTOM_CAM_ZONE = 100;
         public static final double SANDSTORM_PICKUP_SPEED = 0.3;
+        public static final double MODE_SPEED = 0.8;
 
         public static class PID {
             public static final double kP = 0.1;

@@ -12,9 +12,9 @@ public class SandstormPickup extends CommandGroup {
     public SandstormPickup(Robot robot) {
         addSequential(new GripClaw(robot.getHatchIntake(), Constants.Intake.CLOSE_CLAW_MILLI_SS));
         addSequential(new CargoIntakeUp(robot.getCargoIntake()));
-        addSequential(new MoveElevatorToSetPoint(robot.getElevator(), Elevator.Setpoint.ClearRoller, Elevator.MotionMode.Simple, null, Constants.Elevator.SANDSTORM_PICKUP_SPEED));
+        addSequential(new MoveElevatorToSetPoint(robot.getElevator(), Elevator.Setpoint.ClearBumper, Elevator.MotionMode.Simple, null, Constants.Elevator.SANDSTORM_PICKUP_SPEED));
         addSequential(new ClawWristUp(robot));
-        addSequential(new MoveElevatorToSetPoint(robot.getElevator(), Elevator.Setpoint.Bottom, Elevator.MotionMode.Ramp, null, 0.0));
+        addSequential(new MoveElevatorToSetPoint(robot.getElevator(), Elevator.Setpoint.Bottom, Elevator.MotionMode.Simple, null, Constants.Elevator.MODE_SPEED));
         addSequential(new SetConfiguration(robot, Robot.Configuration.hatch));
     }
 

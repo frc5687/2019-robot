@@ -58,6 +58,9 @@ public class MoveElevatorToSetPoint extends OutliersCommand {
 
     @Override
     protected void initialize() {
+        if (_mode== Elevator.MotionMode.Simple &&  _elevator.getPosition() > Elevator.Setpoint.WarningZone.getValue()) {
+            _mode = Elevator.MotionMode.Path;
+        }
         _step = 0;
         _position = _elevator.getPosition();
         if (withinTolerance()) { return; }
@@ -65,6 +68,7 @@ public class MoveElevatorToSetPoint extends OutliersCommand {
         info("Moving to setpoint " + _setpoint.name() + " (" + _setpoint.getValue() + ") using " + _mode.name() + " mode.");
         switch(_mode) {
             case Simple:
+                _rampDirection = (int)Math.copySign(1, _setpoint.getValue() - _position);
                 break;
             case PID:
                 _pidController.setSetpoint(_setpoint.getValue());
@@ -114,9 +118,9 @@ public class MoveElevatorToSetPoint extends OutliersCommand {
         switch(_mode) {
             case Simple:
                 if (_position  < _setpoint.getValue() - TOLERANCE) {
-                    _elevator.setSpeed(_speed == 0 ? SPEED_UP : _speed);
+                    _elevator.setSpeed(_speed == 0 ? SPEED_UP : _speed, false, true);
                 } else if (_position > _setpoint.getValue() + TOLERANCE) {
-                    _elevator.setSpeed(_speed == 0 ? -SPEED_DOWN : -_speed);
+                    _elevator.setSpeed(_speed == 0 ? -SPEED_DOWN : -_speed, false, true);
                 } else {
                     _elevator.setSpeed(0);
                 }
@@ -248,6 +252,12 @@ public class MoveElevatorToSetPoint extends OutliersCommand {
                 return _pathFollower.isFinished();
             case Ramp:
                 return _rampingState == RampingState.Done;
+            case Simple:
+                if (_rampDirection > 0) {
+                    return _position > _setpoint.getValue();
+                } else {
+                    return _position < _setpoint.getValue();
+                }
         }
         return false;
     }

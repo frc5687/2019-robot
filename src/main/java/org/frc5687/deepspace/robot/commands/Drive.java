@@ -37,6 +37,8 @@ public class Drive extends OutliersCommand {
     private long _lockEnd;
     private DriveState _driveState = DriveState.normal;
 
+    private long _seekMax;
+
 
     public Drive(DriveTrain driveTrain, AHRS imu, OI oi, Limelight limelight, Elevator elevator, CargoIntake cargoIntake,HatchIntake hatchIntake, PoseTracker poseTracker) {
         _driveTrain = driveTrain;
@@ -103,6 +105,7 @@ public class Drive extends OutliersCommand {
                     _limelight.setPipeline(_cargoIntake.isIntaking() ? 8 : 0);
                     _limelight.enableLEDs();
                     _driveState = DriveState.seeking;
+                    _seekMax = System.currentTimeMillis() + Constants.DriveTrain.SEEK_TIME;
                     break;
                 case seeking:
                     if (_targetSighted) {
@@ -190,11 +193,12 @@ public class Drive extends OutliersCommand {
             if(_limelight.isTargetSighted()) {
                 double distance = _limelight.getTargetDistance();
                 metric("distance", distance);
-                //if (distance < 120) factor = 1.5;
                  if (distance  < 100) limit = 0.60;
                  if (distance  < 20) limit = 0.30;
-            } else {
+            } else if (System.currentTimeMillis() > _seekMax){
+                // We've been seeking for more than the max allowed...slow the robot down!
                 limit = 0.75;
+                _oi.pulseDriver(1);
             }
         }
         if (_elevator.isAboveMiddle()) {

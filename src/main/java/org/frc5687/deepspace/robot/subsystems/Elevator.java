@@ -43,9 +43,10 @@ public class Elevator extends OutliersSubsystem implements PIDSource {
 
     }
     public void setSpeed(double speed) {
-        setSpeed(speed, false);
+        setSpeed(speed, false, false);
     }
-    public void setSpeed(double speed, boolean overrideRamp) {
+    public void setSpeed(double speed, boolean overrideRamp) { setSpeed(speed,overrideRamp, false); }
+    public void setSpeed(double speed, boolean overrideRamp, boolean overrideJello) {
         speed = limit(speed, -MAX_SPEED_DOWN, MAX_SPEED_UP);
         if (!overrideRamp) {
             if (speed > 0) {
@@ -56,11 +57,11 @@ public class Elevator extends OutliersSubsystem implements PIDSource {
         }
         if (isAtTop()) {
             speed = limit(speed, -MAX_SPEED_DOWN,  0);
-        } else if (isNearTop()) {
+        } else if (!overrideJello && isNearTop()) {
             speed = limit(speed, -MAX_SPEED_DOWN,  JELLO_SPEED_UP);
         } else if (isAtBottom()) {
             speed = limit(speed, 0, MAX_SPEED_UP);
-        } else if (isNearBottom()) {
+        } else if (!overrideJello && isNearBottom()) {
             speed = limit(speed, -JELLO_SPEED_DOWN, MAX_SPEED_UP);
         }
         metric("ElevatorSpeed",speed);
@@ -171,8 +172,9 @@ public class Elevator extends OutliersSubsystem implements PIDSource {
         Port1(1, HallEffectSensor.BOTTOM),
         Hatch1(2, HallEffectSensor.BOTTOM),
         Secure(10),
-        ClearRoller(400),
-        StartHatch(800, 710),
+        ClearBumper(100),
+        WarningZone(700),
+        StartHatch(701, 710),
         HPMode(1230),
         SlowPoint(2000, 1800),
         Port2(2419, 2168),

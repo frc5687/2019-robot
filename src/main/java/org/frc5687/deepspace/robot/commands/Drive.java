@@ -193,8 +193,8 @@ public class Drive extends OutliersCommand {
             if(_limelight.isTargetSighted()) {
                 double distance = _limelight.getTargetDistance();
                 metric("distance", distance);
-                 if (distance  < 100) limit = 0.60;
-                 if (distance  < 20) limit = 0.30;
+                 if (distance  < 60) limit = 0.60;
+                 if (distance  < 26) limit = 0.30;
             } else if (System.currentTimeMillis() > _seekMax){
                 // We've been seeking for more than the max allowed...slow the robot down!
                 limit = 0.75;

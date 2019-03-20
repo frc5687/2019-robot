@@ -59,7 +59,7 @@ public class MoveElevatorToSetPoint extends OutliersCommand {
     @Override
     protected void initialize() {
         if (_mode== Elevator.MotionMode.Simple &&  _elevator.getPosition() > Elevator.Setpoint.WarningZone.getValue()) {
-            _mode = Elevator.MotionMode.Path;
+            _mode = Elevator.MotionMode.Ramp;
         }
         _step = 0;
         _position = _elevator.getPosition();

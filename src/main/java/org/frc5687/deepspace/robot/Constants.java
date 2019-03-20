@@ -84,10 +84,10 @@ public class Constants {
         public static final long CREEP_TIME = 200;
 
         public static final double JELLO_SPEED_UP = 0.3;
-        public static final double JELLO_SPEED_DOWN = 0.4;
+        public static final double JELLO_SPEED_DOWN = 0.3;
 
         public static final double TOP_JELLO_ZONE = 500;
-        public static final double BOTTOM_JELLO_ZONE = 1000;
+        public static final double BOTTOM_JELLO_ZONE = 1200;
 
         public static final double DEADBAND = 0.1;
         public static final double SENSITIVITY = 0.5;
@@ -102,7 +102,7 @@ public class Constants {
         public static final double GOAL_SPEED = 0.5;
         public static final int BOTTOM_CAM_ZONE = 100;
         public static final double SANDSTORM_PICKUP_SPEED = 0.3;
-        public static final double MODE_SPEED = 0.8;
+        public static final double MODE_SPEED = 0.6;
 
         public static class PID {
             public static final double kP = 0.1;
@@ -258,7 +258,7 @@ public class Constants {
             public static final double STILT_HOLD_SPEED = 0.4;
             public static final double RAISE_STILT_SPEED = -0.2;
 
-            public static final double ARM_SPEED = 0.6;
+            public static final double ARM_SPEED = 0.65;
             public static final double ARM_SLOW_SPEED = 0.2;
             public static final double ARM_HOLD_SPEED = 0.0;
             public static final double RAISE_ARM_SPEED = -0.2;
@@ -276,7 +276,7 @@ public class Constants {
 
             public static final double WHEELIE_FORWARD_SPEED = 1.0;
 
-            public static final double DRIVE_FORWARD_SPEED = 0.3;
+            public static final double DRIVE_FORWARD_SPEED = 0.1;
 
             public static final double PARK_SPEED = 0.15;
             public static final double PARK_DISTANCE = 12;
@@ -327,7 +327,7 @@ public class Constants {
              *time the angle must be on target for to be considered steady
              */
             public static final double STEADY_TIME = 60;
-            public static final double STEER_K = .02;
+            public static final double STEER_K = .01;
         }
         public class Drive {
             public static final double SPEED = 1.0;

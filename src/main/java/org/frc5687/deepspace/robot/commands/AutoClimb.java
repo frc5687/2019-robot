@@ -96,7 +96,6 @@ public class AutoClimb extends OutliersCommand {
                 break;
             case MoveRollerAndStilt:
                 _stilt.setLifterSpeed(STILT_SPEED);
-                metric("StiltSpeed", STILT_SPEED);
                 double armSpeed =  _arm.getAngle() >= _slowAngle ? ARM_SLOW_SPEED : ARM_SPEED; // Math.cos(Math.toRadians(_arm.getAngle())) * ARM_SPEED_SCALAR;
                 if ((_arm.isLow() || _arm.getAngle() >= _bottomAngle)) {
                     error("Stopping arm");
@@ -106,7 +105,14 @@ public class AutoClimb extends OutliersCommand {
                     _arm.setSpeed(armSpeed);
                 }
 
-                metric("ArmSpeed", armSpeed);
+                if ((_highHab ?_stilt.isExtended() : _stilt.isAtMiddle())) {
+                    error("Stopping stilt");
+                    _stilt.setLifterSpeed(0);
+                } else {
+                    error("Running stilt");
+                    _stilt.setLifterSpeed(STILT_SPEED);
+                }
+
                 if (_oi.isWheelieForwardPressed() ||
                         ((_arm.isLow() || _arm.getAngle() >= _bottomAngle)
                         && (_highHab ?_stilt.isExtended() : _stilt.isAtMiddle()))) {
@@ -117,6 +123,8 @@ public class AutoClimb extends OutliersCommand {
                     error("Transitioning to " + ClimbState.WheelieForward.name());
                     _climbState = ClimbState.WheelieForward;
                 }
+                metric("StiltSpeed", STILT_SPEED);
+                metric("ArmSpeed", armSpeed);
                 break;
             case WheelieForward:
                 _stilt.setLifterSpeed(_highHab ? STILT_HOLD_SPEED : 0);

@@ -57,6 +57,7 @@ public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
         loadConfigFromUSB();
         RioLogger.getInstance().init(_fileLogLevel, _dsLogLevel);
         metric("Branch", Version.BRANCH);
+        metric("Identity", identityMode.toString());
         info("Starting " + this.getClass().getCanonicalName() + " from branch " + Version.BRANCH);
         info("Robot " + _name + " running in " + identityMode.toString() + " mode");
 

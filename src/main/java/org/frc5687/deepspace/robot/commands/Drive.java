@@ -38,6 +38,7 @@ public class Drive extends OutliersCommand {
     private DriveState _driveState = DriveState.normal;
 
     private long _seekMax;
+    private double _stickyLimit;
 
 
     public Drive(DriveTrain driveTrain, AHRS imu, OI oi, Limelight limelight, Elevator elevator, CargoIntake cargoIntake,HatchIntake hatchIntake, PoseTracker poseTracker) {
@@ -77,6 +78,7 @@ public class Drive extends OutliersCommand {
         double wheelRotation = _oi.getDriveRotation();
         _targetSighted = _limelight.isTargetSighted();
         if (!_oi.isAutoTargetPressed() || !_elevator.isLimelightClear()) {
+            _stickyLimit = 1.0;
             if (_driveState!=DriveState.normal) {
                 // Stop tracking
                 _limelight.disableLEDs();
@@ -193,11 +195,12 @@ public class Drive extends OutliersCommand {
             if(_limelight.isTargetSighted()) {
                 double distance = _limelight.getTargetDistance();
                 metric("distance", distance);
-                 if (distance  < 60) limit = 0.60;
-                 if (distance  < 26) limit = 0.30;
+                 if (distance  < 90) {_stickyLimit = limit = 0.55;}
+                 if (distance  < 30) { _stickyLimit = limit = 0.25; }
             } else if (System.currentTimeMillis() > _seekMax){
+                metric("distance", -999);
                 // We've been seeking for more than the max allowed...slow the robot down!
-                limit = 0.75;
+                limit = Math.min(0.75, _stickyLimit);
                 _oi.pulseDriver(1);
             }
         }

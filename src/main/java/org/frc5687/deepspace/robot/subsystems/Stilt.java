@@ -4,6 +4,7 @@ import com.revrobotics.CANEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
 import edu.wpi.first.wpilibj.PWMVictorSPX;
+import org.frc5687.deepspace.robot.Constants;
 import org.frc5687.deepspace.robot.Robot;
 import org.frc5687.deepspace.robot.RobotMap;
 import org.frc5687.deepspace.robot.commands.stilt.DriveStilt;
@@ -94,7 +95,7 @@ public class Stilt extends OutliersSubsystem {
     }
 
     public boolean isOnSurface() {
-        return _downIR.getAverageValue() > 1000;
+        return _downIR.getAverageValue() > Constants.Stilt.DOWN_IR_THRESHOLD;
     }
 
     @Override

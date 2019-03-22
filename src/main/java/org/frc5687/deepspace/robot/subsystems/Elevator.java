@@ -172,7 +172,7 @@ public class Elevator extends OutliersSubsystem implements PIDSource {
         Port1(1, HallEffectSensor.BOTTOM),
         Hatch1(2, HallEffectSensor.BOTTOM),
         Secure(10),
-        ClearBumper(100),
+        ClearBumper(400),
         WarningZone(700),
         StartHatch(701, 710),
         HPMode(1230),
@@ -181,7 +181,7 @@ public class Elevator extends OutliersSubsystem implements PIDSource {
         Hatch2(2420, 1954),
         Port3(5028, 4098, HallEffectSensor.TOP),
         Hatch3(5029, 4099, HallEffectSensor.TOP),
-        Top(5030, 4100, HallEffectSensor.TOP);
+        Top(5055, 4100, HallEffectSensor.TOP);
 
         private int _competitionValue;
         private int _practiceValue;

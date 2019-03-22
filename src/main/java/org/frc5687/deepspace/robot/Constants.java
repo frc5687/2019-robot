@@ -38,7 +38,7 @@ public class Constants {
         //Roller
         public static final double HIGH_POW = 1.0;
         public static final double LOW_POW = -HIGH_POW;
-        public static final double ROLLER_SPEED = 0.5;
+        public static final double ROLLER_SPEED = 0.7;
         public static final double MAX_ROLLER_SPEED = 1.0;
         public static final boolean MOTOR_INVERTED = false;
         public static final double DEADBAND = 0.1;
@@ -95,8 +95,8 @@ public class Constants {
         public static final int TOLERANCE = 5;
         public static final double MAX_VELOCITY_IPS = 27.0;
         public static final double TICKS_PER_INCH = 111.1111111;
-        public static final double STEPS_UP = 10;
-        public static final double STEPS_DOWN = 30;
+        public static final double STEPS_UP = 10; //10;
+        public static final double STEPS_DOWN = 10; //30;
         public static final double TICKS_PER_STEP = 50;
         public static final double MIN_SPEED = 0.3;
         public static final double GOAL_SPEED = 0.5;
@@ -220,6 +220,7 @@ public class Constants {
         public static final double MIDDLE_POSITION=30.0;
         public static final double BOTTOM_POSITION=0.0;
         public static final double TOP_POSITION=40.0;
+        public static final double DOWN_IR_THRESHOLD = 1500.0;
     }
     public class Limelight {
         public static final double TARGET_HEIGHT = 29;
@@ -327,7 +328,7 @@ public class Constants {
              *time the angle must be on target for to be considered steady
              */
             public static final double STEADY_TIME = 60;
-            public static final double STEER_K = .01;
+            public static final double STEER_K = .02;
         }
         public class Drive {
             public static final double SPEED = 1.0;

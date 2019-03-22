@@ -1,6 +1,5 @@
 package org.frc5687.deepspace.robot.commands;
 
-import edu.wpi.first.wpilibj.DriverStation;
 import org.frc5687.deepspace.robot.OI;
 import org.frc5687.deepspace.robot.Robot;
 import org.frc5687.deepspace.robot.subsystems.*;
@@ -107,7 +106,7 @@ public class AutoClimb extends OutliersCommand {
 
                 if ((_highHab ?_stilt.isExtended() : _stilt.isAtMiddle())) {
                     error("Stopping stilt");
-                    _stilt.setLifterSpeed(0);
+                    _stilt.setLifterSpeed(_highHab ? STILT_HIGH_HOLD_SPEED : STILT_LOW_HOLD_SPEED);
                 } else {
                     error("Running stilt");
                     _stilt.setLifterSpeed(STILT_SPEED);
@@ -127,13 +126,13 @@ public class AutoClimb extends OutliersCommand {
                 metric("ArmSpeed", armSpeed);
                 break;
             case WheelieForward:
-                _stilt.setLifterSpeed(_highHab ? STILT_HOLD_SPEED : 0);
+                _stilt.setLifterSpeed(_highHab ? STILT_HIGH_HOLD_SPEED : STILT_LOW_HOLD_SPEED);
                 _stilt.setWheelieSpeed(WHEELIE_FORWARD_SPEED);
                 _driveTrain.disableBrakeMode();
                 _driveTrain.cheesyDrive(DRIVE_FORWARD_SPEED,0, false, false);
                 metric("WheelieSpeed", WHEELIE_FORWARD_SPEED);
                 metric("DriveSpeed", DRIVE_FORWARD_SPEED);
-                metric("StiltSpeed", STILT_HOLD_SPEED);
+                metric("StiltSpeed", STILT_HIGH_HOLD_SPEED);
                 if (_stilt.isOnSurface()) {
                     metric("WheelieSpeed", 0);
                     metric("DriveSpeed", 0);
@@ -150,7 +149,7 @@ public class AutoClimb extends OutliersCommand {
                     _arm.setSpeed(0);
                     _climbState = ClimbState.LiftStilt;
                     error("Transitioning to " + ClimbState.LiftStilt.name());
-                    _stiltTimeout = System.currentTimeMillis() + STILT_TIMEOUT;
+                    _stiltTimeout = System.currentTimeMillis() + (_highHab ? STILT_TIMEOUT_HIGH : STILT_TIMEOUT_LOW);
                 }
                 break;
 

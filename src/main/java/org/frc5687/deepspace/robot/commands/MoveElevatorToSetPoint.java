@@ -133,6 +133,7 @@ public class MoveElevatorToSetPoint extends OutliersCommand {
                 break;
             case Ramp:
                 _elevator.setSpeed(getRampedSpeed());
+                metric("Ramp/Mode", _rampingState.name());
                 break;
             default:
                 _elevator.setSpeed(0);
@@ -144,30 +145,50 @@ public class MoveElevatorToSetPoint extends OutliersCommand {
         double speed = 0;
         double goalSpeed = 0;
         double minSpeed = MIN_SPEED;
+
         if (_rampDirection > 0) {
+            if (_rampingState==RampingState.Recenter) {
+                if (_position < _setpoint.getValue() + TOLERANCE) {
+                    _rampingState = RampingState.Done;
+                    return 0;
+                }
+                return -MIN_SPEED;
+            }
+
             goalSpeed = SPEED_UP;
             if (_elevator.isAtTop()) {
                 _rampingState = RampingState.Done;
-                metric("RampUp/RampedSpeed", 0);
+                metric("Ramp/RampedSpeed", 0);
                 return 0;
             } else if (_position >= _setpoint.getValue() - TOLERANCE) {
                 if (_setpoint.getHall()== Elevator.HallEffectSensor.TOP && !_elevator.isAtTop()) {
-                    if (_rampingState!=RampingState.Creep) {
+                    if (_rampingState != RampingState.Creep) {
                         _rampingState = RampingState.Creep;
                         _creepEndTime = System.currentTimeMillis() + CREEP_TIME;
                     }
-                    metric("RampUp/RampedSpeed", minSpeed);
+                    metric("Ramp/RampedSpeed", minSpeed);
+                } else if (_position >= _setpoint.getValue() + TOLERANCE) {
+                    _rampingState = RampingState.Recenter;
+                    return -MIN_SPEED;
                 } else {
                     _rampingState = RampingState.Done;
-                    metric("RampUp/RampedSpeed", 0);
+                    metric("Ramp/RampedSpeed", 0);
                     return 0;
                 }
-            };
+            }
         } else if (_rampDirection < 0) {
+            if (_rampingState==RampingState.Recenter) {
+                if (_position > _setpoint.getValue() - TOLERANCE) {
+                    _rampingState = RampingState.Done;
+                    return 0;
+                }
+                return MIN_SPEED;
+            }
+
             goalSpeed = SPEED_DOWN;
             if (_elevator.isAtBottom()) {
                 _rampingState = RampingState.Done;
-                metric("RampUp/RampedSpeed", 0);
+                metric("Ramp/RampedSpeed", 0);
                 return 0;
             } else if (_position <= _setpoint.getValue() + TOLERANCE) {
                 if (_setpoint.getHall()== Elevator.HallEffectSensor.BOTTOM && !_elevator.isAtBottom()) {
@@ -175,19 +196,22 @@ public class MoveElevatorToSetPoint extends OutliersCommand {
                         _rampingState = RampingState.Creep;
                         _creepEndTime = System.currentTimeMillis() + CREEP_TIME;
                     }
-                    metric("RampUp/RampedSpeed", minSpeed);
+                    metric("Ramp/RampedSpeed", minSpeed);
+                } else if (_position < _setpoint.getValue() - TOLERANCE) {
+                    _rampingState = RampingState.Recenter;
+                    return MIN_SPEED;
                 } else {
                     _rampingState = RampingState.Done;
-                    metric("RampUp/RampedSpeed", 0);
+                    metric("Ramp/RampedSpeed", 0);
                     return 0;
                 }
-            };
+            }
         }
         speed = goalSpeed;
 
-        metric("RampUp/RawSpeed", speed);
-        metric("RampUp/Mode", _rampingState.name());
-        metric("RampUp/Step", _step);
+        metric("Ramp/RawSpeed", speed);
+        metric("Ramp/Mode", _rampingState.name());
+        metric("Ramp/Step", _step);
 
         switch(_rampingState) {
             case RampUp:
@@ -233,7 +257,7 @@ public class MoveElevatorToSetPoint extends OutliersCommand {
         speed = limit(speed, minSpeed, goalSpeed);
         speed = speed * _rampDirection;
 
-        metric("RampUp/RampedSpeed", speed);
+        metric("Ramp/RampedSpeed", speed);
 
         return speed;
     }
@@ -341,7 +365,8 @@ public class MoveElevatorToSetPoint extends OutliersCommand {
         Steady(1),
         RampDown(2),
         Creep(3),
-        Done(4);
+        Recenter(4),
+        Done(5);
 
         private int _value;
 

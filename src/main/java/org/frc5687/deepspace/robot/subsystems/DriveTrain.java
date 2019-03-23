@@ -76,6 +76,10 @@ public class DriveTrain extends OutliersSubsystem implements PIDSource {
             _leftFollower.setClosedLoopRampRate(Constants.DriveTrain.RAMP_RATE);
             _rightFollower.setClosedLoopRampRate(Constants.DriveTrain.RAMP_RATE);
 
+            _leftMaster.setSmartCurrentLimit(Constants.DriveTrain.STALL_CURRENT_LIMIT, Constants.DriveTrain.FREE_CURRENT_LIMIT);
+            _rightMaster.setSmartCurrentLimit(Constants.DriveTrain.STALL_CURRENT_LIMIT, Constants.DriveTrain.FREE_CURRENT_LIMIT);
+            _leftFollower.setSmartCurrentLimit(Constants.DriveTrain.STALL_CURRENT_LIMIT, Constants.DriveTrain.FREE_CURRENT_LIMIT);
+            _rightFollower.setSmartCurrentLimit(Constants.DriveTrain.STALL_CURRENT_LIMIT, Constants.DriveTrain.FREE_CURRENT_LIMIT);
 
             _leftMaster.setInverted(Constants.DriveTrain.LEFT_MOTORS_INVERTED);
             _leftFollower.setInverted(Constants.DriveTrain.LEFT_MOTORS_INVERTED);
@@ -83,7 +87,6 @@ public class DriveTrain extends OutliersSubsystem implements PIDSource {
             _rightFollower.setInverted(Constants.DriveTrain.RIGHT_MOTORS_INVERTED);
 
             enableBrakeMode();
-            debug("Configuring followers");
 
             debug("Configuring encoders");
             _leftEncoder = _leftMaster.getEncoder();

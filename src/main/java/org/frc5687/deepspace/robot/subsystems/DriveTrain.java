@@ -66,6 +66,16 @@ public class DriveTrain extends OutliersSubsystem implements PIDSource {
             _leftFollower = new CANSparkMax(RobotMap.CAN.SPARKMAX.DRIVE_LEFT_FOLLOWER, CANSparkMaxLowLevel.MotorType.kBrushless);
             _rightFollower = new CANSparkMax(RobotMap.CAN.SPARKMAX.DRIVE_RIGHT_FOLLOWER, CANSparkMaxLowLevel.MotorType.kBrushless);
 
+            _leftMaster.setOpenLoopRampRate(Constants.DriveTrain.RAMP_RATE);
+            _rightMaster.setOpenLoopRampRate(Constants.DriveTrain.RAMP_RATE);
+            _leftFollower.setOpenLoopRampRate(Constants.DriveTrain.RAMP_RATE);
+            _rightFollower.setOpenLoopRampRate(Constants.DriveTrain.RAMP_RATE);
+
+            _leftMaster.setClosedLoopRampRate(Constants.DriveTrain.RAMP_RATE);
+            _rightMaster.setClosedLoopRampRate(Constants.DriveTrain.RAMP_RATE);
+            _leftFollower.setClosedLoopRampRate(Constants.DriveTrain.RAMP_RATE);
+            _rightFollower.setClosedLoopRampRate(Constants.DriveTrain.RAMP_RATE);
+
 
             _leftMaster.setInverted(Constants.DriveTrain.LEFT_MOTORS_INVERTED);
             _leftFollower.setInverted(Constants.DriveTrain.LEFT_MOTORS_INVERTED);
@@ -277,16 +287,16 @@ public class DriveTrain extends OutliersSubsystem implements PIDSource {
 
 
     public double getLeftMasterCurrent() {
-        return _pdp.getCurrent(11);
+        return _pdp.getCurrent(RobotMap.PDP.DRIVE_LEFT_MASTER);
     }
     public double getLeftFollowerCurrent() {
-        return _pdp.getCurrent(14);
+        return _pdp.getCurrent(RobotMap.PDP.DRIVE_LEFT_FOLLOWER);
     }
     public double getRightMasterCurrent() {
-        return _pdp.getCurrent(6);
+        return _pdp.getCurrent(RobotMap.PDP.DRIVE_RIGHT_MASTER);
     }
     public double getRightFollowerCurrent() {
-        return _pdp.getCurrent(8);
+        return _pdp.getCurrent(RobotMap.PDP.DRIVE_RIGHT_FOLLOWER);
     }
 
 }

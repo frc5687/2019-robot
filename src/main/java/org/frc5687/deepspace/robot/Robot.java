@@ -305,47 +305,10 @@ public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
                 //    - has hatch - solid purple
                 //    - no hatch - pale puple
                 if (_hatchIntake.isPointed()) {
-                    if (_limelight.areLEDsOn()) {
-                        if (!_wereLEDsOn) {
-                            _trackingRetrieveHatch = true;
-                        }
-                    }
-                    if (_trackingRetrieveHatch) {
-                        if (_hatchIntake.isShockTriggered()) {
-                            _lights.setColor(Constants.Lights.SOLID_WHITE, 0);
-                        } else if (_limelight.isTargetCentered()) {
-                            _lights.setColor(Constants.Lights.PULSING_GREEN, 0);
-                        } else if (_limelight.isTargetSighted()) {
-                            _lights.setColor(Constants.Lights.PULSING_GREEN, 0);
-                        } else {
-                            _lights.setColor(Constants.Lights.BEATING_GREEN, 0);
-                        }
-                    } else if (_trackingScoreHatch) {
-                        _lights.setColor(Constants.Lights.SOLID_WHITE, 0);
-                    } else {
-                        _lights.setColor(Constants.Lights.BREATH_SLOW_1, 0);
-                    }
+                    _lights.setColor(Constants.Lights.SOLID_WHITE, 0);
                 } else {
-                    if (_limelight.areLEDsOn()) {
-                        if (!_wereLEDsOn) {
-                            _trackingScoreHatch = true;
-                        }
-                    }
-                    if (_trackingScoreHatch) {
-                        if (_limelight.isTargetCentered()) {
-                            _lights.setColor(Constants.Lights.PULSING_GREEN, 0);
-                        } else if (_limelight.isTargetSighted()) {
-                            _lights.setColor(Constants.Lights.PULSING_GREEN, 0);
-                        } else {
-                            _lights.setColor(Constants.Lights.BEATING_GREEN, 0);
-                        }
-                    } else if (_hatchIntake.isShockTriggered()) {
-                        _lights.setColor(Constants.Lights.SHOT_1, 0);
-                    } else {
-                        _lights.setColor(Constants.Lights.BLEND_1, 0);
-                    }
+                    _lights.setColor(Constants.Lights.SOLID_YELLOW, 0);
                 }
-
                 break;
             case cargo:
                 // Intake running?
@@ -357,30 +320,18 @@ public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
                 // Intake not running
                 //   Has cargo? SOLID ORANGE
                 //   No cargo? PALE
-                if (_cargoIntake.isIntaking()) {
-                    if (_cargoIntake.isBallDetected()) {
-                        _lights.setColor(Constants.Lights.SOLID_ORANGE, 0);
-                    } else if (_limelight.isTargetCentered()) {
-                        _lights.setColor(Constants.Lights.FAST_BEAT_2, 0);
-                    } else if (_limelight.isTargetSighted()) {
-                        _lights.setColor(Constants.Lights.CHASING_2, 0);
-                    } else if (_limelight.areLEDsOn()){
-                        _lights.setColor(Constants.Lights.SCANNING_2, 0);
-                    } else {
-                        _lights.setColor(Constants.Lights.STROBE_2, 0);
-                    }
-                } else if (_cargoIntake.isEjecting()) {
+                if (_cargoIntake.isEjecting()) {
                     _lights.setColor(Constants.Lights.SOLID_WHITE, 0);
+                } else if (_cargoIntake.isBallDetected()) {
+                    _lights.setColor(Constants.Lights.SOLID_RED, 0);
+                } else if (_cargoIntake.isIntaking()) {
+                    _lights.setColor(Constants.Lights.PULSING_RED, 0);
                 } else {
-                    if (_cargoIntake.isBallDetected()) {
-                        _lights.setColor(Constants.Lights.SOLID_ORANGE, 0);
-                    } else {
-                        _lights.setColor(Constants.Lights.BREATH_SLOW_2, 0);
-                    }
+                    _lights.setColor(Constants.Lights.BEATING_RED, 0);
                 }
                 break;
             case climbing:
-                _lights.setColor(Constants.Lights.SOLID_WHITE, 0);
+                _lights.setColor(Constants.Lights.WHITE_SHOT, 0);
                 break;
             case parked:
                 _lights.setColor(Constants.Lights.CONFETTI, 0);

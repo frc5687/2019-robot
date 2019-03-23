@@ -221,13 +221,16 @@ public class MoveElevatorToSetPoint extends OutliersCommand {
                     // Halfway there . . . switch to ramping down
                     _step = 0;
                     _rampingState = RampingState.RampDown;
+                    error("Elevator ramping state " +_rampingState);
                 } else if(Math.abs(_setpoint.getValue() - _elevator.getPosition()) <=  TICKS_PER_STEP * STEPS_DOWN) {
                     // We've reached the slow-down range
                     _step = 0;
                     _rampingState = RampingState.RampDown;
+                    error("Elevator ramping state " +_rampingState);
                 } else if (_step >= STEPS_UP) {
                     // Fully ramped up--switch to steady-state
                     _rampingState = RampingState.Steady;
+                    error("Elevator ramping state " +_rampingState);
                 }
                 break;
             case Steady:
@@ -235,6 +238,7 @@ public class MoveElevatorToSetPoint extends OutliersCommand {
                 if(Math.abs(_setpoint.getValue() - _elevator.getPosition()) <=  TICKS_PER_STEP * STEPS_DOWN) {
                     _step = 0;
                     _rampingState = RampingState.RampDown;
+                    error("Elevator ramping state " +_rampingState);
                 }
                 break;
             case RampDown:

@@ -81,7 +81,7 @@ public class AutoClimb extends OutliersCommand {
                 _arm.enableBrakeMode();
                 _stilt.enableBrakeMode();
                 _arm.setSpeed(STOW_SPEED);
-                if (_arm.isLeftStowed() && _arm.isRightStowed()) {
+                if (_oi.isOverridePressed() || (_arm.isLeftStowed() && _arm.isRightStowed())) {
                     error("Transitioning to " + ClimbState.PositionArm.name());
                     _climbState = ClimbState.PositionArm;
                 }

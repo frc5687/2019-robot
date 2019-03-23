@@ -208,6 +208,7 @@ public class Constants {
 
 
         public static final double WHITE_SHOT = -0.81;
+        public static final double SOLID_WHITE = 0.93;
     }
     public class Stilt {
         public static final boolean MOTOR_INVERTED = false;

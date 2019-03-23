@@ -327,7 +327,7 @@ public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
                 } else if (_cargoIntake.isIntaking()) {
                     _lights.setColor(Constants.Lights.PULSING_RED, 0);
                 } else {
-                    _lights.setColor(Constants.Lights.BEATING_RED, 0);
+                    _lights.setColor(Constants.Lights.SOLID_PURPLE, 0);
                 }
                 break;
             case climbing:

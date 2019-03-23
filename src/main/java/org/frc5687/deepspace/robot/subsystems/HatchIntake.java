@@ -60,7 +60,8 @@ public class HatchIntake extends OutliersSubsystem {
         return _wristSolenoid.get() == DoubleSolenoid.Value.kReverse;
     }
 
-    public boolean isHatchDetected() { return _hatchDetectionLimit.get(); }
+    public boolean isHatchDetected() { return false; }
+
     public boolean isPointed() {
             if(_clawSolenoid.get() == DoubleSolenoid.Value.kReverse){
             return true;

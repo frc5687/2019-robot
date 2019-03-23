@@ -96,8 +96,8 @@ public class Constants {
         public static final double MAX_VELOCITY_IPS = 27.0;
         public static final double TICKS_PER_INCH = 111.1111111;
         public static final double STEPS_UP = 10; //10;
-        public static final double STEPS_DOWN = 10; //30;
-        public static final double TICKS_PER_STEP = 50;
+        public static final double STEPS_DOWN = 20; //30;
+        public static final double TICKS_PER_STEP = 100;
         public static final double MIN_SPEED = 0.3;
         public static final double GOAL_SPEED = 0.5;
         public static final int BOTTOM_CAM_ZONE = 100;
@@ -336,6 +336,7 @@ public class Constants {
             public static final double SPEED = 1.0;
 
             public static final double MIN_SPEED = 0.25;
+            public static final double MIN_TRACK_DISTANCE = 18;
 
             public class MaxVel {
                 public static final double MPS = 2.33; // Meters Per Second

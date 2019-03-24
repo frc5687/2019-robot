@@ -2,6 +2,7 @@ package org.frc5687.deepspace.robot;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import com.kauailabs.navx.frc.AHRS;
+import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.command.Scheduler;
@@ -155,7 +156,7 @@ public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
 
     private void ourPeriodic() {
         // Example of starting a new row of metrics for all instrumented objects.
-        // MetricTracker.newMetricRowAll();
+        //MetricTracker.newMetricRowAll();
 
         if (_oi.isKillAllPressed()) {
             new KillAll(this).start();
@@ -305,45 +306,12 @@ public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
                 //    - has hatch - solid purple
                 //    - no hatch - pale puple
                 if (_hatchIntake.isPointed()) {
-                    if (_limelight.areLEDsOn()) {
-                        if (!_wereLEDsOn) {
-                            _trackingRetrieveHatch = true;
-                        }
-                    }
-                    if (_hatchIntake.isHatchDetected()) {
-                        _lights.setColor(Constants.Lights.SHOT_1, 0);
-                    } else if (_trackingRetrieveHatch) {
-                        if (_limelight.isTargetCentered()) {
-                            _lights.setColor(Constants.Lights.FAST_BEAT_1, 0);
-                        } else if (_limelight.isTargetSighted()) {
-                            _lights.setColor(Constants.Lights.CHASING_1, 0);
-                        } else {
-                            _lights.setColor(Constants.Lights.SCANNING_1, 0);
-                        }
-                    } else {
-                        _lights.setColor(Constants.Lights.BREATH_SLOW_1, 0);
-                    }
+                    _lights.setColor(Constants.Lights.SOLID_WHITE, 0);
+                    setDashLEDs(true);
                 } else {
-                    if (_limelight.areLEDsOn()) {
-                        if (!_wereLEDsOn) {
-                            _trackingScoreHatch = true;
-                        }
-                    }
-                    if (_trackingScoreHatch) {
-                        if (_limelight.isTargetCentered()) {
-                            _lights.setColor(Constants.Lights.FAST_BEAT_1, 0);
-                        } else if (_limelight.isTargetSighted()) {
-                            _lights.setColor(Constants.Lights.CHASING_1, 0);
-                        } else {
-                            _lights.setColor(Constants.Lights.SCANNING_1, 0);
-                        }
-                    } else if (_hatchIntake.isHatchDetected()) {
-                        _lights.setColor(Constants.Lights.SHOT_1, 0);
-                    } else {
-                        _lights.setColor(Constants.Lights.BLEND_1, 0);
-                    }
+                    _lights.setColor(Constants.Lights.SOLID_YELLOW, 0);
+                    setDashLEDs(false);
                 }
-
                 break;
             case cargo:
                 // Intake running?
@@ -355,26 +323,14 @@ public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
                 // Intake not running
                 //   Has cargo? SOLID ORANGE
                 //   No cargo? PALE
-                if (_cargoIntake.isIntaking()) {
-                    if (_cargoIntake.isBallDetected()) {
-                        _lights.setColor(Constants.Lights.SOLID_ORANGE, 0);
-                    } else if (_limelight.isTargetCentered()) {
-                        _lights.setColor(Constants.Lights.FAST_BEAT_2, 0);
-                    } else if (_limelight.isTargetSighted()) {
-                        _lights.setColor(Constants.Lights.CHASING_2, 0);
-                    } else if (_limelight.areLEDsOn()){
-                        _lights.setColor(Constants.Lights.SCANNING_2, 0);
-                    } else {
-                        _lights.setColor(Constants.Lights.STROBE_2, 0);
-                    }
-                } else if (_cargoIntake.isEjecting()) {
-                    _lights.setColor(Constants.Lights.SHOT_2, 0);
+                if (_cargoIntake.isEjecting()) {
+                    _lights.setColor(Constants.Lights.SOLID_WHITE, 0);
+                } else if (_cargoIntake.isBallDetected()) {
+                    _lights.setColor(Constants.Lights.SOLID_RED, 0);
+                } else if (_cargoIntake.isIntaking()) {
+                    _lights.setColor(Constants.Lights.PULSING_RED, 0);
                 } else {
-                    if (_cargoIntake.isBallDetected()) {
-                        _lights.setColor(Constants.Lights.SOLID_ORANGE, 0);
-                    } else {
-                        _lights.setColor(Constants.Lights.BREATH_SLOW_2, 0);
-                    }
+                    _lights.setColor(Constants.Lights.SOLID_PURPLE, 0);
                 }
                 break;
             case climbing:
@@ -389,6 +345,13 @@ public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
             _trackingScoreHatch = false;
             _trackingRetrieveHatch = false;
         }
+    }
+
+    private void setDashLEDs(boolean val) {
+        SmartDashboard.putBoolean("DB/LED 0", val);
+        SmartDashboard.putBoolean("DB/LED 1", val);
+        SmartDashboard.putBoolean("DB/LED 2", val);
+        SmartDashboard.putBoolean("DB/LED 3", val);
     }
 
     @Override

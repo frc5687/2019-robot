@@ -73,6 +73,10 @@ public class RobotMap {
         public static final int LEFT_ARM_COMPO = 14;
         public static final int RIGHT_ARM_PRACTICE = 3;
         public static final int LEFT_ARM_PRACTICE = 2;
+        public static final int DRIVE_LEFT_MASTER = 12;
+        public static final int DRIVE_LEFT_FOLLOWER = 13;
+        public static final int DRIVE_RIGHT_MASTER = 0;
+        public static final int DRIVE_RIGHT_FOLLOWER = 2;
     }
 
     /**

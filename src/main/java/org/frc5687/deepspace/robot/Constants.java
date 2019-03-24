@@ -33,6 +33,10 @@ public class Constants {
         public static final double CAP_SPEED_IPS = .8 * MAX_SPEED_IPS;
         public static final double MAX_ACCELERATION_IPSS = CAP_SPEED_IPS / 2;
         public static final double MAX_JERK_IPSSS = CAP_SPEED_IPS;
+        public static final double RAMP_RATE = 0.125;
+        public static final int STALL_CURRENT_LIMIT = 50;
+        public static final int FREE_CURRENT_LIMIT = 60;
+        public static final double SECONDARY_LIMIT = 90;
     }
     public class Intake {
         //Roller
@@ -96,8 +100,8 @@ public class Constants {
         public static final double MAX_VELOCITY_IPS = 27.0;
         public static final double TICKS_PER_INCH = 111.1111111;
         public static final double STEPS_UP = 10; //10;
-        public static final double STEPS_DOWN = 10; //30;
-        public static final double TICKS_PER_STEP = 50;
+        public static final double STEPS_DOWN = 20; //30;
+        public static final double TICKS_PER_STEP = 100;
         public static final double MIN_SPEED = 0.3;
         public static final double GOAL_SPEED = 0.5;
         public static final int BOTTOM_CAM_ZONE = 100;
@@ -208,6 +212,7 @@ public class Constants {
 
 
         public static final double WHITE_SHOT = -0.81;
+        public static final double SOLID_WHITE = 0.93;
     }
     public class Stilt {
         public static final boolean MOTOR_INVERTED = false;
@@ -316,7 +321,7 @@ public class Constants {
 
             public static final double MAX_SPEED = .7;
             public static final double DESIRED_TARGET_AREA = 5;
-            public static final double STOP_DISTANCE = 18.00;
+            public static final double STOP_DISTANCE = 24.00;
         }
         public class Align {
             public static final double SPEED = 0.15;
@@ -336,6 +341,7 @@ public class Constants {
             public static final double SPEED = 1.0;
 
             public static final double MIN_SPEED = 0.25;
+            public static final double MIN_TRACK_DISTANCE = 18;
 
             public class MaxVel {
                 public static final double MPS = 2.33; // Meters Per Second

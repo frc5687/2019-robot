@@ -39,6 +39,7 @@ public class Drive extends OutliersCommand {
 
     private long _seekMax;
     private double _stickyLimit;
+    private boolean _lockout = false;
 
 
     public Drive(DriveTrain driveTrain, AHRS imu, OI oi, Limelight limelight, Elevator elevator, CargoIntake cargoIntake,HatchIntake hatchIntake, PoseTracker poseTracker) {
@@ -79,6 +80,7 @@ public class Drive extends OutliersCommand {
         _targetSighted = _limelight.isTargetSighted();
         if (!_oi.isAutoTargetPressed() || !_elevator.isLimelightClear()) {
             _stickyLimit = 1.0;
+            _lockout = false;
             if (_driveState!=DriveState.normal) {
                 // Stop tracking
                 _limelight.disableLEDs();
@@ -166,6 +168,13 @@ public class Drive extends OutliersCommand {
     }
 
     protected double getTurnSpeed() {
+        if (_lockout || !_limelight.isTargetSighted()) { return 0; }
+        double distance = _limelight.getTargetDistance();
+        if (distance < Constants.Auto.Drive.MIN_TRACK_DISTANCE) {
+            // We're too close to trust the target!
+            _lockout  = true;
+            return 0;
+        }
         double limeLightAngle = _limelight.getHorizontalAngle();
         double yaw = _imu.getYaw();
 
@@ -195,8 +204,14 @@ public class Drive extends OutliersCommand {
             if(_limelight.isTargetSighted()) {
                 double distance = _limelight.getTargetDistance();
                 metric("distance", distance);
-                 if (distance  < 90) {_stickyLimit = limit = 0.55;}
-                 if (distance  < 30) { _stickyLimit = limit = 0.25; }
+                 if (distance  < 70) {
+                     limit = 0.65;
+                     _stickyLimit = limit;
+                 }
+                 if (distance  < 20) {
+                     limit = 0.30;
+                     _stickyLimit = limit;
+                 }
             } else if (System.currentTimeMillis() > _seekMax){
                 metric("distance", -999);
                 // We've been seeking for more than the max allowed...slow the robot down!
@@ -205,6 +220,7 @@ public class Drive extends OutliersCommand {
             }
         }
         if (_elevator.isAboveMiddle()) {
+            error("Limiting speed due to elevator!");
             limit = Math.min(0.5, limit);
         }
         double limited = Helpers.limit(speed, -limit, limit);

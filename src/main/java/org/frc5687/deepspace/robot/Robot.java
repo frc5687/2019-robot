@@ -307,8 +307,10 @@ public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
                 //    - no hatch - pale puple
                 if (_hatchIntake.isPointed()) {
                     _lights.setColor(Constants.Lights.SOLID_WHITE, 0);
+                    setDashLEDs(true);
                 } else {
                     _lights.setColor(Constants.Lights.SOLID_YELLOW, 0);
+                    setDashLEDs(false);
                 }
                 break;
             case cargo:
@@ -343,6 +345,13 @@ public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
             _trackingScoreHatch = false;
             _trackingRetrieveHatch = false;
         }
+    }
+
+    private void setDashLEDs(boolean val) {
+        SmartDashboard.putBoolean("DB/LED 0", val);
+        SmartDashboard.putBoolean("DB/LED 1", val);
+        SmartDashboard.putBoolean("DB/LED 2", val);
+        SmartDashboard.putBoolean("DB/LED 3", val);
     }
 
     @Override

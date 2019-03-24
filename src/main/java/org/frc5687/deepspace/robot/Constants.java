@@ -34,8 +34,8 @@ public class Constants {
         public static final double MAX_ACCELERATION_IPSS = CAP_SPEED_IPS / 2;
         public static final double MAX_JERK_IPSSS = CAP_SPEED_IPS;
         public static final double RAMP_RATE = 0.125;
-        public static final int STALL_CURRENT_LIMIT = 80;
-        public static final int FREE_CURRENT_LIMIT = 80;
+        public static final int STALL_CURRENT_LIMIT = 50;
+        public static final int FREE_CURRENT_LIMIT = 60;
         public static final double SECONDARY_LIMIT = 90;
     }
     public class Intake {
@@ -321,7 +321,7 @@ public class Constants {
 
             public static final double MAX_SPEED = .7;
             public static final double DESIRED_TARGET_AREA = 5;
-            public static final double STOP_DISTANCE = 18.00;
+            public static final double STOP_DISTANCE = 24.00;
         }
         public class Align {
             public static final double SPEED = 0.15;

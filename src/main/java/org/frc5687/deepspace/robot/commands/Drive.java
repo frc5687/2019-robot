@@ -208,7 +208,7 @@ public class Drive extends OutliersCommand {
                      limit = 0.65;
                      _stickyLimit = limit;
                  }
-                 if (distance  < 24) {
+                 if (distance  < 20) {
                      limit = 0.30;
                      _stickyLimit = limit;
                  }

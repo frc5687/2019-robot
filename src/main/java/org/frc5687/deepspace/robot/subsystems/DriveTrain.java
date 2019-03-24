@@ -198,9 +198,9 @@ public class DriveTrain extends OutliersSubsystem implements PIDSource {
         } else {
             // Square the inputs (while preserving the sign) to increase fine control
             // while permitting full power.
-            //metric("Str/Raw", speed);
+            metric("Str/Raw", speed);
             speed = Math.copySign(applySensitivityFactor(speed, Constants.DriveTrain.SPEED_SENSITIVITY), speed);
-            //metric("Str/Trans", speed);
+            metric("Str/Trans", speed);
             if (!override) {
                 rotation = applySensitivityFactor(rotation, _shifter.getGear() == Shifter.Gear.HIGH ? Constants.DriveTrain.TURNING_SENSITIVITY_HIGH_GEAR : Constants.DriveTrain.TURNING_SENSITIVITY_LOW_GEAR);
             }

@@ -36,6 +36,7 @@ public class Constants {
         public static final double RAMP_RATE = 0.125;
         public static final int STALL_CURRENT_LIMIT = 80;
         public static final int FREE_CURRENT_LIMIT = 80;
+        public static final double SECONDARY_LIMIT = 90;
     }
     public class Intake {
         //Roller

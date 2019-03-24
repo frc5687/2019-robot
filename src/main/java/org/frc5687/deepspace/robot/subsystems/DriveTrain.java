@@ -66,6 +66,12 @@ public class DriveTrain extends OutliersSubsystem implements PIDSource {
             _leftFollower = new CANSparkMax(RobotMap.CAN.SPARKMAX.DRIVE_LEFT_FOLLOWER, CANSparkMaxLowLevel.MotorType.kBrushless);
             _rightFollower = new CANSparkMax(RobotMap.CAN.SPARKMAX.DRIVE_RIGHT_FOLLOWER, CANSparkMaxLowLevel.MotorType.kBrushless);
 
+            _leftMaster.restoreFactoryDefaults();
+            _rightMaster.restoreFactoryDefaults();
+            _leftFollower.restoreFactoryDefaults();
+            _rightFollower.restoreFactoryDefaults();
+
+
             _leftMaster.setOpenLoopRampRate(Constants.DriveTrain.RAMP_RATE);
             _rightMaster.setOpenLoopRampRate(Constants.DriveTrain.RAMP_RATE);
             _leftFollower.setOpenLoopRampRate(Constants.DriveTrain.RAMP_RATE);
@@ -80,6 +86,11 @@ public class DriveTrain extends OutliersSubsystem implements PIDSource {
             _rightMaster.setSmartCurrentLimit(Constants.DriveTrain.STALL_CURRENT_LIMIT, Constants.DriveTrain.FREE_CURRENT_LIMIT);
             _leftFollower.setSmartCurrentLimit(Constants.DriveTrain.STALL_CURRENT_LIMIT, Constants.DriveTrain.FREE_CURRENT_LIMIT);
             _rightFollower.setSmartCurrentLimit(Constants.DriveTrain.STALL_CURRENT_LIMIT, Constants.DriveTrain.FREE_CURRENT_LIMIT);
+
+            _leftMaster.setSecondaryCurrentLimit(Constants.DriveTrain.SECONDARY_LIMIT);
+            _rightMaster.setSecondaryCurrentLimit(Constants.DriveTrain.SECONDARY_LIMIT);
+            _leftFollower.setSecondaryCurrentLimit(Constants.DriveTrain.SECONDARY_LIMIT);
+            _rightFollower.setSecondaryCurrentLimit(Constants.DriveTrain.SECONDARY_LIMIT);
 
             _leftMaster.setInverted(Constants.DriveTrain.LEFT_MOTORS_INVERTED);
             _leftFollower.setInverted(Constants.DriveTrain.LEFT_MOTORS_INVERTED);
@@ -100,6 +111,10 @@ public class DriveTrain extends OutliersSubsystem implements PIDSource {
         _leftMagEncoder = new Encoder(RobotMap.DIO.DRIVE_LEFT_A, RobotMap.DIO.DRIVE_LEFT_B);
         _rightMagEncoder = new Encoder(RobotMap.DIO.DRIVE_RIGHT_A, RobotMap.DIO.DRIVE_RIGHT_B);
 
+//        logMetrics("Power/Left", "Power/Right",
+//                "Faults/LeftMaster", "Faults/RightMaster", "Faults/LeftFollower", "Faults/RightFollower",
+//                "Applied/LeftMaster", "Applied/RightMaster", "Applied/LeftFollower","Applied/RightFollower",
+//                "OutputCurrent/LeftMaster", "OutputCurrent/RightMaster", "OutputCurrent/LeftFollower", "OutputCurrent/RightFollower");
     }
 
     public void enableBrakeMode() {
@@ -133,7 +148,18 @@ public class DriveTrain extends OutliersSubsystem implements PIDSource {
         metric("Mag/Raw/Right", _rightMagEncoder.get());
         metric("Mag/Ticks/Left", getLeftTicks()- _leftOffset);
         metric("Mag/Ticks/Right", getRightTicks() - _rightOffset);
-
+//        metric("Faults/LeftMaster", _leftMaster.getFaults());
+//        metric("Faults/RightMaster", _rightMaster.getFaults());
+//        metric("Faults/LeftFollower", _leftFollower.getFaults());
+//        metric("Faults/RightFollower", _rightFollower.getFaults());
+//        metric("Applied/LeftMaster", _leftMaster.getAppliedOutput());
+//        metric("Applied/RightMaster", _rightMaster.getAppliedOutput());
+//        metric("Applied/LeftFollower", _leftFollower.getAppliedOutput());
+//        metric("Applied/RightFollower", _rightFollower.getAppliedOutput());
+//        metric("OutputCurrent/LeftMaster", _leftMaster.getOutputCurrent());
+//        metric("OutputCurrent/RightMaster", _rightMaster.getOutputCurrent());
+//        metric("OutputCurrent/LeftFollower", _leftFollower.getOutputCurrent());
+//        metric("OutputCurrent/RightFollower", _rightFollower.getOutputCurrent());
     }
 
     @Override

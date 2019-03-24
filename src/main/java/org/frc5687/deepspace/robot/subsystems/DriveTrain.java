@@ -112,7 +112,7 @@ public class DriveTrain extends OutliersSubsystem implements PIDSource {
         _rightMagEncoder = new Encoder(RobotMap.DIO.DRIVE_RIGHT_A, RobotMap.DIO.DRIVE_RIGHT_B);
 
 //        logMetrics("Power/Left", "Power/Right",
-//                "Faults/LeftMaster", "Faults/RightMaster", "Faults/LeftFollower", "Faults/RightFollower",
+//                "PDPCurrent/LeftMaster", "PDPCurrent/RightMaster", "PDPCurrent/LeftFollower", "PDPCurrent/RightFollower",
 //                "Applied/LeftMaster", "Applied/RightMaster", "Applied/LeftFollower","Applied/RightFollower",
 //                "OutputCurrent/LeftMaster", "OutputCurrent/RightMaster", "OutputCurrent/LeftFollower", "OutputCurrent/RightFollower");
     }
@@ -160,6 +160,12 @@ public class DriveTrain extends OutliersSubsystem implements PIDSource {
 //        metric("OutputCurrent/RightMaster", _rightMaster.getOutputCurrent());
 //        metric("OutputCurrent/LeftFollower", _leftFollower.getOutputCurrent());
 //        metric("OutputCurrent/RightFollower", _rightFollower.getOutputCurrent());
+//        metric("PDPCurrent/LeftMaster", getLeftMasterCurrent());
+//        metric("PDPCurrent/RightMaster", getRightMasterCurrent());
+//        metric("PDPCurrent/LeftFollower", getLeftFollowerCurrent());
+//        metric("PDPCurrent/RightFollower", getRightFollowerCurrent());
+
+
     }
 
     @Override

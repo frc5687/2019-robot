@@ -220,6 +220,7 @@ public class Drive extends OutliersCommand {
             }
         }
         if (_elevator.isAboveMiddle()) {
+            error("Limiting speed due to elevator!");
             limit = Math.min(0.5, limit);
         }
         double limited = Helpers.limit(speed, -limit, limit);

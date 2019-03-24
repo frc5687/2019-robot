@@ -156,7 +156,7 @@ public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
 
     private void ourPeriodic() {
         // Example of starting a new row of metrics for all instrumented objects.
-        // MetricTracker.newMetricRowAll();
+        //MetricTracker.newMetricRowAll();
 
         if (_oi.isKillAllPressed()) {
             new KillAll(this).start();

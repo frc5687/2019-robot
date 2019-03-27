@@ -54,10 +54,13 @@ public class MoveElevatorToSetPoint extends OutliersCommand {
         _pidController.setOutputRange(-MAX_SPEED_DOWN, MAX_SPEED_UP);
         _pidController.setInputRange(Elevator.Setpoint.Bottom.getValue(), Elevator.Setpoint.Top.getValue());
         _pidController.disable();
+
+        logMetrics("Ramp/Mode", "Setpoint", "Position", "Ramp/Step", "Ramp/RawSpeed", "Ramp/RampedSpeed", "TopHall", "BottomHall");
     }
 
     @Override
     protected void initialize() {
+        super.initialize();
         if (_mode== Elevator.MotionMode.Simple &&  _elevator.getPosition() > Elevator.Setpoint.WarningZone.getValue()) {
             _mode = Elevator.MotionMode.Ramp;
         }
@@ -111,10 +114,18 @@ public class MoveElevatorToSetPoint extends OutliersCommand {
 
     @Override
     protected void execute() {
+        super.execute();
         _step++;
         double speed;
 
+
         _position = _elevator.getPosition();
+
+        metric("Position", _position);
+        metric("Setpoint", _setpoint.getValue());
+        metric("TopHall", _elevator.isAtTop());
+        metric("BottomHall", _elevator.isAtBottom());
+
         switch(_mode) {
             case Simple:
                 if (_position  < _setpoint.getValue() - TOLERANCE) {
@@ -323,6 +334,7 @@ public class MoveElevatorToSetPoint extends OutliersCommand {
         }
 
         info("Reached setpoint " + _setpoint.name() + " (" + _position + ")");
+        super.end();
     }
 
     private class PIDListener implements PIDOutput {

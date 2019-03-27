@@ -60,6 +60,7 @@ public class Drive extends OutliersCommand {
 
     @Override
     protected void initialize() {
+        super.initialize();
         // create the _angleController here, just like in AutoDriveToTarget
         _driveState = DriveState.normal;
         _targetSighted = false;
@@ -72,6 +73,7 @@ public class Drive extends OutliersCommand {
 
     @Override
     protected void execute() {
+        super.execute();
         // Get the base speed from the throttle
         double stickSpeed = _oi.getDriveSpeed();
 

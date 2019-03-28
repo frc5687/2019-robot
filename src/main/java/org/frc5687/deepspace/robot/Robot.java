@@ -63,7 +63,7 @@ public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
         info("Robot " + _name + " running in " + identityMode.toString() + " mode");
 
         // Periodically flushes metrics (might be good to configure enable/disable via USB config file)
-        // new Notifier(MetricTracker::flushAll).startPeriodic(Constants.METRIC_FLUSH_PERIOD);
+        new Notifier(MetricTracker::flushAll).startPeriodic(Constants.METRIC_FLUSH_PERIOD);
 
         // OI must be first...
         _oi = new OI();
@@ -156,7 +156,7 @@ public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
 
     private void ourPeriodic() {
         // Example of starting a new row of metrics for all instrumented objects.
-        //MetricTracker.newMetricRowAll();
+        MetricTracker.newMetricRowAll();
 
         if (_oi.isKillAllPressed()) {
             new KillAll(this).start();
@@ -180,7 +180,6 @@ public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
         _arm.enableCoastMode();
         _elevator.enableCoastMode();
         _stilt.enableCoastMode();
-        // MetricTracker.flushAll();
     }
 
 
@@ -447,4 +446,13 @@ public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
     public void metric(String name, double value) {
         SmartDashboard.putNumber(getClass().getSimpleName() + "/" + name, value);
     }
+
+    public static double pickConstant(double competitionValue, double practiceValue) {
+        return identityMode == IdentityMode.practice ? practiceValue : competitionValue;
+    }
+
+    public static long pickConstant(long competitionValue, long practiceValue) {
+        return identityMode == IdentityMode.practice ? practiceValue : competitionValue;
+    }
+
 }

@@ -446,4 +446,13 @@ public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
     public void metric(String name, double value) {
         SmartDashboard.putNumber(getClass().getSimpleName() + "/" + name, value);
     }
+
+    public static double pickConstant(double competitionValue, double practiceValue) {
+        return identityMode == IdentityMode.practice ? practiceValue : competitionValue;
+    }
+
+    public static long pickConstant(long competitionValue, long practiceValue) {
+        return identityMode == IdentityMode.practice ? practiceValue : competitionValue;
+    }
+
 }

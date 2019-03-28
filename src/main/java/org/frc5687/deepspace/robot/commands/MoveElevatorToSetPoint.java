@@ -9,6 +9,7 @@ import jaci.pathfinder.Trajectory;
 import jaci.pathfinder.Waypoint;
 import jaci.pathfinder.followers.DistanceFollower;
 import org.frc5687.deepspace.robot.Constants;
+import org.frc5687.deepspace.robot.Robot;
 import org.frc5687.deepspace.robot.subsystems.Elevator;
 import org.frc5687.deepspace.robot.OI;
 
@@ -40,6 +41,8 @@ public class MoveElevatorToSetPoint extends OutliersCommand {
     private long _creepEndTime = 0;
     private double _speed;
 
+    private double _ticksPerStep;
+
     public MoveElevatorToSetPoint(Elevator elevator, Elevator.Setpoint setpoint, Elevator.MotionMode mode, OI oi, double speed) {
         _elevator = elevator;
         requires(_elevator);
@@ -55,12 +58,15 @@ public class MoveElevatorToSetPoint extends OutliersCommand {
         _pidController.setInputRange(Elevator.Setpoint.Bottom.getValue(), Elevator.Setpoint.Top.getValue());
         _pidController.disable();
 
-        logMetrics("Ramp/Mode", "Setpoint", "Position", "Ramp/Step", "Ramp/RawSpeed", "Ramp/RampedSpeed", "TopHall", "BottomHall");
+        // logMetrics("Ramp/Mode", "Setpoint", "Position", "Ramp/Step", "Ramp/RawSpeed", "Ramp/RampedSpeed", "TopHall", "BottomHall");
     }
 
     @Override
     protected void initialize() {
         super.initialize();
+
+        _ticksPerStep = Robot.pickConstant(TICKS_PER_STEP_COMP, TICKS_PER_STEP_PROTO);
+
         if (_mode== Elevator.MotionMode.Simple &&  _elevator.getPosition() > Elevator.Setpoint.WarningZone.getValue()) {
             _mode = Elevator.MotionMode.Ramp;
         }
@@ -233,7 +239,7 @@ public class MoveElevatorToSetPoint extends OutliersCommand {
                     _step = 0;
                     _rampingState = RampingState.RampDown;
                     error("Elevator ramping state " +_rampingState);
-                } else if(Math.abs(_setpoint.getValue() - _elevator.getPosition()) <=  TICKS_PER_STEP * STEPS_DOWN) {
+                } else if(Math.abs(_setpoint.getValue() - _elevator.getPosition()) <=  _ticksPerStep * STEPS_DOWN) {
                     // We've reached the slow-down range
                     _step = 0;
                     _rampingState = RampingState.RampDown;
@@ -246,7 +252,7 @@ public class MoveElevatorToSetPoint extends OutliersCommand {
                 break;
             case Steady:
                 speed = goalSpeed;
-                if(Math.abs(_setpoint.getValue() - _elevator.getPosition()) <=  TICKS_PER_STEP * STEPS_DOWN) {
+                if(Math.abs(_setpoint.getValue() - _elevator.getPosition()) <=  _ticksPerStep * STEPS_DOWN) {
                     _step = 0;
                     _rampingState = RampingState.RampDown;
                     error("Elevator ramping state " +_rampingState);

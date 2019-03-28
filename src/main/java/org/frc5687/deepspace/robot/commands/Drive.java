@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.PIDOutput;
 import org.frc5687.deepspace.robot.Constants;
 import org.frc5687.deepspace.robot.OI;
+import org.frc5687.deepspace.robot.Robot;
 import org.frc5687.deepspace.robot.subsystems.CargoIntake;
 import org.frc5687.deepspace.robot.subsystems.DriveTrain;
 import org.frc5687.deepspace.robot.subsystems.Elevator;
@@ -41,6 +42,8 @@ public class Drive extends OutliersCommand {
     private double _stickyLimit;
     private boolean _lockout = false;
 
+    private double _mediumZone;
+    private double _slowZone;
 
     public Drive(DriveTrain driveTrain, AHRS imu, OI oi, Limelight limelight, Elevator elevator, CargoIntake cargoIntake,HatchIntake hatchIntake, PoseTracker poseTracker) {
         _driveTrain = driveTrain;
@@ -53,13 +56,14 @@ public class Drive extends OutliersCommand {
         _hatchIntake = hatchIntake;
         requires(_driveTrain);
 
-        // logMetrics("StickSpeed", "StickRotation", "LeftPower", "RightPower", "LeftMasterAmps", "LeftFollowerAmps", "RightMasterAmps", "RightFollowerAmps", "TurnSpeed");
+//        logMetrics("StickSpeed", "StickRotation", "LeftPower", "RightPower", "LeftMasterAmps", "LeftFollowerAmps", "RightMasterAmps", "RightFollowerAmps", "TurnSpeed");
     }
 
 
 
     @Override
     protected void initialize() {
+        super.initialize();
         // create the _angleController here, just like in AutoDriveToTarget
         _driveState = DriveState.normal;
         _targetSighted = false;
@@ -68,10 +72,14 @@ public class Drive extends OutliersCommand {
         _angleController.setOutputRange(-Constants.Auto.Drive.AnglePID.MAX_DIFFERENCE, Constants.Auto.Drive.AnglePID.MAX_DIFFERENCE);
         _angleController.setAbsoluteTolerance(Constants.Auto.Drive.AnglePID.TOLERANCE);
         _angleController.setContinuous();
+
+        _mediumZone = Robot.pickConstant(70, 115);
+        _slowZone = Robot.pickConstant(20, 35);
     }
 
     @Override
     protected void execute() {
+        super.execute();
         // Get the base speed from the throttle
         double stickSpeed = _oi.getDriveSpeed();
 
@@ -204,11 +212,11 @@ public class Drive extends OutliersCommand {
             if(_limelight.isTargetSighted()) {
                 double distance = _limelight.getTargetDistance();
                 metric("distance", distance);
-                 if (distance  < 70) {
+                 if (distance  < _mediumZone) {
                      limit = 0.65;
                      _stickyLimit = limit;
                  }
-                 if (distance  < 20) {
+                 if (distance  < _slowZone) {
                      limit = 0.30;
                      _stickyLimit = limit;
                  }

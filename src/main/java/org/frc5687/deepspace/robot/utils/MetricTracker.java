@@ -1,5 +1,7 @@
 package org.frc5687.deepspace.robot.utils;
 
+import edu.wpi.first.wpilibj.DriverStation;
+
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -196,7 +198,7 @@ public class MetricTracker {
             writeMetricRow(_out);
             synchronized (this) {
                 _out++;
-                if (_out>BUFFER_LENGTH) { _out = 0; }
+                if (_out>=BUFFER_LENGTH) { _out = 0; }
             }
         }
 

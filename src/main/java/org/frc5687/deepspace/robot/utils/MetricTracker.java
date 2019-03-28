@@ -1,6 +1,7 @@
 package org.frc5687.deepspace.robot.utils;
 
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -11,7 +12,7 @@ import java.util.*;
 
 public class MetricTracker {
     private static final int BUFFER_LENGTH = 500;
-    private static List<MetricTracker> _allMetricsTrackers = new ArrayList<>();
+    private static Map<String, MetricTracker> _allMetricsTrackers = new HashMap<>();
 
     private Map<String, Integer> _metrics = new HashMap<String, Integer>();
     private Object[][] _metricBuffer;
@@ -26,6 +27,7 @@ public class MetricTracker {
     private boolean _paused = false;
     private boolean _bufferOverflowed = false;
 
+    private String _instrumentedClassName;
     /**
      * MetricsTracker factory method - Creates a new Metrics Tracker and registers the associated object with a list
      * of metrics so they can all be flushed to SD by calling the static flushAll method.
@@ -34,8 +36,13 @@ public class MetricTracker {
      * @return a fresh new MetricTracker.
      */
     public static MetricTracker createMetricTracker(String instrumentedClassName, String... metrics) {
+        if (_allMetricsTrackers.containsKey(instrumentedClassName)) {
+            return _allMetricsTrackers.get(instrumentedClassName);
+        }
+
+        SmartDashboard.putBoolean("MetricLogger/" + instrumentedClassName, false);
         MetricTracker newMetricTracker = new MetricTracker(instrumentedClassName, metrics);
-        MetricTracker._allMetricsTrackers.add(newMetricTracker);
+        MetricTracker._allMetricsTrackers.put(instrumentedClassName, newMetricTracker);
         return newMetricTracker;
     }
 
@@ -53,7 +60,7 @@ public class MetricTracker {
      * Starts a new row for all instrumented objects. This is called by robotPeriodic once per cycle.
      */
     public static void newMetricRowAll() {
-        for (MetricTracker metricTracker : MetricTracker._allMetricsTrackers) {
+        for (MetricTracker metricTracker : MetricTracker._allMetricsTrackers.values()) {
             metricTracker.newMetricRow();
         }
     }
@@ -63,7 +70,7 @@ public class MetricTracker {
      * to perm storage.
      */
     public static void flushAll() {
-        for (MetricTracker metricTracker : MetricTracker._allMetricsTrackers) {
+        for (MetricTracker metricTracker : MetricTracker._allMetricsTrackers.values()) {
             metricTracker.flushMetricsTracker();
         }
     }
@@ -75,6 +82,7 @@ public class MetricTracker {
      * @param metrics list of the metric names to track.  Other metrics will be ignored.
      */
     private MetricTracker(String instrumentedClassName, String... metrics) {
+        _instrumentedClassName = instrumentedClassName;
         StringBuilder header = new StringBuilder();
         _metricCount = metrics.length;
 
@@ -146,7 +154,9 @@ public class MetricTracker {
      * Resume collection of metrics by this tracker.  This does NOT prevent writing already-buffered metrics to the file!
      */
     public void resume() {
-        _paused = false;
+        if (SmartDashboard.getBoolean("MetricLogger/" + _instrumentedClassName, false)) {
+            _paused = false;
+        }
     }
 
 

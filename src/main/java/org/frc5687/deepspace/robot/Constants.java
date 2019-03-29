@@ -292,6 +292,7 @@ public class Constants {
             public static final long STILT_TIMEOUT_HIGH = 2000;
             public static final long STILT_TIMEOUT_LOW = 250;
 
+            public static final double PITCH_THRESHOLD = 20;
         }
 
         public static class AutoDrivePath {

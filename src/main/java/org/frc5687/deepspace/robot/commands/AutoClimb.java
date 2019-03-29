@@ -1,5 +1,6 @@
 package org.frc5687.deepspace.robot.commands;
 
+import com.kauailabs.navx.frc.AHRS;
 import org.frc5687.deepspace.robot.OI;
 import org.frc5687.deepspace.robot.Robot;
 import org.frc5687.deepspace.robot.subsystems.*;
@@ -13,6 +14,7 @@ public class AutoClimb extends OutliersCommand {
     private Stilt _stilt;
     private Arm _arm;
     private DriveTrain _driveTrain;
+    private AHRS _imu;
 
     private CargoIntake _cargoIntake;
     private HatchIntake _hatchIntake;
@@ -20,10 +22,13 @@ public class AutoClimb extends OutliersCommand {
     private ClimbState _climbState;
     private long _stiltTimeout = 0;
     private boolean _highHab = true;
+    private ClimbState _abandonedState;
 
     private double _contactAngle;
     private double _slowAngle;
     private double _bottomAngle;
+
+    private double _climbCurrent;
 
     private OI _oi;
 
@@ -38,6 +43,7 @@ public class AutoClimb extends OutliersCommand {
         _robot = robot;
         _oi = _robot.getOI();
         _highHab = highHab;
+        _imu = robot.getIMU();
 
         requires(_stilt);
         requires(_arm);
@@ -52,8 +58,7 @@ public class AutoClimb extends OutliersCommand {
         //    _climbState = ClimbState.Done;
         //    error("Climb pressed before endgame");
         //}
-
-       _climbState =  ClimbState.StowArm;
+        _climbState = ClimbState.StowArm;
        _driveTrain.enableBrakeMode();
        _robot.setConfiguration(Robot.Configuration.climbing);
 
@@ -87,6 +92,10 @@ public class AutoClimb extends OutliersCommand {
                 }
                 break;
             case PositionArm:
+                if (_imu.getPitch() > PITCH_THRESHOLD || _imu.getPitch() < -PITCH_THRESHOLD) {
+                    _climbState = ClimbState.Freeze;
+                    _abandonedState = ClimbState.PositionArm;
+                }
                 _arm.setSpeed(INITIAL_ARM_SPEED);
                 if (_arm.getAngle() >= _contactAngle) {
                     error("Transitioning to " + ClimbState.MoveRollerAndStilt.name());
@@ -95,6 +104,10 @@ public class AutoClimb extends OutliersCommand {
                 break;
             case MoveRollerAndStilt:
                 _stilt.setLifterSpeed(STILT_SPEED);
+                if (_imu.getPitch() > PITCH_THRESHOLD || _imu.getPitch() < -PITCH_THRESHOLD) {
+                    _climbState = ClimbState.Freeze;
+                    _abandonedState = ClimbState.MoveRollerAndStilt;
+                }
                 double armSpeed =  _arm.getAngle() >= _slowAngle ? ARM_SLOW_SPEED : ARM_SPEED; // Math.cos(Math.toRadians(_arm.getAngle())) * ARM_SPEED_SCALAR;
                 if ((_arm.isLow() || _arm.getAngle() >= _bottomAngle)) {
                     error("Stopping arm");
@@ -126,6 +139,10 @@ public class AutoClimb extends OutliersCommand {
                 metric("ArmSpeed", armSpeed);
                 break;
             case WheelieForward:
+                if (_imu.getPitch() > PITCH_THRESHOLD || _imu.getPitch() < -PITCH_THRESHOLD) {
+                    _climbState = ClimbState.Freeze;
+                    _abandonedState = ClimbState.WheelieForward;
+                }
                 _stilt.setLifterSpeed(_highHab ? STILT_HIGH_HOLD_SPEED : STILT_LOW_HOLD_SPEED);
                 _stilt.setWheelieSpeed(WHEELIE_FORWARD_SPEED);
                 _driveTrain.disableBrakeMode();
@@ -196,6 +213,18 @@ public class AutoClimb extends OutliersCommand {
                 _stilt.setLifterSpeed(0);
                 _arm.setSpeed(0);
                 break;
+            case Freeze:
+                if(_oi.isOverridePressed()){
+                    _climbState = _abandonedState;
+                    _stilt.enableCoastMode();
+                    _arm.enableCoastMode();
+                } else {
+                    _stilt.enableBrakeMode();
+                    _arm.enableBrakeMode();
+                    _stilt.setLifterSpeed(0);
+                    _arm.setSpeed(0);
+                }
+                break;
         }
         metric("ClimbState", _climbState.name());
     }
@@ -220,7 +249,8 @@ public class AutoClimb extends OutliersCommand {
         LiftStilt(5),
         WaitStilt(6),
         Park(7),
-        Done(8);
+        Done(8),
+        Freeze(9);
 
         private int _value;
 

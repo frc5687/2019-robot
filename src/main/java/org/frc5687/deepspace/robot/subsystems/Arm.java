@@ -35,6 +35,9 @@ public class Arm extends OutliersSubsystem  {
     private int _pdpLeft;
     private int _pdpRight;
 
+    private double _leftCurrent;
+    private double _rightCurrent;
+
     public Arm(Robot robot) {
         _robot = robot;
 
@@ -195,6 +198,11 @@ public class Arm extends OutliersSubsystem  {
         return Constants.Arm.STOWED_ANGLE + (getPosition() * Constants.Arm.DEGREES_PER_TICK);
     }
 
+    public double getAMPCurrent() {
+        _leftCurrent = _leftSpark.getOutputCurrent();
+        _rightCurrent = _rightSpark.getOutputCurrent();
+        return (_leftCurrent + _rightCurrent)/2;
+    }
 }
 
 

@@ -40,7 +40,7 @@ public class MetricTracker {
             return _allMetricsTrackers.get(instrumentedClassName);
         }
 
-        SmartDashboard.putBoolean("MetricLogger/" + instrumentedClassName, false);
+        SmartDashboard.putBoolean("MetricTracker/" + instrumentedClassName, false);
         MetricTracker newMetricTracker = new MetricTracker(instrumentedClassName, metrics);
         MetricTracker._allMetricsTrackers.put(instrumentedClassName, newMetricTracker);
         return newMetricTracker;
@@ -154,7 +154,7 @@ public class MetricTracker {
      * Resume collection of metrics by this tracker.  This does NOT prevent writing already-buffered metrics to the file!
      */
     public void resume() {
-        if (SmartDashboard.getBoolean("MetricLogger/" + _instrumentedClassName, false)) {
+        if (SmartDashboard.getBoolean("MetricTracker/" + _instrumentedClassName, false)) {
             _paused = false;
         }
     }
@@ -244,5 +244,9 @@ public class MetricTracker {
         DateFormat df = new SimpleDateFormat("yyyyMMdd_HHmmss");
         df.setTimeZone(TimeZone.getTimeZone("US/Eastern"));
         return df.format(new Date());
+    }
+
+    public boolean isPaused() {
+        return _paused;
     }
 }

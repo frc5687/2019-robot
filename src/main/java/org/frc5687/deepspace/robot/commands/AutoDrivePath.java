@@ -38,8 +38,8 @@ public class AutoDrivePath extends OutliersCommand {
         _imu = imu;
         _path = path;
         info("Loading trajectories for " + path);
-        _leftTrajectory = PathfinderFRC.getTrajectory(_path + ".left");
-        _rightTrajectory = PathfinderFRC.getTrajectory(_path + ".right");
+        _leftTrajectory = PathfinderFRC.getTrajectory(_path + ".right");
+        _rightTrajectory = PathfinderFRC.getTrajectory(_path + ".left");
 
         info("Left has " + _leftTrajectory.length() + " segments.");
         info("Right has " + _leftTrajectory.length() + " segments.");
@@ -48,12 +48,13 @@ public class AutoDrivePath extends OutliersCommand {
             DriverStation.reportError("Seg " + i + " x=" + s.x + ", pos=" + s.position + ", vel=" + s.velocity + ", acc="+s.acceleration,false);
         }
 */
-        logMetrics("Segment", "LeftDistance", "RightDistance", "LeftSpeed","RightSpeed","Heading","DesiredHeading","Turn","LeftOutput","RightOutput");
+        logMetrics("Segment", "LeftDistance", "RightDistance", "LeftSpeed","RightSpeed","Heading","DesiredHeading","HeadingDifference", "Turn","LeftOutput","RightOutput");
 
     }
 
     @Override
     protected void initialize() {
+        SmartDashboard.putBoolean("MetricTracker/AutoDrivePath", true);
         super.initialize();
         _driveTrain.resetDriveEncoders();
         info("Allocating followers");
@@ -76,8 +77,8 @@ public class AutoDrivePath extends OutliersCommand {
         double leftSpeed = _leftFollower.calculate(leftDistance);
         double rightSpeed = _rightFollower.calculate(rightDistance);
         double heading = _imu.getYaw();
-        double desiredHeading = Pathfinder.r2d(_leftFollower.getHeading());
-        double headingDifference = Pathfinder.boundHalfDegrees(desiredHeading - heading);
+        double desiredHeading = Pathfinder.boundHalfDegrees(Pathfinder.r2d(_leftFollower.getHeading()));
+        double headingDifference = Pathfinder.boundHalfDegrees(_leftFollower.getHeading() - heading);
         double turn =  Constants.AutoDrivePath.K_TURN * (-1.0/80.0) * headingDifference;
 
         metric("LeftDistance",leftSpeed);
@@ -86,10 +87,11 @@ public class AutoDrivePath extends OutliersCommand {
         metric("RightSpeed", rightSpeed);
         metric("Heading", heading);
         metric("DesiredHeading", desiredHeading);
+        metric("HeadingDifference", headingDifference);
         metric("Turn", turn);
 
-        metric("LeftOutput",leftSpeed - turn);
-        metric("RightOutput", rightSpeed + turn);
+        metric("LeftOutput",leftSpeed + turn);
+        metric("RightOutput", rightSpeed - turn);
 
         _driveTrain.setPower(leftSpeed - turn, rightSpeed + turn, true);
     }

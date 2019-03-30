@@ -90,9 +90,10 @@ public abstract class OutliersCommand extends Command implements ILoggingSource 
 
     @Override
     protected void execute() {
-        _start = System.currentTimeMillis();
-        innerExecute();
-        metric("execute", System.currentTimeMillis() - _start);
+        if (_metricTracker != null && _metricTracker.isPaused()) {
+            _metricTracker.resume();
+        }
+
     }
 
     protected void innerExecute() {

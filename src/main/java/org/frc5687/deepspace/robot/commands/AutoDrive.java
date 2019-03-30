@@ -23,9 +23,9 @@ public class AutoDrive extends OutliersCommand {
     private DriveTrain _driveTrain;
     private AHRS _imu;
 
-    private double kPdistance = 0.15; // .05;
+    private double kPdistance = 0.1; // .05;
     private double kIdistance = 0.000; // .001;
-    private double kDdistance = 0.3; //.1;
+    private double kDdistance = 0.8; //.1;
     private double kTdistance = 0.5;
 
     private double kPangle = .001;
@@ -82,7 +82,7 @@ public class AutoDrive extends OutliersCommand {
         _angleController.setContinuous();
 
         // If an angle is supplied, use that as our setpoint.  Otherwise get the current heading and stick to it!
-        _angleController.setSetpoint(_angle ==1000? _driveTrain.getYaw(): _angle);
+        _angleController.setSetpoint(Math.abs(_angle) > 180 ? _driveTrain.getYaw(): _angle);
         _angleController.enable();
 
         info("Auto Drive initialized: " + (_stage ==null?"": _stage));

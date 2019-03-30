@@ -26,9 +26,6 @@ public class DriveTrain extends OutliersSubsystem implements PIDSource {
     private CANSparkMax _leftFollower;
     private CANSparkMax _rightFollower;
 
-    private CANEncoder _leftEncoder;
-    private CANEncoder _rightEncoder;
-
     private Encoder _leftMagEncoder;
     private Encoder _rightMagEncoder;
 
@@ -36,9 +33,6 @@ public class DriveTrain extends OutliersSubsystem implements PIDSource {
     private AHRS _imu;
     private Limelight _limelight;
     private Robot _robot;
-
-    private double _leftOffset;
-    private double _rightOffset;
 
     private double _oldLeftSpeed;
     private double _oldLeftSpeedF;
@@ -99,9 +93,6 @@ public class DriveTrain extends OutliersSubsystem implements PIDSource {
 
             enableBrakeMode();
 
-            debug("Configuring encoders");
-            _leftEncoder = _leftMaster.getEncoder();
-            _rightEncoder = _rightMaster.getEncoder();
 
         } catch (Exception e) {
             error("Exception allocating drive motor controllers: " + e.getMessage());
@@ -110,6 +101,9 @@ public class DriveTrain extends OutliersSubsystem implements PIDSource {
         debug("Configuring mag encoders");
         _leftMagEncoder = new Encoder(RobotMap.DIO.DRIVE_LEFT_A, RobotMap.DIO.DRIVE_LEFT_B);
         _rightMagEncoder = new Encoder(RobotMap.DIO.DRIVE_RIGHT_A, RobotMap.DIO.DRIVE_RIGHT_B);
+        _leftMagEncoder.setDistancePerPulse(Constants.DriveTrain.LEFT_DISTANCE_PER_PULSE);
+        _rightMagEncoder.setDistancePerPulse(Constants.DriveTrain.RIGHT_DISTANCE_PER_PULSE);
+        resetDriveEncoders();
 
 //        logMetrics("Power/Left", "Power/Right",
 //                "PDPCurrent/LeftMaster", "PDPCurrent/RightMaster", "PDPCurrent/LeftFollower", "PDPCurrent/RightFollower",
@@ -144,11 +138,14 @@ public class DriveTrain extends OutliersSubsystem implements PIDSource {
 //        metric("Neo/Distance/Left", getLeftDistance());
 //        metric("Neo/Distance/Right", getRightDistance());
 //        metric("Neo/Distance/Total", getDistance());
-        metric("Mag/Raw/Left", _leftMagEncoder.get());
-        metric("Mag/Raw/Right", _rightMagEncoder.get());
-        metric("Mag/Ticks/Left", getLeftTicks()- _leftOffset);
-        metric("Mag/Ticks/Right", getRightTicks() - _rightOffset);
-//        metric("Faults/LeftMaster", _leftMaster.getFaults());
+        metric("Ticks/Left", _leftMagEncoder.get());
+        metric("Ticks/Right", _rightMagEncoder.get());
+        metric("MagDistance/Left", _leftMagEncoder.getDistance());
+        metric("MagDistance/Right", _rightMagEncoder.getDistance());
+        metric("Distance/Left", getLeftDistance());
+        metric("Distance/Right", getRightDistance());
+
+        //        metric("Faults/LeftMaster", _leftMaster.getFaults());
 //        metric("Faults/RightMaster", _rightMaster.getFaults());
 //        metric("Faults/LeftFollower", _leftFollower.getFaults());
 //        metric("Faults/RightFollower", _rightFollower.getFaults());
@@ -261,25 +258,20 @@ public class DriveTrain extends OutliersSubsystem implements PIDSource {
 
 
     public double getLeftDistance() {
-        if (!assertMotorControllers()) { return 0; }
-        return (getLeftTicks()  - _leftOffset) * Constants.DriveTrain.LEFT_RATIO;
+        return getLeftTicks() * Constants.DriveTrain.LEFT_DISTANCE_PER_PULSE;
     }
 
     public double getRightDistance() {
-        if (!assertMotorControllers()) { return 0; }
-
-        return (getRightTicks() - _rightOffset) * Constants.DriveTrain.RIGHT_RATIO;
+        return getRightTicks() * Constants.DriveTrain.RIGHT_DISTANCE_PER_PULSE;
     }
 
     public double getLeftTicks() {
-        if (_leftEncoder==null) { return 0; }
-        return _leftEncoder.getPosition();
+        return _leftMagEncoder.get();
     }
 
 
     public double getRightTicks() {
-        if (_rightEncoder==null) { return 0; }
-        return _rightEncoder.getPosition();
+        return _rightMagEncoder.get();
     }
 
     public double getDistance() {
@@ -293,8 +285,8 @@ public class DriveTrain extends OutliersSubsystem implements PIDSource {
     }
 
     public void resetDriveEncoders() {
-        _leftOffset = getLeftTicks();
-        _rightOffset = getRightTicks();
+        _leftMagEncoder.reset();
+        _rightMagEncoder.reset();
     }
 
     @Override

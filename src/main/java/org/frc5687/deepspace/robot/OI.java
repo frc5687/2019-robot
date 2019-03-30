@@ -149,13 +149,16 @@ public class OI extends OutliersProxy {
                }
         });
 
-        _driverAButton.whenPressed(new ConditionalCommand(
-                new SeekHome(robot)) {
-            @Override
-            protected boolean condition() {
-                return robot.getConfiguration()!=Robot.Configuration.climbing && robot.getConfiguration()!=Robot.Configuration.parked;
-            }
-        });
+//        _driverAButton.whenPressed(new ConditionalCommand(
+//                new SeekHome(robot)) {
+//            @Override
+//            protected boolean condition() {
+//                return robot.getConfiguration()!=Robot.Configuration.climbing && robot.getConfiguration()!=Robot.Configuration.parked;
+//            }
+//        });
+
+        _driverAButton.whenPressed(new AutoDrivePath(robot.getDriveTrain(), robot.getIMU(), "LeftL2ToLeftRocket"));
+        // _driverAButton.whenPressed(new AutoDrive(robot.getDriveTrain(), robot.getIMU(), 48.0, 0.5, true, true, 1000, "", 5000));
 
         // _driverXButton.whenPressed(new AutoScoreRocket(robot, true));
 

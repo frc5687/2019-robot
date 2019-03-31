@@ -78,6 +78,10 @@ public class Limelight extends OutliersProxy {
         _ledmode.setNumber(2);
     }
 
+    public void setPipeline(Pipeline pipeline) {
+        _pipeline.setNumber(pipeline.getValue());
+    }
+
     public void setPipeline(int pipeline) {
         _pipeline.setNumber(pipeline);
     }
@@ -175,5 +179,21 @@ public class Limelight extends OutliersProxy {
 
     }
 
+    public enum Pipeline {
+        TapeTrackingLargest(0),
+        TapeTrackingClosest(1),
+        CargoTrackingLargest(8),
+        CargoTrackingClosest(9);
+
+        private int _value;
+
+        Pipeline(int value) {
+            this._value = value;
+        }
+
+        public int getValue() {
+            return _value;
+        }
+    }
 
 }

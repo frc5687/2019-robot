@@ -56,7 +56,7 @@ public class Drive extends OutliersCommand {
         _hatchIntake = hatchIntake;
         requires(_driveTrain);
 
-        logMetrics("StickSpeed", "StickRotation", "LeftPower", "RightPower", "LeftMasterAmps", "LeftFollowerAmps", "RightMasterAmps", "RightFollowerAmps", "TurnSpeed");
+        logMetrics("State", "StickSpeed", "StickRotation", "LeftPower", "RightPower", "LeftMasterAmps", "LeftFollowerAmps", "RightMasterAmps", "RightFollowerAmps", "TurnSpeed");
     }
 
 
@@ -114,42 +114,50 @@ public class Drive extends OutliersCommand {
             switch (_driveState) {
                 case normal:
                     // Start seeking
-                    _limelight.setPipeline(_cargoIntake.isIntaking() ? 8 : 0);
-                    _limelight.enableLEDs();
-                    _driveState = DriveState.seeking;
-                    _seekMax = System.currentTimeMillis() + Constants.DriveTrain.SEEK_TIME;
+                    if (_cargoIntake.isIntaking()) {
+                        _limelight.setPipeline(Limelight.Pipeline.CargoTrackingLargest);
+                        _limelight.enableLEDs();
+                        _driveState = DriveState.seekingcargo;
+                    } else {
+                        _limelight.setPipeline(Limelight.Pipeline.TapeTrackingLargest);
+                        _limelight.enableLEDs();
+                        _driveState = DriveState.seeking;
+                        _seekMax = System.currentTimeMillis() + Constants.DriveTrain.SEEK_TIME;
+                    }
                     break;
                 case seeking:
                     if (_targetSighted) {
+                        _turnSpeed = getTurnSpeed();
                         _lockEnd = System.currentTimeMillis() + Constants.DriveTrain.LOCK_TIME;
                         _driveState = DriveState.locking;
                     }
                     break;
+                case seekingcargo:
+                    if (_limelight.isTargetSighted()) {
+                        _turnSpeed = getTurnSpeed();
+                        if (_limelight.isTargetCentered()) {
+                            _limelight.setPipeline(Limelight.Pipeline.CargoTrackingClosest);
+                            _driveState = DriveState.trackingcargo;
+                        }
+                    }
+                    break;
                 case locking:
-                    if (System.currentTimeMillis() > _lockEnd) {
+                    if (System.currentTimeMillis() > _lockEnd || (_limelight.isTargetSighted() && _limelight.isTargetCentered())) {
                         // Note that we could also wait until the target is centered to lock...which might make more sense.
                         // Just add  && _limelight.isTargetCentered() to the condition above
-                        _limelight.setPipeline(_cargoIntake.isIntaking() ? 9 : 1);
+                        _limelight.setPipeline(Limelight.Pipeline.TapeTrackingClosest);
                         _driveState = DriveState.tracking;
                     }
                     _turnSpeed = getTurnSpeed();
                     break;
                 case tracking:
+                case trackingcargo:
                     _turnSpeed = getTurnSpeed();
                     break;
             }
         }
-        // If the auto-align trigger is pressed, and !_autoAlignEnabled:
-        //   Enable the LEDs
-        // else if auto_align trigger is not pressed, and _autoAlignEnabled
-        //   disable the LEDs, disable the controller
-        // else if _autoAlignEnabled
-        //   Get target info (copy from AutoAlignToTarget)
-        //   If target sighted and ither controller not enabled or new setpoint different enough from old setpoint
-        //      set setPoint
-        //      enable controller
 
-//         If autoAlignEnabled and pidControllerEnabled, send pidOut in place of wheelRotation (you may need a scale override flag as discussed earlier)
+        metric("State", _driveState.name());
         stickSpeed = limitSpeed(stickSpeed);
         if(!_oi.isOverridePressed() && _hatchIntake.isShockTriggered()) {
             _driveTrain.cheesyDrive(Math.min(stickSpeed, 0), 0, false, false);
@@ -233,7 +241,7 @@ public class Drive extends OutliersCommand {
         }
         double limited = Helpers.limit(speed, -limit, limit);
         metric("limit", limit);
-        metric("scaled", limited);
+        metric("limited", limited);
         return limited;
     }
 
@@ -258,7 +266,9 @@ public class Drive extends OutliersCommand {
         seeking(1),
         locking(2),
         tracking(3),
-        lost(4);
+        seekingcargo(4),
+        trackingcargo(5),
+        lost(6);
 
         private int _value;
 

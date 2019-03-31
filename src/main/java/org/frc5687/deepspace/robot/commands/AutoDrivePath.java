@@ -42,7 +42,7 @@ public class AutoDrivePath extends OutliersCommand {
         _rightTrajectory = PathfinderFRC.getTrajectory(_path + ".left");
 
         info("Left has " + _leftTrajectory.length() + " segments.");
-        info("Right has " + _leftTrajectory.length() + " segments.");
+        info("Right has " + _rightTrajectory.length() + " segments.");
 /*        for (int i = 0; i < _trajectory.length(); i++) {
             Trajectory.Segment s= _trajectory.get(i);
             DriverStation.reportError("Seg " + i + " x=" + s.x + ", pos=" + s.position + ", vel=" + s.velocity + ", acc="+s.acceleration,false);
@@ -78,8 +78,8 @@ public class AutoDrivePath extends OutliersCommand {
         double rightSpeed = _rightFollower.calculate(rightDistance);
         double heading = _imu.getYaw();
         double desiredHeading = Pathfinder.boundHalfDegrees(Pathfinder.r2d(_leftFollower.getHeading()));
-        double headingDifference = Pathfinder.boundHalfDegrees(_leftFollower.getHeading() - heading);
-        double turn =  Constants.AutoDrivePath.K_TURN * (-1.0/80.0) * headingDifference;
+        double headingDifference = Pathfinder.boundHalfDegrees(desiredHeading - heading);
+        double turn =  Constants.AutoDrivePath.K_TURN * (1.0/80.0) * headingDifference;
 
         metric("LeftDistance",leftSpeed);
         metric("RightDistance", rightSpeed);
@@ -93,7 +93,7 @@ public class AutoDrivePath extends OutliersCommand {
         metric("LeftOutput",leftSpeed + turn);
         metric("RightOutput", rightSpeed - turn);
 
-        _driveTrain.setPower(leftSpeed - turn, rightSpeed + turn, true);
+        _driveTrain.setPower(leftSpeed + turn, rightSpeed - turn, true);
     }
 
     @Override

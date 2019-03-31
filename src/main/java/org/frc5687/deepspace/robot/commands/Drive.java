@@ -45,6 +45,9 @@ public class Drive extends OutliersCommand {
     private double _mediumZone;
     private double _slowZone;
 
+    private double _slowSpeed;
+    private double _mediumSpeed;
+
     public Drive(DriveTrain driveTrain, AHRS imu, OI oi, Limelight limelight, Elevator elevator, CargoIntake cargoIntake,HatchIntake hatchIntake, PoseTracker poseTracker) {
         _driveTrain = driveTrain;
         _oi = oi;
@@ -73,8 +76,12 @@ public class Drive extends OutliersCommand {
         _angleController.setAbsoluteTolerance(Constants.Auto.Drive.AnglePID.TOLERANCE);
         _angleController.setContinuous();
 
-        _mediumZone = Robot.pickConstant(70, 115);
-        _slowZone = Robot.pickConstant(20, 35);
+        _mediumZone = Robot.pickConstant(Constants.DriveTrain.MEDIUM_ZONE_COMP, Constants.DriveTrain.MEDIUM_ZONE_PROTO);
+        _slowZone = Robot.pickConstant(Constants.DriveTrain.SLOW_ZONE_COMP, Constants.DriveTrain.SLOW_ZONE_PROTO);
+
+        _mediumSpeed = Robot.pickConstant(Constants.DriveTrain.MEDIUM_SPEED_COMP, Constants.DriveTrain.MEDIUM_SPEED_PROTO);
+        _slowSpeed = Robot.pickConstant(Constants.DriveTrain.SLOW_SPEED_COMP, Constants.DriveTrain.SLOW_SPEED_PROTO);
+
     }
 
     @Override
@@ -221,11 +228,11 @@ public class Drive extends OutliersCommand {
                 double distance = _limelight.getTargetDistance();
                 metric("distance", distance);
                  if (distance  < _mediumZone) {
-                     limit = 0.65;
+                     limit = _mediumSpeed;
                      _stickyLimit = limit;
                  }
                  if (distance  < _slowZone) {
-                     limit = 0.30;
+                     limit = _slowSpeed;
                      _stickyLimit = limit;
                  }
             } else if (System.currentTimeMillis() > _seekMax){

@@ -37,6 +37,21 @@ public class Constants {
         public static final int STALL_CURRENT_LIMIT = 50;
         public static final int FREE_CURRENT_LIMIT = 60;
         public static final double SECONDARY_LIMIT = 90;
+
+
+        public static final double SLOW_ZONE_COMP = 20;
+        public static final double SLOW_ZONE_PROTO = 35;
+
+        public static final double MEDIUM_ZONE_COMP = 70;
+        public static final double MEDIUM_ZONE_PROTO = 115;
+
+        public static final double SLOW_SPEED_COMP = 0.3;
+        public static final double SLOW_SPEED_PROTO = 0.45;
+
+        public static final double MEDIUM_SPEED_COMP = 0.6;
+        public static final double MEDIUM_SPEED_PROTO = 0.6;
+
+
     }
     public class Intake {
         //Roller

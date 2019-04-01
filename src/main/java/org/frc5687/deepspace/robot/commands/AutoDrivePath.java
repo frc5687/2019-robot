@@ -53,7 +53,7 @@ public class AutoDrivePath extends OutliersCommand {
         _leftTrajectory = PathfinderFRC.getTrajectory(_path + ".right");
         _rightTrajectory = PathfinderFRC.getTrajectory(_path + ".left");
         info("Left has " + _leftTrajectory.length() + " segments.");
-        info("Right has " + _leftTrajectory.length() + " segments.");
+        info("Right has " + _rightTrajectory.length() + " segments.");
         _trackingThreshold = _leftTrajectory.length() - trackingSegments;
         /*        for (int i = 0; i < _trajectory.length(); i++) {
             Trajectory.Segment s= _trajectory.get(i);
@@ -130,7 +130,7 @@ public class AutoDrivePath extends OutliersCommand {
         double heading = _imu.getYaw();
         double desiredHeading = Pathfinder.boundHalfDegrees(Pathfinder.r2d(_leftFollower.getHeading()));
         double headingDifference = Pathfinder.boundHalfDegrees((_useVisionAngle ? _visionAngle : desiredHeading) - heading);
-        double turn =  Constants.AutoDrivePath.K_TURN * (-1.0/80.0) * headingDifference;
+        double turn =  Constants.AutoDrivePath.K_TURN * (1.0/80.0) * headingDifference;
 
         metric("LeftDistance",leftSpeed);
         metric("RightDistance", rightSpeed);
@@ -144,7 +144,7 @@ public class AutoDrivePath extends OutliersCommand {
         metric("LeftOutput",leftSpeed + turn);
         metric("RightOutput", rightSpeed - turn);
 
-        _driveTrain.setPower(leftSpeed - turn, rightSpeed + turn, true);
+        _driveTrain.setPower(leftSpeed + turn, rightSpeed - turn, true);
     }
 
     @Override

@@ -69,6 +69,11 @@ public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
         _oi = new OI();
         _imu = new AHRS(SPI.Port.kMXP, (byte) 100);
 
+        try {
+            Thread.sleep(2000);
+        } catch(Exception e) {
+
+        }
         _imu.zeroYaw();
 
         // then proxies...

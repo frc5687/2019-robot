@@ -379,6 +379,6 @@ public class Constants {
     }
 
     public class AutoDrivePath {
-        public static final double K_TURN = 0.8;
+        public static final double K_TURN = 8.0;
     }
 }

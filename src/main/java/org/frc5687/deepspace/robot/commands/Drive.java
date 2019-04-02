@@ -3,6 +3,7 @@ package org.frc5687.deepspace.robot.commands;
 import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.PIDOutput;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.frc5687.deepspace.robot.Constants;
 import org.frc5687.deepspace.robot.OI;
 import org.frc5687.deepspace.robot.Robot;
@@ -48,6 +49,8 @@ public class Drive extends OutliersCommand {
     private double _slowSpeed;
     private double _mediumSpeed;
 
+    private int garbageCount = 0;
+
     public Drive(DriveTrain driveTrain, AHRS imu, OI oi, Limelight limelight, Elevator elevator, CargoIntake cargoIntake,HatchIntake hatchIntake, PoseTracker poseTracker) {
         _driveTrain = driveTrain;
         _oi = oi;
@@ -59,13 +62,14 @@ public class Drive extends OutliersCommand {
         _hatchIntake = hatchIntake;
         requires(_driveTrain);
 
-        logMetrics("State", "StickSpeed", "StickRotation", "LeftPower", "RightPower", "LeftMasterAmps", "LeftFollowerAmps", "RightMasterAmps", "RightFollowerAmps", "TurnSpeed");
+        logMetrics("State", "StickSpeed", "StickRotation", "LeftPower", "RightPower", "LeftMasterAmps", "LeftFollowerAmps", "RightMasterAmps", "RightFollowerAmps", "TurnSpeed", "Pose","Yaw","PoseAngle","LimelightAngle","TargetAngle", "TargetDistance", "Pipeline", "Lockout");
     }
 
 
 
     @Override
     protected void initialize() {
+        //SmartDashboard.putBoolean("MetricTracker/Drive", true);
         super.initialize();
         // create the _angleController here, just like in AutoDriveToTarget
         _driveState = DriveState.normal;
@@ -121,12 +125,23 @@ public class Drive extends OutliersCommand {
             switch (_driveState) {
                 case normal:
                     // Start seeking
-                    if (_cargoIntake.isIntaking()) {
-                        _limelight.setPipeline(Limelight.Pipeline.CargoTrackingLargest);
-                        _limelight.enableLEDs();
-                        _driveState = DriveState.seekingcargo;
+                    if (_hatchIntake.isDown()) {
+                        if (_cargoIntake.isIntaking()) {
+                            error("Cargo intaking");
+                            _limelight.setPipeline(Limelight.Pipeline.CargoTrackingLargest);
+                            metric("Pipeline", Limelight.Pipeline.CargoTrackingLargest.name());
+                            _limelight.enableLEDs();
+                            _driveState = DriveState.seekingcargo;
+                        } else {
+                            _limelight.setPipeline(Limelight.Pipeline.TapeTrackingHighest);
+                            metric("Pipeline", Limelight.Pipeline.TapeTrackingHighest.name());
+                            _limelight.enableLEDs();
+                            _driveState = DriveState.seekingport;
+                            _seekMax = System.currentTimeMillis() + Constants.DriveTrain.SEEK_TIME;
+                        }
                     } else {
                         _limelight.setPipeline(Limelight.Pipeline.TapeTrackingLargest);
+                        metric("Pipeline", Limelight.Pipeline.TapeTrackingLargest.name());
                         _limelight.enableLEDs();
                         _driveState = DriveState.seeking;
                         _seekMax = System.currentTimeMillis() + Constants.DriveTrain.SEEK_TIME;
@@ -139,11 +154,19 @@ public class Drive extends OutliersCommand {
                         _driveState = DriveState.locking;
                     }
                     break;
+                case seekingport:
+                    if (_targetSighted) {
+                        _turnSpeed = getTurnSpeed();
+                        _lockEnd = System.currentTimeMillis() + Constants.DriveTrain.LOCK_TIME;
+                        _driveState = DriveState.lockingport;
+                    }
+                    break;
                 case seekingcargo:
                     if (_limelight.isTargetSighted()) {
                         _turnSpeed = getTurnSpeed();
                         if (_limelight.isTargetCentered()) {
                             _limelight.setPipeline(Limelight.Pipeline.CargoTrackingClosest);
+                            metric("Pipeline", Limelight.Pipeline.CargoTrackingClosest.name());
                             _driveState = DriveState.trackingcargo;
                         }
                     }
@@ -153,11 +176,24 @@ public class Drive extends OutliersCommand {
                         // Note that we could also wait until the target is centered to lock...which might make more sense.
                         // Just add  && _limelight.isTargetCentered() to the condition above
                         _limelight.setPipeline(Limelight.Pipeline.TapeTrackingClosest);
+                        metric("Pipeline", Limelight.Pipeline.TapeTrackingClosest.name());
+                        _driveState = DriveState.tracking;
+                    }
+                    _turnSpeed = getTurnSpeed();
+                    break;
+                case lockingport:
+                    if (System.currentTimeMillis() > _lockEnd || (_limelight.isTargetSighted() && _limelight.isTargetCentered())) {
+                        // Note that we could also wait until the target is centered to lock...which might make more sense.
+                        // Just add  && _limelight.isTargetCentered() to the condition above
+                        //_limelight.setPipeline(Limelight.Pipeline.TapeTrackingClosest);
+                        //metric("Pipeline", Limelight.Pipeline.TapeTrackingClosest.name());
                         _driveState = DriveState.tracking;
                     }
                     _turnSpeed = getTurnSpeed();
                     break;
                 case tracking:
+                    _turnSpeed = getTurnSpeed();
+                    break;
                 case trackingcargo:
                     _turnSpeed = getTurnSpeed();
                     break;
@@ -189,15 +225,24 @@ public class Drive extends OutliersCommand {
        //  metric("RightFollowerAmps",_driveTrain.getRightFollowerCurrent());
         metric("TurnSpeed", _turnSpeed);
     }
-
     protected double getTurnSpeed() {
+        metric("Lockout", _lockout);
         if (_lockout || !_limelight.isTargetSighted()) { return 0; }
         double distance = _limelight.getTargetDistance();
-        if (distance < Constants.Auto.Drive.MIN_TRACK_DISTANCE) {
+
+        _seekMax = System.currentTimeMillis() + Constants.DriveTrain.DROPOUT_TIME;
+
+        if (distance > 0 && distance < Constants.Auto.Drive.MIN_TRACK_DISTANCE) {
             // We're too close to trust the target!
-            _lockout  = true;
+            error("Target too close at " + distance + ", count=" + garbageCount);
+            garbageCount++;
+            if (garbageCount > Constants.Auto.Drive.MAX_GARBAGE) {
+                _lockout = true;
+                error("Garbagecount=" + garbageCount + " setting lockout.");
+            }
             return 0;
         }
+        garbageCount = 0;
         double limeLightAngle = _limelight.getHorizontalAngle();
         double yaw = _imu.getYaw();
 
@@ -225,18 +270,21 @@ public class Drive extends OutliersCommand {
         double limit = 1;
         if (_driveState!=DriveState.normal) {
             if(_limelight.isTargetSighted()) {
+                _seekMax = System.currentTimeMillis() + Constants.DriveTrain.DROPOUT_TIME;
                 double distance = _limelight.getTargetDistance();
-                metric("distance", distance);
-                 if (distance  < _mediumZone) {
-                     limit = _mediumSpeed;
-                     _stickyLimit = limit;
-                 }
-                 if (distance  < _slowZone) {
-                     limit = _slowSpeed;
-                     _stickyLimit = limit;
-                 }
+                metric("TargetDistance", distance);
+                if (distance  > 0) {
+                    if (distance < _mediumZone) {
+                        limit = _mediumSpeed;
+                        _stickyLimit = limit;
+                    }
+                    if (distance < _slowZone) {
+                        limit = _slowSpeed;
+                        _stickyLimit = limit;
+                    }
+                }
             } else if (System.currentTimeMillis() > _seekMax){
-                metric("distance", -999);
+                metric("TargetDistance", -999);
                 // We've been seeking for more than the max allowed...slow the robot down!
                 limit = Math.min(0.75, _stickyLimit);
                 _oi.pulseDriver(1);
@@ -271,11 +319,13 @@ public class Drive extends OutliersCommand {
     public enum DriveState {
         normal(0),
         seeking(1),
-        locking(2),
-        tracking(3),
-        seekingcargo(4),
-        trackingcargo(5),
-        lost(6);
+        seekingport(2),
+        locking(3),
+        lockingport(4),
+        tracking(5),
+        seekingcargo(6),
+        trackingcargo(7),
+        lost(8);
 
         private int _value;
 

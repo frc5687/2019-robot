@@ -182,6 +182,7 @@ public class Limelight extends OutliersProxy {
     public enum Pipeline {
         TapeTrackingLargest(0),
         TapeTrackingClosest(1),
+        TapeTrackingHighest(2),
         CargoTrackingLargest(8),
         CargoTrackingClosest(9);
 

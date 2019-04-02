@@ -27,7 +27,9 @@ public class Constants {
         public static final boolean RIGHT_MOTORS_INVERTED = false;
 
         public static final long LOCK_TIME = 80;
-        public static final long SEEK_TIME = 250;
+        public static final long DROPOUT_TIME = 100;
+        public static final long SEEK_TIME = 500;
+
 
         public static final double MAX_SPEED_IPS = 12 * 12;
         public static final double CAP_SPEED_IPS = .8 * MAX_SPEED_IPS;
@@ -46,7 +48,7 @@ public class Constants {
         public static final double MEDIUM_ZONE_PROTO = 115;
 
         public static final double SLOW_SPEED_COMP = 0.3;
-        public static final double SLOW_SPEED_PROTO = 0.45;
+        public static final double SLOW_SPEED_PROTO = 0.5;
 
         public static final double MEDIUM_SPEED_COMP = 0.6;
         public static final double MEDIUM_SPEED_PROTO = 0.6;
@@ -358,6 +360,7 @@ public class Constants {
 
             public static final double MIN_SPEED = 0.25;
             public static final double MIN_TRACK_DISTANCE = 18;
+            public static final int MAX_GARBAGE = 5;
 
             public class MaxVel {
                 public static final double MPS = 2.33; // Meters Per Second

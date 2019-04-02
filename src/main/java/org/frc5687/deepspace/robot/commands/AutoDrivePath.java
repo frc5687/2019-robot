@@ -161,6 +161,7 @@ public class AutoDrivePath extends OutliersCommand {
         super.end();
         _leftFollower.reset();
         _rightFollower.reset();
+        _limelight.disableLEDs();
         info("Ending AutoDrivePath");
     }
 

@@ -13,5 +13,6 @@ public class AutoScoreRocket extends CommandGroup {
         addSequential(new PointClaw(robot.getHatchIntake()));
         addSequential(new AutoDrive(robot.getDriveTrain(), robot.getIMU(), -12, .6, false, true, 1000, "Retreat", 1000));
         addSequential(new AutoAlign(robot.getDriveTrain(), robot.getIMU(), 180.0, 1.0, 1000, 1.0, "Align Home"));
+
     }
 }

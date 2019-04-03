@@ -157,7 +157,7 @@ public class OI extends OutliersProxy {
 //            }
 //        });
 
-        _driverAButton.whenPressed(new AutoDrivePath(robot.getDriveTrain(), robot.getIMU(), robot.getLimelight(), robot.getPoseTracker(), "LeftL2ToLeftRocket", 30));
+        _driverAButton.whenPressed(new AutoDrivePath(robot.getDriveTrain(), robot.getIMU(), robot.getLimelight(), robot.getPoseTracker(), "LeftL2ToLeftRocket", 30, false));
         // _driverAButton.whenPressed(new AutoDrive(robot.getDriveTrain(), robot.getIMU(), 48.0, 0.5, true, true, 1000, "", 5000));
 
         // _driverXButton.whenPressed(new AutoScoreRocket(robot, true));

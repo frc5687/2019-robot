@@ -32,6 +32,8 @@ public class AutoDrivePath extends OutliersCommand {
     private int _index = 0;
     private String _path;
 
+    private boolean _backwards = false;
+
     public AutoDrivePath(DriveTrain driveTrain, AHRS imu, String path) {
         requires(driveTrain);
         _driveTrain = driveTrain;
@@ -43,11 +45,7 @@ public class AutoDrivePath extends OutliersCommand {
 
         info("Left has " + _leftTrajectory.length() + " segments.");
         info("Right has " + _rightTrajectory.length() + " segments.");
-/*        for (int i = 0; i < _trajectory.length(); i++) {
-            Trajectory.Segment s= _trajectory.get(i);
-            DriverStation.reportError("Seg " + i + " x=" + s.x + ", pos=" + s.position + ", vel=" + s.velocity + ", acc="+s.acceleration,false);
-        }
-*/
+
         logMetrics("Segment", "LeftDistance", "RightDistance", "LeftSpeed","RightSpeed","Heading","DesiredHeading","HeadingDifference", "Turn","LeftOutput","RightOutput");
 
     }
@@ -58,9 +56,13 @@ public class AutoDrivePath extends OutliersCommand {
         super.initialize();
         _driveTrain.resetDriveEncoders();
         info("Allocating followers");
-        _leftFollower = new DistanceFollower(_leftTrajectory);
-        _rightFollower = new DistanceFollower(_rightTrajectory);
-
+        if (!_backwards) {
+            _leftFollower = new DistanceFollower(_leftTrajectory);
+            _rightFollower = new DistanceFollower(_rightTrajectory);
+        } else {
+            _leftFollower = new DistanceFollower(_rightTrajectory);
+            _rightFollower = new DistanceFollower(_leftTrajectory);
+        }
         info("COnfiguring follower PID");
         _leftFollower.configurePIDVA(0.1, 0.0, 0.001, 1 / Constants.DriveTrain.MAX_SPEED_IPS, 0);
         _rightFollower.configurePIDVA(0.1, 0.0, 0.001, 1 / Constants.DriveTrain.MAX_SPEED_IPS, 0);
@@ -72,11 +74,14 @@ public class AutoDrivePath extends OutliersCommand {
     protected void execute() {
         _index++;
         metric("Segment", _index);
-        double leftDistance = _driveTrain.getLeftDistance();
-        double rightDistance = _driveTrain.getRightDistance();
-        double leftSpeed = _leftFollower.calculate(leftDistance);
-        double rightSpeed = _rightFollower.calculate(rightDistance);
+        double leftDistance = _driveTrain.getLeftDistance() * (_backwards ? -1 : 1);
+        double rightDistance = _driveTrain.getRightDistance() * (_backwards ? -1 : 1);
+        double leftSpeed = _leftFollower.calculate(leftDistance) * (_backwards ? -1 : 1);
+        double rightSpeed = _rightFollower.calculate(rightDistance) * (_backwards ? -1 : 1);
         double heading = _imu.getYaw();
+
+        if (_backwards) { heading = Pathfinder.boundHalfDegrees(heading + 180); }
+
         double desiredHeading = Pathfinder.boundHalfDegrees(Pathfinder.r2d(_leftFollower.getHeading()));
         double headingDifference = Pathfinder.boundHalfDegrees(desiredHeading - heading);
         double turn =  Constants.AutoDrivePath.K_TURN * (1.0/80.0) * headingDifference;

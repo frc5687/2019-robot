@@ -280,7 +280,7 @@ public class Constants {
 
             public static final double STILT_SPEED = 1.0; // .55
             public static final double STILT_HIGH_HOLD_SPEED = 0.4;
-            public static final double STILT_LOW_HOLD_SPEED = 0.2;
+            public static final double STILT_LOW_HOLD_SPEED = 0.1;
             public static final double RAISE_STILT_SPEED = -0.2;
 
             public static final double ARM_SPEED = 0.65;

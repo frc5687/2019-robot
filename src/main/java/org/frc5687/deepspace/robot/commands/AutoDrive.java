@@ -4,6 +4,7 @@ import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.PIDOutput;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.frc5687.deepspace.robot.Constants;
 import org.frc5687.deepspace.robot.subsystems.DriveTrain;
 
@@ -53,10 +54,13 @@ public class AutoDrive extends OutliersCommand {
         _stage = stage;
         _driveTrain = driveTrain;
         _imu = imu;
+        logMetrics("Distance", "Angle", "LeftSpeed", "RightSpeed");
     }
 
     @Override
     protected void initialize() {
+        SmartDashboard.putBoolean("MetricTracker/AutoDrive", true);
+        super.initialize();
         _driveTrain.resetDriveEncoders();
 
         _driveTrain.enableBrakeMode();
@@ -90,11 +94,14 @@ public class AutoDrive extends OutliersCommand {
 
     @Override
     protected void execute() {
+        super.execute();
         double baseSpeed = _usePID ? _distancePIDOut : (_distance < 0 ? -_speed : _speed);
+        metric("LeftSpeed", baseSpeed + _anglePIDOut);
+        metric("RightSpeed", baseSpeed - _anglePIDOut);
         _driveTrain.setPower(baseSpeed + _anglePIDOut , baseSpeed - _anglePIDOut, true); // positive output is clockwise
         metric("onTarget", _distanceController == null ? false : _distanceController.onTarget());
-        metric("imu", _driveTrain.getYaw());
-        metric("distance", _driveTrain.pidGet());
+        metric("Angle", _driveTrain.getYaw());
+        metric("Distance", _driveTrain.pidGet());
         metric("turnPID", _anglePIDOut);
         metric("distancePID", _distancePIDOut);
     }
@@ -116,6 +123,7 @@ public class AutoDrive extends OutliersCommand {
 
     @Override
     protected void end() {
+        super.end();
         if (isTimedOut()) {
             warn("AutoDrive Finished (" + _driveTrain.getDistance() + ", " + (_driveTrain.getYaw() - _angleController.getSetpoint()) + ") " + (_stage ==null?"": _stage));
         } else {

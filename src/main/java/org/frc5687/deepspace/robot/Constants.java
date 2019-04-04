@@ -41,13 +41,13 @@ public class Constants {
         public static final double SECONDARY_LIMIT = 90;
 
 
-        public static final double SLOW_ZONE_COMP = 20;
+        public static final double SLOW_ZONE_COMP = 30;
         public static final double SLOW_ZONE_PROTO = 35;
 
         public static final double MEDIUM_ZONE_COMP = 70;
         public static final double MEDIUM_ZONE_PROTO = 115;
 
-        public static final double SLOW_SPEED_COMP = 0.3;
+        public static final double SLOW_SPEED_COMP = 0.35;
         public static final double SLOW_SPEED_PROTO = 0.5;
 
         public static final double MEDIUM_SPEED_COMP = 0.6;
@@ -353,7 +353,7 @@ public class Constants {
              *time the angle must be on target for to be considered steady
              */
             public static final double STEADY_TIME = 60;
-            public static final double STEER_K = .02;
+            public static final double STEER_K = .0175;
         }
         public class Drive {
             public static final double SPEED = 1.0;

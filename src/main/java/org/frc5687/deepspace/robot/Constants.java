@@ -303,10 +303,11 @@ public class Constants {
 
             public static final double DRIVE_FORWARD_SPEED = 0.1;
 
-            public static final double PARK_SPEED = 0.15;
+            public static final double PARK_SPEED = 0.2;
             public static final double PARK_DISTANCE = 12;
+            public static final long PARK_TIMEOUT = 1000;
 
-            public static final long STILT_TIMEOUT_HIGH = 2000;
+            public static final long STILT_TIMEOUT_HIGH = 4000;
             public static final long STILT_TIMEOUT_LOW = 250;
 
         }

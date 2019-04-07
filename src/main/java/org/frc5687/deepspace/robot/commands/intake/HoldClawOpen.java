@@ -1,6 +1,7 @@
 
 package org.frc5687.deepspace.robot.commands.intake;
 
+import com.kauailabs.navx.frc.AHRS;
 import org.frc5687.deepspace.robot.Robot;
 import org.frc5687.deepspace.robot.commands.OutliersCommand;
 import org.frc5687.deepspace.robot.subsystems.HatchIntake;
@@ -36,7 +37,9 @@ public class HoldClawOpen extends OutliersCommand {
 
     @Override
     protected void execute(){
-        if (!_wasTriggered && (_hatchIntake.isHatchDetected() || _hatchIntake.isShockTriggered())) {
+        if (!_wasTriggered
+                && (_hatchIntake.isHatchDetected() || _hatchIntake.isShockTriggered())
+                && !_robot.getElevator().isAboveMiddle()) {
             _hatchIntake.gripClaw();
         }
     }

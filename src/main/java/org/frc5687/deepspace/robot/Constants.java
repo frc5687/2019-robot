@@ -41,13 +41,13 @@ public class Constants {
         public static final double SECONDARY_LIMIT = 90;
 
 
-        public static final double SLOW_ZONE_COMP = 20;
+        public static final double SLOW_ZONE_COMP = 30;
         public static final double SLOW_ZONE_PROTO = 35;
 
         public static final double MEDIUM_ZONE_COMP = 70;
         public static final double MEDIUM_ZONE_PROTO = 115;
 
-        public static final double SLOW_SPEED_COMP = 0.3;
+        public static final double SLOW_SPEED_COMP = 0.35;
         public static final double SLOW_SPEED_PROTO = 0.5;
 
         public static final double MEDIUM_SPEED_COMP = 0.6;
@@ -244,6 +244,7 @@ public class Constants {
         public static final double BOTTOM_POSITION=0.0;
         public static final double TOP_POSITION=40.0;
         public static final double DOWN_IR_THRESHOLD = 1500.0;
+        public static final double TILT_THRESHOLD =  2100.0;
     }
     public class Limelight {
         public static final double TARGET_HEIGHT = 29;
@@ -278,10 +279,15 @@ public class Constants {
         public static class Climb {
             public static final double ENDGAME_CUTOFF = 30.0;
 
+            public static final double STILT_TILT_HOLD_SPEED =0.1;
+            public static final double TILT_PITCH = 20.0;
+
+
             public static final double STILT_SPEED = 1.0; // .55
+            public static final double STILT_TILT_SPEED = 0.5; // .55
             public static final double STILT_HIGH_HOLD_SPEED = 0.4;
-            public static final double STILT_LOW_HOLD_SPEED = 0.2;
-            public static final double RAISE_STILT_SPEED = -0.2;
+            public static final double STILT_LOW_HOLD_SPEED = 0.1;
+            public static final double RAISE_STILT_SPEED = -0.2; // TODO: -0.3
 
             public static final double ARM_SPEED = 0.65;
             public static final double ARM_SLOW_SPEED = 0.2;
@@ -303,10 +309,11 @@ public class Constants {
 
             public static final double DRIVE_FORWARD_SPEED = 0.1;
 
-            public static final double PARK_SPEED = 0.15;
-            public static final double PARK_DISTANCE = 12;
+            public static final double PARK_SPEED = 0.3;
+            public static final double PARK_DISTANCE = 18;
+            public static final long PARK_TIMEOUT = 3000;
 
-            public static final long STILT_TIMEOUT_HIGH = 2000;
+            public static final long STILT_TIMEOUT_HIGH = 4000;
             public static final long STILT_TIMEOUT_LOW = 250;
 
         }
@@ -353,7 +360,7 @@ public class Constants {
              *time the angle must be on target for to be considered steady
              */
             public static final double STEADY_TIME = 60;
-            public static final double STEER_K = .02;
+            public static final double STEER_K = .0175;
         }
         public class Drive {
             public static final double SPEED = 1.0;

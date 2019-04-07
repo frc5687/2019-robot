@@ -62,7 +62,7 @@ public class Drive extends OutliersCommand {
         _hatchIntake = hatchIntake;
         requires(_driveTrain);
 
-        logMetrics("State", "StickSpeed", "StickRotation", "LeftPower", "RightPower", "LeftMasterAmps", "LeftFollowerAmps", "RightMasterAmps", "RightFollowerAmps", "TurnSpeed", "Pose","Yaw","PoseAngle","LimelightAngle","TargetAngle", "TargetDistance", "Pipeline", "Lockout");
+        // logMetrics("State", "StickSpeed", "StickRotation", "LeftPower", "RightPower", "LeftMasterAmps", "LeftFollowerAmps", "RightMasterAmps", "RightFollowerAmps", "TurnSpeed", "Pose","Yaw","PoseAngle","LimelightAngle","TargetAngle", "TargetDistance", "Pipeline", "Lockout");
     }
 
 
@@ -286,10 +286,10 @@ public class Drive extends OutliersCommand {
             } else if (System.currentTimeMillis() > _seekMax){
                 metric("TargetDistance", -999);
                 // We've been seeking for more than the max allowed...slow the robot down!
-                limit = Math.min(0.75, _stickyLimit);
                 _oi.pulseDriver(1);
             }
         }
+        limit = Math.min(limit, _stickyLimit);
         if (_elevator.isAboveMiddle()) {
             error("Limiting speed due to elevator!");
             limit = Math.min(0.5, limit);

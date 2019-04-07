@@ -1,5 +1,7 @@
 package org.frc5687.deepspace.robot;
 
+import edu.wpi.cscore.UsbCamera;
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.DriverStation;
 import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.Notifier;
@@ -47,6 +49,8 @@ public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
     private HatchIntake _hatchIntake;
     private PoseTracker _poseTracker;
 
+    private UsbCamera _driverCamera;
+
     private boolean _fmsConnected;
     /**
      * This function is setRollerSpeed when the robot is first started up and should be
@@ -90,6 +94,15 @@ public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
 
         // Must initialize buttons AFTER subsystems are allocated...
         _oi.initializeButtons(this);
+
+        try {
+            _driverCamera = CameraServer.getInstance().startAutomaticCapture(0);
+            _driverCamera.setResolution(160, 120);
+            _driverCamera.setFPS(30);
+        } catch (Exception e) {
+            DriverStation.reportError(e.getMessage(), true);
+        }
+
 
         // Initialize the other stuff
         _limelight.disableLEDs();

@@ -202,7 +202,7 @@ public class MetricTracker {
      * Flushes the buffer of stats for an instance of a metrics tracker to perm storage.
      */
     protected void flushMetricsTracker() {
-
+        if (_bufferedWriter==null) { return; }
         // Keep writing rows as long at there are rows left to write...
         while(hasUnwrittenRows()) {
             writeMetricRow(_out);
@@ -223,6 +223,7 @@ public class MetricTracker {
      * Formats a row of metrics as a comma-delimited quoted string.
      */
     private void writeMetricRow(int row) {
+        if (_bufferedWriter==null) { return; }
         try {
             for (int i=0; i<=_metricCount;i++) {
                 if (i>0) {_bufferedWriter.write(","); }

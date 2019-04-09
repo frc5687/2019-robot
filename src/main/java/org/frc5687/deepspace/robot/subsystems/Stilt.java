@@ -113,4 +113,8 @@ public class Stilt extends OutliersSubsystem {
         metric("IRVoltage", _downIR.getAverageVoltage());
         metric("OnSurface", isOnSurface());
     }
+
+    public boolean isTilted() {
+        return false; // _downIR.getAverageValue() > TILT_THRESHOLD;
+    }
 }

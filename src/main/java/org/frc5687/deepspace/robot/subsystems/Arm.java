@@ -93,7 +93,7 @@ public class Arm extends OutliersSubsystem  {
         _lastLeftSpeed = speed;
 
         speed = limit(speed,
-                isLeftStowed() ? 0 : -MAX_DRIVE_SPEED ,
+                isLeftStowed() ? 0 : STOW_SPEED,
                 isLeftLow() ? HOLD_SPEED : MAX_DRIVE_SPEED);
         metric("LeftSpeed", speed);
         if(isLeftStowed()) { resetLeftEncoder(); }
@@ -112,7 +112,7 @@ public class Arm extends OutliersSubsystem  {
 
 
         speed = limit(speed,
-                isRightStowed() ? 0 : -MAX_DRIVE_SPEED ,
+                isRightStowed() ? 0 : STOW_SPEED,
                 isRightLow() ? HOLD_SPEED : MAX_DRIVE_SPEED);
         metric("RightSpeed", speed);
         if(isRightStowed()) { resetRightEncoder(); }

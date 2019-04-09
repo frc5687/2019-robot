@@ -209,14 +209,17 @@ public class DriveTrain extends OutliersSubsystem implements PIDSource {
             }
             double delta = override ? rotation : rotation * Math.abs(speed);
 
-            // speed = Math.copySign(limit(Math.abs(speed), 1-Math.abs(delta)), speed);
 
-            if (speed + Math.abs(delta) > 1) {
-                speed = 1 - Math.abs(delta);
-            }
+            if (override) {
+                // speed = Math.copySign(limit(Math.abs(speed), 1-Math.abs(delta)), speed);
 
-            if (speed - Math.abs(delta) <-1) {
-                speed = -1 + Math.abs(delta);
+                if (speed + Math.abs(delta) > 1) {
+                    speed = 1 - Math.abs(delta);
+                }
+
+                if (speed - Math.abs(delta) < -1) {
+                    speed = -1 + Math.abs(delta);
+                }
             }
 
             leftMotorOutput = speed + delta;

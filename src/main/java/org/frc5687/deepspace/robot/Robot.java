@@ -1,5 +1,7 @@
 package org.frc5687.deepspace.robot;
 
+import edu.wpi.cscore.UsbCamera;
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.DriverStation;
 import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.Notifier;
@@ -46,6 +48,8 @@ public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
     private CargoIntake _cargoIntake;
     private HatchIntake _hatchIntake;
     private PoseTracker _poseTracker;
+
+    private UsbCamera _driverCamera;
 
     private boolean _fmsConnected;
     /**
@@ -96,6 +100,15 @@ public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
         // Must initialize buttons AFTER subsystems are allocated...
         _oi.initializeButtons(this);
 
+        try {
+            _driverCamera = CameraServer.getInstance().startAutomaticCapture(0);
+            _driverCamera.setResolution(160, 120);
+            _driverCamera.setFPS(30);
+        } catch (Exception e) {
+            DriverStation.reportError(e.getMessage(), true);
+        }
+
+
         // Initialize the other stuff
         _limelight.disableLEDs();
         _limelight.setStreamingMode(Limelight.StreamMode.PIP_SECONDARY);
@@ -134,6 +147,7 @@ public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
      */
     @Override
     public void autonomousInit() {
+        _driveTrain.enableBrakeMode();
         _limelight.disableLEDs();
         _limelight.setStreamingMode(Limelight.StreamMode.PIP_SECONDARY);
         teleopInit();
@@ -287,6 +301,7 @@ public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
         }
         switch (_configuration) {
             case starting:
+                _oi.setConsoleColor(false, false, false);
                 if (DriverStation.getInstance().getAlliance()== DriverStation.Alliance.Red) {
                     _lights.setColor(Constants.Lights.BEATING_RED, 0);
                 } else if (DriverStation.getInstance().getAlliance()== DriverStation.Alliance.Blue) {
@@ -312,9 +327,11 @@ public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
                 if (_hatchIntake.isPointed()) {
                     _lights.setColor(Constants.Lights.SOLID_WHITE, 0);
                     setDashLEDs(true);
+                    _oi.setConsoleColor(true, true, true);
                 } else {
                     _lights.setColor(Constants.Lights.SOLID_YELLOW, 0);
                     setDashLEDs(false);
+                    _oi.setConsoleColor(false, false, false);
                 }
                 break;
             case cargo:
@@ -329,19 +346,25 @@ public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
                 //   No cargo? PALE
                 if (_cargoIntake.isEjecting()) {
                     _lights.setColor(Constants.Lights.SOLID_WHITE, 0);
+                    _oi.setConsoleColor(true, true, true);
                 } else if (_cargoIntake.isBallDetected()) {
                     _lights.setColor(Constants.Lights.SOLID_RED, 0);
+                    _oi.setConsoleColor(false, true, false);
                 } else if (_cargoIntake.isIntaking()) {
                     _lights.setColor(Constants.Lights.PULSING_RED, 0);
+                    _oi.setConsoleColor(true, false, false);
                 } else {
                     _lights.setColor(Constants.Lights.SOLID_PURPLE, 0);
+                    _oi.setConsoleColor(false, false, false);
                 }
                 break;
             case climbing:
+                _oi.setConsoleColor(false, false, false);
                 _lights.setColor(Constants.Lights.WHITE_SHOT, 0);
                 break;
             case parked:
                 _lights.setColor(Constants.Lights.CONFETTI, 0);
+                _oi.setConsoleColor(false, true, false);
                 break;
         }
         _wereLEDsOn = _limelight.areLEDsOn();

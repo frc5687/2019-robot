@@ -20,6 +20,7 @@ import static org.frc5687.deepspace.robot.utils.Helpers.applySensitivityFactor;
 public class OI extends OutliersProxy {
     protected Gamepad _driverGamepad;
     protected Gamepad _operatorGamepad;
+    protected Launchpad _launchpad;
 
     private Button _operatorRightTrigger;
     private Button _operatorLeftTrigger;
@@ -75,6 +76,10 @@ public class OI extends OutliersProxy {
     public OI(){
         _driverGamepad = new Gamepad(0);
         _operatorGamepad = new Gamepad(1);
+        try {
+            _launchpad = new Launchpad(2);
+        } catch (Exception e) {
+        }
 
         _operatorRightTrigger = new AxisButton(_operatorGamepad, Gamepad.Axes.RIGHT_TRIGGER.getNumber(), Constants.OI.AXIS_BUTTON_THRESHHOLD);
         _operatorLeftTrigger = new AxisButton(_operatorGamepad, Gamepad.Axes.LEFT_TRIGGER.getNumber(), Constants.OI.AXIS_BUTTON_THRESHHOLD);
@@ -314,5 +319,14 @@ public class OI extends OutliersProxy {
         return driverPOV == Constants.OI.OVERRIDE || operatorPOV == Constants.OI.OVERRIDE;
     }
 
+    public void setConsoleColor(boolean red, boolean green, boolean blue) {
+        if (_launchpad==null) { return; }
+        try {
+            _launchpad.setOutput(Constants.OI.RED_CHANNEL, red);
+            _launchpad.setOutput(Constants.OI.GREEN_CHANNEL, green);
+            _launchpad.setOutput(Constants.OI.BLUE_CHANNEL, blue);
+        } catch (Exception e) {
+        }
+    }
 }
 

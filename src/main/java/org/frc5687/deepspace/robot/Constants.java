@@ -144,6 +144,9 @@ public class Constants {
         public static final long RUMBLE_PULSE_TIME = 100;
         public static final int KILL_ALL = 4;
         public static final int OVERRIDE = 8;
+        public static final int RED_CHANNEL = 2;
+        public static final int GREEN_CHANNEL = 3;
+        public static final int BLUE_CHANNEL = 1;
     }
 
     public static class Arm {
@@ -280,7 +283,7 @@ public class Constants {
             public static final double ENDGAME_CUTOFF = 30.0;
 
             public static final double STILT_TILT_HOLD_SPEED =0.1;
-            public static final double TILT_PITCH = 20.0;
+            public static final double TILT_PITCH = 11.0;
 
 
             public static final double STILT_SPEED = 1.0; // .55

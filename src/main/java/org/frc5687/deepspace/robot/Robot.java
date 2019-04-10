@@ -285,6 +285,14 @@ public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
     private boolean _wasShocked = false;
 
     private void update() {
+
+        double timeLeft = DriverStation.getInstance().getMatchTime();
+        if (DriverStation.getInstance().isOperatorControl() && timeLeft <= Constants.FINAL_WARNING
+        && _configuration!=Configuration.climbing && _configuration != Configuration.parked) {
+            _lights.setColor(Constants.Lights.PULSING_YELLOW, 0);
+            _oi.setConsoleColor(false, true, true);
+        }
+
         if (_hatchIntake.isShockTriggered()) {
             if (!_wasShocked) {
                 _oi.pulseDriver(4);
@@ -343,7 +351,7 @@ public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
                     _lights.setColor(Constants.Lights.SOLID_WHITE, 0);
                     _oi.setConsoleColor(true, true, true);
                 } else if (_cargoIntake.isBallDetected()) {
-                    _lights.setColor(Constants.Lights.SOLID_RED, 0);
+                    _lights.setColor(Constants.Lights.SOLID_GREEN, 0);
                     _oi.setConsoleColor(false, true, false);
                 } else if (_cargoIntake.isIntaking()) {
                     _lights.setColor(Constants.Lights.PULSING_RED, 0);

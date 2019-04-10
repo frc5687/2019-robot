@@ -8,6 +8,7 @@ public class Constants {
     public static final int TICKS_PER_UPDATE = 10;
     public static final double METRIC_FLUSH_PERIOD = 1.0;
     public static final int TICKS_PER_UPDATE_COMP = 100;
+    public static final double FINAL_WARNING = 15;
 
     public class DriveTrain {
 

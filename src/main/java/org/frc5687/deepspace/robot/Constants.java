@@ -364,7 +364,7 @@ public class Constants {
              *time the angle must be on target for to be considered steady
              */
             public static final double STEADY_TIME = 60;
-            public static final double STEER_K = .0175;
+            public static final double STEER_K = .015;
         }
         public class Drive {
             public static final double SPEED = 1.0;

@@ -244,10 +244,11 @@ public class Constants {
         public static final double MAX_DOWN_SPEED = 0.4;
         public static final double STILT_HOLD_SPEED = 0.07;
         public static final double TOLERANCE=5.0;
-        public static final double MIDDLE_POSITION=30.0;
+        public static final double MIDDLE_POSITION=25.0;
         public static final double BOTTOM_POSITION=0.0;
         public static final double TOP_POSITION=40.0;
         public static final double DOWN_IR_THRESHOLD = 1500.0;
+        public static final double DOWN_IR_THRESHOLD_LOW = 1000.0;
         public static final double TILT_THRESHOLD =  2100.0;
     }
     public class Limelight {
@@ -291,7 +292,7 @@ public class Constants {
             public static final double STILT_TILT_SPEED = 0.5; // .55
             public static final double STILT_HIGH_HOLD_SPEED = 0.4;
             public static final double STILT_LOW_HOLD_SPEED = 0.1;
-            public static final double RAISE_STILT_SPEED = -0.2; // TODO: -0.3
+            public static final double RAISE_STILT_SPEED = -0.5; // TODO: -0.3
 
             public static final double ARM_SPEED = 0.65;
             public static final double ARM_SLOW_SPEED = 0.2;
@@ -303,13 +304,14 @@ public class Constants {
             public static final double H3_SLOW_ANGLE = 165.0;
             public static final double H2_SLOW_ANGLE = 165.0;
             public static final double H3_BOTTOM_ANGLE = 180.0;
-            public static final double H2_BOTTOM_ANGLE = 190.0;
+            public static final double H2_BOTTOM_ANGLE = 180.0;
 
             public static final double ARM_RETRACT_ANGLE = 165.0;
 
             public static final double INITIAL_ARM_SPEED = 0.6;
 
-            public static final double WHEELIE_FORWARD_SPEED = 1.0;
+            public static final double WHEELIE_FORWARD_SPEED_HIGH = 1.0;
+            public static final double WHEELIE_FORWARD_SPEED_LOW = 0.73;
 
             public static final double DRIVE_FORWARD_SPEED = 0.1;
 

@@ -177,6 +177,7 @@ public class Constants {
         public static final double DEGREES_PER_TICK = 90.0 / 70.0;
 
         public static final double STOWED_ANGLE = 0.0;
+        public static final long ENCODER_ZERO_TIMEOUT = 10000000;
     }
 
     public class Lights {

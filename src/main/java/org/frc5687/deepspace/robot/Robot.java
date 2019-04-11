@@ -109,7 +109,7 @@ public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
         _limelight.disableLEDs();
         _limelight.setStreamingMode(Limelight.StreamMode.PIP_SECONDARY);
         setConfiguration(Configuration.starting);
-        _arm.resetEncoders();
+        //_arm.resetEncoders();
         _arm.enableBrakeMode();
         _elevator.enableBrakeMode();
         _stilt.enableBrakeMode();

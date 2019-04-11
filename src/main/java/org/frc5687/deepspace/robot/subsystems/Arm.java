@@ -34,6 +34,8 @@ public class Arm extends OutliersSubsystem  {
 
     private int _pdpLeft;
     private int _pdpRight;
+    private boolean _leftEncoderZeroed = false;
+    private boolean _rightEncoderZeroed = false;
 
     public Arm(Robot robot) {
         _robot = robot;
@@ -133,6 +135,7 @@ public class Arm extends OutliersSubsystem  {
         metric("RightEncoder", getRightPosition());
         metric("Position", getPosition());
         metric("Angle", getAngle());
+        metric("EncodersZeroed", encodersZeroed());
     }
 
     public boolean isStowed() {
@@ -184,10 +187,12 @@ public class Arm extends OutliersSubsystem  {
     }
 
     public void resetLeftEncoder() {
+        _leftEncoderZeroed = true;
         _leftOffset = _leftEncoder.getPosition();
     }
 
     public void resetRightEncoder() {
+        _rightEncoderZeroed = true;
         _rightOffset = _rightEncoder.getPosition();
     }
 
@@ -195,6 +200,9 @@ public class Arm extends OutliersSubsystem  {
         return Constants.Arm.STOWED_ANGLE + (getPosition() * Constants.Arm.DEGREES_PER_TICK);
     }
 
+    public boolean encodersZeroed() {
+        return _leftEncoderZeroed && _rightEncoderZeroed;
+    }
 }
 
 

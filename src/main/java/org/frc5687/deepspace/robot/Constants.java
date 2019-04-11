@@ -68,14 +68,14 @@ public class Constants {
         public static final long ROLLER_TIME_MILLI_SEC = 500;
         public static final int CARGO_DETECTED_THRESHOLD = 800;
         //Wrist
-        public static final long RAISE_WRIST_MILLI_SEC = 500;
-        public static final long LOWER_WRIST_MILLI_SEC = 500;
+        public static final long RAISE_WRIST_MILLI_SEC = 250;
+        public static final long LOWER_WRIST_MILLI_SEC = 250;
         //Claw
         public static final long OPEN_CLAW_MILLI_SEC = 40;
         public static final long CLOSE_CLAW_MILLI_SEC = 40;
-        public static final long CLOSE_CLAW_MILLI_SS = 160; // Delay in sandstorm
-        public static final long CLAW_RAISE_WRIST_MILLI_SEC = 300;
-        public static final long CLAW_LOWER_WRIST_MILLI_SEC = 300;
+        public static final long CLOSE_CLAW_MILLI_SS = 40; // Delay in sandstorm
+        public static final long CLAW_RAISE_WRIST_MILLI_SEC = 250;
+        public static final long CLAW_LOWER_WRIST_MILLI_SEC = 250;
 
 
         public static final long CARGO_EJECT_MILLIS = 200;

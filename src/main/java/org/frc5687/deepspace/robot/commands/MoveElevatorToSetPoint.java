@@ -77,6 +77,9 @@ public class MoveElevatorToSetPoint extends OutliersCommand {
         info("Moving to setpoint " + _setpoint.name() + " (" + _setpoint.getValue() + ") using " + _mode.name() + " mode.");
         switch(_mode) {
             case Simple:
+                if (_setpoint== Elevator.Setpoint.ClearBumper && _position > Elevator.Setpoint.WarningZone.getValue()) {
+                    _setpoint = Elevator.Setpoint.WarningZone;
+                }
                 _rampDirection = (int)Math.copySign(1, _setpoint.getValue() - _position);
                 break;
             case PID:

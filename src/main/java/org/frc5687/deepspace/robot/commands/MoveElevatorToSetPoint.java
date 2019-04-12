@@ -74,11 +74,11 @@ public class MoveElevatorToSetPoint extends OutliersCommand {
         _position = _elevator.getPosition();
         if (withinTolerance()) { return; }
         error("Moving to setpoint " + _setpoint.name() + " (" + _setpoint.getValue() + ") using " + _mode.name() + " mode.");
-        info("Moving to setpoint " + _setpoint.name() + " (" + _setpoint.getValue() + ") using " + _mode.name() + " mode.");
         switch(_mode) {
             case Simple:
-                if (_setpoint== Elevator.Setpoint.ClearBumper && _position > Elevator.Setpoint.WarningZone.getValue()) {
-                    _setpoint = Elevator.Setpoint.WarningZone;
+                if (_setpoint== Elevator.Setpoint.ClearBumper && _position > Elevator.Setpoint.HPMode.getValue()) {
+                    error("Changing setpoint " + _setpoint.name() + " to " + Elevator.Setpoint.HPMode.name() + " b/c height is " + _position);
+                    _setpoint = Elevator.Setpoint.HPMode;
                 }
                 _rampDirection = (int)Math.copySign(1, _setpoint.getValue() - _position);
                 break;

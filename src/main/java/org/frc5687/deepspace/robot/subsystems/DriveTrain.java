@@ -196,6 +196,8 @@ public class DriveTrain extends OutliersSubsystem implements PIDSource {
             if (creep) {
                 //metric("Rot/Creep", creep);
                 rotation = rotation * CREEP_FACTOR;
+            } else {
+                rotation = rotation * 0.9;
             }
 
             //metric("Rot/Transformed", rotation);

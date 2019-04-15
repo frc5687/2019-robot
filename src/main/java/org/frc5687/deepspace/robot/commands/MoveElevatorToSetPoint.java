@@ -72,9 +72,14 @@ public class MoveElevatorToSetPoint extends OutliersCommand {
         }
         _step = 0;
         _position = _elevator.getPosition();
+
+        if (_setpoint== Elevator.Setpoint.ClearBumper && _position > Elevator.Setpoint.ClearBumper.getValue()) {
+            error("Skipping setpoint " + _setpoint.name() + "  b/c height is " + _position);
+            return;
+        }
+
         if (withinTolerance()) { return; }
         error("Moving to setpoint " + _setpoint.name() + " (" + _setpoint.getValue() + ") using " + _mode.name() + " mode.");
-        info("Moving to setpoint " + _setpoint.name() + " (" + _setpoint.getValue() + ") using " + _mode.name() + " mode.");
         switch(_mode) {
             case Simple:
                 _rampDirection = (int)Math.copySign(1, _setpoint.getValue() - _position);
@@ -124,6 +129,10 @@ public class MoveElevatorToSetPoint extends OutliersCommand {
         _step++;
         double speed;
 
+        if (_setpoint== Elevator.Setpoint.ClearBumper && _position > Elevator.Setpoint.ClearBumper.getValue()) {
+            error("Skipping setpoint " + _setpoint.name() + "  b/c height is " + _position);
+            return;
+        }
 
         _position = _elevator.getPosition();
 
@@ -134,6 +143,7 @@ public class MoveElevatorToSetPoint extends OutliersCommand {
 
         switch(_mode) {
             case Simple:
+
                 if (_position  < _setpoint.getValue() - TOLERANCE) {
                     _elevator.setSpeed(_speed == 0 ? SPEED_UP : _speed, false, true);
                 } else if (_position > _setpoint.getValue() + TOLERANCE) {
@@ -287,9 +297,14 @@ public class MoveElevatorToSetPoint extends OutliersCommand {
     }
     @Override
     protected boolean isFinished() {
+        if (_setpoint== Elevator.Setpoint.ClearBumper && _position > Elevator.Setpoint.ClearBumper.getValue()) {
+            error("Skipping setpoint " + _setpoint.name() + "  b/c height is " + _position);
+            return true;
+        }
+
         if (withinTolerance()) {
             return true;
-        };
+        }
         switch (_mode) {
             case PID:
                 return _pidController.onTarget();

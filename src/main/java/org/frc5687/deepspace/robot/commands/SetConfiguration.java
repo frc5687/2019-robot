@@ -1,5 +1,6 @@
 package org.frc5687.deepspace.robot.commands;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import org.frc5687.deepspace.robot.Robot;
 
 public class SetConfiguration extends OutliersCommand {
@@ -10,6 +11,7 @@ public class SetConfiguration extends OutliersCommand {
     public SetConfiguration(Robot robot, Robot.Configuration configuration) {
         _robot = robot;
         _configuration = configuration;
+        error("Configuration set to " + configuration.name() + " at " + DriverStation.getInstance().getMatchTime());
     }
 
     @Override

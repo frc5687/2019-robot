@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.PIDOutput;
 import org.frc5687.deepspace.robot.Constants;
 import org.frc5687.deepspace.robot.subsystems.DriveTrain;
+import org.frc5687.deepspace.robot.subsystems.HatchIntake;
 
 public class AutoDrive extends OutliersCommand {
     private double _distance;
@@ -22,6 +23,7 @@ public class AutoDrive extends OutliersCommand {
 
     private DriveTrain _driveTrain;
     private AHRS _imu;
+    private HatchIntake _hatchIntake;
 
     private double kPdistance = 0.15; // .05;
     private double kIdistance = 0.000; // .001;
@@ -42,7 +44,7 @@ public class AutoDrive extends OutliersCommand {
      * @param stopOnFinish Whether to stop the motors when we are done
      * @param angle The angle to drive, in degrees.  Pass 1000 to maintain robot's hading.
      */
-    public AutoDrive(DriveTrain driveTrain, AHRS imu, double distance, double speed, boolean usePID, boolean stopOnFinish, double angle, String stage, double timeout) {
+    public AutoDrive(DriveTrain driveTrain, AHRS imu, HatchIntake hatchIntake, double distance, double speed, boolean usePID, boolean stopOnFinish, double angle, String stage, double timeout) {
         super(timeout);
         requires(driveTrain);
         _speed = speed;
@@ -53,6 +55,7 @@ public class AutoDrive extends OutliersCommand {
         _stage = stage;
         _driveTrain = driveTrain;
         _imu = imu;
+        _hatchIntake = hatchIntake;
     }
 
     @Override
@@ -108,6 +111,9 @@ public class AutoDrive extends OutliersCommand {
         } else {
             info("AutoDrive nopid complete at " + _driveTrain.getDistance() + " inches");
             return _distance == 0 ? true : _distance < 0 ? (_driveTrain.getDistance() < _distance) : (_driveTrain.getDistance() > _distance);
+        }
+        if (_hatchIntake.isShockTriggered()) {
+            return true;
         }
         return false;
     }

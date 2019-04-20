@@ -85,6 +85,14 @@ public class Elevator extends OutliersSubsystem implements PIDSource {
         // _elevator.setIdleMode(CANSparkMax.IdleMode.kCoast);
     }
 
+    public void enableSparkRamping(double rate) {
+        try {
+            _elevator.setOpenLoopRampRate(rate);
+        } catch (Exception e) {
+            error("Exception while setting elevator ramp rate to " + rate + ": " + e.getMessage());
+        }
+    }
+
     private double getRawNeoEncoder() {
         if (_elevator==null) { return 0; }
         return _neoElevatorEncoder.getPosition();
@@ -161,6 +169,7 @@ public class Elevator extends OutliersSubsystem implements PIDSource {
         return getPosition() >= Setpoint.SlowPoint.getValue();
     }
 
+
     public enum HallEffectSensor {
         BOTTOM,
         TOP
@@ -217,7 +226,8 @@ public class Elevator extends OutliersSubsystem implements PIDSource {
         Simple(0),
         PID(1),
         Path(2),
-        Ramp(3);
+        Ramp(3),
+        Proportional(4);
 
         private int _value;
 

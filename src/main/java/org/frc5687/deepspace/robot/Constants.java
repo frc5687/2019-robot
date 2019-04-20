@@ -126,6 +126,9 @@ public class Constants {
         public static final int BOTTOM_CAM_ZONE = 100;
         public static final double SANDSTORM_PICKUP_SPEED = 0.3;
         public static final double MODE_SPEED = 0.6;
+        public static final double SPARK_RAMPING = 0.20;
+        public static final double RAMP_TICKS = 500;
+
 
         public static class PID {
             public static final double kP = 0.1;

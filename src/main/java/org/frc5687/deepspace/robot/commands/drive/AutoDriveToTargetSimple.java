@@ -63,6 +63,7 @@ public class AutoDriveToTargetSimple extends OutliersCommand {
     @Override
     protected void initialize() {
         // create the _angleController here, just like in AutoDriveToTarget
+        error("Starting AutoSimple");
         _targetSighted = false;
         _driveState = DriveState.normal;
         _angleController = new PIDController(Constants.Auto.Drive.AnglePID.kP,Constants.Auto.Drive.AnglePID.kI,Constants.Auto.Drive.AnglePID.kD, _imu, new AngleListener(), 0.1);
@@ -176,7 +177,14 @@ public class AutoDriveToTargetSimple extends OutliersCommand {
 
     @Override
     protected boolean isFinished() {
-        return _finishFromDistance ? (_limelight.getTargetDistance() <= _distance && (_oi.isOverridePressed() || _hatchIntake.isShockTriggered())) : _oi.isOverridePressed() || _hatchIntake.isShockTriggered();
+        if (_finishFromDistance) {
+            return _limelight.getTargetDistance() <= _distance;
+        }
+        if (!_elevator.isLimelightClear()) {
+            return true;
+        }
+//        return _oi.isOverridePressed() || _hatchIntake.isShockTriggered();
+        return _oi.isOverridePressed() || _hatchIntake.isShockTriggered();
     }
 
     private class AngleListener implements PIDOutput {

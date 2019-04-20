@@ -115,6 +115,8 @@ public class Elevator extends OutliersSubsystem implements PIDSource {
 
     public boolean isNearBottom() { return isAtBottom() || (getPosition() < Setpoint.Bottom.getValue() + BOTTOM_JELLO_ZONE); }
 
+
+
     public boolean isLimelightClear() {
         return isAtBottom()
                 || (getPosition() < Setpoint.Bottom.getValue() + BOTTOM_CAM_ZONE)

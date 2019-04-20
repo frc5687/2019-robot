@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.command.ConditionalCommand;
 import org.frc5687.deepspace.robot.commands.*;
 import org.frc5687.deepspace.robot.commands.drive.AutoScoreRocket;
 import org.frc5687.deepspace.robot.commands.drive.SeekHome;
+import org.frc5687.deepspace.robot.commands.drive.TwoHatchRocket;
 import org.frc5687.deepspace.robot.commands.intake.*;
 import org.frc5687.deepspace.robot.subsystems.Elevator;
 import org.frc5687.deepspace.robot.subsystems.Shifter;
@@ -156,14 +157,15 @@ public class OI extends OutliersProxy {
 
         //_driverAButton.whenpressed
 
-//        _driverAButton.whenPressed(new ConditionalCommand(
-////                new SeekHome(robot)) {
+        _driverAButton.whenPressed(new ConditionalCommand(
+//                new SeekHome(robot)) {
 //                new AutoAlign(robot.getDriveTrain(), robot.getIMU(), 180, 1,1000,5.0,"Aligning to Human Player Station")) {
-//            @Override
-//            protected boolean condition() {
-//                return robot.getConfiguration()!=Robot.Configuration.climbing && robot.getConfiguration()!=Robot.Configuration.parked;
-//            }
-//        });
+                new TwoHatchRocket(robot, true)) {
+            @Override
+            protected boolean condition() {
+                return robot.getConfiguration()!=Robot.Configuration.climbing && robot.getConfiguration()!=Robot.Configuration.parked;
+            }
+        });
 
         // _driverXButton.whenPressed(new AutoScoreRocket(robot, true));
 

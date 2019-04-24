@@ -160,7 +160,7 @@ public class OI extends OutliersProxy {
         _driverAButton.whenPressed(new ConditionalCommand(
 //                new SeekHome(robot)) {
 //                new AutoAlign(robot.getDriveTrain(), robot.getIMU(), 180, 1,1000,5.0,"Aligning to Human Player Station")) {
-                new TwoHatchRocket(robot, true)) {
+                new TwoHatchRocket(robot, false, true)) {
             @Override
             protected boolean condition() {
                 return robot.getConfiguration()!=Robot.Configuration.climbing && robot.getConfiguration()!=Robot.Configuration.parked;

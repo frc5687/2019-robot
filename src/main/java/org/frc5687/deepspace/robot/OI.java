@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.command.ConditionalCommand;
 import org.frc5687.deepspace.robot.commands.*;
 import org.frc5687.deepspace.robot.commands.drive.AutoScoreRocket;
 import org.frc5687.deepspace.robot.commands.drive.SeekHome;
+import org.frc5687.deepspace.robot.commands.elevator.MoveElevatorToSetPointProportional;
 import org.frc5687.deepspace.robot.commands.intake.*;
 import org.frc5687.deepspace.robot.subsystems.Elevator;
 import org.frc5687.deepspace.robot.subsystems.Shifter;
@@ -186,7 +187,7 @@ public class OI extends OutliersProxy {
 
 
         _operatorAButton.whenPressed(new MoveElevatorToSetPoint(robot.getElevator(), Elevator.Setpoint.Hatch1, Elevator.MotionMode.Ramp, this, 0.0));
-        _operatorBButton.whenPressed(new MoveElevatorToSetPoint(robot.getElevator(), Elevator.Setpoint.Hatch2, Elevator.MotionMode.Ramp, this, 0.0));
+        _operatorBButton.whenPressed(new MoveElevatorToSetPointProportional(robot.getElevator(), Elevator.Setpoint.Hatch2, this, 0.0));
         _operatorYButton.whenPressed(new MoveElevatorToSetPoint(robot.getElevator(), Elevator.Setpoint.Hatch3, Elevator.MotionMode.Ramp, this, 0.0));
         _operatorXButton.whenPressed(new MoveElevatorToSetPoint(robot.getElevator(), Elevator.Setpoint.HPMode, Elevator.MotionMode.Ramp, this, 0.0));
 

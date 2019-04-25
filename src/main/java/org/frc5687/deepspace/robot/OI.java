@@ -141,15 +141,15 @@ public class OI extends OutliersProxy {
 
         // _driverAButton.whenPressed(new AutoDrivePath(robot.getDriveTrain(), robot.getIMU()));
         _driverXButton.whenPressed(new ConditionalCommand(
-                new AutoAlign(robot.getDriveTrain(), robot.getIMU(), -151.0, 1.0, 2000, 1.0, "Aligning to back of left rocket.")) {
+                new TwoHatchRocket(robot, false, true)) {
             @Override
             protected boolean condition() {
                 return robot.getConfiguration()!=Robot.Configuration.climbing && robot.getConfiguration()!=Robot.Configuration.parked;
             }
         });
         _driverBButton.whenPressed(new ConditionalCommand(
-                new AutoAlign(robot.getDriveTrain(), robot.getIMU(), 151.0, 1.0, 2000, 1.0, "Aligning to back of right rocket." )) {
-               @Override
+                new TwoHatchRocket(robot, false, false)) {
+            @Override
                protected boolean condition() {
                    return robot.getConfiguration()!=Robot.Configuration.climbing && robot.getConfiguration()!=Robot.Configuration.parked;
                }
@@ -159,8 +159,7 @@ public class OI extends OutliersProxy {
 
         _driverAButton.whenPressed(new ConditionalCommand(
 //                new SeekHome(robot)) {
-//                new AutoAlign(robot.getDriveTrain(), robot.getIMU(), 180, 1,1000,5.0,"Aligning to Human Player Station")) {
-                new TwoHatchRocket(robot, false, true)) {
+                new AutoAlign(robot.getDriveTrain(), robot.getIMU(), 180, 1,1000,5.0,"Aligning to Human Player Station")) {
             @Override
             protected boolean condition() {
                 return robot.getConfiguration()!=Robot.Configuration.climbing && robot.getConfiguration()!=Robot.Configuration.parked;

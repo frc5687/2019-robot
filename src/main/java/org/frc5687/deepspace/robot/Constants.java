@@ -48,7 +48,7 @@ public class Constants {
         public static final double MEDIUM_ZONE_COMP = 70;
         public static final double MEDIUM_ZONE_PROTO = 115;
 
-        public static final double SLOW_SPEED_COMP = 0.35;
+        public static final double SLOW_SPEED_COMP = 0.4;
         public static final double SLOW_SPEED_PROTO = 0.5;
 
         public static final double MEDIUM_SPEED_COMP = 0.6;
@@ -118,10 +118,10 @@ public class Constants {
         public static final double MAX_VELOCITY_IPS = 27.0;
         public static final double TICKS_PER_INCH = 111.1111111;
         public static final double STEPS_UP = 10; //10;
-        public static final double STEPS_DOWN = 20; //30;
+        public static final double STEPS_DOWN = 30; //30;
         public static final double TICKS_PER_STEP_COMP = 100;
         public static final double TICKS_PER_STEP_PROTO = 50;
-        public static final double MIN_SPEED = 0.2;
+        public static final double MIN_SPEED = 0.3;
         public static final double GOAL_SPEED = 0.5;
         public static final int BOTTOM_CAM_ZONE = 100;
         public static final double SANDSTORM_PICKUP_SPEED = 0.3;

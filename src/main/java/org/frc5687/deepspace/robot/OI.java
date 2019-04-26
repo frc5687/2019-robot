@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.command.ConditionalCommand;
 import org.frc5687.deepspace.robot.commands.*;
 import org.frc5687.deepspace.robot.commands.drive.AutoScoreRocket;
 import org.frc5687.deepspace.robot.commands.drive.SeekHome;
+import org.frc5687.deepspace.robot.commands.drive.TwoHatchCargoShip;
 import org.frc5687.deepspace.robot.commands.drive.TwoHatchRocket;
 import org.frc5687.deepspace.robot.commands.intake.*;
 import org.frc5687.deepspace.robot.subsystems.Elevator;
@@ -148,7 +149,7 @@ public class OI extends OutliersProxy {
             }
         });
         _driverBButton.whenPressed(new ConditionalCommand(
-                new TwoHatchRocket(robot, false, false)) {
+                new TwoHatchCargoShip(robot, false, false)) {
             @Override
                protected boolean condition() {
                    return robot.getConfiguration()!=Robot.Configuration.climbing && robot.getConfiguration()!=Robot.Configuration.parked;

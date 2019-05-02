@@ -31,7 +31,7 @@ public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
     public static IdentityMode identityMode = IdentityMode.competition;
     private Configuration _configuration;
     private RioLogger.LogLevel _dsLogLevel = RioLogger.LogLevel.warn;
-    private RioLogger.LogLevel _fileLogLevel = RioLogger.LogLevel.warn;
+    private RioLogger.LogLevel _fileLogLevel = RioLogger.LogLevel.none;
 
     private int _updateTick = 0;
 

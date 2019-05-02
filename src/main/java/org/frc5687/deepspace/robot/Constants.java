@@ -48,7 +48,7 @@ public class Constants {
         public static final double MEDIUM_ZONE_COMP = 70;
         public static final double MEDIUM_ZONE_PROTO = 115;
 
-        public static final double SLOW_SPEED_COMP = 0.35;
+        public static final double SLOW_SPEED_COMP = 0.4;
         public static final double SLOW_SPEED_PROTO = 0.5;
 
         public static final double MEDIUM_SPEED_COMP = 0.6;
@@ -114,11 +114,11 @@ public class Constants {
         public static final double DEADBAND = 0.1;
         public static final double SENSITIVITY = 0.5;
         public static final boolean ELEVATOR_MOTOR_INVERTED = true;
-        public static final int TOLERANCE = 5;
+        public static final int TOLERANCE = 8;
         public static final double MAX_VELOCITY_IPS = 27.0;
         public static final double TICKS_PER_INCH = 111.1111111;
         public static final double STEPS_UP = 10; //10;
-        public static final double STEPS_DOWN = 20; //30;
+        public static final double STEPS_DOWN = 30; //30;
         public static final double TICKS_PER_STEP_COMP = 100;
         public static final double TICKS_PER_STEP_PROTO = 50;
         public static final double MIN_SPEED = 0.3;

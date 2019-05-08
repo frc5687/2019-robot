@@ -257,7 +257,14 @@ public class Constants {
         public static final double LIMELIGHT_HEIGHT = 41.5;
         public static final double LIMELIGHT_ANGLE = 20;
         public static final double OVERALL_LATENCY_MILLIS = 11;
+    }public class Vision {
+        public static final double CAMERA_FRAME_RATE = 90;
+        public static final double MAX_GOAL_TRACK_AGE = 0.3;
+        public static final double MAX_TRACKER_DISTANCE = 18;
+        public static final double ACCEPTABLE_ERROR = 6.0;
+        public static final double DISK_HEIGHT = 28.625;
     }
+
 
 
     /*
@@ -409,4 +416,5 @@ public class Constants {
             }
         }
     }
+
 }

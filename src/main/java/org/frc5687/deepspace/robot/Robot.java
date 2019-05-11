@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.frc5687.deepspace.robot.commands.KillAll;
 import org.frc5687.deepspace.robot.commands.SandstormPickup;
+import org.frc5687.deepspace.robot.commands.drive.TwoHatchRocket;
 import org.frc5687.deepspace.robot.subsystems.*;
 import org.frc5687.deepspace.robot.utils.*;
 
@@ -146,7 +147,7 @@ public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
         _driveTrain.enableBrakeMode();
         _limelight.disableLEDs();
         _limelight.setStreamingMode(Limelight.StreamMode.PIP_SECONDARY);
-        (new SandstormPickup(this)).start();
+        (new TwoHatchRocket(this, false,true)).start();
         teleopInit();
     }
 

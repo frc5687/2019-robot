@@ -21,8 +21,9 @@ public class Constants {
         public static final double TURNING_SENSITIVITY_LOW_GEAR = 1;
 
         public static final double CREEP_FACTOR = 0.25;
-        public static final double LEFT_DISTANCE_PER_PULSE = 0.03096774193548387096774193548387;
-        public static final double RIGHT_DISTANCE_PER_PULSE = 0.03096774193548387096774193548387;
+        public static final double LEFT_DISTANCE_PER_PULSE = 0.0283185840707964601769911504424;
+        public static final double RIGHT_DISTANCE_PER_PULSE = 0.0283185840707964601769911504424;
+
 
         public static final boolean LEFT_MOTORS_INVERTED = true;
         public static final boolean RIGHT_MOTORS_INVERTED = false;
@@ -53,8 +54,6 @@ public class Constants {
 
         public static final double MEDIUM_SPEED_COMP = 0.6;
         public static final double MEDIUM_SPEED_PROTO = 0.6;
-
-
     }
     public class Intake {
         //Roller
@@ -123,8 +122,8 @@ public class Constants {
         public static final double TICKS_PER_STEP_PROTO = 50;
         public static final double MIN_SPEED = 0.2;
         public static final double GOAL_SPEED = 0.5;
-        public static final int BOTTOM_CAM_ZONE = 100;
-        public static final double SANDSTORM_PICKUP_SPEED = 0.3;
+        public static final int BOTTOM_CAM_ZONE = 450;
+        public static final double SANDSTORM_PICKUP_SPEED = 0.5;
         public static final double MODE_SPEED = 0.6;
 
         public static class PID {

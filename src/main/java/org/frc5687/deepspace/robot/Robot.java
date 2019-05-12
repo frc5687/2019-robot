@@ -7,6 +7,7 @@ import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -50,6 +51,7 @@ public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
     private CargoIntake _cargoIntake;
     private HatchIntake _hatchIntake;
     private PoseTracker _poseTracker;
+    private AutoChooser _autoChooser;
 
     private UsbCamera _driverCamera;
 
@@ -82,6 +84,7 @@ public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
         _limelight = new Limelight("limelight");
         _pdp = new PDP();
 
+        _autoChooser = new AutoChooser(getIdentityMode()==IdentityMode.competition);
         // Then subsystems....
         _shifter = new Shifter(this);
         _driveTrain = new DriveTrain(this);
@@ -147,7 +150,19 @@ public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
         _driveTrain.enableBrakeMode();
         _limelight.disableLEDs();
         _limelight.setStreamingMode(Limelight.StreamMode.PIP_SECONDARY);
-        (new TwoHatchRocket(this, false,true)).start();
+        AutoChooser.Mode mode = _autoChooser.getSelectedMode();
+        AutoChooser.Position position = _autoChooser.getSelectedPosition();
+        Command autoCommand = new SandstormPickup(this);
+        switch (mode) {
+            case NearAndTopRocket:
+                autoCommand = new TwoHatchRocket(this,
+                        position==AutoChooser.Position.LeftL2 || position==AutoChooser.Position.RightL2,
+                        position==AutoChooser.Position.LeftL1 || position==AutoChooser.Position.LeftL2);
+                break;
+        }
+        if (autoCommand!=null) {
+            autoCommand.start();
+        }
         teleopInit();
     }
 

@@ -408,4 +408,8 @@ public class Constants {
             }
         }
     }
+
+    public class RotarySwitch {
+        public static final double TOLERANCE = 0.02;
+    }
 }

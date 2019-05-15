@@ -90,8 +90,8 @@ public class RobotMap {
         public static final int FRONT_IR = 0;
         public static final int BALL_IR = 1;
         public static final int DOWN_IR = 2;
-        public static final int POSITION_SWITCH = 3;
-        public static final int MODE_SWITCH = 4;
+        public static final int POSITION_SWITCH = 4;
+        public static final int MODE_SWITCH = 5;
     }
 
     /**

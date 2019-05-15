@@ -7,7 +7,7 @@ import org.frc5687.deepspace.robot.RobotMap;
 /**
  * Created by Ben Bernard on 2/2/2018.
  */
-public class AutoChooser {
+public class AutoChooser extends OutliersProxy {
     private RotarySwitch _positionSwitch;
     private RotarySwitch _modeSwitch;
 
@@ -25,21 +25,25 @@ public class AutoChooser {
 
 
     public Position getSelectedPosition(){
-        return Position.values()[_positionSwitch.get()];
+        int raw = _positionSwitch.get();
+        if (raw >= Position.values().length) { raw = 0; }
+        return Position.values()[raw];
     }
 
     public Mode getSelectedMode(){
-        return Mode.values()[_modeSwitch.get()];
+        int raw = _modeSwitch.get();
+        if (raw >= Mode.values().length) { raw = 0; }
+        return Mode.values()[raw];
 
     }
 
     public void updateDashboard(){
-        SmartDashboard.putString("AutoChooser/Label/Position", getSelectedPosition().getLabel());
-        SmartDashboard.putString("AutoChooser/Label/Mode", getSelectedMode().getLabel());
-        SmartDashboard.putNumber("AutoChooser/Raw/Position", _positionSwitch.getRaw());
-        SmartDashboard.putNumber("AutoChooser/Raw/Mode", _modeSwitch.getRaw());
-        SmartDashboard.putNumber("AutoChooser/Numeric/Position", getSelectedPosition().getValue());
-        SmartDashboard.putNumber("AutoChooser/Numeric/Mode", getSelectedMode().getValue());
+        metric("Label/Position", getSelectedPosition().getLabel());
+        metric("Label/Mode", getSelectedMode().getLabel());
+        metric("Raw/Position", _positionSwitch.getRaw());
+        metric("Raw/Mode", _modeSwitch.getRaw());
+        metric("Numeric/Position", _positionSwitch.get());
+        metric("Numeric/Mode", _modeSwitch.get());
   }
 
   public enum Position {
@@ -47,7 +51,7 @@ public class AutoChooser {
         LeftL1(1, "Left L1"),
         Center(2, "Center"),
         RightL1(3, "Right L1"),
-        RightL2(4, "RightL2");
+        RightL2(4, "Right L2");
 
         private String _label;
         private int _value;

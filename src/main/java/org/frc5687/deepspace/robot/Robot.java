@@ -53,6 +53,8 @@ public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
     private PoseTracker _poseTracker;
     private AutoChooser _autoChooser;
 
+    private Command _autoCommand;
+
     private UsbCamera _driverCamera;
 
     private boolean _fmsConnected;
@@ -147,23 +149,27 @@ public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
      */
     @Override
     public void autonomousInit() {
+        _fmsConnected =  DriverStation.getInstance().isFMSAttached();
         _driveTrain.enableBrakeMode();
         _limelight.disableLEDs();
         _limelight.setStreamingMode(Limelight.StreamMode.PIP_SECONDARY);
         AutoChooser.Mode mode = _autoChooser.getSelectedMode();
         AutoChooser.Position position = _autoChooser.getSelectedPosition();
-        Command autoCommand = new SandstormPickup(this);
         switch (mode) {
             case NearAndTopRocket:
-                autoCommand = new TwoHatchRocket(this,
-                        position==AutoChooser.Position.LeftL2 || position==AutoChooser.Position.RightL2,
-                        position==AutoChooser.Position.LeftL1 || position==AutoChooser.Position.LeftL2);
+                if (position!= AutoChooser.Position.Center) {
+                    // If we are in the center we can't do rocket hatches!
+                    _autoCommand = new TwoHatchRocket(this,
+                            position == AutoChooser.Position.LeftL2 || position == AutoChooser.Position.RightL2,
+                            position == AutoChooser.Position.LeftL1 || position == AutoChooser.Position.LeftL2);
+                }
                 break;
         }
-        if (autoCommand!=null) {
-            autoCommand.start();
+        if (_autoCommand==null) {
+            _autoCommand = new SandstormPickup(this);
         }
-        teleopInit();
+        error("autoCommand is " + _autoCommand.getClass().getSimpleName());
+        _autoCommand.start();
     }
 
     public void teleopInit() {
@@ -230,6 +236,7 @@ public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
             _stilt.updateDashboard();
             _cargoIntake.updateDashboard();
             _hatchIntake.updateDashboard();
+            _autoChooser.updateDashboard();
             metric("imu/yaw", _imu.getYaw());
             metric("imu/pitch", _imu.getPitch());
             metric("imu/roll", _imu.getRoll());

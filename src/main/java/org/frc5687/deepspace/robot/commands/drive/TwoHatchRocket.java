@@ -30,7 +30,7 @@ public class TwoHatchRocket extends CommandGroup {
 //    }
     public TwoHatchRocket(Robot robot, boolean OffHAB, boolean left) {
         if (OffHAB) {
-            addSequential(new AutoLaunch(robot));
+            addSequential(new AutoDrive(robot.getDriveTrain(),robot.getIMU(), robot.getHatchIntake(), robot.getElevator(),48,.6,false, true, 0, "", 2000));
         }
         addParallel(new SandstormPickup(robot));
         addSequential(new AutoAlign(robot.getDriveTrain(), robot.getIMU(), left ? -30 : 30, .7, 500, 2, "aligning to rocket"));

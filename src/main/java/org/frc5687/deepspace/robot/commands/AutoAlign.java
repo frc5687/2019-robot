@@ -41,6 +41,7 @@ public class AutoAlign extends OutliersCommand implements PIDOutput {
 
     @Override
     protected void initialize() {
+        error("Starting AutoAlign");
         super.initialize();
         double kP = Constants.Auto.Align.kP; // Double.parseDouble(SmartDashboard.getString("DB/String 0", ".04"));
         double kI = Constants.Auto.Align.kI; // Double.parseDouble(SmartDashboard.getString("DB/String 1", ".006"));

@@ -181,6 +181,8 @@ public class AutoDriveToTargetSimple extends OutliersCommand {
             return _limelight.getTargetDistance() <= _distance;
         }
         if (!_elevator.isLimelightClear()) {
+            error("Elevator is too high");
+            error("Elevator is at" + _elevator.getPosition());
             return true;
         }
 //        return _oi.isOverridePressed() || _hatchIntake.isShockTriggered();

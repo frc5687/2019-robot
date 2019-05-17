@@ -22,7 +22,7 @@ public class TwoHatchCargoRocket extends CommandGroup {
         addSequential(new GripClaw(robot.getHatchIntake()));
         addSequential(new AutoDrive(robot.getDriveTrain(), robot.getIMU(), robot.getHatchIntake(), robot.getElevator(), -12, .5,false, true, 0, "reverse 12 inches", 1000));
         addSequential(new AutoAlign(robot.getDriveTrain(), robot.getIMU(), left ? -170 : 170, 1, 1000, 2, "aligning to rocket"));
-        addSequential(new AutoDrive(robot.getDriveTrain(), robot.getIMU(), robot.getHatchIntake(), robot.getElevator(), -100, .5,false, true, 0, "reverse 12 inches", 1000));
+        addSequential(new AutoDrive(robot.getDriveTrain(), robot.getIMU(), robot.getHatchIntake(), robot.getElevator(), -112, .5,false, true, 0, "reverse 12 inches", 1000));
         addSequential(new AutoAlign(robot.getDriveTrain(), robot.getIMU(), left ? 90 : -90, 1, 1000, 2, "aligning to rocket"));
         addSequential(new AutoDriveToTargetSimple(robot.getDriveTrain(), robot.getIMU(), robot.getOI(), robot.getLimelight(), robot.getElevator(), robot.getCargoIntake(), robot.getHatchIntake(), robot.getPoseTracker(), .7, false, 0));
         addSequential(new PointClaw(robot.getHatchIntake()));

@@ -11,6 +11,8 @@ import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import org.frc5687.deepspace.robot.commands.AutoDrive;
+import org.frc5687.deepspace.robot.commands.AutoLaunch;
 import org.frc5687.deepspace.robot.commands.KillAll;
 import org.frc5687.deepspace.robot.commands.SandstormPickup;
 import org.frc5687.deepspace.robot.commands.drive.TwoHatchRocket;
@@ -156,6 +158,13 @@ public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
         AutoChooser.Mode mode = _autoChooser.getSelectedMode();
         AutoChooser.Position position = _autoChooser.getSelectedPosition();
         switch (mode) {
+            case Launch:
+                if (position != AutoChooser.Position.Center) {
+
+                    _autoCommand = new AutoLaunch(this);
+                }
+                break;
+
             case NearAndTopRocket:
                 if (position!= AutoChooser.Position.Center) {
                     // If we are in the center we can't do rocket hatches!

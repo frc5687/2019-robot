@@ -62,14 +62,14 @@ public class Drive extends OutliersCommand {
         _hatchIntake = hatchIntake;
         requires(_driveTrain);
 
-        // logMetrics("State", "StickSpeed", "StickRotation", "LeftPower", "RightPower", "LeftMasterAmps", "LeftFollowerAmps", "RightMasterAmps", "RightFollowerAmps", "TurnSpeed", "Pose","Yaw","PoseAngle","LimelightAngle","TargetAngle", "TargetDistance", "Pipeline", "Lockout");
+//        logMetrics("State", "StickSpeed", "StickRotation", "LeftPower", "RightPower", "LeftMasterAmps", "LeftFollowerAmps", "RightMasterAmps", "RightFollowerAmps", "TurnSpeed", "Pose","Yaw","PoseAngle","LimelightAngle","TargetAngle", "TargetDistance", "Pipeline", "Lockout");
     }
 
 
 
     @Override
     protected void initialize() {
-        //SmartDashboard.putBoolean("MetricTracker/Drive", true);
+//        SmartDashboard.putBoolean("MetricTracker/Drive", true);
         super.initialize();
         // create the _angleController here, just like in AutoDriveToTarget
         _driveState = DriveState.normal;

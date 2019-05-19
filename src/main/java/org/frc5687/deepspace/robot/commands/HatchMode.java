@@ -14,7 +14,7 @@ public class HatchMode extends CommandGroup {
             addSequential(new CargoIntakeUp(robot.getCargoIntake()));
             addSequential(new ClawWristUp(robot));
             addSequential(new PointClaw(robot.getHatchIntake()));
-            addSequential(new MoveElevatorToSetPoint(robot.getElevator(), Elevator.Setpoint.Bottom, Elevator.MotionMode.Simple, null, Constants.Elevator.MODE_SPEED));
+            addSequential(new MoveElevatorToSetPoint(robot.getElevator(), Elevator.Setpoint.Bottom, Elevator.MotionMode.Ramp, null, Constants.Elevator.MODE_SPEED));
             addSequential(new SetConfiguration(robot, Robot.Configuration.hatch));
 
     }

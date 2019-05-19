@@ -24,7 +24,7 @@ public class DriveTrain extends OutliersSubsystem implements PIDSource {
     private CANSparkMax _rightMaster;
 
     private CANSparkMax _leftFollower;
-    private CANSparkMax _rightFollower;
+    private CANSparkMax _rightFollower;;
 
     private Encoder _leftMagEncoder;
     private Encoder _rightMagEncoder;
@@ -93,7 +93,6 @@ public class DriveTrain extends OutliersSubsystem implements PIDSource {
 
             enableBrakeMode();
 
-
         } catch (Exception e) {
             error("Exception allocating drive motor controllers: " + e.getMessage());
         }
@@ -104,6 +103,7 @@ public class DriveTrain extends OutliersSubsystem implements PIDSource {
         _leftMagEncoder.setDistancePerPulse(Constants.DriveTrain.LEFT_DISTANCE_PER_PULSE);
         _rightMagEncoder.setDistancePerPulse(Constants.DriveTrain.RIGHT_DISTANCE_PER_PULSE);
         resetDriveEncoders();
+
 
 //        logMetrics("Power/Left", "Power/Right",
 //                "PDPCurrent/LeftMaster", "PDPCurrent/RightMaster", "PDPCurrent/LeftFollower", "PDPCurrent/RightFollower",
@@ -193,6 +193,8 @@ public class DriveTrain extends OutliersSubsystem implements PIDSource {
             if (creep) {
                 //metric("Rot/Creep", creep);
                 rotation = rotation * CREEP_FACTOR;
+            } else {
+                rotation = rotation * 0.8;
             }
 
             //metric("Rot/Transformed", rotation);
@@ -270,7 +272,6 @@ public class DriveTrain extends OutliersSubsystem implements PIDSource {
         _isPaused = false;
     }
 
-
     public double getLeftDistance() {
         return getLeftTicks() * Constants.DriveTrain.LEFT_DISTANCE_PER_PULSE;
     }
@@ -282,7 +283,6 @@ public class DriveTrain extends OutliersSubsystem implements PIDSource {
     public double getLeftTicks() {
         return _leftMagEncoder.get();
     }
-
 
     public double getRightTicks() {
         return _rightMagEncoder.get();

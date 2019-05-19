@@ -54,7 +54,8 @@ public class AutoClimb extends OutliersCommand {
         //    error("Climb pressed before endgame");
         //}
 
-       _climbState =  ClimbState.StowArm;
+       _climbState = _arm.encodersZeroed() ? ClimbState.PositionArm : ClimbState.StowArm;
+       metric("EncodersZeroed", _arm.encodersZeroed());
        _driveTrain.enableBrakeMode();
        _robot.setConfiguration(Robot.Configuration.climbing);
 
@@ -67,6 +68,8 @@ public class AutoClimb extends OutliersCommand {
            _slowAngle = H2_SLOW_ANGLE;
            _bottomAngle = H2_BOTTOM_ANGLE;
        }
+        _arm.enableBrakeMode();
+        _stilt.enableBrakeMode();
 
         metric("ClimbState", _climbState.name());
 
@@ -79,8 +82,6 @@ public class AutoClimb extends OutliersCommand {
                 _cargoIntake.raiseWrist();
                 _hatchIntake.pointClaw();
                 _hatchIntake.lowerWrist();
-                _arm.enableBrakeMode();
-                _stilt.enableBrakeMode();
                 _arm.setSpeed(STOW_SPEED);
                 if (_oi.isOverridePressed() || (_arm.isLeftStowed() && _arm.isRightStowed())) {
                     error("Transitioning to " + ClimbState.PositionArm.name());
@@ -128,13 +129,13 @@ public class AutoClimb extends OutliersCommand {
                 break;
             case WheelieForward:
                 _stilt.setLifterSpeed(_highHab ? STILT_HIGH_HOLD_SPEED : STILT_LOW_HOLD_SPEED);
-                _stilt.setWheelieSpeed(WHEELIE_FORWARD_SPEED);
+                _stilt.setWheelieSpeed(_highHab ? WHEELIE_FORWARD_SPEED_HIGH : WHEELIE_FORWARD_SPEED_LOW);
                 _driveTrain.disableBrakeMode();
                 _driveTrain.cheesyDrive(DRIVE_FORWARD_SPEED,0, false, false);
-                metric("WheelieSpeed", WHEELIE_FORWARD_SPEED);
+                metric("WheelieSpeed", WHEELIE_FORWARD_SPEED_HIGH);
                 metric("DriveSpeed", DRIVE_FORWARD_SPEED);
                 metric("StiltSpeed", STILT_HIGH_HOLD_SPEED);
-                if (_stilt.isOnSurface()) {
+                if (_highHab ? _stilt.isOnSurface() : _stilt.isOnSurfaceLow()) {
                     metric("WheelieSpeed", 0);
                     metric("DriveSpeed", 0);
                     metric("StiltSpeed", 0);

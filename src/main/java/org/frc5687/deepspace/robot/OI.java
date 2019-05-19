@@ -7,9 +7,7 @@ import edu.wpi.first.wpilibj.buttons.Button;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import edu.wpi.first.wpilibj.command.ConditionalCommand;
 import org.frc5687.deepspace.robot.commands.*;
-import org.frc5687.deepspace.robot.commands.drive.AutoScoreFrontCargo;
-import org.frc5687.deepspace.robot.commands.drive.AutoScoreRocket;
-import org.frc5687.deepspace.robot.commands.drive.SeekHome;
+import org.frc5687.deepspace.robot.commands.drive.*;
 import org.frc5687.deepspace.robot.commands.intake.*;
 import org.frc5687.deepspace.robot.subsystems.Elevator;
 import org.frc5687.deepspace.robot.subsystems.Shifter;
@@ -141,27 +139,31 @@ public class OI extends OutliersProxy {
 
         // _driverAButton.whenPressed(new AutoDrivePath(robot.getDriveTrain(), robot.getIMU()));
         _driverXButton.whenPressed(new ConditionalCommand(
-                new AutoAlign(robot.getDriveTrain(), robot.getIMU(), -151.0, 1.0, 2000, 1.0, "Aligning to back of left rocket.")) {
+                new TwoHatchRocket(robot, false, true)) {
             @Override
             protected boolean condition() {
                 return robot.getConfiguration()!=Robot.Configuration.climbing && robot.getConfiguration()!=Robot.Configuration.parked;
             }
         });
         _driverBButton.whenPressed(new ConditionalCommand(
-                new AutoAlign(robot.getDriveTrain(), robot.getIMU(), 151.0, 1.0, 2000, 1.0, "Aligning to back of right rocket." )) {
-               @Override
+                new TwoHatchRocket(robot, false, false)) {
+            @Override
                protected boolean condition() {
                    return robot.getConfiguration()!=Robot.Configuration.climbing && robot.getConfiguration()!=Robot.Configuration.parked;
                }
         });
 
-//        _driverAButton.whenPressed(new ConditionalCommand(
+        //_driverAButton.whenpressed
+
+        _driverAButton.whenPressed(new ConditionalCommand(
 //                new SeekHome(robot)) {
-//            @Override
-//            protected boolean condition() {
-//                return robot.getConfiguration()!=Robot.Configuration.climbing && robot.getConfiguration()!=Robot.Configuration.parked;
-//            }
-//        });
+//                new AutoAlign(robot.getDriveTrain(), robot.getIMU(), 180, 1,1000,5.0,"Aligning to Human Player Station")) {
+                new AutoDrive(robot.getDriveTrain(), robot.getIMU(), robot.getHatchIntake(), robot.getElevator(), 48, 0.3,false,true,0,"Drive 48 inches", 3000)) {
+            @Override
+            protected boolean condition() {
+                return robot.getConfiguration()!=Robot.Configuration.climbing && robot.getConfiguration()!=Robot.Configuration.parked;
+            }
+        });
 
         _driverAButton.whenPressed(new AutoScoreFrontCargo(robot, -1,true));
         // _driverAButton.whenPressed(new AutoDrivePath(robot.getDriveTrain(), robot.getIMU(), robot.getLimelight(), robot.getPoseTracker(), "LeftL2ToLeftRocket", 30, false));
@@ -211,9 +213,10 @@ public class OI extends OutliersProxy {
         return speed;
     }
     public double getArmSpeed() {
-        double speed = -getSpeedFromAxis(_operatorGamepad, Gamepad.Axes.LEFT_Y.getNumber()) * Constants.Arm.MAX_DRIVE_SPEED;
-        speed = applyDeadband(speed, Constants.Arm.DEADBAND);
-        return applySensitivityFactor(speed, Constants.Arm.SENSITIVITY);
+        return 0;
+//        double speed = -getSpeedFromAxis(_operatorGamepad, Gamepad.Axes.LEFT_Y.getNumber()) * Constants.Arm.MAX_DRIVE_SPEED;
+//        speed = applyDeadband(speed, Constants.Arm.DEADBAND);
+//        return applySensitivityFactor(speed, Constants.Arm.SENSITIVITY);
     }
     public double getRollerSpeed() {
         double speed = getSpeedFromAxis(_operatorGamepad, Gamepad.Axes.LEFT_X.getNumber()) * Constants.Intake.MAX_ROLLER_SPEED;

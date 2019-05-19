@@ -1,6 +1,5 @@
 package org.frc5687.deepspace.robot.commands;
 
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.PIDOutput;
@@ -34,12 +33,15 @@ public class MoveElevatorToSetPoint extends OutliersCommand {
     private Trajectory _trajectory;
     private DistanceFollower _pathFollower;
     private Notifier _pathNotifier;
+    private Notifier _mainNotifier;
     private long _startTime;
     private double _step;
     private int _rampDirection = 0;
     private double _rampMid = 0;
     private long _creepEndTime = 0;
     private double _speed;
+    private boolean _topTriggered = false;
+    private boolean _bottomTriggered = false;
 
     private double _ticksPerStep;
 
@@ -58,12 +60,17 @@ public class MoveElevatorToSetPoint extends OutliersCommand {
         _pidController.setInputRange(Elevator.Setpoint.Bottom.getValue(), Elevator.Setpoint.Top.getValue());
         _pidController.disable();
 
+        _mainNotifier = new Notifier(this::poll);
+
         // logMetrics("Ramp/Mode", "Setpoint", "Position", "Ramp/Step", "Ramp/RawSpeed", "Ramp/RampedSpeed", "TopHall", "BottomHall");
     }
 
     @Override
     protected void initialize() {
         super.initialize();
+
+        _topTriggered = _elevator.isHallEffectTriggered(Elevator.HallEffectSensor.TOP);
+        _bottomTriggered = _elevator.isHallEffectTriggered(Elevator.HallEffectSensor.BOTTOM);
 
         _ticksPerStep = Robot.pickConstant(TICKS_PER_STEP_COMP, TICKS_PER_STEP_PROTO);
 
@@ -72,9 +79,14 @@ public class MoveElevatorToSetPoint extends OutliersCommand {
         }
         _step = 0;
         _position = _elevator.getPosition();
+
+        if (_setpoint== Elevator.Setpoint.ClearBumper && _position > Elevator.Setpoint.ClearBumper.getValue()) {
+            error("Skipping setpoint " + _setpoint.name() + "  b/c height is " + _position);
+            return;
+        }
+
         if (withinTolerance()) { return; }
         error("Moving to setpoint " + _setpoint.name() + " (" + _setpoint.getValue() + ") using " + _mode.name() + " mode.");
-        info("Moving to setpoint " + _setpoint.name() + " (" + _setpoint.getValue() + ") using " + _mode.name() + " mode.");
         switch(_mode) {
             case Simple:
                 _rampDirection = (int)Math.copySign(1, _setpoint.getValue() - _position);
@@ -116,14 +128,29 @@ public class MoveElevatorToSetPoint extends OutliersCommand {
                 break;
         }
         _startTime = System.currentTimeMillis();
+        _mainNotifier.startPeriodic(.01);
+    }
+
+    protected void poll() {
+        _topTriggered |= _elevator.isHallEffectTriggered(Elevator.HallEffectSensor.TOP);
+        _bottomTriggered |= _elevator.isHallEffectTriggered(Elevator.HallEffectSensor.BOTTOM);
+        if (_rampDirection > 0 && _topTriggered) {
+            _elevator.setSpeed(0);
+        } else if (_rampDirection < 0 && _bottomTriggered) {
+            _elevator.setSpeed(0);
+        }
     }
 
     @Override
     protected void execute() {
-        super.execute();
         _step++;
+        super.execute();
         double speed;
 
+        if (_setpoint== Elevator.Setpoint.ClearBumper && _position > Elevator.Setpoint.ClearBumper.getValue()) {
+            error("Skipping setpoint " + _setpoint.name() + "  b/c height is " + _position);
+            return;
+        }
 
         _position = _elevator.getPosition();
 
@@ -131,9 +158,12 @@ public class MoveElevatorToSetPoint extends OutliersCommand {
         metric("Setpoint", _setpoint.getValue());
         metric("TopHall", _elevator.isAtTop());
         metric("BottomHall", _elevator.isAtBottom());
+        metric("TopTriggered", _topTriggered);
+        metric("BottomTriggered", _bottomTriggered);
 
         switch(_mode) {
             case Simple:
+
                 if (_position  < _setpoint.getValue() - TOLERANCE) {
                     _elevator.setSpeed(_speed == 0 ? SPEED_UP : _speed, false, true);
                 } else if (_position > _setpoint.getValue() + TOLERANCE) {
@@ -173,12 +203,12 @@ public class MoveElevatorToSetPoint extends OutliersCommand {
             }
 
             goalSpeed = SPEED_UP;
-            if (_elevator.isAtTop()) {
+            if (_elevator.isAtTop() || _topTriggered) {
                 _rampingState = RampingState.Done;
                 metric("Ramp/RampedSpeed", 0);
                 return 0;
             } else if (_position >= _setpoint.getValue() - TOLERANCE) {
-                if (_setpoint.getHall()== Elevator.HallEffectSensor.TOP && !_elevator.isAtTop()) {
+                if (_setpoint.getHall()== Elevator.HallEffectSensor.TOP && !_elevator.isAtTop() && !_topTriggered) {
                     if (_rampingState != RampingState.Creep) {
                         _rampingState = RampingState.Creep;
                         _creepEndTime = System.currentTimeMillis() + CREEP_TIME;
@@ -203,12 +233,12 @@ public class MoveElevatorToSetPoint extends OutliersCommand {
             }
 
             goalSpeed = SPEED_DOWN;
-            if (_elevator.isAtBottom()) {
+            if (_elevator.isAtBottom() || _bottomTriggered) {
                 _rampingState = RampingState.Done;
                 metric("Ramp/RampedSpeed", 0);
                 return 0;
             } else if (_position <= _setpoint.getValue() + TOLERANCE) {
-                if (_setpoint.getHall()== Elevator.HallEffectSensor.BOTTOM && !_elevator.isAtBottom()) {
+                if (_setpoint.getHall()== Elevator.HallEffectSensor.BOTTOM && !_elevator.isAtBottom() && !_bottomTriggered) {
                     if (_rampingState!=RampingState.Creep) {
                         _rampingState = RampingState.Creep;
                         _creepEndTime = System.currentTimeMillis() + CREEP_TIME;
@@ -287,9 +317,14 @@ public class MoveElevatorToSetPoint extends OutliersCommand {
     }
     @Override
     protected boolean isFinished() {
+        if (_setpoint== Elevator.Setpoint.ClearBumper && _position > Elevator.Setpoint.ClearBumper.getValue()) {
+            error("Skipping setpoint " + _setpoint.name() + "  b/c height is " + _position);
+            return true;
+        }
+
         if (withinTolerance()) {
             return true;
-        };
+        }
         switch (_mode) {
             case PID:
                 return _pidController.onTarget();
@@ -311,6 +346,9 @@ public class MoveElevatorToSetPoint extends OutliersCommand {
     protected void end() {
         long endTime = System.currentTimeMillis();
         // DriverStation.reportError("MoveElevatorToSetpoint Ran for " + (endTime - _startTime) + " millis, stopped at " + _position + ", state=" + _rampingState.name(), false);
+        if (_mainNotifier!=null) {
+            _mainNotifier.stop();
+        }
         if (_pidController!=null) {
             _pidController.disable();
         }

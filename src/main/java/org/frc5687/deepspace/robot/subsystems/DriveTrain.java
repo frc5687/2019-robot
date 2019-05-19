@@ -24,10 +24,7 @@ public class DriveTrain extends OutliersSubsystem implements PIDSource {
     private CANSparkMax _rightMaster;
 
     private CANSparkMax _leftFollower;
-    private CANSparkMax _rightFollower;
-
-    private CANEncoder _leftEncoder;
-    private CANEncoder _rightEncoder;
+    private CANSparkMax _rightFollower;;
 
     private Encoder _leftMagEncoder;
     private Encoder _rightMagEncoder;
@@ -99,10 +96,6 @@ public class DriveTrain extends OutliersSubsystem implements PIDSource {
 
             enableBrakeMode();
 
-            debug("Configuring encoders");
-            _leftEncoder = _leftMaster.getEncoder();
-            _rightEncoder = _rightMaster.getEncoder();
-
         } catch (Exception e) {
             error("Exception allocating drive motor controllers: " + e.getMessage());
         }
@@ -110,6 +103,10 @@ public class DriveTrain extends OutliersSubsystem implements PIDSource {
         debug("Configuring mag encoders");
         _leftMagEncoder = new Encoder(RobotMap.DIO.DRIVE_LEFT_A, RobotMap.DIO.DRIVE_LEFT_B);
         _rightMagEncoder = new Encoder(RobotMap.DIO.DRIVE_RIGHT_A, RobotMap.DIO.DRIVE_RIGHT_B);
+        _leftMagEncoder.setDistancePerPulse(Constants.DriveTrain.LEFT_DISTANCE_PER_PULSE);
+        _rightMagEncoder.setDistancePerPulse(Constants.DriveTrain.RIGHT_DISTANCE_PER_PULSE);
+        resetDriveEncoders();
+
 
 //        logMetrics("Power/Left", "Power/Right",
 //                "PDPCurrent/LeftMaster", "PDPCurrent/RightMaster", "PDPCurrent/LeftFollower", "PDPCurrent/RightFollower",
@@ -197,7 +194,7 @@ public class DriveTrain extends OutliersSubsystem implements PIDSource {
                 //metric("Rot/Creep", creep);
                 rotation = rotation * CREEP_FACTOR;
             } else {
-                rotation = rotation * 0.9;
+                rotation = rotation * 0.8;
             }
 
             //metric("Rot/Transformed", rotation);
@@ -275,27 +272,20 @@ public class DriveTrain extends OutliersSubsystem implements PIDSource {
         _isPaused = false;
     }
 
-
     public double getLeftDistance() {
-        if (!assertMotorControllers()) { return 0; }
-        return (getLeftTicks()  - _leftOffset) * Constants.DriveTrain.LEFT_RATIO;
+        return getLeftTicks() * Constants.DriveTrain.LEFT_DISTANCE_PER_PULSE;
     }
 
     public double getRightDistance() {
-        if (!assertMotorControllers()) { return 0; }
-
-        return (getRightTicks() - _rightOffset) * Constants.DriveTrain.RIGHT_RATIO;
+        return getRightTicks() * Constants.DriveTrain.RIGHT_DISTANCE_PER_PULSE;
     }
 
     public double getLeftTicks() {
-        if (_leftEncoder==null) { return 0; }
-        return _leftEncoder.getPosition();
+        return _leftMagEncoder.get();
     }
 
-
     public double getRightTicks() {
-        if (_rightEncoder==null) { return 0; }
-        return _rightEncoder.getPosition();
+        return _rightMagEncoder.get();
     }
 
     public double getDistance() {
@@ -309,8 +299,8 @@ public class DriveTrain extends OutliersSubsystem implements PIDSource {
     }
 
     public void resetDriveEncoders() {
-        _leftOffset = getLeftTicks();
-        _rightOffset = getRightTicks();
+        _leftMagEncoder.reset();
+        _rightMagEncoder.reset();
     }
 
     @Override

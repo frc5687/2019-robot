@@ -7,11 +7,13 @@ import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.frc5687.deepspace.robot.commands.KillAll;
 import org.frc5687.deepspace.robot.commands.SandstormPickup;
+import org.frc5687.deepspace.robot.commands.drive.TwoHatchRocket;
 import org.frc5687.deepspace.robot.subsystems.*;
 import org.frc5687.deepspace.robot.utils.*;
 
@@ -31,7 +33,7 @@ public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
     public static IdentityMode identityMode = IdentityMode.competition;
     private Configuration _configuration;
     private RioLogger.LogLevel _dsLogLevel = RioLogger.LogLevel.warn;
-    private RioLogger.LogLevel _fileLogLevel = RioLogger.LogLevel.warn;
+    private RioLogger.LogLevel _fileLogLevel = RioLogger.LogLevel.none;
 
     private int _updateTick = 0;
 
@@ -49,6 +51,9 @@ public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
     private CargoIntake _cargoIntake;
     private HatchIntake _hatchIntake;
     private PoseTracker _poseTracker;
+    private AutoChooser _autoChooser;
+
+    private Command _autoCommand;
 
     private UsbCamera _driverCamera;
 
@@ -81,6 +86,7 @@ public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
         _limelight = new Limelight("limelight");
         _pdp = new PDP();
 
+        _autoChooser = new AutoChooser(getIdentityMode()==IdentityMode.competition);
         // Then subsystems....
         _shifter = new Shifter(this);
         _driveTrain = new DriveTrain(this);
@@ -143,11 +149,27 @@ public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
      */
     @Override
     public void autonomousInit() {
+        _fmsConnected =  DriverStation.getInstance().isFMSAttached();
         _driveTrain.enableBrakeMode();
         _limelight.disableLEDs();
         _limelight.setStreamingMode(Limelight.StreamMode.PIP_SECONDARY);
-        (new SandstormPickup(this)).start();
-        teleopInit();
+        AutoChooser.Mode mode = _autoChooser.getSelectedMode();
+        AutoChooser.Position position = _autoChooser.getSelectedPosition();
+        switch (mode) {
+            case NearAndTopRocket:
+                if (position!= AutoChooser.Position.Center) {
+                    // If we are in the center we can't do rocket hatches!
+                    _autoCommand = new TwoHatchRocket(this,
+                            position == AutoChooser.Position.LeftL2 || position == AutoChooser.Position.RightL2,
+                            position == AutoChooser.Position.LeftL1 || position == AutoChooser.Position.LeftL2);
+                }
+                break;
+        }
+        if (_autoCommand==null) {
+            _autoCommand = new SandstormPickup(this);
+        }
+        error("autoCommand is " + _autoCommand.getClass().getSimpleName());
+        _autoCommand.start();
     }
 
     public void teleopInit() {
@@ -214,6 +236,7 @@ public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
             _stilt.updateDashboard();
             _cargoIntake.updateDashboard();
             _hatchIntake.updateDashboard();
+            _autoChooser.updateDashboard();
             metric("imu/yaw", _imu.getYaw());
             metric("imu/pitch", _imu.getPitch());
             metric("imu/roll", _imu.getRoll());

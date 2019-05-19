@@ -21,8 +21,9 @@ public class Constants {
         public static final double TURNING_SENSITIVITY_LOW_GEAR = 1;
 
         public static final double CREEP_FACTOR = 0.25;
-        public static final double LEFT_RATIO = 1.590193804869969;
-        public static final double RIGHT_RATIO = 1.590193804869969;
+        public static final double LEFT_DISTANCE_PER_PULSE = 0.0283185840707964601769911504424;
+        public static final double RIGHT_DISTANCE_PER_PULSE = 0.0283185840707964601769911504424;
+
 
         public static final boolean LEFT_MOTORS_INVERTED = true;
         public static final boolean RIGHT_MOTORS_INVERTED = false;
@@ -48,13 +49,11 @@ public class Constants {
         public static final double MEDIUM_ZONE_COMP = 70;
         public static final double MEDIUM_ZONE_PROTO = 115;
 
-        public static final double SLOW_SPEED_COMP = 0.35;
+        public static final double SLOW_SPEED_COMP = 0.4;
         public static final double SLOW_SPEED_PROTO = 0.5;
 
         public static final double MEDIUM_SPEED_COMP = 0.6;
         public static final double MEDIUM_SPEED_PROTO = 0.6;
-
-
     }
     public class Intake {
         //Roller
@@ -114,17 +113,17 @@ public class Constants {
         public static final double DEADBAND = 0.1;
         public static final double SENSITIVITY = 0.5;
         public static final boolean ELEVATOR_MOTOR_INVERTED = true;
-        public static final int TOLERANCE = 5;
+        public static final int TOLERANCE = 8;
         public static final double MAX_VELOCITY_IPS = 27.0;
         public static final double TICKS_PER_INCH = 111.1111111;
         public static final double STEPS_UP = 10; //10;
-        public static final double STEPS_DOWN = 20; //30;
+        public static final double STEPS_DOWN = 30; //30;
         public static final double TICKS_PER_STEP_COMP = 100;
         public static final double TICKS_PER_STEP_PROTO = 50;
         public static final double MIN_SPEED = 0.3;
         public static final double GOAL_SPEED = 0.5;
-        public static final int BOTTOM_CAM_ZONE = 100;
-        public static final double SANDSTORM_PICKUP_SPEED = 0.3;
+        public static final int BOTTOM_CAM_ZONE = 450;
+        public static final double SANDSTORM_PICKUP_SPEED = 0.5;
         public static final double MODE_SPEED = 0.6;
 
         public static class PID {
@@ -362,7 +361,7 @@ public class Constants {
 
             public static final double kP = 0.03; //0.03;
             public static final double kI = 0.000; // 0;.000.1
-            public static final double kD = 0.2;  //0.1;
+            public static final double kD = 0.3;  //0.1;
             public static final double TOLERANCE = 1; // 0.5
             public static final double MINIMUM_SPEED = 0;//0.15;
             /*
@@ -410,5 +409,9 @@ public class Constants {
                 public static final double TOLERANCE = .25;
             }
         }
+    }
+
+    public class RotarySwitch {
+        public static final double TOLERANCE = 0.02;
     }
 }

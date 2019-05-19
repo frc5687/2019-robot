@@ -7,8 +7,7 @@ import edu.wpi.first.wpilibj.buttons.Button;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import edu.wpi.first.wpilibj.command.ConditionalCommand;
 import org.frc5687.deepspace.robot.commands.*;
-import org.frc5687.deepspace.robot.commands.drive.AutoScoreRocket;
-import org.frc5687.deepspace.robot.commands.drive.SeekHome;
+import org.frc5687.deepspace.robot.commands.drive.*;
 import org.frc5687.deepspace.robot.commands.intake.*;
 import org.frc5687.deepspace.robot.subsystems.Elevator;
 import org.frc5687.deepspace.robot.subsystems.Shifter;
@@ -20,6 +19,7 @@ import static org.frc5687.deepspace.robot.utils.Helpers.applySensitivityFactor;
 public class OI extends OutliersProxy {
     protected Gamepad _driverGamepad;
     protected Gamepad _operatorGamepad;
+    protected Launchpad _launchpad;
 
     private Button _operatorRightTrigger;
     private Button _operatorLeftTrigger;
@@ -75,6 +75,10 @@ public class OI extends OutliersProxy {
     public OI(){
         _driverGamepad = new Gamepad(0);
         _operatorGamepad = new Gamepad(1);
+        try {
+            _launchpad = new Launchpad(2);
+        } catch (Exception e) {
+        }
 
         _operatorRightTrigger = new AxisButton(_operatorGamepad, Gamepad.Axes.RIGHT_TRIGGER.getNumber(), Constants.OI.AXIS_BUTTON_THRESHHOLD);
         _operatorLeftTrigger = new AxisButton(_operatorGamepad, Gamepad.Axes.LEFT_TRIGGER.getNumber(), Constants.OI.AXIS_BUTTON_THRESHHOLD);
@@ -135,27 +139,31 @@ public class OI extends OutliersProxy {
 
         // _driverAButton.whenPressed(new AutoDrivePath(robot.getDriveTrain(), robot.getIMU()));
         _driverXButton.whenPressed(new ConditionalCommand(
-                new AutoAlign(robot.getDriveTrain(), robot.getIMU(), -151.0, 1.0, 2000, 1.0, "Aligning to back of left rocket.")) {
+                new TwoHatchRocket(robot, false, true)) {
             @Override
             protected boolean condition() {
                 return robot.getConfiguration()!=Robot.Configuration.climbing && robot.getConfiguration()!=Robot.Configuration.parked;
             }
         });
         _driverBButton.whenPressed(new ConditionalCommand(
-                new AutoAlign(robot.getDriveTrain(), robot.getIMU(), 151.0, 1.0, 2000, 1.0, "Aligning to back of right rocket." )) {
-               @Override
+                new TwoHatchRocket(robot, false, false)) {
+            @Override
                protected boolean condition() {
                    return robot.getConfiguration()!=Robot.Configuration.climbing && robot.getConfiguration()!=Robot.Configuration.parked;
                }
         });
 
-//        _driverAButton.whenPressed(new ConditionalCommand(
+        //_driverAButton.whenpressed
+
+        _driverAButton.whenPressed(new ConditionalCommand(
 //                new SeekHome(robot)) {
-//            @Override
-//            protected boolean condition() {
-//                return robot.getConfiguration()!=Robot.Configuration.climbing && robot.getConfiguration()!=Robot.Configuration.parked;
-//            }
-//        });
+//                new AutoAlign(robot.getDriveTrain(), robot.getIMU(), 180, 1,1000,5.0,"Aligning to Human Player Station")) {
+                new AutoDrive(robot.getDriveTrain(), robot.getIMU(), robot.getHatchIntake(), robot.getElevator(), 48, 0.3,false,true,0,"Drive 48 inches", 3000)) {
+            @Override
+            protected boolean condition() {
+                return robot.getConfiguration()!=Robot.Configuration.climbing && robot.getConfiguration()!=Robot.Configuration.parked;
+            }
+        });
 
         _driverAButton.whenPressed(new AutoDrivePath(robot.getDriveTrain(), robot.getIMU(), "LeftL2ToLeftRocket"));
         // _driverAButton.whenPressed(new AutoDrive(robot.getDriveTrain(), robot.getIMU(), 48.0, 0.5, true, true, 1000, "", 5000));
@@ -204,9 +212,10 @@ public class OI extends OutliersProxy {
         return speed;
     }
     public double getArmSpeed() {
-        double speed = -getSpeedFromAxis(_operatorGamepad, Gamepad.Axes.LEFT_Y.getNumber()) * Constants.Arm.MAX_DRIVE_SPEED;
-        speed = applyDeadband(speed, Constants.Arm.DEADBAND);
-        return applySensitivityFactor(speed, Constants.Arm.SENSITIVITY);
+        return 0;
+//        double speed = -getSpeedFromAxis(_operatorGamepad, Gamepad.Axes.LEFT_Y.getNumber()) * Constants.Arm.MAX_DRIVE_SPEED;
+//        speed = applyDeadband(speed, Constants.Arm.DEADBAND);
+//        return applySensitivityFactor(speed, Constants.Arm.SENSITIVITY);
     }
     public double getRollerSpeed() {
         double speed = getSpeedFromAxis(_operatorGamepad, Gamepad.Axes.LEFT_X.getNumber()) * Constants.Intake.MAX_ROLLER_SPEED;
@@ -317,5 +326,14 @@ public class OI extends OutliersProxy {
         return driverPOV == Constants.OI.OVERRIDE || operatorPOV == Constants.OI.OVERRIDE;
     }
 
+    public void setConsoleColor(boolean red, boolean green, boolean blue) {
+        if (_launchpad==null) { return; }
+        try {
+            _launchpad.setOutput(Constants.OI.RED_CHANNEL, red);
+            _launchpad.setOutput(Constants.OI.GREEN_CHANNEL, green);
+            _launchpad.setOutput(Constants.OI.BLUE_CHANNEL, blue);
+        } catch (Exception e) {
+        }
+    }
 }
 

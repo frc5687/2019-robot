@@ -1,14 +1,19 @@
 package org.frc5687.deepspace.robot;
 
+import edu.wpi.cscore.UsbCamera;
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.DriverStation;
 import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.frc5687.deepspace.robot.commands.KillAll;
+import org.frc5687.deepspace.robot.commands.SandstormPickup;
+import org.frc5687.deepspace.robot.commands.drive.TwoHatchRocket;
 import org.frc5687.deepspace.robot.subsystems.*;
 import org.frc5687.deepspace.robot.utils.*;
 
@@ -28,7 +33,7 @@ public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
     public static IdentityMode identityMode = IdentityMode.competition;
     private Configuration _configuration;
     private RioLogger.LogLevel _dsLogLevel = RioLogger.LogLevel.warn;
-    private RioLogger.LogLevel _fileLogLevel = RioLogger.LogLevel.warn;
+    private RioLogger.LogLevel _fileLogLevel = RioLogger.LogLevel.none;
 
     private int _updateTick = 0;
 
@@ -46,6 +51,11 @@ public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
     private CargoIntake _cargoIntake;
     private HatchIntake _hatchIntake;
     private PoseTracker _poseTracker;
+    private AutoChooser _autoChooser;
+
+    private Command _autoCommand;
+
+    private UsbCamera _driverCamera;
 
     private boolean _fmsConnected;
     /**
@@ -81,6 +91,7 @@ public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
         _limelight = new Limelight("limelight");
         _pdp = new PDP();
 
+        _autoChooser = new AutoChooser(getIdentityMode()==IdentityMode.competition);
         // Then subsystems....
         _shifter = new Shifter(this);
         _driveTrain = new DriveTrain(this);
@@ -96,11 +107,20 @@ public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
         // Must initialize buttons AFTER subsystems are allocated...
         _oi.initializeButtons(this);
 
+        try {
+            _driverCamera = CameraServer.getInstance().startAutomaticCapture(0);
+            _driverCamera.setResolution(160, 120);
+            _driverCamera.setFPS(30);
+        } catch (Exception e) {
+            DriverStation.reportError(e.getMessage(), true);
+        }
+
+
         // Initialize the other stuff
         _limelight.disableLEDs();
         _limelight.setStreamingMode(Limelight.StreamMode.PIP_SECONDARY);
         setConfiguration(Configuration.starting);
-        _arm.resetEncoders();
+        //_arm.resetEncoders();
         _arm.enableBrakeMode();
         _elevator.enableBrakeMode();
         _stilt.enableBrakeMode();
@@ -134,9 +154,27 @@ public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
      */
     @Override
     public void autonomousInit() {
+        _fmsConnected =  DriverStation.getInstance().isFMSAttached();
+        _driveTrain.enableBrakeMode();
         _limelight.disableLEDs();
         _limelight.setStreamingMode(Limelight.StreamMode.PIP_SECONDARY);
-        teleopInit();
+        AutoChooser.Mode mode = _autoChooser.getSelectedMode();
+        AutoChooser.Position position = _autoChooser.getSelectedPosition();
+        switch (mode) {
+            case NearAndTopRocket:
+                if (position!= AutoChooser.Position.Center) {
+                    // If we are in the center we can't do rocket hatches!
+                    _autoCommand = new TwoHatchRocket(this,
+                            position == AutoChooser.Position.LeftL2 || position == AutoChooser.Position.RightL2,
+                            position == AutoChooser.Position.LeftL1 || position == AutoChooser.Position.LeftL2);
+                }
+                break;
+        }
+        if (_autoCommand==null) {
+            _autoCommand = new SandstormPickup(this);
+        }
+        error("autoCommand is " + _autoCommand.getClass().getSimpleName());
+        _autoCommand.start();
     }
 
     public void teleopInit() {
@@ -203,6 +241,7 @@ public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
             _stilt.updateDashboard();
             _cargoIntake.updateDashboard();
             _hatchIntake.updateDashboard();
+            _autoChooser.updateDashboard();
             metric("imu/yaw", _imu.getYaw());
             metric("imu/pitch", _imu.getPitch());
             metric("imu/roll", _imu.getRoll());
@@ -276,6 +315,14 @@ public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
     private boolean _wasShocked = false;
 
     private void update() {
+
+        double timeLeft = DriverStation.getInstance().getMatchTime();
+        if (DriverStation.getInstance().isOperatorControl() && timeLeft <= Constants.FINAL_WARNING
+        && _configuration!=Configuration.climbing && _configuration != Configuration.parked) {
+            _lights.setColor(Constants.Lights.PULSING_YELLOW, 0);
+            _oi.setConsoleColor(false, true, true);
+        }
+
         if (_hatchIntake.isShockTriggered()) {
             if (!_wasShocked) {
                 _oi.pulseDriver(4);
@@ -287,6 +334,7 @@ public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
         }
         switch (_configuration) {
             case starting:
+                _oi.setConsoleColor(false, false, false);
                 if (DriverStation.getInstance().getAlliance()== DriverStation.Alliance.Red) {
                     _lights.setColor(Constants.Lights.BEATING_RED, 0);
                 } else if (DriverStation.getInstance().getAlliance()== DriverStation.Alliance.Blue) {
@@ -312,9 +360,11 @@ public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
                 if (_hatchIntake.isPointed()) {
                     _lights.setColor(Constants.Lights.SOLID_WHITE, 0);
                     setDashLEDs(true);
+                    _oi.setConsoleColor(true, true, true);
                 } else {
                     _lights.setColor(Constants.Lights.SOLID_YELLOW, 0);
                     setDashLEDs(false);
+                    _oi.setConsoleColor(false, false, false);
                 }
                 break;
             case cargo:
@@ -329,19 +379,25 @@ public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
                 //   No cargo? PALE
                 if (_cargoIntake.isEjecting()) {
                     _lights.setColor(Constants.Lights.SOLID_WHITE, 0);
+                    _oi.setConsoleColor(true, true, true);
                 } else if (_cargoIntake.isBallDetected()) {
-                    _lights.setColor(Constants.Lights.SOLID_RED, 0);
+                    _lights.setColor(Constants.Lights.SOLID_GREEN, 0);
+                    _oi.setConsoleColor(false, true, false);
                 } else if (_cargoIntake.isIntaking()) {
                     _lights.setColor(Constants.Lights.PULSING_RED, 0);
+                    _oi.setConsoleColor(true, false, false);
                 } else {
                     _lights.setColor(Constants.Lights.SOLID_PURPLE, 0);
+                    _oi.setConsoleColor(false, false, false);
                 }
                 break;
             case climbing:
+                _oi.setConsoleColor(false, false, false);
                 _lights.setColor(Constants.Lights.WHITE_SHOT, 0);
                 break;
             case parked:
                 _lights.setColor(Constants.Lights.CONFETTI, 0);
+                _oi.setConsoleColor(false, true, false);
                 break;
         }
         _wereLEDsOn = _limelight.areLEDsOn();

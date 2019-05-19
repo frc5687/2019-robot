@@ -98,6 +98,10 @@ public class Stilt extends OutliersSubsystem {
         return _downIR.getAverageValue() > Constants.Stilt.DOWN_IR_THRESHOLD;
     }
 
+    public boolean isOnSurfaceLow() {
+        return _downIR.getAverageValue() > Constants.Stilt.DOWN_IR_THRESHOLD_LOW;
+    }
+
     @Override
     protected void initDefaultCommand() {
         setDefaultCommand(new DriveStilt(this, _robot.getOI()));
@@ -112,5 +116,9 @@ public class Stilt extends OutliersSubsystem {
         metric("IRValue", _downIR.getAverageValue());
         metric("IRVoltage", _downIR.getAverageVoltage());
         metric("OnSurface", isOnSurface());
+    }
+
+    public boolean isTilted() {
+        return false; // _downIR.getAverageValue() > TILT_THRESHOLD;
     }
 }

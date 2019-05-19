@@ -6,6 +6,8 @@ import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.PIDOutput;
 import org.frc5687.deepspace.robot.Constants;
 import org.frc5687.deepspace.robot.subsystems.DriveTrain;
+import org.frc5687.deepspace.robot.subsystems.Elevator;
+import org.frc5687.deepspace.robot.subsystems.HatchIntake;
 
 public class AutoDrive extends OutliersCommand {
     private double _distance;
@@ -22,11 +24,13 @@ public class AutoDrive extends OutliersCommand {
 
     private DriveTrain _driveTrain;
     private AHRS _imu;
+    private HatchIntake _hatchIntake;
+    private Elevator _elevator;
 
     private double kPdistance = 0.1; // .05;
     private double kIdistance = 0.000; // .001;
     private double kDdistance = 0.8; //.1;
-    private double kTdistance = 0.5;
+    private double kTdistance = 1;
 
     private double kPangle = .001;
     private double kIangle = .0001;
@@ -42,7 +46,7 @@ public class AutoDrive extends OutliersCommand {
      * @param stopOnFinish Whether to stop the motors when we are done
      * @param angle The angle to drive, in degrees.  Pass 1000 to maintain robot's hading.
      */
-    public AutoDrive(DriveTrain driveTrain, AHRS imu, double distance, double speed, boolean usePID, boolean stopOnFinish, double angle, String stage, double timeout) {
+    public AutoDrive(DriveTrain driveTrain, AHRS imu, HatchIntake hatchIntake, Elevator elevator, double distance, double speed, boolean usePID, boolean stopOnFinish, double angle, String stage, double timeout) {
         super(timeout);
         requires(driveTrain);
         _speed = speed;
@@ -53,10 +57,13 @@ public class AutoDrive extends OutliersCommand {
         _stage = stage;
         _driveTrain = driveTrain;
         _imu = imu;
+        _hatchIntake = hatchIntake;
+        _elevator = elevator;
     }
 
     @Override
     protected void initialize() {
+        error("Starting AutoDrive");
         _driveTrain.resetDriveEncoders();
 
         _driveTrain.enableBrakeMode();
@@ -104,6 +111,7 @@ public class AutoDrive extends OutliersCommand {
         if (_usePID) {
             if (_distanceController.onTarget()) {
                error("AutoDrive stoped at " + _driveTrain.getDistance());
+               return true;
             }
         } else {
             info("AutoDrive nopid complete at " + _driveTrain.getDistance() + " inches");

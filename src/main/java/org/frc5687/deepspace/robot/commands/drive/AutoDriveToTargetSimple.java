@@ -34,12 +34,14 @@ public class AutoDriveToTargetSimple extends OutliersCommand {
     private double _angle;
     private double _turnSpeed;
     private boolean _targetSighted;
+    private boolean _finishFromDistance;
+    private double _distance;
     private long _lockEnd;
     private DriveState _driveState = DriveState.normal;
 
     private double _speed;
 
-    public AutoDriveToTargetSimple(DriveTrain driveTrain, AHRS imu, OI oi, Limelight limelight, Elevator elevator, CargoIntake cargoIntake, HatchIntake hatchIntake, PoseTracker poseTracker, double speed) {
+    public AutoDriveToTargetSimple(DriveTrain driveTrain, AHRS imu, OI oi, Limelight limelight, Elevator elevator, CargoIntake cargoIntake, HatchIntake hatchIntake, PoseTracker poseTracker, double speed, boolean finishFromDistance, double distance) {
         _driveTrain = driveTrain;
         _oi = oi;
         _imu = imu;
@@ -49,6 +51,8 @@ public class AutoDriveToTargetSimple extends OutliersCommand {
         _cargoIntake = cargoIntake;
         _hatchIntake = hatchIntake;
         _speed = speed;
+        _finishFromDistance = finishFromDistance;
+        _distance = distance;
         requires(_driveTrain);
 
         // logMetrics("StickSpeed", "StickRotation", "LeftPower", "RightPower", "LeftMasterAmps", "LeftFollowerAmps", "RightMasterAmps", "RightFollowerAmps", "TurnSpeed");
@@ -59,6 +63,7 @@ public class AutoDriveToTargetSimple extends OutliersCommand {
     @Override
     protected void initialize() {
         // create the _angleController here, just like in AutoDriveToTarget
+        error("Starting AutoSimple");
         _targetSighted = false;
         _driveState = DriveState.normal;
         _angleController = new PIDController(Constants.Auto.Drive.AnglePID.kP,Constants.Auto.Drive.AnglePID.kI,Constants.Auto.Drive.AnglePID.kD, _imu, new AngleListener(), 0.1);
@@ -172,6 +177,13 @@ public class AutoDriveToTargetSimple extends OutliersCommand {
 
     @Override
     protected boolean isFinished() {
+        if (_finishFromDistance) {
+            return _limelight.getTargetDistance() <= _distance;
+        }
+        if (!_elevator.isLimelightClear()) {
+            return true;
+        }
+//        return _oi.isOverridePressed() || _hatchIntake.isShockTriggered();
         return _oi.isOverridePressed() || _hatchIntake.isShockTriggered();
     }
 

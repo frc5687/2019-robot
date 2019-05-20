@@ -47,11 +47,12 @@ public class AutoChooser extends OutliersProxy {
   }
 
   public enum Position {
-        LeftL2(0, "Left L2"),
-        LeftL1(1, "Left L1"),
-        Center(2, "Center"),
-        RightL1(3, "Right L1"),
-        RightL2(4, "Right L2");
+        LeftHAB(0, "Left HAB"),
+        LeftPlatform(1, "Left Platform"),
+        CenterLeft(2, "Center Left"),
+        CenterRight(3, "Center Right"),
+        RightPlatform(4, "Right Platform"),
+        RightHAB(5, "Right HAB");
 
         private String _label;
         private int _value;

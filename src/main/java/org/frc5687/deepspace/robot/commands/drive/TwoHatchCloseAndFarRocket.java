@@ -17,15 +17,16 @@ public class TwoHatchCloseAndFarRocket extends CommandGroup {
         addSequential(new AutoAlign(robot.getDriveTrain(), robot.getIMU(), left ? -30 : 30, .7, 500, 2, "aligning to rocket"));
         addSequential(new AutoDriveToTargetSimple(robot.getDriveTrain(), robot.getIMU(), robot.getOI(), robot.getLimelight(), robot.getElevator(), robot.getCargoIntake(), robot.getHatchIntake(), robot.getPoseTracker(), .9, false, 0));
         addSequential(new PointClaw(robot.getHatchIntake()));
-        addSequential(new AutoDrive(robot.getDriveTrain(), robot.getIMU(), robot.getHatchIntake(), robot.getElevator(), -10, .7, false, true, 0, "reverse 12 inches", 1000));
-        addSequential(new AutoAlign(robot.getDriveTrain(), robot.getIMU(), left ? -170 : 170, .7, 1000, 2, "aligning to rocket"));
+        addSequential(new AutoDrive(robot.getDriveTrain(), robot.getIMU(), robot.getHatchIntake(), robot.getElevator(), -8, .7, false, true, 0, "reverse 12 inches", 1000));
+        addSequential(new AutoAlign(robot.getDriveTrain(), robot.getIMU(), left ? -175 : 175, .7, 1000, 2, "aligning to rocket"));
         addSequential(new AutoDriveToTargetSimple(robot.getDriveTrain(), robot.getIMU(), robot.getOI(), robot.getLimelight(), robot.getElevator(), robot.getCargoIntake(), robot.getHatchIntake(), robot.getPoseTracker(), .9, false, 0));
         addSequential(new GripClaw(robot.getHatchIntake()));
-        addSequential(new AutoDrive(robot.getDriveTrain(), robot.getIMU(), robot.getHatchIntake(), robot.getElevator(), -150, .7, false, true, 0, "reverse 12 inches", 1000));
-        addSequential(new AutoAlign(robot.getDriveTrain(), robot.getIMU(), 180, .7, 500, 2, "aligning to rocket"));
-        addSequential(new AutoDrive(robot.getDriveTrain(), robot.getIMU(), robot.getHatchIntake(), robot.getElevator(), -80, .7, false, true, 0, "reverse 12 inches", 1000));
-        addSequential(new AutoAlign(robot.getDriveTrain(), robot.getIMU(), -150, .7, 500, 2, "aligning to rocket"));
-        addSequential(new AutoDriveToTargetSimple(robot.getDriveTrain(), robot.getIMU(), robot.getOI(), robot.getLimelight(), robot.getElevator(), robot.getCargoIntake(), robot.getHatchIntake(), robot.getPoseTracker(), .9, false, 0));
+        addSequential(new AutoDrive(robot.getDriveTrain(), robot.getIMU(), robot.getHatchIntake(), robot.getElevator(), -10, .7, false, true, 0, "reverse 12 inches", 1000));
+        addSequential(new AutoAlign(robot.getDriveTrain(), robot.getIMU(), -175, .7, 1000, 2, "aligning to rocket"));
+        addSequential(new AutoDrive(robot.getDriveTrain(), robot.getIMU(), robot.getHatchIntake(), robot.getElevator(), -2, .7, false, true, 0, "reverse 12 inches", 1000));
+        addSequential(new AutoAlign(robot.getDriveTrain(), robot.getIMU(), -133, .7, 1000, 2, "aligning to rocket"));
+//        addSequential(new AutoDriveToTargetSimple(robot.getDriveTrain(), robot.getIMU(), robot.getOI(), robot.getLimelight(), robot.getElevator(), robot.getCargoIntake(), robot.getHatchIntake(), robot.getPoseTracker(), .9, false, 0));
+//        addSequential(new PointClaw(robot.getHatchIntake()));
     }
 
 }

@@ -22,14 +22,13 @@ public class AutoDrivePath extends OutliersCommand {
     private Trajectory _rightTrajectory;
     private DistanceFollower _leftFollower;
     private DistanceFollower _rightFollower;
+    private Notifier _pathNotifier;
 
     private DriveTrain _driveTrain;
     private AHRS _imu;
     private Limelight _limelight;
     private PoseTracker _poseTracker;
 
-    private PIDController _angleController;
-//    private PIDListener _anglePID;
     private double kPangle = .001;
     private double kIangle = .0001;
     private double kDangle = .001;
@@ -39,6 +38,7 @@ public class AutoDrivePath extends OutliersCommand {
     private State _state;
 
     private boolean _backwards = false;
+    private int _direction;
     private boolean _useVisionAngle;
     private double _visionAngle;
 
@@ -49,11 +49,12 @@ public class AutoDrivePath extends OutliersCommand {
         _limelight = limelight;
         _poseTracker = poseTracker;
         _backwards = backwards;
+        _direction = _backwards ? -1 : 1;
 
         _path = path;
         info("Loading trajectories for " + path);
-        _leftTrajectory = PathfinderFRC.getTrajectory(_path + ".right");
-        _rightTrajectory = PathfinderFRC.getTrajectory(_path + ".left");
+        _leftTrajectory = PathfinderFRC.getTrajectory(_path + ".left");
+        _rightTrajectory = PathfinderFRC.getTrajectory(_path + ".right");
         info("Left has " + _leftTrajectory.length() + " segments.");
         info("Right has " + _rightTrajectory.length() + " segments.");
         _trackingThreshold = _leftTrajectory.length() - trackingSegments;
@@ -76,15 +77,20 @@ public class AutoDrivePath extends OutliersCommand {
         }
         _state = State.normal;
 
-        info("COnfiguring follower PID");
+        error("COnfiguring follower PID");
+        error("Backwards=" + _backwards + " and direction=" + _direction);
         _leftFollower.configurePIDVA(0.1, 0.0, 0.001, 1 / Constants.DriveTrain.MAX_SPEED_IPS, 0);
         _rightFollower.configurePIDVA(0.1, 0.0, 0.001, 1 / Constants.DriveTrain.MAX_SPEED_IPS, 0);
 
+        _pathNotifier = new Notifier(this::run);
+        _pathNotifier.startPeriodic(_leftTrajectory.get(0).dt);
         _index = 0;
     }
 
     @Override
     protected void execute() {
+    }
+    public void run() {
         _index++;
         metric("Segment", _index);
         metric("State",_state.name());
@@ -122,10 +128,10 @@ public class AutoDrivePath extends OutliersCommand {
                 }
                 break;
         }
-        double leftDistance = _driveTrain.getLeftDistance() * (_backwards ? -1 : 1);
-        double rightDistance = _driveTrain.getRightDistance() * (_backwards ? -1 : 1);
-        double leftSpeed = _leftFollower.calculate(leftDistance) * (_backwards ? -1 : 1);
-        double rightSpeed = _rightFollower.calculate(rightDistance) * (_backwards ? -1 : 1);
+        double leftDistance = _driveTrain.getLeftDistance() * _direction;
+        double rightDistance = _driveTrain.getRightDistance() * _direction;
+        double leftSpeed = _leftFollower.calculate(_backwards ? rightDistance : leftDistance) * _direction;
+        double rightSpeed = _rightFollower.calculate(_backwards ? leftDistance : rightDistance) * _direction;
         double heading = _imu.getYaw();
 
         if (_backwards) { heading = Pathfinder.boundHalfDegrees(heading + 180); }
@@ -163,6 +169,7 @@ public class AutoDrivePath extends OutliersCommand {
         super.end();
         _leftFollower.reset();
         _rightFollower.reset();
+        if (_pathNotifier != null) { _pathNotifier.stop(); }
         _limelight.disableLEDs();
         info("Ending AutoDrivePath");
     }

@@ -17,7 +17,7 @@ public class AutoScoreDoubleRocket extends CommandGroup {
         addSequential(new SandstormPickup(robot));
         addSequential(new AutoDrivePath(robot.getDriveTrain(), robot.getIMU(), robot.getLimelight(), robot.getPoseTracker(), start +"To" + rocket, 80, false));
         addSequential(new PointClaw(robot.getHatchIntake()));
-        addSequential(new AutoDrive(robot.getDriveTrain(), robot.getIMU(), -12, .6, false, true, 1000, "Retreat", 1000));
+        addSequential(new AutoDrive(robot.getDriveTrain(), robot.getIMU(), robot.getHatchIntake(), robot.getElevator(),-12, .6, false, true, 1000, "Retreat", 1000));
         addSequential(new AutoAlign(robot.getDriveTrain(), robot.getIMU(), left ? -179.9 : 179.9, 1.0, 1000, 1.0, "Align Home"));
         addSequential(new GripClaw(robot.getHatchIntake()));
         addSequential(new PointClaw(robot.getHatchIntake()));
@@ -26,7 +26,7 @@ public class AutoScoreDoubleRocket extends CommandGroup {
         addSequential(new AutoDrivePath(robot.getDriveTrain(), robot.getIMU(), robot.getLimelight(), robot.getPoseTracker(), loading +"To" + center, 0, true));
         addSequential(new AutoDrivePath(robot.getDriveTrain(), robot.getIMU(), robot.getLimelight(), robot.getPoseTracker(), center +"To" + farRocket, 80, false));
         addSequential(new PointClaw(robot.getHatchIntake()));
-        addSequential(new AutoDrive(robot.getDriveTrain(), robot.getIMU(), -12, .6, false, true, 1000, "Retrieve", 1000));
+        addSequential(new AutoDrive(robot.getDriveTrain(), robot.getIMU(), robot.getHatchIntake(),robot.getElevator(), -12, .6, false, true, 1000, "Retrieve", 1000));
         addSequential(new AutoAlign(robot.getDriveTrain(), robot.getIMU(), left ? 180 : -180, 1.0, 1000, 1.0, "Align Cargo Ship"));
         addSequential(new CargoMode(robot));
     }

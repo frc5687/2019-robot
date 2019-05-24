@@ -37,8 +37,6 @@ public class AutoDrivePath extends OutliersCommand {
     private String _path;
     private State _state;
 
-    private boolean _backwards = false;
-    private int _direction;
     private boolean _useVisionAngle;
     private double _visionAngle;
 
@@ -48,13 +46,11 @@ public class AutoDrivePath extends OutliersCommand {
         _imu = imu;
         _limelight = limelight;
         _poseTracker = poseTracker;
-        _backwards = backwards;
-        _direction = _backwards ? -1 : 1;
 
         _path = path;
         info("Loading trajectories for " + path);
-        _leftTrajectory = PathfinderFRC.getTrajectory(_path + ".left");
-        _rightTrajectory = PathfinderFRC.getTrajectory(_path + ".right");
+        _leftTrajectory = PathfinderFRC.getTrajectory(_path + ".right");
+        _rightTrajectory = PathfinderFRC.getTrajectory(_path + ".left");
         info("Left has " + _leftTrajectory.length() + " segments.");
         info("Right has " + _rightTrajectory.length() + " segments.");
         _trackingThreshold = _leftTrajectory.length() - trackingSegments;
@@ -68,17 +64,13 @@ public class AutoDrivePath extends OutliersCommand {
         super.initialize();
         _driveTrain.resetDriveEncoders();
         info("Allocating followers");
-        if (!_backwards) {
-            _leftFollower = new DistanceFollower(_leftTrajectory);
-            _rightFollower = new DistanceFollower(_rightTrajectory);
-        } else {
-            _leftFollower = new DistanceFollower(_rightTrajectory);
-            _rightFollower = new DistanceFollower(_leftTrajectory);
-        }
+
+        _leftFollower = new DistanceFollower(_leftTrajectory);
+        _rightFollower = new DistanceFollower(_rightTrajectory);
+
         _state = State.normal;
 
         error("COnfiguring follower PID");
-        error("Backwards=" + _backwards + " and direction=" + _direction);
         _leftFollower.configurePIDVA(0.1, 0.0, 0.001, 1 / Constants.DriveTrain.MAX_SPEED_IPS, 0);
         _rightFollower.configurePIDVA(0.1, 0.0, 0.001, 1 / Constants.DriveTrain.MAX_SPEED_IPS, 0);
 
@@ -128,13 +120,11 @@ public class AutoDrivePath extends OutliersCommand {
                 }
                 break;
         }
-        double leftDistance = _driveTrain.getLeftDistance() * _direction;
-        double rightDistance = _driveTrain.getRightDistance() * _direction;
-        double leftSpeed = _leftFollower.calculate(_backwards ? rightDistance : leftDistance) * _direction;
-        double rightSpeed = _rightFollower.calculate(_backwards ? leftDistance : rightDistance) * _direction;
+        double leftDistance = _driveTrain.getLeftDistance();
+        double rightDistance = _driveTrain.getRightDistance();
+        double leftSpeed = _leftFollower.calculate(leftDistance);
+        double rightSpeed = _rightFollower.calculate(rightDistance);
         double heading = _imu.getYaw();
-
-        if (_backwards) { heading = Pathfinder.boundHalfDegrees(heading + 180); }
 
         double desiredHeading = Pathfinder.boundHalfDegrees(Pathfinder.r2d(_leftFollower.getHeading()));
         double headingDifference = Pathfinder.boundHalfDegrees((_useVisionAngle ? _visionAngle : desiredHeading) - heading);

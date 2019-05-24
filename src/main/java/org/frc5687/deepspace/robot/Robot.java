@@ -171,7 +171,7 @@ public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
                 }
                 break;
             case ReversePathTest:
-                _autoCommand = new AutoDrivePath(_driveTrain, _imu, _limelight, _poseTracker, "LeftTest", 0, false);
+                _autoCommand = new AutoDrivePath(_driveTrain, _imu, _limelight, _poseTracker, "LeftTest", 0, true);
                 break;
         }
         if (_autoCommand==null) {

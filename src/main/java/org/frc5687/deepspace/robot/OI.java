@@ -18,6 +18,8 @@ import static org.frc5687.deepspace.robot.utils.Helpers.applySensitivityFactor;
 
 public class OI extends OutliersProxy {
     protected Gamepad _driverGamepad;
+    protected Joystick _driverLeftjoystick;
+    protected Joystick _driverRightjoystick;
     protected Gamepad _operatorGamepad;
     protected Launchpad _launchpad;
 
@@ -75,8 +77,10 @@ public class OI extends OutliersProxy {
     public OI(){
         _driverGamepad = new Gamepad(0);
         _operatorGamepad = new Gamepad(1);
+        _driverLeftjoystick = new Joystick(2);
+        _driverRightjoystick = new Joystick(3);
         try {
-            _launchpad = new Launchpad(2);
+            _launchpad = new Launchpad(4);
         } catch (Exception e) {
         }
 
@@ -198,13 +202,13 @@ public class OI extends OutliersProxy {
         return _driverRightYAxisUpButton.get();
     }
     public double getDriveSpeed() {
-        double speed = -getSpeedFromAxis(_driverGamepad, Gamepad.Axes.LEFT_Y.getNumber());
+        double speed = -getSpeedFromAxis(_driverLeftjoystick, _driverLeftjoystick.getYChannel());
         speed = applyDeadband(speed, Constants.DriveTrain.DEADBAND);
         return speed;
     }
 
     public double getDriveRotation() {
-        double speed = getSpeedFromAxis(_driverGamepad, Gamepad.Axes.RIGHT_X.getNumber());
+        double speed = getSpeedFromAxis(_driverRightjoystick, _driverRightjoystick.getXChannel());
         speed = applyDeadband(speed, Constants.DriveTrain.DEADBAND);
         return speed;
     }

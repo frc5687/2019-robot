@@ -38,10 +38,11 @@ public class AutoDriveToTargetSimple extends OutliersCommand {
     private double _distance;
     private long _lockEnd;
     private DriveState _driveState = DriveState.normal;
+    private boolean _ignoreElevatorHeight = false;
 
     private double _speed;
 
-    public AutoDriveToTargetSimple(DriveTrain driveTrain, AHRS imu, OI oi, Limelight limelight, Elevator elevator, CargoIntake cargoIntake, HatchIntake hatchIntake, PoseTracker poseTracker, double speed, boolean finishFromDistance, double distance) {
+    public AutoDriveToTargetSimple(DriveTrain driveTrain, AHRS imu, OI oi, Limelight limelight, Elevator elevator, CargoIntake cargoIntake, HatchIntake hatchIntake, PoseTracker poseTracker, double speed, boolean finishFromDistance, double distance, boolean ignoreElevatorHeight) {
         _driveTrain = driveTrain;
         _oi = oi;
         _imu = imu;
@@ -53,6 +54,7 @@ public class AutoDriveToTargetSimple extends OutliersCommand {
         _speed = speed;
         _finishFromDistance = finishFromDistance;
         _distance = distance;
+        _ignoreElevatorHeight = ignoreElevatorHeight;
         requires(_driveTrain);
 
         // logMetrics("StickSpeed", "StickRotation", "LeftPower", "RightPower", "LeftMasterAmps", "LeftFollowerAmps", "RightMasterAmps", "RightFollowerAmps", "TurnSpeed");
@@ -180,7 +182,7 @@ public class AutoDriveToTargetSimple extends OutliersCommand {
         if (_finishFromDistance) {
             return _limelight.getTargetDistance() <= _distance;
         }
-        if (!_elevator.isLimelightClear()) {
+        if (!_ignoreElevatorHeight && !_elevator.isLimelightClear()) {
             error("Elevator is too high");
             error("Elevator is at" + _elevator.getPosition());
             return true;

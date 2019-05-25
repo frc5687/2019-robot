@@ -131,8 +131,8 @@ public class AutoDrivePath extends OutliersCommand {
         double leftSpeed = _leftFollower.calculate(leftDistance) * _direction;
         double rightSpeed = _rightFollower.calculate(rightDistance) * _direction;
         double yaw = _imu.getYaw();
-        //double heading = _backwards ? Pathfinder.boundHalfDegrees(yaw + 180) : yaw;
-        double heading = yaw;
+        double heading = _backwards ? Pathfinder.boundHalfDegrees(yaw + 180) : yaw;
+        //double heading = yaw;
 
         double desiredHeading = Pathfinder.boundHalfDegrees(Pathfinder.r2d(_leftFollower.getHeading()));
         double headingDifference = Pathfinder.boundHalfDegrees((_useVisionAngle ? _visionAngle : desiredHeading) - heading);

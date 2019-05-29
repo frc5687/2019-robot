@@ -110,7 +110,7 @@ public class OI extends OutliersProxy {
 
         _driverRightStickButton = new JoystickButton(_driverGamepad, Gamepad.Buttons.RIGHT_STICK.getNumber());
 
-        _driverRightYAxisUpButton = new AxisButton(_driverGamepad,Gamepad.Axes.RIGHT_Y.getNumber(), -.75);
+        _driverRightYAxisUpButton = new AxisButton(_driverRightjoystick, _driverRightjoystick.getYChannel(), -.75);
         _driverRightYAxisDownButton = new AxisButton(_driverGamepad,Gamepad.Axes.RIGHT_Y.getNumber(), 0.75);
 
         _operatorStartButton = new JoystickButton(_operatorGamepad, Gamepad.Buttons.START.getNumber());

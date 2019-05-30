@@ -17,7 +17,7 @@ public class TwoHatchCargoShip extends CommandGroup {
         addParallel(new SandstormPickup(robot));
         addSequential(new AutoDriveToTargetSimple(robot.getDriveTrain(), robot.getIMU(), robot.getOI(),robot.getLimelight(), robot.getElevator(), robot.getCargoIntake(), robot.getHatchIntake(), robot.getPoseTracker(), .7, false, 0, true));
         addSequential(new PointClaw(robot.getHatchIntake()));
-        addSequential(new AutoDrive(robot.getDriveTrain(), robot.getIMU(), robot.getHatchIntake(), robot.getElevator(), -12, .5, false, true, 0, "Backing away from CargoShip", 1000));
+        addSequential(new AutoDrive(robot.getDriveTrain(), robot.getIMU(), robot.getHatchIntake(), robot.getElevator(), -8, .5, false, true, 0, "Backing away from CargoShip", 1000));
         addSequential(new AutoAlign(robot.getDriveTrain(), robot.getIMU(), left ? 90 : -90, 1,1000, 2,"Turning to back up near Human Player Station"));
         addSequential(new AutoAlign(robot.getDriveTrain(), robot.getIMU(), left ? -170 : 170, 1,1000, 2,"Aligning to Human Player Station"));
         addSequential(new AutoDriveToTargetSimple(robot.getDriveTrain(), robot.getIMU(), robot.getOI(), robot.getLimelight(), robot.getElevator(), robot.getCargoIntake(), robot.getHatchIntake(), robot.getPoseTracker(), .7,false, 0, false));

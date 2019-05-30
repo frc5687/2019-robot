@@ -191,9 +191,6 @@ public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
                         position == AutoChooser.Position.LeftHAB || position == AutoChooser.Position.RightHAB,
                         position == AutoChooser.Position.CenterLeft || position == AutoChooser.Position.LeftHAB);
                 break;
-            case ReversePathTest:
-                _autoCommand = new AutoDrivePath(_driveTrain, _imu, _limelight, _poseTracker, "LeftTest", 0, true);
-                break;
         }
         if (_autoCommand==null) {
             _autoCommand = new SandstormPickup(this);

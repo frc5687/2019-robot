@@ -74,8 +74,7 @@ public class AutoChooser extends OutliersProxy {
         NearRocket(4, "Near Rocket"),
         NearAndTopRocket(5, "Near and Top Rocket"),
         NearAndFarRocket(6, "Near and Far Rocket"),
-        CargoFaceAndNearRocket(7, "Cargo Face and Near Rocket"),
-        ReversePathTest(8, "Reverse Path Test");
+        CargoFaceAndNearRocket(7, "Cargo Face and Near Rocket");
 
         private String _label;
         private int _value;

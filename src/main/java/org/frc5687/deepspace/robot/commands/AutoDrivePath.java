@@ -60,7 +60,7 @@ public class AutoDrivePath extends OutliersCommand {
         info("Left has " + _leftTrajectory.length() + " segments.");
         info("Right has " + _rightTrajectory.length() + " segments.");
         _trackingThreshold = _leftTrajectory.length() - trackingSegments;
-        logMetrics("Segment", "State", "LeftDistance", "RightDistance", "LeftSpeed","RightSpeed","Yaw","Heading","VisionHeading","DesiredHeading","HeadingDifference", "Turn","LeftOutput","RightOutput");
+        // logMetrics("Segment", "State", "LeftDistance", "RightDistance", "LeftSpeed","RightSpeed","Yaw","Heading","VisionHeading","DesiredHeading","HeadingDifference", "Turn","LeftOutput","RightOutput");
 
     }
 
@@ -138,7 +138,7 @@ public class AutoDrivePath extends OutliersCommand {
         double headingDifference = Pathfinder.boundHalfDegrees((_useVisionAngle ? _visionAngle : desiredHeading) - heading);
         double turn =  Constants.AutoDrivePath.K_TURN * (1.0/80.0) * headingDifference;
 
-        metric("LeftDistance",leftDistance);
+/*        metric("LeftDistance",leftDistance);
         metric("RightDistance", rightDistance);
         metric("LeftSpeed",leftSpeed);
         metric("RightSpeed", rightSpeed);
@@ -150,7 +150,7 @@ public class AutoDrivePath extends OutliersCommand {
 
         metric("LeftOutput",leftSpeed + turn);
         metric("RightOutput", rightSpeed - turn);
-
+*/
         _driveTrain.setPower(leftSpeed + turn, rightSpeed - turn, true);
     }
 

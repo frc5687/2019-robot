@@ -5,7 +5,7 @@ public class Constants {
      *
      */
     public static final int CYCLES_PER_SECOND = 50;
-    public static final int TICKS_PER_UPDATE = 10;
+    public static final int TICKS_PER_UPDATE = 100;
     public static final double METRIC_FLUSH_PERIOD = 1.0;
     public static final int TICKS_PER_UPDATE_COMP = 100;
     public static final double FINAL_WARNING = 15;
@@ -21,8 +21,8 @@ public class Constants {
         public static final double TURNING_SENSITIVITY_LOW_GEAR = 1;
 
         public static final double CREEP_FACTOR = 0.25;
-        public static final double LEFT_DISTANCE_PER_PULSE = 0.0283185840707964601769911504424;
-        public static final double RIGHT_DISTANCE_PER_PULSE = 0.0283185840707964601769911504424;
+        public static final double LEFT_DISTANCE_PER_PULSE = 0.0286206896551724;
+        public static final double RIGHT_DISTANCE_PER_PULSE = 0.0286206896551724;
 
 
         public static final boolean LEFT_MOTORS_INVERTED = true;

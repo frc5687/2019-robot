@@ -5,7 +5,7 @@ import org.frc5687.deepspace.robot.Robot;
 
 public class AutoLaunch extends CommandGroup {
     public AutoLaunch(Robot robot) {
-        addSequential(new AutoDrive(robot.getDriveTrain(),robot.getIMU(), robot.getHatchIntake(), robot.getElevator(),5,.5,false, true, 0, "", 2000));
+        addSequential(new AutoDrive(robot.getDriveTrain(),robot.getIMU(), robot.getHatchIntake(), robot.getElevator(),16,.5,false, true, 0, "", 2000));
 //        addSequential(new SandstormPickup(robot));
     }
 }

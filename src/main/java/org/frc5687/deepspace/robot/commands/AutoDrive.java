@@ -114,12 +114,26 @@ public class AutoDrive extends OutliersCommand {
     protected boolean isFinished() {
         if (_usePID) {
             if (_distanceController.onTarget()) {
-               error("AutoDrive stoped at " + _driveTrain.getDistance());
+               error("AutoDrive stopped at " + _driveTrain.getDistance());
                return true;
             }
         } else {
-            info("AutoDrive nopid complete at " + _driveTrain.getDistance() + " inches");
-            return _distance == 0 ? true : _distance < 0 ? (_driveTrain.getDistance() < _distance) : (_driveTrain.getDistance() > _distance);
+            if (_distance == 0) {
+                info("AutoDrive nopid complete at " + _driveTrain.getDistance() + " inches");
+                return true;
+            } else if (_distance < 0 && _driveTrain.getDistance() < _distance) {
+                info("AutoDrive nopid complete at " + _driveTrain.getDistance() + " inches");
+                if (_stopOnFinish) {
+                    _driveTrain.setPower(0, 0, true);
+                }
+                return true;
+            } else if (_distance > 0 && _driveTrain.getDistance() > _distance)  {
+                info("AutoDrive nopid complete at " + _driveTrain.getDistance() + " inches");
+                if (_stopOnFinish) {
+                    _driveTrain.setPower(0, 0, true);
+                }
+                return true;
+            }
         }
         return false;
     }
@@ -130,21 +144,18 @@ public class AutoDrive extends OutliersCommand {
     protected void end() {
         super.end();
         if (isTimedOut()) {
-            warn("AutoDrive Finished (" + _driveTrain.getDistance() + ", " + (_driveTrain.getYaw() - _angleController.getSetpoint()) + ") " + (_stage ==null?"": _stage));
+            error("AutoDrive timed out (" + _driveTrain.getDistance() + ", " + (_driveTrain.getYaw() - _angleController.getSetpoint()) + ") " + (_stage ==null?"": _stage));
         } else {
-            info("AutoDrive Finished (" + _driveTrain.getDistance() + ", " + (_driveTrain.getYaw() - _angleController.getSetpoint()) + ") " + (_stage == null ? "" : _stage));
+            error("AutoDrive Finished (" + _driveTrain.getDistance() + ", " + (_driveTrain.getYaw() - _angleController.getSetpoint()) + ") " + (_stage == null ? "" : _stage));
         }
-        error("AutoDrive Finished (" + _driveTrain.getDistance() + ", " + (_driveTrain.getYaw() - _angleController.getSetpoint()) + ") " + (_stage ==null?"": _stage));
-        _driveTrain.disableBrakeMode();
-        _angleController.disable();
         if (_distanceController !=null) {
             _distanceController.disable();
         }
         if (_stopOnFinish) {
-            info("Stopping at ." + _driveTrain.getDistance());
-            _driveTrain.enableBrakeMode();
+            error("AutoDrive stopping at " + _driveTrain.getDistance());
             _driveTrain.setPower(0, 0, true);
         }
+        _angleController.disable();
     }
 
 

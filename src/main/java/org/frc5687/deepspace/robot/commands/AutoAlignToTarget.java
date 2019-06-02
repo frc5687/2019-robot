@@ -154,7 +154,6 @@ public class AutoAlignToTarget extends OutliersCommand implements PIDOutput {
     @Override
     protected void end() {
         _driveTrain.setPower(0, 0, true);
-        _driveTrain.disableBrakeMode();
         error("AutoAlign finished: angle = " + _imu.getYaw() + ", time = " + (System.currentTimeMillis() - _startTimeMillis));
         _controller.disable();
         error("AutoAlign.end() controller disabled");

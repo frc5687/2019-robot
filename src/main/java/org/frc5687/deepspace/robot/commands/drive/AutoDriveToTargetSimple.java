@@ -140,7 +140,7 @@ public class AutoDriveToTargetSimple extends OutliersCommand {
         } else if (_driveState == DriveState.normal) {
             if (speed==0 && _angleController.isEnabled()) {
                 metric("PID/AngleOut", _anglePIDOut);
-                metric("PID/Yaw", _imu.getYaw());
+                //metric("PID/Yaw", _imu.getYaw());
                 _driveTrain.cheesyDrive(speed, speed==0 ?  0 :_anglePIDOut, false, true);
             } else {
                 _driveTrain.cheesyDrive(speed, 0, _oi.isCreepPressed(), false);
@@ -149,8 +149,8 @@ public class AutoDriveToTargetSimple extends OutliersCommand {
             _driveTrain.cheesyDrive(speed, _turnSpeed, false, true);
         }
         metric("Speed", speed);
-        metric("LeftPower", _driveTrain.getLeftPower());
-        metric("RightPower", _driveTrain.getRightPower());
+        //metric("LeftPower", _driveTrain.getLeftPower());
+        //metric("RightPower", _driveTrain.getRightPower());
         metric("TurnSpeed", _turnSpeed);
     }
 
@@ -169,11 +169,11 @@ public class AutoDriveToTargetSimple extends OutliersCommand {
         double offsetCompensation = yaw - poseAngle;
         double targetAngle = limeLightAngle - offsetCompensation;
 
-        metric("Pose", pose==null?0:pose.getMillis());
-        metric("Yaw", yaw);
-        metric("PoseAngle", poseAngle);
-        metric("LimelightAngle", limeLightAngle);
-        metric("TargetAngle", targetAngle);
+        //metric("Pose", pose==null?0:pose.getMillis());
+        //metric("Yaw", yaw);
+        //metric("PoseAngle", poseAngle);
+        //metric("LimelightAngle", limeLightAngle);
+        //metric("TargetAngle", targetAngle);
 
         return targetAngle * STEER_K;
     }

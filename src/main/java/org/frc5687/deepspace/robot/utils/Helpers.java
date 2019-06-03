@@ -82,4 +82,8 @@ public class Helpers {
         return capped*input*input*input + (1-capped)*input;
     }
 
+    public static boolean epsilonEquals(double a, double b, double epsilon) {
+        return (a - epsilon <= b) && (a + epsilon >= b);
+    }
+
 }

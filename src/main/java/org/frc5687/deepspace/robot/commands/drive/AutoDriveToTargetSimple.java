@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.PIDOutput;
 import org.frc5687.deepspace.robot.Constants;
 import org.frc5687.deepspace.robot.OI;
+import org.frc5687.deepspace.robot.Robot;
 import org.frc5687.deepspace.robot.commands.OutliersCommand;
 import org.frc5687.deepspace.robot.subsystems.CargoIntake;
 import org.frc5687.deepspace.robot.subsystems.DriveTrain;
@@ -38,10 +39,21 @@ public class AutoDriveToTargetSimple extends OutliersCommand {
     private double _distance;
     private long _lockEnd;
     private DriveState _driveState = DriveState.normal;
+    private boolean _ignoreElevatorHeight = false;
 
     private double _speed;
 
-    public AutoDriveToTargetSimple(DriveTrain driveTrain, AHRS imu, OI oi, Limelight limelight, Elevator elevator, CargoIntake cargoIntake, HatchIntake hatchIntake, PoseTracker poseTracker, double speed, boolean finishFromDistance, double distance) {
+    private double _mediumZone;
+    private double _slowZone;
+
+    private double _slowSpeed;
+    private double _mediumSpeed;
+
+    public AutoDriveToTargetSimple(DriveTrain driveTrain, AHRS imu, OI oi, Limelight limelight, Elevator elevator, CargoIntake cargoIntake, HatchIntake hatchIntake, PoseTracker poseTracker, double speed, boolean finishFromDistance, double distance, boolean ignoreElevatorHeight) {
+        this(driveTrain,imu,oi,limelight,elevator,cargoIntake,hatchIntake,poseTracker, speed, finishFromDistance,distance, ignoreElevatorHeight, 0);
+    }
+
+    public AutoDriveToTargetSimple(DriveTrain driveTrain, AHRS imu, OI oi, Limelight limelight, Elevator elevator, CargoIntake cargoIntake, HatchIntake hatchIntake, PoseTracker poseTracker, double speed, boolean finishFromDistance, double distance, boolean ignoreElevatorHeight, int pipeline) {
         _driveTrain = driveTrain;
         _oi = oi;
         _imu = imu;
@@ -53,6 +65,7 @@ public class AutoDriveToTargetSimple extends OutliersCommand {
         _speed = speed;
         _finishFromDistance = finishFromDistance;
         _distance = distance;
+        _ignoreElevatorHeight = ignoreElevatorHeight;
         requires(_driveTrain);
 
         // logMetrics("StickSpeed", "StickRotation", "LeftPower", "RightPower", "LeftMasterAmps", "LeftFollowerAmps", "RightMasterAmps", "RightFollowerAmps", "TurnSpeed");
@@ -71,6 +84,13 @@ public class AutoDriveToTargetSimple extends OutliersCommand {
         _angleController.setOutputRange(-Constants.Auto.Drive.AnglePID.MAX_DIFFERENCE, Constants.Auto.Drive.AnglePID.MAX_DIFFERENCE);
         _angleController.setAbsoluteTolerance(Constants.Auto.Drive.AnglePID.TOLERANCE);
         _angleController.setContinuous();
+
+        _mediumZone = Robot.pickConstant(Constants.DriveTrain.MEDIUM_ZONE_COMP, Constants.DriveTrain.MEDIUM_ZONE_PROTO);
+        _slowZone = Robot.pickConstant(Constants.DriveTrain.SLOW_ZONE_COMP, Constants.DriveTrain.SLOW_ZONE_PROTO);
+
+        _mediumSpeed = Robot.pickConstant(Constants.DriveTrain.MEDIUM_SPEED_COMP, Constants.DriveTrain.MEDIUM_SPEED_PROTO);
+        _slowSpeed = Robot.pickConstant(Constants.DriveTrain.SLOW_SPEED_COMP, Constants.DriveTrain.SLOW_SPEED_PROTO);
+
     }
 
     @Override
@@ -120,7 +140,7 @@ public class AutoDriveToTargetSimple extends OutliersCommand {
         } else if (_driveState == DriveState.normal) {
             if (speed==0 && _angleController.isEnabled()) {
                 metric("PID/AngleOut", _anglePIDOut);
-                metric("PID/Yaw", _imu.getYaw());
+                //metric("PID/Yaw", _imu.getYaw());
                 _driveTrain.cheesyDrive(speed, speed==0 ?  0 :_anglePIDOut, false, true);
             } else {
                 _driveTrain.cheesyDrive(speed, 0, _oi.isCreepPressed(), false);
@@ -129,8 +149,8 @@ public class AutoDriveToTargetSimple extends OutliersCommand {
             _driveTrain.cheesyDrive(speed, _turnSpeed, false, true);
         }
         metric("Speed", speed);
-        metric("LeftPower", _driveTrain.getLeftPower());
-        metric("RightPower", _driveTrain.getRightPower());
+        //metric("LeftPower", _driveTrain.getLeftPower());
+        //metric("RightPower", _driveTrain.getRightPower());
         metric("TurnSpeed", _turnSpeed);
     }
 
@@ -149,11 +169,11 @@ public class AutoDriveToTargetSimple extends OutliersCommand {
         double offsetCompensation = yaw - poseAngle;
         double targetAngle = limeLightAngle - offsetCompensation;
 
-        metric("Pose", pose==null?0:pose.getMillis());
-        metric("Yaw", yaw);
-        metric("PoseAngle", poseAngle);
-        metric("LimelightAngle", limeLightAngle);
-        metric("TargetAngle", targetAngle);
+        //metric("Pose", pose==null?0:pose.getMillis());
+        //metric("Yaw", yaw);
+        //metric("PoseAngle", poseAngle);
+        //metric("LimelightAngle", limeLightAngle);
+        //metric("TargetAngle", targetAngle);
 
         return targetAngle * STEER_K;
     }
@@ -163,8 +183,8 @@ public class AutoDriveToTargetSimple extends OutliersCommand {
         if (_driveState!= DriveState.normal) {
             if(_limelight.isTargetSighted()) {
                 double distance = _limelight.getTargetDistance();
-                if (distance < 100) limit = .6;
-                if (distance < 20) limit = 0.3;
+                if (distance < _mediumZone) limit = _mediumSpeed;
+                if (distance < _slowZone) limit = _slowSpeed;
             } else {
                 limit = 0.75;
             }
@@ -180,7 +200,9 @@ public class AutoDriveToTargetSimple extends OutliersCommand {
         if (_finishFromDistance) {
             return _limelight.getTargetDistance() <= _distance;
         }
-        if (!_elevator.isLimelightClear()) {
+        if (!_ignoreElevatorHeight && !_elevator.isLimelightClear()) {
+            error("Elevator is too high");
+            error("Elevator is at" + _elevator.getPosition());
             return true;
         }
 //        return _oi.isOverridePressed() || _hatchIntake.isShockTriggered();

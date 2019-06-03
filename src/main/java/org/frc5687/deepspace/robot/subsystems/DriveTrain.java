@@ -34,9 +34,6 @@ public class DriveTrain extends OutliersSubsystem implements PIDSource {
     private Limelight _limelight;
     private Robot _robot;
 
-    private double _leftOffset;
-    private double _rightOffset;
-
     private double _oldLeftSpeed;
     private double _oldLeftSpeedF;
     private double _oldRightSpeed;
@@ -141,11 +138,14 @@ public class DriveTrain extends OutliersSubsystem implements PIDSource {
 //        metric("Neo/Distance/Left", getLeftDistance());
 //        metric("Neo/Distance/Right", getRightDistance());
 //        metric("Neo/Distance/Total", getDistance());
-        metric("Mag/Raw/Left", _leftMagEncoder.get());
-        metric("Mag/Raw/Right", _rightMagEncoder.get());
-        metric("Mag/Ticks/Left", getLeftTicks()- _leftOffset);
-        metric("Mag/Ticks/Right", getRightTicks() - _rightOffset);
-//        metric("Faults/LeftMaster", _leftMaster.getFaults());
+        metric("Ticks/Left", _leftMagEncoder.get());
+        metric("Ticks/Right", _rightMagEncoder.get());
+        metric("MagDistance/Left", _leftMagEncoder.getDistance());
+        metric("MagDistance/Right", _rightMagEncoder.getDistance());
+        metric("Distance/Left", getLeftDistance());
+        metric("Distance/Right", getRightDistance());
+
+        //        metric("Faults/LeftMaster", _leftMaster.getFaults());
 //        metric("Faults/RightMaster", _rightMaster.getFaults());
 //        metric("Faults/LeftFollower", _leftFollower.getFaults());
 //        metric("Faults/RightFollower", _rightFollower.getFaults());

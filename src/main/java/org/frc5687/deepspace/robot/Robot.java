@@ -11,8 +11,12 @@ import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import org.frc5687.deepspace.robot.commands.AutoLaunch;
+import org.frc5687.deepspace.robot.commands.AutoDrivePath;
 import org.frc5687.deepspace.robot.commands.KillAll;
 import org.frc5687.deepspace.robot.commands.SandstormPickup;
+import org.frc5687.deepspace.robot.commands.drive.TwoHatchCargoRocket;
+import org.frc5687.deepspace.robot.commands.drive.TwoHatchCloseAndFarRocket;
 import org.frc5687.deepspace.robot.commands.drive.TwoHatchRocket;
 import org.frc5687.deepspace.robot.subsystems.*;
 import org.frc5687.deepspace.robot.utils.*;
@@ -79,6 +83,11 @@ public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
         _oi = new OI();
         _imu = new AHRS(SPI.Port.kMXP, (byte) 100);
 
+        try {
+            Thread.sleep(2000);
+        } catch(Exception e) {
+
+        }
         _imu.zeroYaw();
 
         // then proxies...
@@ -156,13 +165,31 @@ public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
         AutoChooser.Mode mode = _autoChooser.getSelectedMode();
         AutoChooser.Position position = _autoChooser.getSelectedPosition();
         switch (mode) {
+            case Launch:
+                if ((position == AutoChooser.Position.LeftHAB) || (position == AutoChooser.Position.RightHAB)) {
+                    _autoCommand = new AutoLaunch(this);
+                }
+                break;
             case NearAndTopRocket:
-                if (position!= AutoChooser.Position.Center) {
+                if ((position != AutoChooser.Position.CenterLeft) && (position != AutoChooser.Position.CenterRight)) {
                     // If we are in the center we can't do rocket hatches!
                     _autoCommand = new TwoHatchRocket(this,
-                            position == AutoChooser.Position.LeftL2 || position == AutoChooser.Position.RightL2,
-                            position == AutoChooser.Position.LeftL1 || position == AutoChooser.Position.LeftL2);
+                            position == AutoChooser.Position.LeftHAB || position == AutoChooser.Position.RightHAB,
+                            position == AutoChooser.Position.LeftPlatform || position == AutoChooser.Position.LeftHAB);
                 }
+                break;
+            case NearAndFarRocket:
+                if ((position != AutoChooser.Position.CenterLeft) && (position != AutoChooser.Position.CenterRight)){
+                    _autoCommand = new TwoHatchCloseAndFarRocket(this,
+                            position == AutoChooser.Position.LeftHAB || position == AutoChooser.Position.RightHAB,
+                            position == AutoChooser.Position.LeftPlatform || position == AutoChooser.Position.LeftHAB);
+                }
+                break;
+            case CargoFaceAndNearRocket:
+
+                _autoCommand = new TwoHatchCargoRocket(this,
+                        position == AutoChooser.Position.LeftHAB || position == AutoChooser.Position.RightHAB,
+                        position == AutoChooser.Position.CenterLeft || position == AutoChooser.Position.LeftHAB);
                 break;
         }
         if (_autoCommand==null) {

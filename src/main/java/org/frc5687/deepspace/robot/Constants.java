@@ -9,6 +9,7 @@ public class Constants {
     public static final double METRIC_FLUSH_PERIOD = 1.0;
     public static final int TICKS_PER_UPDATE_COMP = 100;
     public static final double FINAL_WARNING = 15;
+    public static final double LOOPER_DT = 0.005;
 
     public class DriveTrain {
 
@@ -256,16 +257,29 @@ public class Constants {
         public static final double TILT_THRESHOLD =  2100.0;
     }
     public class Limelight {
-        public static final double TARGET_HEIGHT = 29;
+        public static final double TARGET_HEIGHT = 28.625;
+        // X coordinate.
+        public static final double LIMELIGHT_X_OFFSET_FROM_CENTER = 2.537;
+        // Y coordinate.
+        public static final double LIMELIGH_Y_OFFSET_FROM_CENTER = 0.0; // not measured yet.
+        // Z coordinate.
         public static final double LIMELIGHT_HEIGHT = 41.5;
-        public static final double LIMELIGHT_ANGLE = 20;
+        // Pitch of Limelight.
+        public static final double LIMELIGHT_ANGLE = 20; // degrees.
+        // Yaw of Limelight.
+        public static final double LIMELIGHT_YAW_ANGLE = 0.0;
         public static final double OVERALL_LATENCY_MILLIS = 11;
-    }public class Vision {
+
+        public static final double CAMERA_X_FOV = 29.8;
+        public static final double CAMERA_Y_FOV = 24.85;
+    }
+    public class Vision {
         public static final double CAMERA_FRAME_RATE = 90;
         public static final double MAX_GOAL_TRACK_AGE = 0.3;
         public static final double MAX_TRACKER_DISTANCE = 18;
-        public static final double ACCEPTABLE_ERROR = 6.0;
         public static final double DISK_HEIGHT = 28.625;
+        public static final double ACCEPTABLE_ERROR = 6.0;
+
     }
 
 

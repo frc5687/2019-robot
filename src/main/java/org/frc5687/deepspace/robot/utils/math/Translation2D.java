@@ -1,4 +1,4 @@
-package org.frc5687.deepspace.robot.utils.Math;
+package org.frc5687.deepspace.robot.utils.math;
 
 public class Translation2D implements Interpolable<Translation2D> {
 

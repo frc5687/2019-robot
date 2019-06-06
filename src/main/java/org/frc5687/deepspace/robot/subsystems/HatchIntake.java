@@ -4,8 +4,8 @@ import edu.wpi.first.wpilibj.DoubleSolenoid;
 import org.frc5687.deepspace.robot.Robot;
 import org.frc5687.deepspace.robot.RobotMap;
 import org.frc5687.deepspace.robot.commands.intake.IdleHatchIntake;
-import org.frc5687.deepspace.robot.utils.HallEffect;
-import org.frc5687.deepspace.robot.utils.LimitSwitch;
+import org.frc5687.deepspace.robot.utils.sensors.HallEffect;
+import org.frc5687.deepspace.robot.utils.sensors.LimitSwitch;
 
 public class HatchIntake extends OutliersSubsystem {
 

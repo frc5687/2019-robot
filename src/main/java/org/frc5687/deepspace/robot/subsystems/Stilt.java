@@ -8,8 +8,8 @@ import org.frc5687.deepspace.robot.Constants;
 import org.frc5687.deepspace.robot.Robot;
 import org.frc5687.deepspace.robot.RobotMap;
 import org.frc5687.deepspace.robot.commands.stilt.DriveStilt;
-import org.frc5687.deepspace.robot.utils.HallEffect;
-import org.frc5687.deepspace.robot.utils.IRDistanceSensor;
+import org.frc5687.deepspace.robot.utils.sensors.HallEffect;
+import org.frc5687.deepspace.robot.utils.sensors.IRDistanceSensor;
 import static org.frc5687.deepspace.robot.Constants.Stilt.*;
 import static org.frc5687.deepspace.robot.utils.Helpers.*;
 

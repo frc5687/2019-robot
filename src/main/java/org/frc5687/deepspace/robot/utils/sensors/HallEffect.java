@@ -1,4 +1,4 @@
-package org.frc5687.deepspace.robot.utils;
+package org.frc5687.deepspace.robot.utils.sensors;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 

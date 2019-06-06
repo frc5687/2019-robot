@@ -7,6 +7,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.frc5687.deepspace.robot.Constants;
 import org.frc5687.deepspace.robot.OI;
 import org.frc5687.deepspace.robot.Robot;
+import org.frc5687.deepspace.robot.RobotState;
+import org.frc5687.deepspace.robot.commands.vision.AimingParameters;
 import org.frc5687.deepspace.robot.subsystems.CargoIntake;
 import org.frc5687.deepspace.robot.subsystems.DriveTrain;
 import org.frc5687.deepspace.robot.subsystems.Elevator;
@@ -16,6 +18,9 @@ import org.frc5687.deepspace.robot.utils.Helpers;
 import org.frc5687.deepspace.robot.utils.Limelight;
 
 import org.frc5687.deepspace.robot.utils.PoseTracker;
+import org.frc5687.deepspace.robot.utils.math.Rotation2D;
+
+import java.util.Optional;
 
 import static org.frc5687.deepspace.robot.Constants.Auto.Align.STEER_K;
 
@@ -29,8 +34,12 @@ public class Drive extends OutliersCommand {
     private Elevator _elevator;
     private HatchIntake _hatchIntake;
     private CargoIntake _cargoIntake;
+    private RobotState _robotstate;
 
     private PIDController _angleController;
+
+    private Rotation2D _targetHeading = new Rotation2D();
+    private boolean _onTarget = false;
 
     private double _anglePIDOut;
     private double _angle;
@@ -51,7 +60,7 @@ public class Drive extends OutliersCommand {
 
     private int garbageCount = 0;
 
-    public Drive(DriveTrain driveTrain, AHRS imu, OI oi, Limelight limelight, Elevator elevator, CargoIntake cargoIntake,HatchIntake hatchIntake, PoseTracker poseTracker) {
+    public Drive(DriveTrain driveTrain, AHRS imu, OI oi, Limelight limelight, Elevator elevator, CargoIntake cargoIntake,HatchIntake hatchIntake, PoseTracker poseTracker, RobotState robotstate) {
         _driveTrain = driveTrain;
         _oi = oi;
         _imu = imu;
@@ -60,6 +69,8 @@ public class Drive extends OutliersCommand {
         _poseTracker = poseTracker;
         _cargoIntake = cargoIntake;
         _hatchIntake = hatchIntake;
+        _robotstate = robotstate;
+
         requires(_driveTrain);
 
 //        logMetrics("State", "StickSpeed", "StickRotation", "LeftPower", "RightPower", "LeftMasterAmps", "LeftFollowerAmps", "RightMasterAmps", "RightFollowerAmps", "TurnSpeed", "Pose","Yaw","PoseAngle","LimelightAngle","TargetAngle", "TargetDistance", "Pipeline", "Lockout");
@@ -299,7 +310,23 @@ public class Drive extends OutliersCommand {
         metric("limited", limited);
         return limited;
     }
+    private void updateGoalHeading(double timestamp) {
+        Optional<AimingParameters> aim = _robotstate.getAimingParameters();
+        if (aim.isPresent()) {
+            _targetHeading = aim.get().getRobotToGoal();
+        }
+    }
 
+    private void updateTurnToHeading(double timestamp) {
+        final Rotation2D fieldToRobot = _robotstate.getLatestFieldToVehicle().getValue().getRotation();
+
+        final Rotation2D robotToTarget = fieldToRobot.inverse().rotateBy(_targetHeading);
+
+        final double goalPositionTolerance = 0.75;
+        if (Math.abs(robotToTarget.getDegrees()) < goalPositionTolerance) {
+            _onTarget = true;
+        }
+    }
     @Override
     protected boolean isFinished() {
         return false;

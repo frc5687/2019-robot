@@ -1,9 +1,9 @@
 package org.frc5687.deepspace.robot.utils;
 
 import org.frc5687.deepspace.robot.Constants;
-import org.frc5687.deepspace.robot.utils.Math.RigidTransform2D;
-import org.frc5687.deepspace.robot.utils.Math.Rotation2D;
-import org.frc5687.deepspace.robot.utils.Math.Twist2D;
+import org.frc5687.deepspace.robot.utils.math.RigidTransform2D;
+import org.frc5687.deepspace.robot.utils.math.Rotation2D;
+import org.frc5687.deepspace.robot.utils.math.Twist2D;
 
 /**
  * Provides forward and inverse kinematics equations for the robot modeling the wheelbase as a differential drive (with

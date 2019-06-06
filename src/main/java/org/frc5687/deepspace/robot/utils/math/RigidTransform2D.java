@@ -1,6 +1,4 @@
-package org.frc5687.deepspace.robot.utils.Math;
-
-import edu.wpi.first.wpilibj.AnalogTrigger;
+package org.frc5687.deepspace.robot.utils.math;
 
 import static org.frc5687.deepspace.robot.utils.Helpers.epsilonEquals;
 

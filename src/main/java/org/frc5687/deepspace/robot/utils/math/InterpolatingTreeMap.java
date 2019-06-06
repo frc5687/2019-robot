@@ -1,4 +1,4 @@
-package org.frc5687.deepspace.robot.utils.Math;
+package org.frc5687.deepspace.robot.utils.math;
 
 import java.util.Map;
 import java.util.TreeMap;

@@ -1,4 +1,4 @@
-package org.frc5687.deepspace.robot.utils.Math;
+package org.frc5687.deepspace.robot.utils.math;
 
 /**
  * InverseInterpolable is an interface used by an Interpolating Tree as the Key type. Given two endpoint keys and a

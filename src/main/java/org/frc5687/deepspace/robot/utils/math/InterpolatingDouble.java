@@ -1,4 +1,4 @@
-package org.frc5687.deepspace.robot.utils.Math;
+package org.frc5687.deepspace.robot.utils.math;
 
 /**
  * A Double that can be interpolated using the InterpolatingTreeMap.

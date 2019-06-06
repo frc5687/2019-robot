@@ -1,4 +1,4 @@
-package org.frc5687.deepspace.robot.utils.Math;
+package org.frc5687.deepspace.robot.utils.math;
 
 /**
  * A movement along an arc at constant curvature and velocity. We can use ideas from "differential calculus" to create

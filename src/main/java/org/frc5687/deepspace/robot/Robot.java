@@ -159,10 +159,11 @@ public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
     @Override
     public void autonomousInit() {
         _fmsConnected =  DriverStation.getInstance().isFMSAttached();
+//        _elevator.resetEncoder();
         _driveTrain.enableBrakeMode();
         _limelight.disableLEDs();
         _limelight.setStreamingMode(Limelight.StreamMode.PIP_SECONDARY);
-        AutoChooser.Mode mode = _autoChooser.getSelectedMode();
+        AutoChooser.Mode mode = _autoChooser.getSelectedMode();//AutoChooser.Mode.NearAndFarRocket;
         AutoChooser.Position position = _autoChooser.getSelectedPosition();
         switch (mode) {
             case Launch:

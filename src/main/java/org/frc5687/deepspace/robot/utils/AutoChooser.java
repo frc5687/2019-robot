@@ -33,9 +33,13 @@ public class AutoChooser extends OutliersProxy {
     public Mode getSelectedMode(){
         int raw = _modeSwitch.get();
         if (raw >= Mode.values().length) { raw = 0; }
-        return Mode.values()[raw];
-
+        try {
+            return Mode.values()[raw];
+        } catch(Exception e){
+                return Mode.StayPut;
+        }
     }
+
 
     public void updateDashboard(){
         metric("Label/Position", getSelectedPosition().getLabel());

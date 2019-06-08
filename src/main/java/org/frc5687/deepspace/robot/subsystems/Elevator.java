@@ -102,6 +102,7 @@ public class Elevator extends OutliersSubsystem implements PIDSource {
     @Override
     public void updateDashboard() {
         metric("MAGEncoder", getRawMAGEncoder());
+
 //        metric("NEOEncoder", getRawNeoEncoder());
         metric("Position", getPosition());
         metric("Bottom", isAtBottom());
@@ -174,7 +175,7 @@ public class Elevator extends OutliersSubsystem implements PIDSource {
         Port1(1, HallEffectSensor.BOTTOM),
         Hatch1(2, HallEffectSensor.BOTTOM),
         Secure(10),
-        ClearBumper(260),
+        ClearBumper(300),
         WarningZone(700),
         StartHatch(701, 710),
         HPMode(1230),

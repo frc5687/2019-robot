@@ -5,6 +5,7 @@ import org.frc5687.deepspace.robot.Robot;
 import org.frc5687.deepspace.robot.commands.*;
 import org.frc5687.deepspace.robot.commands.intake.GripClaw;
 import org.frc5687.deepspace.robot.commands.intake.PointClaw;
+import org.frc5687.deepspace.robot.subsystems.Shifter;
 
 public class TwoHatchCloseAndFarRocket extends CommandGroup {
     public TwoHatchCloseAndFarRocket (Robot robot, boolean OffHAB, boolean left) {

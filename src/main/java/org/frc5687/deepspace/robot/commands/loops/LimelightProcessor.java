@@ -1,13 +1,10 @@
 package org.frc5687.deepspace.robot.commands.loops;
 
 import org.frc5687.deepspace.robot.Constants;
-import org.frc5687.deepspace.robot.RobotState;
-import org.frc5687.deepspace.robot.commands.OutliersCommand;
 
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import org.frc5687.deepspace.robot.commands.vision.TargetInfo;
 
 import java.util.ArrayList;
 import java.util.Arrays;

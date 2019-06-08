@@ -1,131 +1,84 @@
 package org.frc5687.deepspace.robot.utils.math;
 
-import static org.frc5687.deepspace.robot.utils.Helpers.epsilonEquals;
-
 public class Rotation2D implements Interpolable<Rotation2D> {
 
-    public static final Rotation2D Identity = new Rotation2D();
-
-    public static final Rotation2D getIdentity() {
-        return Identity;
-    }
-
-    //determine whether the number is small enough to be insignificant.
-    protected static final double Epsilon = 1E-9;
-
-    //cosine angle
-    protected double cosAngle;
-    //sin angle
-    protected double sinAngle;
+    private double _cos;
+    private double _sin;
 
     public Rotation2D() {
-        this(1,0,false);
+        _cos = 1;
+        _sin = 0;
     }
 
-    public Rotation2D(double x, double y, boolean normalize) {
-        cosAngle = x;
-        sinAngle = y;
-        if(normalize) {
+    public Rotation2D(double cos, double sin) {
+        this._cos = cos;
+        this._sin = sin;
+    }
+
+    public Rotation2D(double cos, double sin, boolean normalize) {
+        this._cos = cos;
+        this._sin = sin;
+        if (normalize) {
             normalize();
         }
     }
 
-    public Rotation2D(Rotation2D other) {
-        cosAngle = other.cosAngle;
-        sinAngle = other.sinAngle;
+    public static Rotation2D fromDegrees(double angle) {
+        return Rotation2D.fromDegrees(Math.toRadians(angle));
     }
 
-    public static Rotation2D fromRadians(double angleRadians) {
-        return new Rotation2D(Math.cos(angleRadians), Math.sin(angleRadians), false);
+
+    public static Rotation2D fromRadians(double radians) {
+        return new Rotation2D(Math.cos(radians), Math.sin(radians));
     }
 
-    public static Rotation2D fromDegrees(double angleDegrees){
-        return fromRadians(Math.toRadians(angleDegrees));
-    }
-    /**
-     * From trig, we know that sin^2 + cos^2 == 1, but as we do math on this object we might accumulate rounding errors.
-     * Normalizing forces us to re-scale the sin and cos to reset rounding errors.
-     */
     public void normalize() {
-        // magnitude is the length of a vector.
-        // Math.hypot This method returns sqrt(x2 +y2) without intermediate overflow or underflow
-        double magnitude = Math.hypot(cosAngle, sinAngle);
-        if (magnitude > Epsilon) {
-            cosAngle /= magnitude;
-            sinAngle /= magnitude;
+        double magnitude = Math.hypot(_cos, _sin);
+        if (magnitude > 1E-9) {
+            _cos /= magnitude;
+            _sin /= magnitude;
         } else {
-            cosAngle = 1;
-            sinAngle = 0;
+            _cos = 1;
+            _sin = 0;
         }
-
     }
 
-    public double getCos() {
-        return cosAngle;
+    public double cos() {
+        return _cos;
     }
 
-    public double getSin() {
-        return sinAngle;
-    }
-
-    public double getTan() {
-        if (Math.abs(cosAngle) < Epsilon) {
-            if (sinAngle >= 0.0) {
-                return Double.POSITIVE_INFINITY;
-            } else {
-                return Double.NEGATIVE_INFINITY;
-            }
-        }
-        return sinAngle / cosAngle;
-    }
-    public double getRadians() {
-        return Math.atan2(sinAngle, cosAngle);
+    public double sin() {
+        return _sin;
     }
 
     public double getDegrees() {
         return Math.toDegrees(getRadians());
     }
-    /**
-     * We can rotate this Rotation2d by adding together the effects of it and another rotation.
-     *
-     * @param other
-     *            The other rotation. See: https://en.wikipedia.org/wiki/Rotation_matrix
-     * @return This rotation rotated by other.
-     */
-    public Rotation2D rotateBy(Rotation2D other) {
-        return new Rotation2D(cosAngle * other.cosAngle - sinAngle * other.sinAngle, cosAngle * other.cosAngle + sinAngle * other.sinAngle, true);
+
+    public double getRadians() {
+        return Math.atan2(_sin, _cos);
     }
 
-    public Rotation2D normal() {
-        return new Rotation2D(-sinAngle, cosAngle, false);
-    }
-
-    /**
-     * The inverse of a Rotation2d "undoes" the effect of this rotation.
-     *
-     * @return The opposite of this rotation.
-     */
     public Rotation2D inverse() {
-        return new Rotation2D(cosAngle, -sinAngle, false);
+        return new Rotation2D(_cos, -_sin);
     }
 
-    /**
-     * Checking if two values are withing the error of Epsilon.
-     */
-    public boolean isParallel(Rotation2D other) {
-        return epsilonEquals(Translation2D.cross(toTranslation(), other.toTranslation()), 0.0, Epsilon);
+    public Rotation2D flip() {
+        return new Rotation2D(-_cos, -_sin);
     }
-    public Translation2D toTranslation() {
-        return new Translation2D(cosAngle, sinAngle);
+    public Rotation2D rotateBy(Rotation2D rotationMat) {
+        return new Rotation2D(_cos * rotationMat.cos() - _sin * rotationMat.sin(), _sin * rotationMat.cos() + _cos * rotationMat.sin(), true);
     }
 
-    public Rotation2D interpolate(Rotation2D other, double x) {
-        if (x <= 0) {
-            return new Rotation2D(this);
-        } else if (x >= 1){
-            return new Rotation2D(other);
-        }
-        double angleDifference = inverse().rotateBy(other).getRadians();
-        return this.rotateBy(Rotation2D.fromRadians(angleDifference * x));
+    @Override
+    public Rotation2D interpolate(Rotation2D other, double percentage) {
+        Rotation2D diff = inverse().rotateBy(other);
+        return rotateBy(Rotation2D.fromRadians(diff.getRadians() * percentage));
     }
+
+
+
+
+
+
 }

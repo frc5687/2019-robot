@@ -11,6 +11,8 @@ import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import jaci.pathfinder.PathfinderFRC;
+import jaci.pathfinder.Trajectory;
 import org.frc5687.deepspace.robot.commands.AutoLaunch;
 import org.frc5687.deepspace.robot.commands.AutoDrivePath;
 import org.frc5687.deepspace.robot.commands.KillAll;
@@ -62,6 +64,14 @@ public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
     private UsbCamera _driverCamera;
 
     private boolean _fmsConnected;
+
+    private Trajectory _leftSideLeftTrajectory;
+    private Trajectory _leftSideRightTrajectory;
+    private Trajectory _rightSideLeftTrajectory;
+    private Trajectory _rightSideRightTrajectory;
+
+
+
     /**
      * This function is setRollerSpeed when the robot is first started up and should be
      * used for any initialization code.
@@ -128,6 +138,8 @@ public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
         _arm.enableBrakeMode();
         _elevator.enableBrakeMode();
         _stilt.enableBrakeMode();
+
+        initializeTrajectories();
     }
 
     /**
@@ -143,6 +155,18 @@ public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
         updateDashboard();
         _oi.poll();
         update();
+    }
+
+    private void initializeTrajectories() {
+        var  path = "LeftFarRocket";
+        info("Loading trajectories for " + path);
+        _leftSideLeftTrajectory = PathfinderFRC.getTrajectory(path + ".right");
+        _leftSideRightTrajectory = PathfinderFRC.getTrajectory(path + ".left");
+
+        path = "RightFarRocket";
+        info("Loading trajectories for " + path);
+        _rightSideLeftTrajectory = PathfinderFRC.getTrajectory(path + ".right");
+        _rightSideRightTrajectory = PathfinderFRC.getTrajectory(path + ".left");
     }
 
     /**
@@ -164,6 +188,8 @@ public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
         _limelight.setStreamingMode(Limelight.StreamMode.PIP_SECONDARY);
         AutoChooser.Mode mode = _autoChooser.getSelectedMode();
         AutoChooser.Position position = _autoChooser.getSelectedPosition();
+        boolean leftSide = position == AutoChooser.Position.LeftPlatform || position == AutoChooser.Position.LeftHAB;
+
         switch (mode) {
             case Launch:
                 if ((position == AutoChooser.Position.LeftHAB) || (position == AutoChooser.Position.RightHAB)) {
@@ -182,7 +208,10 @@ public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
                 if ((position != AutoChooser.Position.CenterLeft) && (position != AutoChooser.Position.CenterRight)){
                     _autoCommand = new TwoHatchCloseAndFarRocket(this,
                             position == AutoChooser.Position.LeftHAB || position == AutoChooser.Position.RightHAB,
-                            position == AutoChooser.Position.LeftPlatform || position == AutoChooser.Position.LeftHAB);
+                            leftSide,
+                            leftSide ? _leftSideLeftTrajectory : _rightSideLeftTrajectory,
+                            leftSide ? _leftSideRightTrajectory : _rightSideRightTrajectory
+                            );
                 }
                 break;
             case CargoFaceAndNearRocket:

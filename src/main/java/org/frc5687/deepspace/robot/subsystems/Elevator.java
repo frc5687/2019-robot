@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.PIDSource;
 import edu.wpi.first.wpilibj.PIDSourceType;
 import org.frc5687.deepspace.robot.Constants;
+import org.frc5687.deepspace.robot.OI;
 import org.frc5687.deepspace.robot.Robot;
 import org.frc5687.deepspace.robot.RobotMap;
 import org.frc5687.deepspace.robot.commands.DriveElevator;
@@ -26,9 +27,11 @@ public class Elevator extends OutliersSubsystem implements PIDSource {
     private HallEffect _bottomHall;
 
     private double _offset = 0;
+    private OI _oi;
 
     public Elevator(Robot robot) {
         _robot = robot;
+        _oi = robot.getOI();
 
         try {
             _elevator = new CANSparkMax(RobotMap.CAN.SPARKMAX.ELEVATOR_MOTOR, CANSparkMaxLowLevel.MotorType.kBrushless);
@@ -49,6 +52,11 @@ public class Elevator extends OutliersSubsystem implements PIDSource {
     public void setSpeed(double speed, boolean overrideRamp) { setSpeed(speed,overrideRamp, false); }
     public void setSpeed(double speed, boolean overrideRamp, boolean overrideJello) {
         speed = limit(speed, -MAX_SPEED_DOWN, MAX_SPEED_UP);
+        if (_oi.isOverridePressed()) {
+            overrideJello = true;
+            overrideRamp = true;
+        }
+
         if (!overrideRamp) {
             if (speed > 0) {
                 speed = limit(speed, -MAX_SPEED_DOWN, _elevator.get() + (MAX_SPEED_UP / STEPS_UP));

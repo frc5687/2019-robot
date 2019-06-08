@@ -3,6 +3,7 @@ package org.frc5687.deepspace.robot.subsystems;
 import com.revrobotics.CANEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.PIDSource;
 import edu.wpi.first.wpilibj.PIDSourceType;
@@ -130,6 +131,10 @@ public class Elevator extends OutliersSubsystem implements PIDSource {
 
     public void resetEncoder(long position) {
         _offset = position - getRawMAGEncoder();
+//        DriverStation.reportError("Resetting elevator Encoder pos" + position, true);
+//        DriverStation.reportError("Resetting elevator Encoder raw" + getRawMAGEncoder(), true);
+
+
     }
 
     public double getPosition() {

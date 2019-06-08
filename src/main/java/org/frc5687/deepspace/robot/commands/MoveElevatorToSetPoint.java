@@ -148,7 +148,7 @@ public class MoveElevatorToSetPoint extends OutliersCommand {
         double speed;
 
         if (_setpoint== Elevator.Setpoint.ClearBumper && _position > Elevator.Setpoint.ClearBumper.getValue()) {
-            error("Skipping setpoint " + _setpoint.name() + "  b/c height is " + _position);
+            error("Ending setpoint " + _setpoint.name() + "  b/c height is " + _position);
             return;
         }
 

@@ -10,6 +10,7 @@ import org.frc5687.deepspace.robot.subsystems.Elevator;
 
 public class SandstormPickup extends CommandGroup {
     public SandstormPickup(Robot robot) {
+        addSequential(new MoveElevatorToSetPoint(robot.getElevator(), Elevator.Setpoint.Bottom, Elevator.MotionMode.Simple, null, Constants.Elevator.SANDSTORM_PICKUP_SPEED));
         addSequential(new GripClaw(robot.getHatchIntake(), Constants.Intake.CLOSE_CLAW_MILLI_SS));
         addSequential(new CargoIntakeUp(robot.getCargoIntake()));
         addSequential(new MoveElevatorToSetPoint(robot.getElevator(), Elevator.Setpoint.ClearBumper, Elevator.MotionMode.Simple, null, Constants.Elevator.SANDSTORM_PICKUP_SPEED));

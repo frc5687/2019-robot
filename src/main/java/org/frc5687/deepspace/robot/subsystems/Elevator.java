@@ -68,9 +68,9 @@ public class Elevator extends OutliersSubsystem implements PIDSource {
         metric("ElevatorSpeed",speed);
 
         if (_elevator==null) { return; }
-        if (isAtTop()) {
+        if (speed>=0 && isAtTop()) {
             resetEncoder(Setpoint.Top.getValue());
-        } else if (isAtBottom()) {
+        } else if (speed <= 0 && isAtBottom()) {
             resetEncoder(Setpoint.Bottom.getValue());
         }
         _elevator.set(speed);

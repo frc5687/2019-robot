@@ -82,6 +82,10 @@ public class Elevator extends OutliersSubsystem implements PIDSource {
         } else if (speed <= 0 && isAtBottom()) {
             resetEncoder(Setpoint.Bottom.getValue());
         }
+
+        if (speed==0 && _elevator.get()!=0){
+            DriverStation.reportError("Setting speed to 0 ", true);
+        }
         _elevator.set(speed);
     }
 

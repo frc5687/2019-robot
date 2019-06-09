@@ -132,12 +132,14 @@ public class MoveElevatorToSetPoint extends OutliersCommand {
     }
 
     protected void poll() {
-        _topTriggered |= _elevator.isHallEffectTriggered(Elevator.HallEffectSensor.TOP);
-        _bottomTriggered |= _elevator.isHallEffectTriggered(Elevator.HallEffectSensor.BOTTOM);
-        if (_rampDirection > 0 && _topTriggered) {
-            _elevator.setSpeed(0);
-        } else if (_rampDirection < 0 && _bottomTriggered) {
-            _elevator.setSpeed(0);
+        if (this.isRunning()) {
+            _topTriggered |= _elevator.isHallEffectTriggered(Elevator.HallEffectSensor.TOP);
+            _bottomTriggered |= _elevator.isHallEffectTriggered(Elevator.HallEffectSensor.BOTTOM);
+            if (_rampDirection > 0 && _topTriggered) {
+                _elevator.setSpeed(0);
+            } else if (_rampDirection < 0 && _bottomTriggered) {
+                _elevator.setSpeed(0);
+            }
         }
     }
 
@@ -345,6 +347,12 @@ public class MoveElevatorToSetPoint extends OutliersCommand {
     @Override
     protected void end() {
         long endTime = System.currentTimeMillis();
+
+        // Resetting members used by the notifier.
+        _topTriggered = false;
+        _bottomTriggered = false;
+        _rampDirection = 0;
+
         // DriverStation.reportError("MoveElevatorToSetpoint Ran for " + (endTime - _startTime) + " millis, stopped at " + _position + ", state=" + _rampingState.name(), false);
         if (_mainNotifier!=null) {
             _mainNotifier.stop();

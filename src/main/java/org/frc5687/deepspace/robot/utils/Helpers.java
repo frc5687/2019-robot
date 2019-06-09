@@ -1,5 +1,7 @@
 package org.frc5687.deepspace.robot.utils;
 
+import edu.wpi.first.wpilibj.DriverStation;
+
 /**
  * Created by Ben Bernard on 6/4/2018.
  */
@@ -17,10 +19,20 @@ public class Helpers {
     }
 
     public static double limit(double value, double limitValLow, double limitValHigh) {
+        return limit(value, limitValLow, limitValHigh, null);
+    }
+
+    public static double limit(double value, double limitValLow, double limitValHigh, String reason) {
         if (value > limitValHigh) {
+            if (reason!=null) {
+                DriverStation.reportError("Limiting because " + reason, false);
+            }
             return limitValHigh;
         }
         if (value < limitValLow) {
+            if (reason!=null) {
+                DriverStation.reportError("Limiting because " + reason, false);
+            }
             return limitValLow;
         }
         return value;

@@ -59,19 +59,19 @@ public class Elevator extends OutliersSubsystem implements PIDSource {
 
         if (!overrideRamp) {
             if (speed > 0) {
-                speed = limit(speed, -MAX_SPEED_DOWN, _elevator.get() + (MAX_SPEED_UP / STEPS_UP));
+                speed = limit(speed, -MAX_SPEED_DOWN, _elevator.get() + (MAX_SPEED_UP / STEPS_UP), "ramping up");
             } else if (speed < 0) {
-                speed = limit(speed, _elevator.get() - (MAX_SPEED_DOWN / STEPS_UP), MAX_SPEED_UP);
+                speed = limit(speed, _elevator.get() - (MAX_SPEED_DOWN / STEPS_UP), MAX_SPEED_UP, "ramping down");
             }
         }
         if (isAtTop()) {
-            speed = limit(speed, -MAX_SPEED_DOWN,  0);
+            speed = limit(speed, -MAX_SPEED_DOWN,  0, "at top");
         } else if (!overrideJello && isNearTop()) {
-            speed = limit(speed, -MAX_SPEED_DOWN,  JELLO_SPEED_UP);
+            speed = limit(speed, -MAX_SPEED_DOWN,  JELLO_SPEED_UP, "near top");
         } else if (isAtBottom()) {
-            speed = limit(speed, 0, MAX_SPEED_UP);
+            speed = limit(speed, 0, MAX_SPEED_UP, "at bottom");
         } else if (!overrideJello && isNearBottom()) {
-            speed = limit(speed, -JELLO_SPEED_DOWN, MAX_SPEED_UP);
+            speed = limit(speed, -JELLO_SPEED_DOWN, MAX_SPEED_UP, "near bottom");
         }
         metric("ElevatorSpeed",speed);
 

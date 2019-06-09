@@ -24,7 +24,6 @@ public class DriveElevator extends OutliersCommand{
     public void execute() {
         // Read speed stick positions from OI
         double speed = _oi.getElevatorSpeed();
-        metric("RequestedSpeed", speed);
         // Send to the Elevator
         _elevator.setSpeed(speed);
     }

@@ -51,6 +51,7 @@ public class Elevator extends OutliersSubsystem implements PIDSource {
     }
     public void setSpeed(double speed, boolean overrideRamp) { setSpeed(speed,overrideRamp, false); }
     public void setSpeed(double speed, boolean overrideRamp, boolean overrideJello) {
+        metric("RequestedSpeed", speed);
         speed = limit(speed, -MAX_SPEED_DOWN, MAX_SPEED_UP);
         if (_oi.isOverridePressed()) {
             overrideJello = true;
@@ -59,9 +60,9 @@ public class Elevator extends OutliersSubsystem implements PIDSource {
 
         if (!overrideRamp) {
             if (speed > 0) {
-                speed = limit(speed, -MAX_SPEED_DOWN, _elevator.get() + (MAX_SPEED_UP / STEPS_UP), "ramping up");
+                speed = limit(speed, -MAX_SPEED_DOWN, _elevator.get() + (MAX_SPEED_UP / 5), "ramping up");
             } else if (speed < 0) {
-                speed = limit(speed, _elevator.get() - (MAX_SPEED_DOWN / STEPS_UP), MAX_SPEED_UP, "ramping down");
+                speed = limit(speed, _elevator.get() - (MAX_SPEED_DOWN / 5), MAX_SPEED_UP, "ramping down");
             }
         }
         if (isAtTop()) {

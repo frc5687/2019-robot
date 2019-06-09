@@ -25,13 +25,13 @@ public class Helpers {
     public static double limit(double value, double limitValLow, double limitValHigh, String reason) {
         if (value > limitValHigh) {
             if (reason!=null) {
-                DriverStation.reportError("Limiting because " + reason, false);
+                DriverStation.reportError("Limiting " + value + " to " +limitValHigh + " because " + reason, false);
             }
             return limitValHigh;
         }
         if (value < limitValLow) {
             if (reason!=null) {
-                DriverStation.reportError("Limiting because " + reason, false);
+                DriverStation.reportError("Limiting " + value + " to " + limitValLow + " because " + reason, false);
             }
             return limitValLow;
         }

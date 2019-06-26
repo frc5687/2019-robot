@@ -11,8 +11,14 @@ import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import jaci.pathfinder.PathfinderFRC;
+import jaci.pathfinder.Trajectory;
+import org.frc5687.deepspace.robot.commands.AutoLaunch;
+import org.frc5687.deepspace.robot.commands.AutoDrivePath;
 import org.frc5687.deepspace.robot.commands.KillAll;
 import org.frc5687.deepspace.robot.commands.SandstormPickup;
+import org.frc5687.deepspace.robot.commands.drive.TwoHatchCargoRocket;
+import org.frc5687.deepspace.robot.commands.drive.TwoHatchCloseAndFarRocket;
 import org.frc5687.deepspace.robot.commands.drive.TwoHatchRocket;
 import org.frc5687.deepspace.robot.subsystems.*;
 import org.frc5687.deepspace.robot.utils.*;
@@ -58,6 +64,14 @@ public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
     private UsbCamera _driverCamera;
 
     private boolean _fmsConnected;
+
+    private Trajectory _leftSideLeftTrajectory;
+    private Trajectory _leftSideRightTrajectory;
+    private Trajectory _rightSideLeftTrajectory;
+    private Trajectory _rightSideRightTrajectory;
+
+
+
     /**
      * This function is setRollerSpeed when the robot is first started up and should be
      * used for any initialization code.
@@ -79,6 +93,11 @@ public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
         _oi = new OI();
         _imu = new AHRS(SPI.Port.kMXP, (byte) 100);
 
+        try {
+            Thread.sleep(2000);
+        } catch(Exception e) {
+
+        }
         _imu.zeroYaw();
 
         // then proxies...
@@ -119,6 +138,8 @@ public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
         _arm.enableBrakeMode();
         _elevator.enableBrakeMode();
         _stilt.enableBrakeMode();
+
+        initializeTrajectories();
     }
 
     /**
@@ -134,6 +155,18 @@ public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
         updateDashboard();
         _oi.poll();
         update();
+    }
+
+    private void initializeTrajectories() {
+        var  path = "LeftFarRocket";
+        info("Loading trajectories for " + path);
+        _leftSideLeftTrajectory = PathfinderFRC.getTrajectory(path + ".right");
+        _leftSideRightTrajectory = PathfinderFRC.getTrajectory(path + ".left");
+
+        path = "RightFarRocket";
+        info("Loading trajectories for " + path);
+        _rightSideLeftTrajectory = PathfinderFRC.getTrajectory(path + ".right");
+        _rightSideRightTrajectory = PathfinderFRC.getTrajectory(path + ".left");
     }
 
     /**
@@ -153,16 +186,39 @@ public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
         _driveTrain.enableBrakeMode();
         _limelight.disableLEDs();
         _limelight.setStreamingMode(Limelight.StreamMode.PIP_SECONDARY);
-        AutoChooser.Mode mode = _autoChooser.getSelectedMode();
+        AutoChooser.Mode mode = _autoChooser.getSelectedMode();//AutoChooser.Mode.NearAndFarRocket;
         AutoChooser.Position position = _autoChooser.getSelectedPosition();
+        boolean leftSide = position == AutoChooser.Position.LeftPlatform || position == AutoChooser.Position.LeftHAB;
+
         switch (mode) {
+            case Launch:
+                if ((position == AutoChooser.Position.LeftHAB) || (position == AutoChooser.Position.RightHAB)) {
+                    _autoCommand = new AutoLaunch(this);
+                }
+                break;
             case NearAndTopRocket:
-                if (position!= AutoChooser.Position.Center) {
+                if ((position != AutoChooser.Position.CenterLeft) && (position != AutoChooser.Position.CenterRight)) {
                     // If we are in the center we can't do rocket hatches!
                     _autoCommand = new TwoHatchRocket(this,
-                            position == AutoChooser.Position.LeftL2 || position == AutoChooser.Position.RightL2,
-                            position == AutoChooser.Position.LeftL1 || position == AutoChooser.Position.LeftL2);
+                            position == AutoChooser.Position.LeftHAB || position == AutoChooser.Position.RightHAB,
+                            position == AutoChooser.Position.LeftPlatform || position == AutoChooser.Position.LeftHAB);
                 }
+                break;
+            case NearAndFarRocket:
+                if ((position != AutoChooser.Position.CenterLeft) && (position != AutoChooser.Position.CenterRight)){
+                    _autoCommand = new TwoHatchCloseAndFarRocket(this,
+                            position == AutoChooser.Position.LeftHAB || position == AutoChooser.Position.RightHAB,
+                            leftSide,
+                            leftSide ? _leftSideLeftTrajectory : _rightSideLeftTrajectory,
+                            leftSide ? _leftSideRightTrajectory : _rightSideRightTrajectory
+                            );
+                }
+                break;
+            case CargoFaceAndNearRocket:
+
+                _autoCommand = new TwoHatchCargoRocket(this,
+                        position == AutoChooser.Position.LeftHAB || position == AutoChooser.Position.RightHAB,
+                        position == AutoChooser.Position.CenterLeft || position == AutoChooser.Position.LeftHAB);
                 break;
         }
         if (_autoCommand==null) {

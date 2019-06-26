@@ -5,7 +5,7 @@ public class Constants {
      *
      */
     public static final int CYCLES_PER_SECOND = 50;
-    public static final int TICKS_PER_UPDATE = 10;
+    public static final int TICKS_PER_UPDATE = 100;
     public static final double METRIC_FLUSH_PERIOD = 1.0;
     public static final int TICKS_PER_UPDATE_COMP = 100;
     public static final double FINAL_WARNING = 15;
@@ -21,8 +21,8 @@ public class Constants {
         public static final double TURNING_SENSITIVITY_LOW_GEAR = 1;
 
         public static final double CREEP_FACTOR = 0.25;
-        public static final double LEFT_DISTANCE_PER_PULSE = 0.0283185840707964601769911504424;
-        public static final double RIGHT_DISTANCE_PER_PULSE = 0.0283185840707964601769911504424;
+        public static final double LEFT_DISTANCE_PER_PULSE = 0.0286206896551724;
+        public static final double RIGHT_DISTANCE_PER_PULSE = 0.0286206896551724;
 
 
         public static final boolean LEFT_MOTORS_INVERTED = true;
@@ -33,7 +33,7 @@ public class Constants {
         public static final long SEEK_TIME = 500;
 
 
-        public static final double MAX_SPEED_IPS = 12 * 12;
+        public static final double MAX_SPEED_IPS = 156.0;
         public static final double CAP_SPEED_IPS = .8 * MAX_SPEED_IPS;
         public static final double MAX_ACCELERATION_IPSS = CAP_SPEED_IPS / 2;
         public static final double MAX_JERK_IPSSS = CAP_SPEED_IPS;
@@ -411,5 +411,9 @@ public class Constants {
 
     public class RotarySwitch {
         public static final double TOLERANCE = 0.02;
+    }
+
+    public class AutoDrivePath {
+        public static final double K_TURN = 0.2;
     }
 }

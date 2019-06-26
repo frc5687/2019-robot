@@ -12,13 +12,13 @@ public class Constants {
 
     public class DriveTrain {
 
-        public static final double DEADBAND = 0.1;
+        public static final double DEADBAND = 0.25;
         public static final double SPEED_SENSITIVITY = 0.80;
         public static final double ROTATION_SENSITIVITY = 0.75;
-        public static final double ROTATION_SENSITIVITY_HIGH_GEAR = 1;
-        public static final double ROTATION_SENSITIVITY_LOW_GEAR = 1;
-        public static final double TURNING_SENSITIVITY_HIGH_GEAR = 1;
-        public static final double TURNING_SENSITIVITY_LOW_GEAR = 1;
+        public static final double ROTATION_SENSITIVITY_HIGH_GEAR = .1;
+        public static final double ROTATION_SENSITIVITY_LOW_GEAR = .1;
+        public static final double TURNING_SENSITIVITY_HIGH_GEAR = .1;
+        public static final double TURNING_SENSITIVITY_LOW_GEAR = .1;
 
         public static final double CREEP_FACTOR = 0.25;
         public static final double LEFT_DISTANCE_PER_PULSE = 0.0286206896551724;

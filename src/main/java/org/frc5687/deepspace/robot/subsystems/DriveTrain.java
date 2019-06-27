@@ -209,7 +209,7 @@ public class DriveTrain extends OutliersSubsystem implements PIDSource {
             if (!override) {
                 rotation = applySensitivityFactor(rotation, _shifter.getGear() == Shifter.Gear.HIGH ? Constants.DriveTrain.TURNING_SENSITIVITY_HIGH_GEAR : Constants.DriveTrain.TURNING_SENSITIVITY_LOW_GEAR);
             }
-            double delta = override ? rotation : rotation * Math.abs(speed);
+            double delta = override ? rotation : rotation;//* Math.abs(speed)
 
 
             if (override) {

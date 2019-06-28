@@ -60,15 +60,14 @@ public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
     private AutoChooser _autoChooser;
 
     private Command _autoCommand;
+    private AutoChooser.Mode _mode;
+    private AutoChooser.Position _position;
+    private long _autoPoll = 0;
 
     private UsbCamera _driverCamera;
 
     private boolean _fmsConnected;
 
-    private Trajectory _leftSideLeftTrajectory;
-    private Trajectory _leftSideRightTrajectory;
-    private Trajectory _rightSideLeftTrajectory;
-    private Trajectory _rightSideRightTrajectory;
 
 
 
@@ -138,8 +137,6 @@ public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
         _arm.enableBrakeMode();
         _elevator.enableBrakeMode();
         _stilt.enableBrakeMode();
-
-        initializeTrajectories();
     }
 
     /**
@@ -157,16 +154,10 @@ public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
         update();
     }
 
-    private void initializeTrajectories() {
-        var  path = "LeftFarRocket";
-        info("Loading trajectories for " + path);
-        _leftSideLeftTrajectory = PathfinderFRC.getTrajectory(path + ".right");
-        _leftSideRightTrajectory = PathfinderFRC.getTrajectory(path + ".left");
 
-        path = "RightFarRocket";
-        info("Loading trajectories for " + path);
-        _rightSideLeftTrajectory = PathfinderFRC.getTrajectory(path + ".right");
-        _rightSideRightTrajectory = PathfinderFRC.getTrajectory(path + ".left");
+    @Override
+    public void disabledPeriodic() {
+        pollAutoChooser();
     }
 
     /**
@@ -188,6 +179,28 @@ public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
         _limelight.setStreamingMode(Limelight.StreamMode.PIP_SECONDARY);
         AutoChooser.Mode mode = _autoChooser.getSelectedMode();//AutoChooser.Mode.NearAndFarRocket;
         AutoChooser.Position position = _autoChooser.getSelectedPosition();
+        if (_autoCommand==null || mode!=_mode || position!=_position) {
+            initAutoCommand();
+        }
+        error("Starting autocommand " + _autoCommand.getClass().getSimpleName());
+        _autoCommand.start();
+    }
+
+    public void initAutoCommand() {
+        _fmsConnected =  DriverStation.getInstance().isFMSAttached();
+        AutoChooser.Mode mode = _autoChooser.getSelectedMode();//AutoChooser.Mode.NearAndFarRocket;
+        AutoChooser.Position position = _autoChooser.getSelectedPosition();
+        // If we already have the command and the mode/position haven't changed, we're done.
+        if (_autoCommand != null && mode==_mode && position==position) {
+            return;
+        }
+
+        // If we already had a command, it's the wrong one!  Clear it and run garbage collection.
+        if (_autoCommand!=null) {
+            _autoCommand = null;
+            System.gc();
+        }
+
         boolean leftSide = position == AutoChooser.Position.LeftPlatform || position == AutoChooser.Position.LeftHAB;
 
         switch (mode) {
@@ -208,10 +221,8 @@ public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
                 if ((position != AutoChooser.Position.CenterLeft) && (position != AutoChooser.Position.CenterRight)){
                     _autoCommand = new TwoHatchCloseAndFarRocket(this,
                             position == AutoChooser.Position.LeftHAB || position == AutoChooser.Position.RightHAB,
-                            leftSide,
-                            leftSide ? _leftSideLeftTrajectory : _rightSideLeftTrajectory,
-                            leftSide ? _leftSideRightTrajectory : _rightSideRightTrajectory
-                            );
+                            leftSide
+                    );
                 }
                 break;
             case CargoFaceAndNearRocket:
@@ -224,8 +235,28 @@ public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
         if (_autoCommand==null) {
             _autoCommand = new SandstormPickup(this);
         }
+        _mode = mode;
+        _position = position;
         error("autoCommand is " + _autoCommand.getClass().getSimpleName());
-        _autoCommand.start();
+    }
+
+    /***
+     *  Poll the AutoChooser to see if the values have changed and they've been stable for at least a second...
+     */
+    private void pollAutoChooser() {
+        AutoChooser.Mode mode = _autoChooser.getSelectedMode();//AutoChooser.Mode.NearAndFarRocket;
+        AutoChooser.Position position = _autoChooser.getSelectedPosition();
+        if (mode!=_mode || position!=_position) {
+            // A switch was changed...reset the counter
+            _autoPoll = System.currentTimeMillis() + Constants.Auto.AUTOCHOOSER_DELAY;
+            return;
+        }
+        if (System.currentTimeMillis() >= _autoPoll) {
+            _autoPoll = Long.MAX_VALUE;
+            initAutoCommand();
+        }
+
+
     }
 
     public void teleopInit() {

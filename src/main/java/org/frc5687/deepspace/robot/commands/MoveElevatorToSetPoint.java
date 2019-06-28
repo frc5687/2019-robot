@@ -137,8 +137,10 @@ public class MoveElevatorToSetPoint extends OutliersCommand {
             _bottomTriggered |= _elevator.isHallEffectTriggered(Elevator.HallEffectSensor.BOTTOM);
             if (_rampDirection > 0 && _topTriggered) {
                 _elevator.setSpeed(0);
+                _rampDirection = 0;
             } else if (_rampDirection < 0 && _bottomTriggered) {
                 _elevator.setSpeed(0);
+                _rampDirection = 0;
             }
         }
     }

@@ -74,6 +74,13 @@ public class OI extends OutliersProxy {
     private JoystickLight _targetCenteredLED;
     private JoystickLight _targetRightLED;
 
+    private Button _driverLeftButton;
+    private Button _driverRightButton;
+    private Button _driverTrigger;
+    private Button _driverHighButton;
+    private Button _driverLowButton;
+    private Button _driverStartingButton;
+
     public OI(){
         _driverGamepad = new Gamepad(0);
         _operatorGamepad = new Gamepad(1);
@@ -128,15 +135,22 @@ public class OI extends OutliersProxy {
         _operatorRightXAxisLeftButton = new AxisButton(_operatorGamepad,Gamepad.Axes.RIGHT_X.getNumber(), -.5);
         _operatorRightXAxisRightButton = new AxisButton(_operatorGamepad, Gamepad.Axes.RIGHT_X.getNumber(), .5);
 
+        _driverTrigger = new JoystickButton(_driverRightjoystick, 1);
+        _driverLeftButton = new JoystickButton(_driverRightjoystick,2);
+        _driverRightButton = new JoystickButton(_driverRightjoystick, 3);
+        _driverHighButton = new  JoystickButton(_driverLeftjoystick, 3);
+        _driverLowButton = new JoystickButton(_driverLeftjoystick, 2);
+        _driverStartingButton = new JoystickButton(_driverRightjoystick, 4);
+
         // _operatorPOV = new POV();
     }
     public void initializeButtons(Robot robot){
 
-        _driverStartButton.whenPressed(new SafeguardCommand(robot, new AutoClimb(robot.getStilt(), robot.getArm(), robot.getDriveTrain(), robot.getCargoIntake(), robot.getHatchIntake(), robot, true), -30));
-        _driverBackButton.whenPressed(new SafeguardCommand(robot, new AutoClimb(robot.getStilt(), robot.getArm(), robot.getDriveTrain(), robot.getCargoIntake(), robot.getHatchIntake(), robot, false), -30));
+        _driverRightButton.whenPressed(new SafeguardCommand(robot, new AutoClimb(robot.getStilt(), robot.getArm(), robot.getDriveTrain(), robot.getCargoIntake(), robot.getHatchIntake(), robot, true), -30));
+        _driverLeftButton.whenPressed(new SafeguardCommand(robot, new AutoClimb(robot.getStilt(), robot.getArm(), robot.getDriveTrain(), robot.getCargoIntake(), robot.getHatchIntake(), robot, false), -30));
 
-        _driverRightBumper.whenPressed(new Shift(robot.getDriveTrain(), robot.getShifter(), Shifter.Gear.LOW, false));
-        _driverLeftBumper.whenPressed(new Shift(robot.getDriveTrain(), robot.getShifter(), Shifter.Gear.HIGH, false));
+        _driverLowButton.whenPressed(new Shift(robot.getDriveTrain(), robot.getShifter(), Shifter.Gear.LOW, false));
+        _driverHighButton.whenPressed(new Shift(robot.getDriveTrain(), robot.getShifter(), Shifter.Gear.HIGH, false));
 
         _driverLeftTrigger.whenPressed(new Eject(robot));
         _driverRightTrigger.whenPressed(new Intake(robot));
@@ -161,6 +175,7 @@ public class OI extends OutliersProxy {
 
 //        _operatorBackButton.whenPressed(new AutoLaunch(robot));
         _operatorStartButton.whenPressed(new StartingConfiguration(robot));
+        _driverStartingButton.whenPressed(new StartingConfiguration(robot));
 
         _operatorRightTrigger.whenPressed(new IntakeCargo(robot));
         _operatorLeftTrigger.whileHeld(new HoldClawOpen(robot));
@@ -177,7 +192,7 @@ public class OI extends OutliersProxy {
     }
 
     public boolean isAutoTargetPressed() {
-        return _driverRightYAxisUpButton.get();
+        return _driverTrigger.get();
     }
     public double getDriveSpeed() {
         double speed = -getSpeedFromAxis(_driverLeftjoystick, _driverLeftjoystick.getYChannel());
@@ -226,7 +241,7 @@ public class OI extends OutliersProxy {
         return POV.fromWPILIbAngle(0, _operatorGamepad.getPOV()).getDirectionValue();
     }
     public int getDriverPOV() {
-        return POV.fromWPILIbAngle(0, _driverGamepad.getPOV()).getDirectionValue();
+        return POV.fromWPILIbAngle(0, _driverLeftjoystick.getPOV()).getDirectionValue();
     }
 
     protected double getSpeedFromAxis(Joystick gamepad, int axisNumber) {

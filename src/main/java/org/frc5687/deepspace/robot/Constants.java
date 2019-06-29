@@ -61,7 +61,7 @@ public class Constants {
         public static final double LOW_POW = -HIGH_POW;
         public static final double ROLLER_SPEED = 0.7;
         public static final double MAX_ROLLER_SPEED = 1.0;
-        public static final boolean MOTOR_INVERTED = false;
+        public static final boolean MOTOR_INVERTED = true;
         public static final double DEADBAND = 0.1;
         public static final double SENSITIVITY = 0.5;
         public static final long ROLLER_TIME_MILLI_SEC = 500;

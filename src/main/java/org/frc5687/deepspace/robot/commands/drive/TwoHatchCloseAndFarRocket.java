@@ -9,7 +9,7 @@ import org.frc5687.deepspace.robot.commands.intake.PointClaw;
 import org.frc5687.deepspace.robot.subsystems.Shifter;
 
 public class TwoHatchCloseAndFarRocket extends CommandGroup {
-    public TwoHatchCloseAndFarRocket (Robot robot, boolean OffHAB, boolean left, Trajectory leftTrajectory, Trajectory rightTrajectory) {
+    public TwoHatchCloseAndFarRocket (Robot robot, boolean OffHAB, boolean left) {
         if (OffHAB) {
             addSequential(new AutoLaunch(robot));
         }
@@ -22,7 +22,7 @@ public class TwoHatchCloseAndFarRocket extends CommandGroup {
         addSequential(new AutoDriveToTargetSimple(robot.getDriveTrain(), robot.getIMU(), robot.getOI(), robot.getLimelight(), robot.getElevator(), robot.getCargoIntake(), robot.getHatchIntake(), robot.getPoseTracker(), .9, false, 0, false));
         addSequential(new GripClaw(robot.getHatchIntake()));
         addSequential(new AutoAlign(robot.getDriveTrain(), robot.getIMU(), left ? -179 : 179, .7, 250, 5, "aligning to rocket"));
-        addSequential(new AutoDrivePath(robot.getDriveTrain(), robot.getIMU(), robot.getLimelight(), robot.getPoseTracker(), leftTrajectory, rightTrajectory, 0, true));
+        addSequential(new AutoDrivePath(robot.getDriveTrain(), robot.getIMU(), robot.getLimelight(), robot.getPoseTracker(), left ? "LeftFarRocket" : "RightFarRocket", 0, true));
         addSequential(new AutoDriveToTargetSimple(robot.getDriveTrain(), robot.getIMU(), robot.getOI(), robot.getLimelight(), robot.getElevator(), robot.getCargoIntake(), robot.getHatchIntake(), robot.getPoseTracker(), .9, false, 0, false, 3));
         addSequential(new PointClaw(robot.getHatchIntake()));
         addSequential(new AutoDrive(robot.getDriveTrain(), robot.getIMU(), robot.getHatchIntake(), robot.getElevator(), -3.5, .7, false, true, 0, "reverse 12 inches", 180));

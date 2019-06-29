@@ -280,6 +280,7 @@ public class Constants {
         public static final double MAX_PITCH = 20.0;
         public static final double MAX_ROLL = 20.0;
         public static final double IR_THRESHOLD = 24.0;
+        public static final long AUTOCHOOSER_DELAY = 5000;
 
         public static class Climb {
             public static final double ENDGAME_CUTOFF = 30.0;

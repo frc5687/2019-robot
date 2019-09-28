@@ -12,12 +12,9 @@ import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.frc5687.deepspace.robot.commands.KillAll;
 import org.frc5687.deepspace.robot.commands.SandstormPickup;
-import org.frc5687.deepspace.robot.commands.loops.LimelightProcessor;
-import org.frc5687.deepspace.robot.commands.loops.Looper;
 import org.frc5687.deepspace.robot.subsystems.*;
 import org.frc5687.deepspace.robot.utils.*;
 
-import java.awt.font.LineMetrics;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -42,7 +39,6 @@ public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
     private String _name;
     private OI _oi;
     private AHRS _imu;
-    private Looper _enableLooper;
     private Limelight _limelight;
     private DriveTrain _driveTrain;
     private Elevator _elevator;
@@ -54,7 +50,6 @@ public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
     private CargoIntake _cargoIntake;
     private HatchIntake _hatchIntake;
     private PoseTracker _poseTracker;
-    private LimelightProcessor _limelightProcessor;
 
     private UsbCamera _driverCamera;
 
@@ -75,7 +70,6 @@ public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
 
         // Periodically flushes metrics (might be good to configure enable/disable via USB config file)
         new Notifier(MetricTracker::flushAll).startPeriodic(Constants.METRIC_FLUSH_PERIOD);
-        _enableLooper.register(_limelightProcessor);
 
         // OI must be first...
         _oi = new OI();

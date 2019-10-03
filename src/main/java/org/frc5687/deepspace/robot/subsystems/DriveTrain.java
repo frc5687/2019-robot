@@ -13,7 +13,7 @@ import org.frc5687.deepspace.robot.commands.Drive;
 import org.frc5687.deepspace.robot.utils.Limelight;
 import org.frc5687.deepspace.robot.utils.PDP;
 
-import static org.frc5687.deepspace.robot.Constants.DriveTrain.CREEP_FACTOR;
+import static org.frc5687.deepspace.robot.Constants.DriveTrain.*;
 import static org.frc5687.deepspace.robot.utils.Helpers.applySensitivityFactor;
 import static org.frc5687.deepspace.robot.utils.Helpers.limit;
 
@@ -296,6 +296,12 @@ public class DriveTrain extends OutliersSubsystem implements PIDSource {
         return _rightEncoder.getPosition();
     }
 
+    public double getLeftVelocity() {
+        return _leftMagEncoder.getRate()/(COUNTS_PER_REVOLUTION * WHEEL_DIAMETER);
+    }
+    public double getRightVelocity() {
+        return _rightMagEncoder.getRate()/(COUNTS_PER_REVOLUTION * WHEEL_DIAMETER)
+    }
     public double getDistance() {
         if (Math.abs(getRightTicks())<10) {
             return getLeftDistance();

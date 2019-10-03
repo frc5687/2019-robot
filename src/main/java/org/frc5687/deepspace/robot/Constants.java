@@ -55,8 +55,10 @@ public class Constants {
         public static final double MEDIUM_SPEED_COMP = 0.6;
         public static final double MEDIUM_SPEED_PROTO = 0.6;
 
+        public static final double COUNTS_PER_REVOLUTION = 1024;
 
         public static final double WHEEL_SCRUB_FACTOR = 0.9;
+        public static final double WHEEL_DIAMETER = 4;
         // is the distance from the center left wheel to center right wheel.
         public static final double TRACK_WIDTH_INCHES = 31.5;
     }

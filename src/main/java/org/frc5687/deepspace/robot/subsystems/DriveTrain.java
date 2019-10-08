@@ -12,6 +12,7 @@ import org.frc5687.deepspace.robot.RobotMap;
 import org.frc5687.deepspace.robot.commands.Drive;
 import org.frc5687.deepspace.robot.utils.Limelight;
 import org.frc5687.deepspace.robot.utils.PDP;
+import org.frc5687.deepspace.robot.utils.sensors.Navx;
 
 import static org.frc5687.deepspace.robot.Constants.DriveTrain.*;
 import static org.frc5687.deepspace.robot.utils.Helpers.applySensitivityFactor;
@@ -22,27 +23,25 @@ public class DriveTrain extends OutliersSubsystem implements PIDSource {
     private CANSparkMax _rightMaster;
 
     private CANSparkMax _leftFollower;
-    private CANSparkMax _rightFollower;
-
-    private CANEncoder _leftEncoder;
-    private CANEncoder _rightEncoder;
+    private CANSparkMax _rightFollower;;
 
     private Encoder _leftMagEncoder;
     private Encoder _rightMagEncoder;
 
     private OI _oi;
     private AHRS _imu;
+    private Navx _navx;
     private Limelight _limelight;
     private Robot _robot;
-
-    private double _leftOffset;
-    private double _rightOffset;
 
     private double _oldLeftSpeed;
     private double _oldLeftSpeedF;
     private double _oldRightSpeed;
     private double _oldRightSpeedF;
     private boolean _isPaused = false;
+
+    private double _prevLeftVelocity;
+    private double _prevRightVelocity;
 
     private Shifter _shifter;
     private PDP _pdp;
@@ -51,6 +50,7 @@ public class DriveTrain extends OutliersSubsystem implements PIDSource {
         info("Constructing DriveTrain class.");
         _oi = robot.getOI();
         _imu = robot.getIMU();
+        _navx = new Navx();
         _limelight = robot.getLimelight();
         _pdp = robot.getPDP();
         _robot = robot;
@@ -97,10 +97,6 @@ public class DriveTrain extends OutliersSubsystem implements PIDSource {
 
             enableBrakeMode();
 
-            debug("Configuring encoders");
-            _leftEncoder = _leftMaster.getEncoder();
-            _rightEncoder = _rightMaster.getEncoder();
-
         } catch (Exception e) {
             error("Exception allocating drive motor controllers: " + e.getMessage());
         }
@@ -108,6 +104,10 @@ public class DriveTrain extends OutliersSubsystem implements PIDSource {
         debug("Configuring mag encoders");
         _leftMagEncoder = new Encoder(RobotMap.DIO.DRIVE_LEFT_A, RobotMap.DIO.DRIVE_LEFT_B);
         _rightMagEncoder = new Encoder(RobotMap.DIO.DRIVE_RIGHT_A, RobotMap.DIO.DRIVE_RIGHT_B);
+        _leftMagEncoder.setDistancePerPulse(Constants.DriveTrain.LEFT_DISTANCE_PER_PULSE);
+        _rightMagEncoder.setDistancePerPulse(Constants.DriveTrain.RIGHT_DISTANCE_PER_PULSE);
+        resetDriveEncoders();
+
 
 //        logMetrics("Power/Left", "Power/Right",
 //                "PDPCurrent/LeftMaster", "PDPCurrent/RightMaster", "PDPCurrent/LeftFollower", "PDPCurrent/RightFollower",
@@ -142,11 +142,17 @@ public class DriveTrain extends OutliersSubsystem implements PIDSource {
 //        metric("Neo/Distance/Left", getLeftDistance());
 //        metric("Neo/Distance/Right", getRightDistance());
 //        metric("Neo/Distance/Total", getDistance());
-        metric("Mag/Raw/Left", _leftMagEncoder.get());
-        metric("Mag/Raw/Right", _rightMagEncoder.get());
-        metric("Mag/Ticks/Left", getLeftTicks()- _leftOffset);
-        metric("Mag/Ticks/Right", getRightTicks() - _rightOffset);
-//        metric("Faults/LeftMaster", _leftMaster.getFaults());
+        metric("Ticks/Left", _leftMagEncoder.get());
+        metric("Ticks/Right", _rightMagEncoder.get());
+        metric("MagDistance/Left", _leftMagEncoder.getDistance());
+        metric("MagDistance/Right", _rightMagEncoder.getDistance());
+        metric("Distance/Left", getLeftDistance());
+        metric("Distance/Right", getRightDistance());
+        metric("Velocity/Left", getLeftVelocity());
+        metric("Velocity/Right", getRightVelocity());
+        metric("Velocity/Velocity", getVelocity());
+
+        //        metric("Faults/LeftMaster", _leftMaster.getFaults());
 //        metric("Faults/RightMaster", _rightMaster.getFaults());
 //        metric("Faults/LeftFollower", _leftFollower.getFaults());
 //        metric("Faults/RightFollower", _rightFollower.getFaults());
@@ -195,7 +201,7 @@ public class DriveTrain extends OutliersSubsystem implements PIDSource {
                 //metric("Rot/Creep", creep);
                 rotation = rotation * CREEP_FACTOR;
             } else {
-                rotation = rotation * 0.8;
+                rotation = rotation * 1;
             }
 
             //metric("Rot/Transformed", rotation);
@@ -210,7 +216,7 @@ public class DriveTrain extends OutliersSubsystem implements PIDSource {
             if (!override) {
                 rotation = applySensitivityFactor(rotation, _shifter.getGear() == Shifter.Gear.HIGH ? Constants.DriveTrain.TURNING_SENSITIVITY_HIGH_GEAR : Constants.DriveTrain.TURNING_SENSITIVITY_LOW_GEAR);
             }
-            double delta = override ? rotation : rotation * Math.abs(speed);
+            double delta = override ? rotation : rotation;//* Math.abs(speed)
 
 
             if (override) {
@@ -234,7 +240,6 @@ public class DriveTrain extends OutliersSubsystem implements PIDSource {
     public float getYaw() {
         return _imu.getYaw();
     }
-
 
     public void setPower(double leftSpeed, double rightSpeed, boolean override) {
 //         if (!assertMotorControllers()) { return; }
@@ -273,35 +278,38 @@ public class DriveTrain extends OutliersSubsystem implements PIDSource {
         _isPaused = false;
     }
 
-
     public double getLeftDistance() {
-        if (!assertMotorControllers()) { return 0; }
-        return (getLeftTicks()  - _leftOffset) * Constants.DriveTrain.LEFT_RATIO;
+        return getLeftTicks() * Constants.DriveTrain.LEFT_DISTANCE_PER_PULSE;
     }
 
     public double getRightDistance() {
-        if (!assertMotorControllers()) { return 0; }
-
-        return (getRightTicks() - _rightOffset) * Constants.DriveTrain.RIGHT_RATIO;
+        return getRightTicks() * Constants.DriveTrain.RIGHT_DISTANCE_PER_PULSE;
     }
 
     public double getLeftTicks() {
-        if (_leftEncoder==null) { return 0; }
-        return _leftEncoder.getPosition();
+        return _leftMagEncoder.get();
     }
 
-
     public double getRightTicks() {
-        if (_rightEncoder==null) { return 0; }
-        return _rightEncoder.getPosition();
+        return _rightMagEncoder.get();
     }
 
     public double getLeftVelocity() {
-        return _leftMagEncoder.getRate()/(COUNTS_PER_REVOLUTION * WHEEL_DIAMETER);
+        return ((_leftMagEncoder.getRate() / (10 * _leftMagEncoder.getDistancePerPulse())) * 10/COUNTS_PER_REVOLUTION) * Math.PI * WHEEL_DIAMETER; //Inches Per Second.
     }
+
     public double getRightVelocity() {
-        return _rightMagEncoder.getRate()/(COUNTS_PER_REVOLUTION * WHEEL_DIAMETER)
+        return ((_rightMagEncoder.getRate() / (10 * _rightMagEncoder.getDistancePerPulse())) * 10/COUNTS_PER_REVOLUTION) * Math.PI * WHEEL_DIAMETER; //Inches Per Second.
     }
+
+    public double getVelocity() {
+        return (getRightVelocity() + getLeftVelocity())/2; //Inches Per Second.
+    }
+
+    public double getHeading() {
+        return _navx.getAngle();
+    }
+
     public double getDistance() {
         if (Math.abs(getRightTicks())<10) {
             return getLeftDistance();
@@ -313,8 +321,8 @@ public class DriveTrain extends OutliersSubsystem implements PIDSource {
     }
 
     public void resetDriveEncoders() {
-        _leftOffset = getLeftTicks();
-        _rightOffset = getRightTicks();
+        _leftMagEncoder.reset();
+        _rightMagEncoder.reset();
     }
 
     @Override
@@ -331,7 +339,6 @@ public class DriveTrain extends OutliersSubsystem implements PIDSource {
     public void setPIDSourceType(PIDSourceType pidSource) {
     }
 
-
     public double getLeftPower() {
         return _leftMaster.get();
     }
@@ -339,7 +346,6 @@ public class DriveTrain extends OutliersSubsystem implements PIDSource {
     public double getRightPower() {
         return _rightMaster.get();
     }
-
 
     public double getLeftMasterCurrent() {
         return _pdp.getCurrent(RobotMap.PDP.DRIVE_LEFT_MASTER);

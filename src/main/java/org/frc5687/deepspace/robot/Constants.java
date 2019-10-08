@@ -5,7 +5,7 @@ public class Constants {
      *
      */
     public static final int CYCLES_PER_SECOND = 50;
-    public static final int TICKS_PER_UPDATE = 10;
+    public static final int TICKS_PER_UPDATE = 100;
     public static final double METRIC_FLUSH_PERIOD = 1.0;
     public static final int TICKS_PER_UPDATE_COMP = 100;
     public static final double FINAL_WARNING = 15;
@@ -13,17 +13,18 @@ public class Constants {
 
     public class DriveTrain {
 
-        public static final double DEADBAND = 0.1;
-        public static final double SPEED_SENSITIVITY = 0.80;
+        public static final double DEADBAND = 0.25;
+        public static final double SPEED_SENSITIVITY = 0.9;
         public static final double ROTATION_SENSITIVITY = 0.75;
-        public static final double ROTATION_SENSITIVITY_HIGH_GEAR = 1;
-        public static final double ROTATION_SENSITIVITY_LOW_GEAR = 1;
-        public static final double TURNING_SENSITIVITY_HIGH_GEAR = 1;
-        public static final double TURNING_SENSITIVITY_LOW_GEAR = 1;
+        public static final double ROTATION_SENSITIVITY_HIGH_GEAR = 0;
+        public static final double ROTATION_SENSITIVITY_LOW_GEAR = 0;
+        public static final double TURNING_SENSITIVITY_HIGH_GEAR = 0;
+        public static final double TURNING_SENSITIVITY_LOW_GEAR = 0;
 
         public static final double CREEP_FACTOR = 0.25;
-        public static final double LEFT_RATIO = 1.590193804869969;
-        public static final double RIGHT_RATIO = 1.590193804869969;
+        public static final double LEFT_DISTANCE_PER_PULSE = 0.0286206896551724;
+        public static final double RIGHT_DISTANCE_PER_PULSE = 0.0286206896551724;
+
 
         public static final boolean LEFT_MOTORS_INVERTED = true;
         public static final boolean RIGHT_MOTORS_INVERTED = false;
@@ -33,7 +34,7 @@ public class Constants {
         public static final long SEEK_TIME = 500;
 
 
-        public static final double MAX_SPEED_IPS = 12 * 12;
+        public static final double MAX_SPEED_IPS = 156.0;
         public static final double CAP_SPEED_IPS = .8 * MAX_SPEED_IPS;
         public static final double MAX_ACCELERATION_IPSS = CAP_SPEED_IPS / 2;
         public static final double MAX_JERK_IPSSS = CAP_SPEED_IPS;
@@ -54,7 +55,6 @@ public class Constants {
 
         public static final double MEDIUM_SPEED_COMP = 0.6;
         public static final double MEDIUM_SPEED_PROTO = 0.6;
-
         public static final double COUNTS_PER_REVOLUTION = 1024;
 
         public static final double WHEEL_SCRUB_FACTOR = 0.9;
@@ -68,7 +68,7 @@ public class Constants {
         public static final double LOW_POW = -HIGH_POW;
         public static final double ROLLER_SPEED = 0.7;
         public static final double MAX_ROLLER_SPEED = 1.0;
-        public static final boolean MOTOR_INVERTED = false;
+        public static final boolean MOTOR_INVERTED = true;
         public static final double DEADBAND = 0.1;
         public static final double SENSITIVITY = 0.5;
         public static final long ROLLER_TIME_MILLI_SEC = 500;
@@ -129,8 +129,8 @@ public class Constants {
         public static final double TICKS_PER_STEP_PROTO = 50;
         public static final double MIN_SPEED = 0.3;
         public static final double GOAL_SPEED = 0.5;
-        public static final int BOTTOM_CAM_ZONE = 100;
-        public static final double SANDSTORM_PICKUP_SPEED = 0.3;
+        public static final int BOTTOM_CAM_ZONE = 450;
+        public static final double SANDSTORM_PICKUP_SPEED = 0.5;
         public static final double MODE_SPEED = 0.6;
 
         public static class PID {
@@ -307,6 +307,7 @@ public class Constants {
         public static final double MAX_PITCH = 20.0;
         public static final double MAX_ROLL = 20.0;
         public static final double IR_THRESHOLD = 24.0;
+        public static final long AUTOCHOOSER_DELAY = 5000;
 
         public static class Climb {
             public static final double ENDGAME_CUTOFF = 30.0;
@@ -386,7 +387,7 @@ public class Constants {
 
             public static final double kP = 0.03; //0.03;
             public static final double kI = 0.000; // 0;.000.1
-            public static final double kD = 0.2;  //0.1;
+            public static final double kD = 0.3;  //0.1;
             public static final double TOLERANCE = 1; // 0.5
             public static final double MINIMUM_SPEED = 0;//0.15;
             /*
@@ -436,4 +437,11 @@ public class Constants {
         }
     }
 
+    public class RotarySwitch {
+        public static final double TOLERANCE = 0.02;
+    }
+
+    public class AutoDrivePath {
+        public static final double K_TURN = 0.2;
+    }
 }

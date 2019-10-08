@@ -7,11 +7,19 @@ import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import jaci.pathfinder.PathfinderFRC;
+import jaci.pathfinder.Trajectory;
+import org.frc5687.deepspace.robot.commands.AutoLaunch;
+import org.frc5687.deepspace.robot.commands.AutoDrivePath;
 import org.frc5687.deepspace.robot.commands.KillAll;
 import org.frc5687.deepspace.robot.commands.SandstormPickup;
+import org.frc5687.deepspace.robot.commands.drive.TwoHatchCargoRocket;
+import org.frc5687.deepspace.robot.commands.drive.TwoHatchCloseAndFarRocket;
+import org.frc5687.deepspace.robot.commands.drive.TwoHatchRocket;
 import org.frc5687.deepspace.robot.subsystems.*;
 import org.frc5687.deepspace.robot.utils.*;
 
@@ -41,6 +49,7 @@ public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
     private AHRS _imu;
     private Limelight _limelight;
     private DriveTrain _driveTrain;
+    private RobotPose _robotPose;
     private Elevator _elevator;
     private PDP _pdp;
     private Arm _arm;
@@ -50,10 +59,20 @@ public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
     private CargoIntake _cargoIntake;
     private HatchIntake _hatchIntake;
     private PoseTracker _poseTracker;
+    private AutoChooser _autoChooser;
+
+    private Command _autoCommand;
+    private AutoChooser.Mode _mode;
+    private AutoChooser.Position _position;
+    private long _autoPoll = 0;
 
     private UsbCamera _driverCamera;
 
     private boolean _fmsConnected;
+
+
+
+
     /**
      * This function is setRollerSpeed when the robot is first started up and should be
      * used for any initialization code.
@@ -75,6 +94,11 @@ public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
         _oi = new OI();
         _imu = new AHRS(SPI.Port.kMXP, (byte) 100);
 
+        try {
+            Thread.sleep(2000);
+        } catch(Exception e) {
+
+        }
         _imu.zeroYaw();
 
         // then proxies...
@@ -82,9 +106,11 @@ public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
         _limelight = new Limelight("limelight");
         _pdp = new PDP();
 
+        _autoChooser = new AutoChooser(getIdentityMode()==IdentityMode.competition);
         // Then subsystems....
         _shifter = new Shifter(this);
         _driveTrain = new DriveTrain(this);
+        _robotPose = new RobotPose(this);
         _arm = new Arm(this);
         _elevator = new Elevator(this);
         _stilt = new Stilt(this);
@@ -131,6 +157,12 @@ public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
         update();
     }
 
+
+    @Override
+    public void disabledPeriodic() {
+        pollAutoChooser();
+    }
+
     /**
      * This autonomous (along with the chooser code above) shows how to select
      * between different autonomous modes using the dashboard. The sendable
@@ -144,11 +176,90 @@ public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
      */
     @Override
     public void autonomousInit() {
+        _fmsConnected =  DriverStation.getInstance().isFMSAttached();
         _driveTrain.enableBrakeMode();
         _limelight.disableLEDs();
         _limelight.setStreamingMode(Limelight.StreamMode.PIP_SECONDARY);
-        (new SandstormPickup(this)).start();
-        teleopInit();
+        AutoChooser.Mode mode = _autoChooser.getSelectedMode();//AutoChooser.Mode.NearAndFarRocket;
+        AutoChooser.Position position = _autoChooser.getSelectedPosition();
+        if (_autoCommand==null || mode!=_mode || position!=_position) {
+            initAutoCommand();
+        }
+        error("Starting autocommand " + _autoCommand.getClass().getSimpleName());
+        _autoCommand.start();
+    }
+
+    public void initAutoCommand() {
+        _fmsConnected =  DriverStation.getInstance().isFMSAttached();
+        AutoChooser.Mode mode = _autoChooser.getSelectedMode();//AutoChooser.Mode.NearAndFarRocket;
+        AutoChooser.Position position = _autoChooser.getSelectedPosition();
+        // If we already have the command and the mode/position haven't changed, we're done.
+        if (_autoCommand != null && mode==_mode && position==position) {
+            return;
+        }
+
+        // If we already had a command, it's the wrong one!  Clear it and run garbage collection.
+        if (_autoCommand!=null) {
+            _autoCommand = null;
+            System.gc();
+        }
+
+        boolean leftSide = position == AutoChooser.Position.LeftPlatform || position == AutoChooser.Position.LeftHAB;
+
+        switch (mode) {
+            case Launch:
+                if ((position == AutoChooser.Position.LeftHAB) || (position == AutoChooser.Position.RightHAB)) {
+                    _autoCommand = new AutoLaunch(this);
+                }
+                break;
+            case NearAndTopRocket:
+                if ((position != AutoChooser.Position.CenterLeft) && (position != AutoChooser.Position.CenterRight)) {
+                    // If we are in the center we can't do rocket hatches!
+                    _autoCommand = new TwoHatchRocket(this,
+                            position == AutoChooser.Position.LeftHAB || position == AutoChooser.Position.RightHAB,
+                            position == AutoChooser.Position.LeftPlatform || position == AutoChooser.Position.LeftHAB);
+                }
+                break;
+            case NearAndFarRocket:
+                if ((position != AutoChooser.Position.CenterLeft) && (position != AutoChooser.Position.CenterRight)){
+                    _autoCommand = new TwoHatchCloseAndFarRocket(this,
+                            position == AutoChooser.Position.LeftHAB || position == AutoChooser.Position.RightHAB,
+                            leftSide
+                    );
+                }
+                break;
+            case CargoFaceAndNearRocket:
+
+                _autoCommand = new TwoHatchCargoRocket(this,
+                        position == AutoChooser.Position.LeftHAB || position == AutoChooser.Position.RightHAB,
+                        position == AutoChooser.Position.CenterLeft || position == AutoChooser.Position.LeftHAB);
+                break;
+        }
+        if (_autoCommand==null) {
+            _autoCommand = new SandstormPickup(this);
+        }
+        _mode = mode;
+        _position = position;
+        error("autoCommand is " + _autoCommand.getClass().getSimpleName());
+    }
+
+    /***
+     *  Poll the AutoChooser to see if the values have changed and they've been stable for at least a second...
+     */
+    private void pollAutoChooser() {
+        AutoChooser.Mode mode = _autoChooser.getSelectedMode();//AutoChooser.Mode.NearAndFarRocket;
+        AutoChooser.Position position = _autoChooser.getSelectedPosition();
+        if (mode!=_mode || position!=_position) {
+            // A switch was changed...reset the counter
+            _autoPoll = System.currentTimeMillis() + Constants.Auto.AUTOCHOOSER_DELAY;
+            return;
+        }
+        if (System.currentTimeMillis() >= _autoPoll) {
+            _autoPoll = Long.MAX_VALUE;
+            initAutoCommand();
+        }
+
+
     }
 
     public void teleopInit() {
@@ -215,6 +326,8 @@ public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
             _stilt.updateDashboard();
             _cargoIntake.updateDashboard();
             _hatchIntake.updateDashboard();
+            _autoChooser.updateDashboard();
+            _robotPose.updateDashboard();
             metric("imu/yaw", _imu.getYaw());
             metric("imu/pitch", _imu.getPitch());
             metric("imu/roll", _imu.getRoll());
@@ -424,6 +537,7 @@ public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
     public CargoIntake getCargoIntake() { return _cargoIntake;}
     public HatchIntake getHatchIntake() { return _hatchIntake;}
     public PoseTracker getPoseTracker() { return _poseTracker; }
+    public RobotPose getRobotPose() { return _robotPose; }
 
     @Override
     public Pose getPose() {

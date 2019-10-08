@@ -4,8 +4,11 @@ import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.PIDOutput;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.frc5687.deepspace.robot.Constants;
 import org.frc5687.deepspace.robot.subsystems.DriveTrain;
+import org.frc5687.deepspace.robot.subsystems.Elevator;
+import org.frc5687.deepspace.robot.subsystems.HatchIntake;
 
 public class AutoDrive extends OutliersCommand {
     private double _distance;
@@ -22,11 +25,13 @@ public class AutoDrive extends OutliersCommand {
 
     private DriveTrain _driveTrain;
     private AHRS _imu;
+    private HatchIntake _hatchIntake;
+    private Elevator _elevator;
 
-    private double kPdistance = 0.15; // .05;
+    private double kPdistance = 0.1; // .05;
     private double kIdistance = 0.000; // .001;
-    private double kDdistance = 0.3; //.1;
-    private double kTdistance = 0.5;
+    private double kDdistance = 0.8; //.1;
+    private double kTdistance = 1;
 
     private double kPangle = .001;
     private double kIangle = .0001;
@@ -42,7 +47,7 @@ public class AutoDrive extends OutliersCommand {
      * @param stopOnFinish Whether to stop the motors when we are done
      * @param angle The angle to drive, in degrees.  Pass 1000 to maintain robot's hading.
      */
-    public AutoDrive(DriveTrain driveTrain, AHRS imu, double distance, double speed, boolean usePID, boolean stopOnFinish, double angle, String stage, double timeout) {
+    public AutoDrive(DriveTrain driveTrain, AHRS imu, HatchIntake hatchIntake, Elevator elevator, double distance, double speed, boolean usePID, boolean stopOnFinish, double angle, String stage, double timeout) {
         super(timeout);
         requires(driveTrain);
         _speed = speed;
@@ -53,10 +58,13 @@ public class AutoDrive extends OutliersCommand {
         _stage = stage;
         _driveTrain = driveTrain;
         _imu = imu;
+        _hatchIntake = hatchIntake;
+        _elevator = elevator;
     }
 
     @Override
     protected void initialize() {
+        error("Starting AutoDrive");
         _driveTrain.resetDriveEncoders();
 
         _driveTrain.enableBrakeMode();
@@ -82,7 +90,7 @@ public class AutoDrive extends OutliersCommand {
         _angleController.setContinuous();
 
         // If an angle is supplied, use that as our setpoint.  Otherwise get the current heading and stick to it!
-        _angleController.setSetpoint(_angle ==1000? _driveTrain.getYaw(): _angle);
+        _angleController.setSetpoint(Math.abs(_angle) > 180 ? _driveTrain.getYaw(): _angle);
         _angleController.enable();
 
         info("Auto Drive initialized: " + (_stage ==null?"": _stage));
@@ -90,11 +98,14 @@ public class AutoDrive extends OutliersCommand {
 
     @Override
     protected void execute() {
+        super.execute();
         double baseSpeed = _usePID ? _distancePIDOut : (_distance < 0 ? -_speed : _speed);
+        metric("LeftSpeed", baseSpeed + _anglePIDOut);
+        metric("RightSpeed", baseSpeed - _anglePIDOut);
         _driveTrain.setPower(baseSpeed + _anglePIDOut , baseSpeed - _anglePIDOut, true); // positive output is clockwise
         metric("onTarget", _distanceController == null ? false : _distanceController.onTarget());
-        metric("imu", _driveTrain.getYaw());
-        metric("distance", _driveTrain.pidGet());
+        metric("Angle", _driveTrain.getYaw());
+        metric("Distance", _driveTrain.pidGet());
         metric("turnPID", _anglePIDOut);
         metric("distancePID", _distancePIDOut);
     }
@@ -103,11 +114,26 @@ public class AutoDrive extends OutliersCommand {
     protected boolean isFinished() {
         if (_usePID) {
             if (_distanceController.onTarget()) {
-               error("AutoDrive stoped at " + _driveTrain.getDistance());
+               error("AutoDrive stopped at " + _driveTrain.getDistance());
+               return true;
             }
         } else {
-            info("AutoDrive nopid complete at " + _driveTrain.getDistance() + " inches");
-            return _distance == 0 ? true : _distance < 0 ? (_driveTrain.getDistance() < _distance) : (_driveTrain.getDistance() > _distance);
+            if (_distance == 0) {
+                info("AutoDrive nopid complete at " + _driveTrain.getDistance() + " inches");
+                return true;
+            } else if (_distance < 0 && _driveTrain.getDistance() < _distance) {
+                info("AutoDrive nopid complete at " + _driveTrain.getDistance() + " inches");
+                if (_stopOnFinish) {
+                    _driveTrain.setPower(0, 0, true);
+                }
+                return true;
+            } else if (_distance > 0 && _driveTrain.getDistance() > _distance)  {
+                info("AutoDrive nopid complete at " + _driveTrain.getDistance() + " inches");
+                if (_stopOnFinish) {
+                    _driveTrain.setPower(0, 0, true);
+                }
+                return true;
+            }
         }
         return false;
     }
@@ -116,22 +142,20 @@ public class AutoDrive extends OutliersCommand {
 
     @Override
     protected void end() {
+        super.end();
         if (isTimedOut()) {
-            warn("AutoDrive Finished (" + _driveTrain.getDistance() + ", " + (_driveTrain.getYaw() - _angleController.getSetpoint()) + ") " + (_stage ==null?"": _stage));
+            error("AutoDrive timed out (" + _driveTrain.getDistance() + ", " + (_driveTrain.getYaw() - _angleController.getSetpoint()) + ") " + (_stage ==null?"": _stage));
         } else {
-            info("AutoDrive Finished (" + _driveTrain.getDistance() + ", " + (_driveTrain.getYaw() - _angleController.getSetpoint()) + ") " + (_stage == null ? "" : _stage));
+            error("AutoDrive Finished (" + _driveTrain.getDistance() + ", " + (_driveTrain.getYaw() - _angleController.getSetpoint()) + ") " + (_stage == null ? "" : _stage));
         }
-        error("AutoDrive Finished (" + _driveTrain.getDistance() + ", " + (_driveTrain.getYaw() - _angleController.getSetpoint()) + ") " + (_stage ==null?"": _stage));
-        _driveTrain.disableBrakeMode();
-        _angleController.disable();
         if (_distanceController !=null) {
             _distanceController.disable();
         }
         if (_stopOnFinish) {
-            info("Stopping at ." + _driveTrain.getDistance());
-            _driveTrain.enableBrakeMode();
+            error("AutoDrive stopping at " + _driveTrain.getDistance());
             _driveTrain.setPower(0, 0, true);
         }
+        _angleController.disable();
     }
 
 

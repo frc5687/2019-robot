@@ -27,7 +27,7 @@ public class TwoHatchCloseAndFarRocket extends CommandGroup {
         addSequential(new PointClaw(robot.getHatchIntake()));
         addSequential(new AutoDrive(robot.getDriveTrain(), robot.getIMU(), robot.getHatchIntake(), robot.getElevator(), -3.5, .7, false, true, 0, "reverse 12 inches", 180));
         addSequential(new AutoAlign(robot.getDriveTrain(), robot.getIMU(), left ? 90 : -90, .7, 1000, 5, "aligning to rocket"));
-        addSequential(new CargoMode(robot));
+            addSequential(new CargoMode(robot));
         addSequential(new AutoIntake(robot));
     }
 

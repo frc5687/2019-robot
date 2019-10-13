@@ -17,6 +17,9 @@ public class TrackPose extends OutliersCommand {
     private double _deltaTime;
     private double _prevTime;
 
+    private double _leftVelocity;
+    private double _rightVelocity;
+
     public TrackPose(RobotPose robotPose, DriveTrain driveTrain) {
         _robotPose = robotPose;
         _driveTrain = driveTrain;
@@ -31,6 +34,8 @@ public class TrackPose extends OutliersCommand {
         super.initialize();
         _deltaTime = 20.0;
         _prevTime = 0.0;
+        _leftVelocity = 0.0;
+        _rightVelocity = 0.0;
         _robotPose.reset();
     }
 
@@ -46,8 +51,10 @@ public class TrackPose extends OutliersCommand {
 
 //        _robotPose.navxUpdate();
 
+
         _heading = _driveTrain.getYaw();
         _robotPose.setHeading(_heading);
+
 
         //use Riemann Sum to update x and y.
         double xSpeed = _driveTrain.getVelocity() * Math.cos(Math.toRadians(_heading));

@@ -55,7 +55,7 @@ public class Constants {
 
         public static final double MEDIUM_SPEED_COMP = 0.6;
         public static final double MEDIUM_SPEED_PROTO = 0.6;
-        public static final double COUNTS_PER_REVOLUTION = 1024;
+        public static final double PULSE_PER_REVOLUTION = 1000;
 
         public static final double WHEEL_SCRUB_FACTOR = 0.9;
         public static final double WHEEL_DIAMETER = 4;

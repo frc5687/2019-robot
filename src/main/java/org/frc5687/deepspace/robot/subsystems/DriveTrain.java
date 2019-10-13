@@ -40,8 +40,11 @@ public class DriveTrain extends OutliersSubsystem implements PIDSource {
     private double _oldRightSpeedF;
     private boolean _isPaused = false;
 
-    private double _prevLeftVelocity;
-    private double _prevRightVelocity;
+    private double _prevLeftTicks;
+    private double _prevRightTicks;
+
+    private double _leftDistance;
+    private double _rightDistance;
 
     private Shifter _shifter;
     private PDP _pdp;
@@ -104,7 +107,7 @@ public class DriveTrain extends OutliersSubsystem implements PIDSource {
         debug("Configuring mag encoders");
         _leftMagEncoder = new Encoder(RobotMap.DIO.DRIVE_LEFT_A, RobotMap.DIO.DRIVE_LEFT_B);
         _rightMagEncoder = new Encoder(RobotMap.DIO.DRIVE_RIGHT_A, RobotMap.DIO.DRIVE_RIGHT_B);
-        _leftMagEncoder.setDistancePerPulse(Constants.DriveTrain.LEFT_DISTANCE_PER_PULSE);
+        _leftMagEncoder.setDistancePerPulse(Math.PI * WHEEL_DIAMETER / PULSE_PER_REVOLUTION);
         _rightMagEncoder.setDistancePerPulse(Constants.DriveTrain.RIGHT_DISTANCE_PER_PULSE);
         resetDriveEncoders();
 
@@ -277,15 +280,6 @@ public class DriveTrain extends OutliersSubsystem implements PIDSource {
         _rightFollower.set(_oldRightSpeedF);
         _isPaused = false;
     }
-
-    public double getLeftDistance() {
-        return getLeftTicks() * Constants.DriveTrain.LEFT_DISTANCE_PER_PULSE;
-    }
-
-    public double getRightDistance() {
-        return getRightTicks() * Constants.DriveTrain.RIGHT_DISTANCE_PER_PULSE;
-    }
-
     public double getLeftTicks() {
         return _leftMagEncoder.get();
     }
@@ -294,12 +288,32 @@ public class DriveTrain extends OutliersSubsystem implements PIDSource {
         return _rightMagEncoder.get();
     }
 
+    public double getDeltaLeftTicks() {
+        _prevLeftTicks = getLeftTicks();
+        return ((getLeftTicks() - _prevLeftTicks) / PULSE_PER_REVOLUTION) * Math.PI;
+    }
+
+    public double getDeltaRightTicks() {
+        _prevRightTicks = getRightTicks();
+        return ((getRightTicks() - _prevRightTicks) / PULSE_PER_REVOLUTION) * Math.PI;
+    }
+
+    public double getLeftDistance() {
+        _leftDistance += getDeltaLeftTicks() * WHEEL_DIAMETER;
+        return _leftDistance;
+    }
+
+    public double getRightDistance() {
+        _rightDistance += getDeltaRightTicks() * WHEEL_DIAMETER;
+        return _rightDistance;
+    }
+
     public double getLeftVelocity() {
-        return ((_leftMagEncoder.getRate() / (10 * _leftMagEncoder.getDistancePerPulse())) * 10/COUNTS_PER_REVOLUTION) * Math.PI * WHEEL_DIAMETER; //Inches Per Second.
+        return ((_leftMagEncoder.getRate() / (10 * _leftMagEncoder.getDistancePerPulse())) * 10/PULSE_PER_REVOLUTION) * Math.PI * WHEEL_DIAMETER; //Inches Per Second.
     }
 
     public double getRightVelocity() {
-        return ((_rightMagEncoder.getRate() / (10 * _rightMagEncoder.getDistancePerPulse())) * 10/COUNTS_PER_REVOLUTION) * Math.PI * WHEEL_DIAMETER; //Inches Per Second.
+        return ((_rightMagEncoder.getRate() / (10 * _rightMagEncoder.getDistancePerPulse())) * 10/PULSE_PER_REVOLUTION) * Math.PI * WHEEL_DIAMETER; //Inches Per Second.
     }
 
     public double getVelocity() {

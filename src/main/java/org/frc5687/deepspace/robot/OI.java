@@ -149,15 +149,18 @@ public class OI extends OutliersProxy {
         _driverRightButton.whenPressed(new SafeguardCommand(robot, new AutoClimb(robot.getStilt(), robot.getArm(), robot.getDriveTrain(), robot.getCargoIntake(), robot.getHatchIntake(), robot, true), -30));
         _driverLeftButton.whenPressed(new SafeguardCommand(robot, new AutoClimb(robot.getStilt(), robot.getArm(), robot.getDriveTrain(), robot.getCargoIntake(), robot.getHatchIntake(), robot, false), -30));
 
-        _driverLowButton.whenPressed(new Shift(robot.getDriveTrain(), robot.getShifter(), Shifter.Gear.LOW, false));
-        _driverHighButton.whenPressed(new Shift(robot.getDriveTrain(), robot.getShifter(), Shifter.Gear.HIGH, false));
+        _driverLeftBumper.whenPressed(new Shift(robot.getDriveTrain(), robot.getShifter(), Shifter.Gear.LOW, false));
+        _driverRightBumper.whenPressed(new Shift(robot.getDriveTrain(), robot.getShifter(), Shifter.Gear.HIGH, false));
+        _driverLowButton.whenPressed(new Shift (robot.getDriveTrain(), robot.getShifter(), Shifter.Gear.LOW, false));
+        _driverHighButton.whenPressed(new Shift(robot.getDriveTrain(),robot.getShifter(), Shifter.Gear.HIGH, false));
 
         _driverLeftTrigger.whenPressed(new Eject(robot));
         _driverRightTrigger.whenPressed(new Intake(robot));
 
 
         _driverAButton.whenPressed(new ConditionalCommand(
-                new AutoAlign(robot.getDriveTrain(), robot.getIMU(), 180, 1,1000,5.0,"Aligning to Human Player Station")) {
+                new AutoDrive(robot.getDriveTrain(), robot.getIMU(), robot.getHatchIntake(), robot.getElevator(), 9999, .8, false, true, 0, "Backing away from CargoShip", 500))
+        {
             @Override
             protected boolean condition() {
                 return robot.getConfiguration()!=Robot.Configuration.climbing && robot.getConfiguration()!=Robot.Configuration.parked;
@@ -192,16 +195,16 @@ public class OI extends OutliersProxy {
     }
 
     public boolean isAutoTargetPressed() {
-        return _driverTrigger.get();
+        return _driverRightTrigger.get();
     }
     public double getDriveSpeed() {
-        double speed = -getSpeedFromAxis(_driverLeftjoystick, _driverLeftjoystick.getYChannel());
+        double speed = -getSpeedFromAxis(_driverGamepad, Gamepad.Axes.LEFT_Y.getNumber());
         speed = applyDeadband(speed, Constants.DriveTrain.DEADBAND);
         return speed;
     }
 
     public double getDriveRotation() {
-        double speed = getSpeedFromAxis(_driverRightjoystick, _driverRightjoystick.getXChannel());
+        double speed = getSpeedFromAxis(_driverGamepad, Gamepad.Axes.RIGHT_X.getNumber());
         speed = applyDeadband(speed, Constants.DriveTrain.DEADBAND);
         return speed;
     }

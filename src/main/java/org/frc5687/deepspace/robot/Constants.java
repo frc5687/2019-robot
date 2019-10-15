@@ -104,8 +104,8 @@ public class Constants {
 
         public static final long CREEP_TIME = 200;
 
-        public static final double JELLO_SPEED_UP = 0.3;
-        public static final double JELLO_SPEED_DOWN = 0.3;
+        public static final double JELLO_SPEED_UP = 0.25;
+        public static final double JELLO_SPEED_DOWN = 0.25;
 
         public static final double TOP_JELLO_ZONE = 500;
         public static final double BOTTOM_JELLO_ZONE = 1200;

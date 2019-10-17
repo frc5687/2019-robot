@@ -153,7 +153,7 @@ public class OI extends OutliersProxy {
         _driverHighButton.whenPressed(new Shift(robot.getDriveTrain(), robot.getShifter(), Shifter.Gear.HIGH, false));
 
         _driverLeftTrigger.whenPressed(new Eject(robot));
-        _driverRightTrigger.whenPressed(new Intake(robot));
+//        _driverRightTrigger.whenPressed(new Intake(robot));
 
 
         _driverAButton.whenPressed(new ConditionalCommand(
@@ -192,16 +192,28 @@ public class OI extends OutliersProxy {
     }
 
     public boolean isAutoTargetPressed() {
-        return _driverTrigger.get();
+        return _driverRightTrigger.get();
     }
+
+//    public double getDriveSpeed() {
+//        double speed = -getSpeedFromAxis(_driverLeftjoystick, _driverLeftjoystick.getYChannel());
+//        speed = applyDeadband(speed, Constants.DriveTrain.DEADBAND);
+//        return speed;
+//    }
+//
+//    public double getDriveRotation() {
+//        double speed = getSpeedFromAxis(_driverRightjoystick, _driverRightjoystick.getXChannel());
+//        speed = applyDeadband(speed, Constants.DriveTrain.DEADBAND);
+//        return speed;
+//    }
     public double getDriveSpeed() {
-        double speed = -getSpeedFromAxis(_driverLeftjoystick, _driverLeftjoystick.getYChannel());
+        double speed = -getSpeedFromAxis(_driverGamepad, Gamepad.Axes.LEFT_Y.getNumber());
         speed = applyDeadband(speed, Constants.DriveTrain.DEADBAND);
         return speed;
     }
 
     public double getDriveRotation() {
-        double speed = getSpeedFromAxis(_driverRightjoystick, _driverRightjoystick.getXChannel());
+        double speed = getSpeedFromAxis(_driverGamepad, Gamepad.Axes.RIGHT_X.getNumber());
         speed = applyDeadband(speed, Constants.DriveTrain.DEADBAND);
         return speed;
     }

@@ -155,7 +155,7 @@ public class OI extends OutliersProxy {
         _driverHighButton.whenPressed(new Shift(robot.getDriveTrain(),robot.getShifter(), Shifter.Gear.HIGH, false));
 
         _driverLeftTrigger.whenPressed(new Eject(robot));
-        _driverRightTrigger.whenPressed(new Intake(robot));
+        //_driverRightTrigger.whenPressed(new Intake(robot));
 
 
         _driverAButton.whenPressed(new ConditionalCommand(
@@ -195,7 +195,7 @@ public class OI extends OutliersProxy {
     }
 
     public boolean isAutoTargetPressed() {
-        return _driverRightYAxisUpButton.get();
+        return _driverRightTrigger.get();
     }
     public double getDriveSpeed() {
         double speed = -getSpeedFromAxis(_driverGamepad, Gamepad.Axes.LEFT_Y.getNumber());

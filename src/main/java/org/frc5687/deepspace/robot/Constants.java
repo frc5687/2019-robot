@@ -100,12 +100,12 @@ public class Constants {
         public static final double MAX_SPEED_UP = 1.0;
         public static final double MAX_SPEED_DOWN = 1.0;
         public static final double SPEED_UP = 1.0;
-        public static final double SPEED_DOWN = 1.0;
+        public static final double SPEED_DOWN = .8;
 
         public static final long CREEP_TIME = 200;
 
         public static final double JELLO_SPEED_UP = 0.25;
-        public static final double JELLO_SPEED_DOWN = 0.25;
+        public static final double JELLO_SPEED_DOWN = 0.15;
 
         public static final double TOP_JELLO_ZONE = 500;
         public static final double BOTTOM_JELLO_ZONE = 1200;
@@ -117,7 +117,7 @@ public class Constants {
         public static final double MAX_VELOCITY_IPS = 27.0;
         public static final double TICKS_PER_INCH = 111.1111111;
         public static final double STEPS_UP = 10; //10;
-        public static final double STEPS_DOWN = 30; //30;
+        public static final double STEPS_DOWN = 40; //30;
         public static final double TICKS_PER_STEP_COMP = 100;
         public static final double TICKS_PER_STEP_PROTO = 50;
         public static final double MIN_SPEED = 0.3;

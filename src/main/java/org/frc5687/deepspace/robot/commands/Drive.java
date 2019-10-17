@@ -312,6 +312,10 @@ public class Drive extends OutliersCommand {
             error("Limiting speed due to elevator!");
             limit = Math.min(0.5, limit);
         }
+        if (!_elevator.isLimelightClear() && _limelightbot.isTargetSighted()) {
+            error("Limiting speed for middle hatch");
+            limit = Math.min(0.7, limit);
+        }
         double limited = Helpers.limit(speed, -limit, limit);
         metric("limit", limit);
         metric("limited", limited);

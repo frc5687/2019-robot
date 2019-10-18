@@ -146,8 +146,8 @@ public class OI extends OutliersProxy {
     }
     public void initializeButtons(Robot robot){
 
-        _driverRightButton.whenPressed(new SafeguardCommand(robot, new AutoClimb(robot.getStilt(), robot.getArm(), robot.getDriveTrain(), robot.getCargoIntake(), robot.getHatchIntake(), robot, true), -30));
-        _driverLeftButton.whenPressed(new SafeguardCommand(robot, new AutoClimb(robot.getStilt(), robot.getArm(), robot.getDriveTrain(), robot.getCargoIntake(), robot.getHatchIntake(), robot, false), -30));
+        _driverStartButton.whenPressed(new SafeguardCommand(robot, new AutoClimb(robot.getStilt(), robot.getArm(), robot.getDriveTrain(), robot.getCargoIntake(), robot.getHatchIntake(), robot, true), -30));
+        _driverBackButton.whenPressed(new SafeguardCommand(robot, new AutoClimb(robot.getStilt(), robot.getArm(), robot.getDriveTrain(), robot.getCargoIntake(), robot.getHatchIntake(), robot, false), -30));
 
         _driverLowButton.whenPressed(new Shift(robot.getDriveTrain(), robot.getShifter(), Shifter.Gear.LOW, false));
         _driverHighButton.whenPressed(new Shift(robot.getDriveTrain(), robot.getShifter(), Shifter.Gear.HIGH, false));
@@ -253,7 +253,7 @@ public class OI extends OutliersProxy {
         return POV.fromWPILIbAngle(0, _operatorGamepad.getPOV()).getDirectionValue();
     }
     public int getDriverPOV() {
-        return POV.fromWPILIbAngle(0, _driverLeftjoystick.getPOV()).getDirectionValue();
+        return POV.fromWPILIbAngle(0, _driverGamepad.getPOV()).getDirectionValue();
     }
 
     protected double getSpeedFromAxis(Joystick gamepad, int axisNumber) {

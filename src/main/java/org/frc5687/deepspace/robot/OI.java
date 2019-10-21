@@ -149,8 +149,8 @@ public class OI extends OutliersProxy {
         _driverStartButton.whenPressed(new SafeguardCommand(robot, new AutoClimb(robot.getStilt(), robot.getArm(), robot.getDriveTrain(), robot.getCargoIntake(), robot.getHatchIntake(), robot, true), -30));
         _driverBackButton.whenPressed(new SafeguardCommand(robot, new AutoClimb(robot.getStilt(), robot.getArm(), robot.getDriveTrain(), robot.getCargoIntake(), robot.getHatchIntake(), robot, false), -30));
 
-        _driverLowButton.whenPressed(new Shift(robot.getDriveTrain(), robot.getShifter(), Shifter.Gear.LOW, false));
-        _driverHighButton.whenPressed(new Shift(robot.getDriveTrain(), robot.getShifter(), Shifter.Gear.HIGH, false));
+        _driverLeftBumper.whenPressed(new Shift(robot.getDriveTrain(), robot.getShifter(), Shifter.Gear.LOW, false));
+        _driverRightBumper.whenPressed(new Shift(robot.getDriveTrain(), robot.getShifter(), Shifter.Gear.HIGH, false));
 
         _driverLeftTrigger.whenPressed(new Eject(robot));
 //        _driverRightTrigger.whenPressed(new Intake(robot));

@@ -100,7 +100,7 @@ public class Constants {
         public static final double MAX_SPEED_UP = 1.0;
         public static final double MAX_SPEED_DOWN = 1.0;
         public static final double SPEED_UP = 1.0;
-        public static final double SPEED_DOWN = .8;
+        public static final double SPEED_DOWN = .85;
 
         public static final long CREEP_TIME = 200;
 
@@ -125,6 +125,7 @@ public class Constants {
         public static final int BOTTOM_CAM_ZONE = 450;
         public static final double SANDSTORM_PICKUP_SPEED = 0.5;
         public static final double MODE_SPEED = 0.6;
+        public static final double HOLD_SPEED =  0.05;
 
         public static class PID {
             public static final double kP = 0.1;

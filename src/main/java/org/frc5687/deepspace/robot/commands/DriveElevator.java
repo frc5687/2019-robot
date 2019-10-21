@@ -1,6 +1,6 @@
 package org.frc5687.deepspace.robot.commands;
 
-import edu.wpi.first.wpilibj.DriverStation;
+import org.frc5687.deepspace.robot.Constants;
 import org.frc5687.deepspace.robot.OI;
 import org.frc5687.deepspace.robot.Robot;
 import org.frc5687.deepspace.robot.subsystems.Elevator;
@@ -24,6 +24,11 @@ public class DriveElevator extends OutliersCommand{
     public void execute() {
         // Read speed stick positions from OI
         double speed = _oi.getElevatorSpeed();
+        if (_elevator.isNearBottom()) {
+            speed = _oi.getElevatorSpeed();
+        } else if (Math.abs(speed) <= Constants.Elevator.DEADBAND) {
+            speed = Constants.Elevator.HOLD_SPEED;
+        }
         // Send to the Elevator
         _elevator.setSpeed(speed);
     }

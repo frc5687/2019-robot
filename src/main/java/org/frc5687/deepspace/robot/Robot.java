@@ -47,6 +47,7 @@ public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
     private OI _oi;
     private AHRS _imu;
     private Limelight _limelight;
+    private Limelight _limelightbot;
     private DriveTrain _driveTrain;
     private Elevator _elevator;
     private PDP _pdp;
@@ -102,6 +103,7 @@ public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
         // then proxies...
         _lights = new Lights(this);
         _limelight = new Limelight("limelight");
+        _limelightbot = new Limelight("limelight-bottom");
         _pdp = new PDP();
 
         _autoChooser = new AutoChooser(getIdentityMode()==IdentityMode.competition);
@@ -132,6 +134,8 @@ public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
         // Initialize the other stuff
         _limelight.disableLEDs();
         _limelight.setStreamingMode(Limelight.StreamMode.PIP_SECONDARY);
+        _limelightbot.disableLEDs();
+        _limelightbot.setStreamingMode(Limelight.StreamMode.PIP_SECONDARY);
         setConfiguration(Configuration.starting);
         //_arm.resetEncoders();
         _arm.enableBrakeMode();
@@ -157,7 +161,7 @@ public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
 
     @Override
     public void disabledPeriodic() {
-        pollAutoChooser();
+//        pollAutoChooser();
     }
 
     /**
@@ -177,7 +181,9 @@ public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
         _driveTrain.enableBrakeMode();
         _limelight.disableLEDs();
         _limelight.setStreamingMode(Limelight.StreamMode.PIP_SECONDARY);
-        AutoChooser.Mode mode = _autoChooser.getSelectedMode();//AutoChooser.Mode.NearAndFarRocket;
+        _limelightbot.disableLEDs();
+        _limelightbot.setStreamingMode(Limelight.StreamMode.PIP_SECONDARY);
+        AutoChooser.Mode mode = _autoChooser.getSelectedMode();
         AutoChooser.Position position = _autoChooser.getSelectedPosition();
         if (_autoCommand==null || mode!=_mode || position!=_position) {
             initAutoCommand();
@@ -188,7 +194,7 @@ public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
 
     public void initAutoCommand() {
         _fmsConnected =  DriverStation.getInstance().isFMSAttached();
-        AutoChooser.Mode mode = _autoChooser.getSelectedMode();//AutoChooser.Mode.NearAndFarRocket;
+        AutoChooser.Mode mode = _autoChooser.getSelectedMode();
         AutoChooser.Position position = _autoChooser.getSelectedPosition();
         // If we already have the command and the mode/position haven't changed, we're done.
         if (_autoCommand != null && mode==_mode && position==position) {
@@ -244,7 +250,7 @@ public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
      *  Poll the AutoChooser to see if the values have changed and they've been stable for at least a second...
      */
     private void pollAutoChooser() {
-        AutoChooser.Mode mode = _autoChooser.getSelectedMode();//AutoChooser.Mode.NearAndFarRocket;
+        AutoChooser.Mode mode = _autoChooser.getSelectedMode();
         AutoChooser.Position position = _autoChooser.getSelectedPosition();
         if (mode!=_mode || position!=_position) {
             // A switch was changed...reset the counter
@@ -315,6 +321,7 @@ public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
             _oi.updateDashboard();
             _driveTrain.updateDashboard();
             _limelight.updateDashboard();
+            _limelightbot.updateDashboard();
             _arm.updateDashboard();
             _elevator.updateDashboard();
             _pdp.updateDashboard();
@@ -483,6 +490,7 @@ public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
                 break;
         }
         _wereLEDsOn = _limelight.areLEDsOn();
+        _wereLEDsOn = _limelightbot.areLEDsOn();
         if (!_wereLEDsOn) {
             _trackingScoreHatch = false;
             _trackingRetrieveHatch = false;
@@ -524,6 +532,7 @@ public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
     public Limelight getLimelight() {
         return _limelight;
     }
+    public Limelight getLimeLightBot() {return _limelightbot; }
     public PDP getPDP() { return _pdp; }
     public Arm getArm() { return _arm; }
     public Elevator getElevator() { return _elevator; }

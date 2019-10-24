@@ -100,7 +100,7 @@ public class Constants {
         public static final double MAX_SPEED_UP = 1.0;
         public static final double MAX_SPEED_DOWN = 1.0;
         public static final double SPEED_UP = 1.0;
-        public static final double SPEED_DOWN = 1.0;
+        public static final double SPEED_DOWN = .85;
 
         public static final long CREEP_TIME = 200;
 
@@ -117,7 +117,7 @@ public class Constants {
         public static final double MAX_VELOCITY_IPS = 27.0;
         public static final double TICKS_PER_INCH = 111.1111111;
         public static final double STEPS_UP = 10; //10;
-        public static final double STEPS_DOWN = 30; //30;
+        public static final double STEPS_DOWN = 40; //30;
         public static final double TICKS_PER_STEP_COMP = 100;
         public static final double TICKS_PER_STEP_PROTO = 50;
         public static final double MIN_SPEED = 0.3;
@@ -125,6 +125,7 @@ public class Constants {
         public static final int BOTTOM_CAM_ZONE = 450;
         public static final double SANDSTORM_PICKUP_SPEED = 0.5;
         public static final double MODE_SPEED = 0.6;
+        public static final double HOLD_SPEED =  0.05;
 
         public static class PID {
             public static final double kP = 0.1;
@@ -367,7 +368,7 @@ public class Constants {
              *time the angle must be on target for to be considered steady
              */
             public static final double STEADY_TIME = 60;
-            public static final double STEER_K = .015;
+            public static final double STEER_K = .016;
         }
         public class Drive {
             public static final double SPEED = 1.0;

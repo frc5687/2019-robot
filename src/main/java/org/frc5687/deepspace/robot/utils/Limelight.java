@@ -30,9 +30,9 @@ public class Limelight extends OutliersProxy {
     NetworkTableEntry _pipeline;
     NetworkTableEntry _stream;
 
-    public Limelight() {
-        this("limelight");
-    }
+//    public Limelight() {
+//        this("limelight");
+//    }
 
     public Limelight(String key) {
         _table = NetworkTableInstance.getDefault().getTable(key);
@@ -54,6 +54,7 @@ public class Limelight extends OutliersProxy {
         _pipeline = _table.getEntry("pipeline");
         _stream = _table.getEntry("stream");
     }
+
     public void enableVision() {
         _cammode.setNumber(0);
     }
@@ -72,7 +73,6 @@ public class Limelight extends OutliersProxy {
 
     public void disableLEDs() {
         _ledmode.setNumber(1);
-
     }
     public void blinkLEDs() {
         _ledmode.setNumber(2);

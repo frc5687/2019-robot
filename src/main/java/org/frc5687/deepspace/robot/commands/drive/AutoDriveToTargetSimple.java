@@ -24,6 +24,7 @@ public class AutoDriveToTargetSimple extends OutliersCommand {
     private DriveTrain _driveTrain;
     private AHRS _imu;
     private Limelight _limelight;
+    private Limelight _limelightbot;
     private PoseTracker _poseTracker;
     private Elevator _elevator;
     private HatchIntake _hatchIntake;
@@ -40,6 +41,7 @@ public class AutoDriveToTargetSimple extends OutliersCommand {
     private long _lockEnd;
     private DriveState _driveState = DriveState.normal;
     private boolean _ignoreElevatorHeight = false;
+    private boolean _useTwoLimelights = false;
 
     private double _speed;
 
@@ -49,15 +51,16 @@ public class AutoDriveToTargetSimple extends OutliersCommand {
     private double _slowSpeed;
     private double _mediumSpeed;
 
-    public AutoDriveToTargetSimple(DriveTrain driveTrain, AHRS imu, OI oi, Limelight limelight, Elevator elevator, CargoIntake cargoIntake, HatchIntake hatchIntake, PoseTracker poseTracker, double speed, boolean finishFromDistance, double distance, boolean ignoreElevatorHeight) {
-        this(driveTrain,imu,oi,limelight,elevator,cargoIntake,hatchIntake,poseTracker, speed, finishFromDistance,distance, ignoreElevatorHeight, 0);
+    public AutoDriveToTargetSimple(DriveTrain driveTrain, AHRS imu, OI oi, Limelight limelight, Limelight limelightbot, Elevator elevator, CargoIntake cargoIntake, HatchIntake hatchIntake, PoseTracker poseTracker, double speed, boolean finishFromDistance, double distance, boolean ignoreElevatorHeight, boolean useTwoLimelights) {
+        this(driveTrain,imu,oi,limelight,limelightbot,elevator,cargoIntake,hatchIntake,poseTracker, speed, finishFromDistance, distance, ignoreElevatorHeight, useTwoLimelights, 0);
     }
 
-    public AutoDriveToTargetSimple(DriveTrain driveTrain, AHRS imu, OI oi, Limelight limelight, Elevator elevator, CargoIntake cargoIntake, HatchIntake hatchIntake, PoseTracker poseTracker, double speed, boolean finishFromDistance, double distance, boolean ignoreElevatorHeight, int pipeline) {
+    public AutoDriveToTargetSimple(DriveTrain driveTrain, AHRS imu, OI oi, Limelight limelight,Limelight limelightbot, Elevator elevator, CargoIntake cargoIntake, HatchIntake hatchIntake, PoseTracker poseTracker, double speed, boolean finishFromDistance, double distance, boolean ignoreElevatorHeight, boolean useTwoLimelights, int pipeline) {
         _driveTrain = driveTrain;
         _oi = oi;
         _imu = imu;
         _limelight = limelight;
+        _limelightbot = limelightbot;
         _elevator = elevator;
         _poseTracker = poseTracker;
         _cargoIntake = cargoIntake;
@@ -66,6 +69,7 @@ public class AutoDriveToTargetSimple extends OutliersCommand {
         _finishFromDistance = finishFromDistance;
         _distance = distance;
         _ignoreElevatorHeight = ignoreElevatorHeight;
+        _useTwoLimelights = useTwoLimelights;
         requires(_driveTrain);
 
         // logMetrics("StickSpeed", "StickRotation", "LeftPower", "RightPower", "LeftMasterAmps", "LeftFollowerAmps", "RightMasterAmps", "RightFollowerAmps", "TurnSpeed");
@@ -96,12 +100,25 @@ public class AutoDriveToTargetSimple extends OutliersCommand {
     @Override
     protected void execute() {
         // Get the base speed from the throttle
-        _targetSighted = _limelight.isTargetSighted();
+        if (_useTwoLimelights) {
+            _targetSighted = (!_elevator.isLimelightClear() ? _limelightbot.isTargetSighted() : _limelight.isTargetSighted());
+        } else {
+            _targetSighted = _limelight.isTargetSighted();
+        }
         switch (_driveState) {
             case normal:
                 // Start seeking
                 _limelight.setPipeline(_cargoIntake.isIntaking() ? 8 : 0);
-                _limelight.enableLEDs();
+                if (_useTwoLimelights) {
+                    if (!_elevator.isLimelightClear()) {
+                        _limelightbot.enableLEDs();
+                    } else {
+                        _limelight.enableLEDs();
+                    }
+                } else {
+                    _limelight.enableLEDs();
+                }
+
                 _driveState = DriveState.seeking;
                 break;
             case seeking:
@@ -155,11 +172,11 @@ public class AutoDriveToTargetSimple extends OutliersCommand {
     }
 
     protected double getTurnSpeed() {
-        double limeLightAngle = _limelight.getHorizontalAngle();
+        double limeLightAngle = (!_elevator.isLimelightClear() ? _limelightbot.getHorizontalAngle() : _limelight.getHorizontalAngle());
         double yaw = _imu.getYaw();
 
         // Find the pose of the robot _when the picture was taken_
-        long timeKey = System.currentTimeMillis() - (long)_limelight.getLatency();
+        long timeKey = System.currentTimeMillis() - (!_elevator.isLimelightClear() ? (long)_limelight.getLatency() : (long) _limelightbot.getLatency());
         BasicPose pose = (BasicPose)_poseTracker.get(timeKey);
 
         // Get the angle from the pose if one was found--otherwise use yaw
@@ -205,7 +222,6 @@ public class AutoDriveToTargetSimple extends OutliersCommand {
             error("Elevator is at" + _elevator.getPosition());
             return true;
         }
-//        return _oi.isOverridePressed() || _hatchIntake.isShockTriggered();
         return _oi.isOverridePressed() || _hatchIntake.isShockTriggered();
     }
 

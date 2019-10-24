@@ -27,7 +27,11 @@ public class AutoChooser extends OutliersProxy {
     public Position getSelectedPosition(){
         int raw = _positionSwitch.get();
         if (raw >= Position.values().length) { raw = 0; }
-        return Position.values()[raw];
+        try {
+            return Position.values()[raw];
+        } catch(Exception e) {
+            return Position.LeftPlatform;
+        }
     }
 
     public Mode getSelectedMode(){

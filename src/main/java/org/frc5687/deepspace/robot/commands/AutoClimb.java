@@ -209,24 +209,24 @@ public class AutoClimb extends OutliersCommand {
                     error("Transitioning to " + ClimbState.Tilt.name());
                     _climbState = ClimbState.Tilt;
                 }
-                break;
-            case Tilt:
-                _stilt.setLifterSpeed(STILT_TILT_SPEED);
-                if (_stilt.isTilted() || _robot.getIMU().getPitch() >= TILT_PITCH) {
-                    error("Transitioning to " + ClimbState.Done.name());
-                    _climbState = ClimbState.Done;
-                    _stilt.setLifterSpeed(STILT_TILT_HOLD_SPEED);
-                    _stilt.enableBrakeMode();
-                    error("Transitioning to " + ClimbState.Done.name());
-                    _climbState = ClimbState.Done;
-                }
-                break;
-            case Done:
-                _robot.setConfiguration(Robot.Configuration.parked);
-                _driveTrain.enableBrakeMode();
-                _stilt.setLifterSpeed(0);
-                _arm.setSpeed(0);
-                break;
+//                break;
+//            case Tilt:
+//                _stilt.setLifterSpeed(STILT_TILT_SPEED);
+//                if (_stilt.isTilted() || _robot.getIMU().getPitch() >= TILT_PITCH) {
+//                    error("Transitioning to " + ClimbState.Done.name());
+//                    _climbState = ClimbState.Done;
+//                    _stilt.setLifterSpeed(STILT_TILT_HOLD_SPEED);
+//                    _stilt.enableBrakeMode();
+//                    error("Transitioning to " + ClimbState.Done.name());
+//                    _climbState = ClimbState.Done;
+//                }
+//                break;
+//            case Done:
+//                _robot.setConfiguration(Robot.Configuration.parked);
+//                _driveTrain.enableBrakeMode();
+//                _stilt.setLifterSpeed(0);
+//                _arm.setSpeed(0);
+//                break;
         }
         metric("ClimbState", _climbState.name());
     }

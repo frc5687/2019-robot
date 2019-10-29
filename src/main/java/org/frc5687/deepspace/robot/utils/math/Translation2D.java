@@ -5,6 +5,11 @@ public class Translation2D implements Interpolable<Translation2D> {
     private double _x;
     private double _y;
 
+    public Translation2D() {
+        _x = 0;
+        _y = 0;
+    }
+
     public Translation2D(double x, double y) {
         _x = x;
         _y = y;
@@ -15,10 +20,6 @@ public class Translation2D implements Interpolable<Translation2D> {
         _y = other._y;
     }
 
-    public double norm() {
-        return Math.hypot(_x, _y);
-    }
-
     public double getX() {
         return _x;
     }
@@ -27,16 +28,16 @@ public class Translation2D implements Interpolable<Translation2D> {
         return _y;
     }
 
-    public Translation2D translateTo(final Translation2D other) {
+    public Translation2D rotateBy(Rotation2D rotation) {
+        double x = _x * rotation.getCos() - _y * rotation.getSin();
+        double y = _x * rotation.getSin() + _y * rotation.getCos();
+        return new Translation2D(x, y);
+    }
+    public Translation2D translateBy(final Translation2D other) {
         return new Translation2D(_x + other._x, _y + other._y);
     }
-
     public Translation2D inverse() {
         return new Translation2D(-_x, -_y);
-    }
-
-    public double getDistance(final Translation2D other) {
-        return inverse().translateTo(other).norm();
     }
 
     @Override

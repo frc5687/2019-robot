@@ -12,6 +12,7 @@ import org.frc5687.deepspace.robot.RobotMap;
 import org.frc5687.deepspace.robot.commands.Drive;
 import org.frc5687.deepspace.robot.utils.Limelight;
 import org.frc5687.deepspace.robot.utils.PDP;
+import org.frc5687.deepspace.robot.utils.math.Rotation2D;
 import org.frc5687.deepspace.robot.utils.sensors.Navx;
 
 import static org.frc5687.deepspace.robot.Constants.DriveTrain.*;
@@ -240,8 +241,8 @@ public class DriveTrain extends OutliersSubsystem implements PIDSource {
         setPower(limit(leftMotorOutput), limit(rightMotorOutput), true);
     }
 
-    public float getYaw() {
-        return _imu.getYaw();
+    public Rotation2D getYaw() {
+        return Rotation2D.fromDegrees(_imu.getYaw());
     }
 
     public void setPower(double leftSpeed, double rightSpeed, boolean override) {

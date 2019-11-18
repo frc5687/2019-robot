@@ -275,14 +275,6 @@ public class Constants {
         public static final double CAMERA_X_FOV = 29.8;
         public static final double CAMERA_Y_FOV = 24.85;
     }
-    public class Vision {
-        public static final double CAMERA_FRAME_RATE = 90;
-        public static final double MAX_GOAL_TRACK_AGE = 0.3;
-        public static final double MAX_TRACKER_DISTANCE = 18;
-        public static final double DISK_HEIGHT = 28.625;
-        public static final double ACCEPTABLE_ERROR = 6.0;
-
-    }
 
 
 
@@ -443,5 +435,21 @@ public class Constants {
 
     public class AutoDrivePath {
         public static final double K_TURN = 0.2;
+    }
+
+    public class Positions  {
+        public static final double ANGLE_RANGE = 20.0;// in degrees.
+
+        public static final double RIGHT_ROCKET_FRONT_ANGLE = -45.0;
+        public static final double LEFT_ROCKET_FRONT_ANGLE = 45.0;
+
+
+
+        public static final double LEFT_ROCKET_FRONT_HATCH_X = 0; //TODO
+        public static final double LEFT_ROCKET_FRONT_HATCH_Y = 0; //TODO
+        public static final double RIGHT_ROCKET_FRONT_HATCH_X = 0; // TODO
+        public static final double RIGHT_ROCKET_FRONT_HATCH_Y = 0; // TODO
+
+
     }
 }

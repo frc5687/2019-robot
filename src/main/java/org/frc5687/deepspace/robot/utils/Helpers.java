@@ -58,24 +58,6 @@ public class Helpers {
     }
 
     /**
-     * Normalize all wheel speeds if the magnitude of any wheel is greater than 1.0.
-     */
-    public static void normalize(double[] wheelSpeeds) {
-        double maxMagnitude = Math.abs(wheelSpeeds[0]);
-        for (int i = 1; i < wheelSpeeds.length; i++) {
-            double temp = Math.abs(wheelSpeeds[i]);
-            if (maxMagnitude < temp) {
-                maxMagnitude = temp;
-            }
-        }
-        if (maxMagnitude > 1.0) {
-            for (int i = 0; i < wheelSpeeds.length; i++) {
-                wheelSpeeds[i] = wheelSpeeds[i] / maxMagnitude;
-            }
-        }
-    }
-
-    /**
      * Applies a transform to the input to provide better sensitivity at low speeds.
      * @param input the raw input value from a joystick
      * @param factor the raw sensitivity factor to apply
@@ -94,8 +76,5 @@ public class Helpers {
         return capped*input*input*input + (1-capped)*input;
     }
 
-    public static boolean epsilonEquals(double a, double b, double epsilon) {
-        return (a - epsilon <= b) && (a + epsilon >= b);
-    }
 
 }

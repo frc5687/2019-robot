@@ -49,7 +49,6 @@ public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
     private AHRS _imu;
     private Limelight _limelight;
     private DriveTrain _driveTrain;
-    private RobotPose _robotPose;
     private Elevator _elevator;
     private PDP _pdp;
     private Arm _arm;
@@ -110,7 +109,6 @@ public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
         // Then subsystems....
         _shifter = new Shifter(this);
         _driveTrain = new DriveTrain(this);
-        _robotPose = new RobotPose(this);
         _arm = new Arm(this);
         _elevator = new Elevator(this);
         _stilt = new Stilt(this);
@@ -327,7 +325,6 @@ public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
             _cargoIntake.updateDashboard();
             _hatchIntake.updateDashboard();
             _autoChooser.updateDashboard();
-            _robotPose.updateDashboard();
             metric("imu/yaw", _imu.getYaw());
             metric("imu/pitch", _imu.getPitch());
             metric("imu/roll", _imu.getRoll());
@@ -537,7 +534,6 @@ public class Robot extends TimedRobot implements ILoggingSource, IPoseTrackable{
     public CargoIntake getCargoIntake() { return _cargoIntake;}
     public HatchIntake getHatchIntake() { return _hatchIntake;}
     public PoseTracker getPoseTracker() { return _poseTracker; }
-    public RobotPose getRobotPose() { return _robotPose; }
 
     @Override
     public Pose getPose() {

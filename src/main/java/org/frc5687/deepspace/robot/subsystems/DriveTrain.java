@@ -12,7 +12,6 @@ import org.frc5687.deepspace.robot.RobotMap;
 import org.frc5687.deepspace.robot.commands.Drive;
 import org.frc5687.deepspace.robot.utils.Limelight;
 import org.frc5687.deepspace.robot.utils.PDP;
-import org.frc5687.deepspace.robot.utils.math.Rotation2D;
 import org.frc5687.deepspace.robot.utils.sensors.Navx;
 
 import static org.frc5687.deepspace.robot.Constants.DriveTrain.*;
@@ -31,7 +30,6 @@ public class DriveTrain extends OutliersSubsystem implements PIDSource {
 
     private OI _oi;
     private AHRS _imu;
-    private Navx _navx;
     private Limelight _limelight;
     private Robot _robot;
 
@@ -54,7 +52,6 @@ public class DriveTrain extends OutliersSubsystem implements PIDSource {
         info("Constructing DriveTrain class.");
         _oi = robot.getOI();
         _imu = robot.getIMU();
-        _navx = new Navx();
         _limelight = robot.getLimelight();
         _pdp = robot.getPDP();
         _robot = robot;
@@ -109,7 +106,7 @@ public class DriveTrain extends OutliersSubsystem implements PIDSource {
         _leftMagEncoder = new Encoder(RobotMap.DIO.DRIVE_LEFT_A, RobotMap.DIO.DRIVE_LEFT_B);
         _rightMagEncoder = new Encoder(RobotMap.DIO.DRIVE_RIGHT_A, RobotMap.DIO.DRIVE_RIGHT_B);
         _leftMagEncoder.setDistancePerPulse(Math.PI * WHEEL_DIAMETER / PULSE_PER_REVOLUTION);
-        _rightMagEncoder.setDistancePerPulse(Constants.DriveTrain.RIGHT_DISTANCE_PER_PULSE);
+        _rightMagEncoder.setDistancePerPulse(Math.PI * WHEEL_DIAMETER / PULSE_PER_REVOLUTION);
         resetDriveEncoders();
 
 
@@ -241,8 +238,8 @@ public class DriveTrain extends OutliersSubsystem implements PIDSource {
         setPower(limit(leftMotorOutput), limit(rightMotorOutput), true);
     }
 
-    public Rotation2D getYaw() {
-        return Rotation2D.fromDegrees(_imu.getYaw());
+    public double getYaw() {
+        return _imu.getYaw();
     }
 
     public void setPower(double leftSpeed, double rightSpeed, boolean override) {
@@ -319,10 +316,6 @@ public class DriveTrain extends OutliersSubsystem implements PIDSource {
 
     public double getVelocity() {
         return (getRightVelocity() + getLeftVelocity())/2; //Inches Per Second.
-    }
-
-    public double getHeading() {
-        return _navx.getAngle();
     }
 
     public double getDistance() {

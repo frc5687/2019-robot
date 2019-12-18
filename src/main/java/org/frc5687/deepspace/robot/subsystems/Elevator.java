@@ -1,5 +1,6 @@
 package org.frc5687.deepspace.robot.subsystems;
 
+import com.revrobotics.AlternateEncoderType;
 import com.revrobotics.CANEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
@@ -36,7 +37,8 @@ public class Elevator extends OutliersSubsystem implements PIDSource {
         try {
             _elevator = new CANSparkMax(RobotMap.CAN.SPARKMAX.ELEVATOR_MOTOR, CANSparkMaxLowLevel.MotorType.kBrushless);
             _elevator.setInverted(Constants.Elevator.ELEVATOR_MOTOR_INVERTED);
-            _neoElevatorEncoder = _elevator.getEncoder();
+//            _neoElevatorEncoder = _elevator.getAlternateEncoder(AlternateEncoderType.kQuadrature, 8192);
+
         } catch (Exception e) {
             error("Unable to allocate elevator controller: " + e.getMessage());
         }
@@ -116,7 +118,6 @@ public class Elevator extends OutliersSubsystem implements PIDSource {
     @Override
     public void updateDashboard() {
         metric("MAGEncoder", getRawMAGEncoder());
-
 //        metric("NEOEncoder", getRawNeoEncoder());
         metric("Position", getPosition());
         metric("Bottom", isAtBottom());
